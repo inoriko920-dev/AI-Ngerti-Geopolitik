@@ -59,7 +59,7 @@ def test_timeline_projection_uses_stable_ids_and_current_revision(tmp_path: Path
     assert projection.project_revision == 4
     assert projection.track_id == "V1"
     assert [clip.clip_id for clip in projection.clips] == ["C001", "C002"]
-    assert [
-        (clip.timeline_start_frame, clip.timeline_end_frame)
-        for clip in projection.clips
-    ] == [(0, 150), (150, 210)]
+    assert [(clip.timeline_start_frame, clip.timeline_end_frame) for clip in projection.clips] == [
+        (0, 150),
+        (150, 210),
+    ]

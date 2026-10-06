@@ -255,8 +255,7 @@ class MainWindow:
 
         current = self.stack.currentWidget()
         blocks = [
-            current.findChild(QLabel, f"timeline_video_block_{index}")
-            for index in range(1, 5)
+            current.findChild(QLabel, f"timeline_video_block_{index}") for index in range(1, 5)
         ]
         for block in blocks:
             if block is not None:
@@ -265,9 +264,7 @@ class MainWindow:
             block = blocks[index]
             if block is None:
                 raise RuntimeError(f"STEP 10 timeline block {index + 1} not found")
-            block.setText(
-                f"{clip.clip_id}  {clip.timeline_start_frame}-{clip.timeline_end_frame}f"
-            )
+            block.setText(f"{clip.clip_id}  {clip.timeline_start_frame}-{clip.timeline_end_frame}f")
             block.setMinimumWidth(max(90, clip.duration_frames * 2))
             block.setVisible(True)
         self.window.setProperty("step10_project_revision", projection.project_revision)
