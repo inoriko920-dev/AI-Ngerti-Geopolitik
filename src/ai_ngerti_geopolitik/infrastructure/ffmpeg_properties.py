@@ -75,7 +75,7 @@ def build_w3_filter_plan(clip: Clip, fps: int) -> W3FilterPlan:
             f"trunc(ih*{_number(crop_height)}/2)*2:"
             f"iw*{_number(crop_x)}:ih*{_number(crop_y)}"
         ),
-        (f"scale=max(2,trunc(iw*{_number(scale_x)}/2)*2):max(2,trunc(ih*{_number(scale_y)}/2)*2)"),
+        (f"scale=trunc(iw*{_number(scale_x)}/2)*2:trunc(ih*{_number(scale_y)}/2)*2"),
     ]
     if abs(rotation) > 1e-9:
         radians = rotation * 3.141592653589793 / 180.0
