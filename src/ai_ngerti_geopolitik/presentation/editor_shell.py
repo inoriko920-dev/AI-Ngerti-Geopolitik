@@ -500,8 +500,8 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
         ("action_timeline_in", "Set IN", "I", UiIntentType.TIMELINE_SET_IN),
         ("action_timeline_out", "Set OUT", "O", UiIntentType.TIMELINE_SET_OUT),
     ]
-    for object_name, label, shortcut, kind in action_specs:
-        action = QAction(label, outer)
+    for object_name, action_label, shortcut, kind in action_specs:
+        action = QAction(action_label, outer)
         action.setObjectName(object_name)
         action.setShortcut(shortcut)
         action.setShortcutContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
