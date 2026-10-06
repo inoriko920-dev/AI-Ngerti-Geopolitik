@@ -1,4 +1,4 @@
-"""Application ports for persistence, probing, media execution and file availability."""
+"""Application ports for persistence, probing, media execution and playback."""
 
 from __future__ import annotations
 
@@ -76,3 +76,17 @@ class MediaEnginePort(Protocol):
         output_path: Path,
         cancellation: CancellationToken | None = None,
     ) -> ExportResult: ...
+
+
+class RealtimePlaybackPort(Protocol):
+    """Non-blocking native playback transport behind the application boundary."""
+
+    def load(self, state: ProjectState) -> None: ...
+
+    def seek(self, frame: int) -> None: ...
+
+    def play(self) -> None: ...
+
+    def pause(self) -> None: ...
+
+    def stop(self) -> None: ...

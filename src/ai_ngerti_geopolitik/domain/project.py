@@ -1,8 +1,8 @@
 """Pure canonical project/timeline model.
 
 All canonical edit time is stored as integer frames tied to an explicit project FPS.
-STEP 11 W1 extends the STEP 10 schema compatibly with project settings and explicit
-media availability while preserving stable asset/clip identifiers.
+STEP 11 W2 extends schema-v1 compatibly with project markers while preserving the
+W1 media/project guarantees and stable asset/clip identifiers.
 """
 
 from __future__ import annotations
@@ -96,6 +96,10 @@ class Clip:
     enabled: bool = True
 
     def __post_init__(self) -> None:
+        if not self.clip_id:
+            raise DomainValidationError("clip_id is required")
+        if not self.asset_id:
+            raise DomainValidationError("clip asset_id is required")
         fps_values = {self.timeline_start.fps, self.source_in.fps, self.source_out.fps}
         if len(fps_values) != 1:
             raise DomainValidationError("clip time values must share one FPS")
@@ -119,10 +123,28 @@ class Track:
     clips: tuple[Clip, ...] = ()
 
     def __post_init__(self) -> None:
+        if not self.track_id:
+            raise DomainValidationError("track_id is required")
         if self.kind != "video":
             raise DomainValidationError("current canonical timeline supports video tracks")
         if self.order < 0:
             raise DomainValidationError("track order must be non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class Marker:
+    marker_id: str
+    frame: FrameTime
+    label: str
+    marker_type: str = "marker"
+
+    def __post_init__(self) -> None:
+        if not self.marker_id:
+            raise DomainValidationError("marker_id is required")
+        if not self.label.strip():
+            raise DomainValidationError("marker label is required")
+        if self.marker_type not in {"marker", "chapter", "note"}:
+            raise DomainValidationError(f"unsupported marker_type: {self.marker_type}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -134,6 +156,7 @@ class ProjectState:
     revision: int
     assets: tuple[Asset, ...] = ()
     tracks: tuple[Track, ...] = ()
+    markers: tuple[Marker, ...] = ()
     settings: ProjectSettings = ProjectSettings()
 
     @classmethod
@@ -179,6 +202,24 @@ class ProjectState:
                 return track
         raise DomainValidationError(f"unknown track: {track_id}")
 
+    def marker(self, marker_id: str) -> Marker:
+        for marker in self.markers:
+            if marker.marker_id == marker_id:
+                return marker
+        raise DomainValidationError(f"unknown marker: {marker_id}")
+
+    @property
+    def timeline_end_frame(self) -> int:
+        return max(
+            (
+                clip.timeline_end_frame
+                for track in self.tracks
+                for clip in track.clips
+                if clip.enabled
+            ),
+            default=0,
+        )
+
     def validate(self) -> None:
         if self.schema_version != 1:
             raise DomainValidationError("unsupported schema version")
@@ -210,6 +251,18 @@ class ProjectState:
                 clip_ids.append(clip.clip_id)
         if len(clip_ids) != len(set(clip_ids)):
             raise DomainValidationError("duplicate clip id")
+
+        marker_ids = [marker.marker_id for marker in self.markers]
+        if len(marker_ids) != len(set(marker_ids)):
+            raise DomainValidationError("duplicate marker id")
+        timeline_end = self.timeline_end_frame
+        for marker in self.markers:
+            if marker.frame.fps != self.fps:
+                raise DomainValidationError("marker FPS must match project FPS")
+            if timeline_end <= 0:
+                raise DomainValidationError("markers require a non-empty timeline")
+            if marker.frame.frames >= timeline_end:
+                raise DomainValidationError("marker must be inside the timeline")
 
     def semantic_dict(self, *, include_revision: bool = False) -> dict[str, object]:
         data = asdict(self)

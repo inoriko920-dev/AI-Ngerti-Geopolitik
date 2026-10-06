@@ -1,4 +1,4 @@
-"""Semantic CommandBus and reversible STEP 10 edit commands."""
+"""Semantic CommandBus and reversible canonical edit commands."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from ai_ngerti_geopolitik.domain import (
     Clip,
     DomainValidationError,
     FrameTime,
+    Marker,
     ProjectSettings,
     ProjectState,
     Track,
@@ -39,6 +40,19 @@ def _replace_track(state: ProjectState, new_track: Track) -> ProjectState:
     return candidate
 
 
+def _sorted_clips(track: Track) -> list[Clip]:
+    return sorted(track.clips, key=lambda item: item.timeline_start.frames)
+
+
+def _repack_contiguous(clips: list[Clip], fps: int) -> tuple[Clip, ...]:
+    cursor = 0
+    packed: list[Clip] = []
+    for clip in clips:
+        packed.append(replace(clip, timeline_start=FrameTime(cursor, fps)))
+        cursor += clip.duration_frames
+    return tuple(packed)
+
+
 @dataclass(frozen=True, slots=True)
 class ImportAssetCommand:
     asset: Asset
@@ -47,7 +61,7 @@ class ImportAssetCommand:
         if any(item.asset_id == self.asset.asset_id for item in state.assets):
             raise CommandError(f"duplicate asset id: {self.asset.asset_id}")
         if any(item.path_ref == self.asset.path_ref for item in state.assets):
-            raise CommandError("duplicate media path in STEP 10 slice")
+            raise CommandError("duplicate media path in canonical project")
         candidate = replace(state, assets=(*state.assets, self.asset))
         candidate.validate()
         return candidate
@@ -110,6 +124,105 @@ class AddClipCommand:
 
 
 @dataclass(frozen=True, slots=True)
+class ReorderClipCommand:
+    clip_id: str
+    target_index: int
+    track_id: str = "V1"
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track = state.track(self.track_id)
+        clips = _sorted_clips(track)
+        if self.target_index < 0 or self.target_index >= len(clips):
+            raise CommandError(f"target index outside track: {self.target_index}")
+        source_index = next(
+            (index for index, clip in enumerate(clips) if clip.clip_id == self.clip_id),
+            None,
+        )
+        if source_index is None:
+            raise CommandError(f"unknown clip: {self.clip_id}")
+        clip = clips.pop(source_index)
+        clips.insert(self.target_index, clip)
+        packed = _repack_contiguous(clips, state.fps)
+        return _replace_track(state, replace(track, clips=packed))
+
+
+@dataclass(frozen=True, slots=True)
+class SetClipDurationCommand:
+    clip_id: str
+    duration_frames: int
+    ripple: bool = True
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if self.duration_frames <= 0:
+            raise CommandError("clip duration must be positive")
+        for track in state.tracks:
+            ordered = _sorted_clips(track)
+            for index, clip in enumerate(ordered):
+                if clip.clip_id != self.clip_id:
+                    continue
+                asset = state.asset(clip.asset_id)
+                new_source_out = clip.source_in.frames + self.duration_frames
+                if new_source_out > asset.duration.frames:
+                    raise CommandError("clip duration exceeds source media")
+                delta = self.duration_frames - clip.duration_frames
+                updated = replace(
+                    clip,
+                    source_out=FrameTime(new_source_out, state.fps),
+                )
+                ordered[index] = updated
+                if self.ripple and delta:
+                    for later_index in range(index + 1, len(ordered)):
+                        later = ordered[later_index]
+                        shifted = later.timeline_start.frames + delta
+                        if shifted < 0:
+                            raise CommandError("ripple edit would create negative timeline time")
+                        ordered[later_index] = replace(
+                            later,
+                            timeline_start=FrameTime(shifted, state.fps),
+                        )
+                return _replace_track(state, replace(track, clips=tuple(ordered)))
+        raise CommandError(f"unknown clip: {self.clip_id}")
+
+
+@dataclass(frozen=True, slots=True)
+class RemoveClipCommand:
+    clip_id: str
+    ripple: bool = True
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        for track in state.tracks:
+            ordered = _sorted_clips(track)
+            index = next(
+                (position for position, clip in enumerate(ordered) if clip.clip_id == self.clip_id),
+                None,
+            )
+            if index is None:
+                continue
+            removed = ordered.pop(index)
+            if self.ripple:
+                for later_index in range(index, len(ordered)):
+                    later = ordered[later_index]
+                    ordered[later_index] = replace(
+                        later,
+                        timeline_start=FrameTime(
+                            later.timeline_start.frames - removed.duration_frames,
+                            state.fps,
+                        ),
+                    )
+            candidate = _replace_track(state, replace(track, clips=tuple(ordered)))
+            valid_markers = tuple(
+                marker
+                for marker in candidate.markers
+                if marker.frame.frames < candidate.timeline_end_frame
+            )
+            if valid_markers != candidate.markers:
+                candidate = replace(candidate, markers=valid_markers)
+                candidate.validate()
+            return candidate
+        raise CommandError(f"unknown clip: {self.clip_id}")
+
+
+@dataclass(frozen=True, slots=True)
 class SplitClipCommand:
     clip_id: str
     split_timeline_frame: int
@@ -142,6 +255,7 @@ class SplitClipCommand:
                     timeline_start=FrameTime(self.split_timeline_frame, state.fps),
                     source_in=FrameTime(split_source_frame, state.fps),
                     source_out=clip.source_out,
+                    enabled=clip.enabled,
                 )
                 clips = (*track.clips[:index], left, right, *track.clips[index + 1 :])
                 return _replace_track(state, replace(track, clips=clips))
@@ -156,7 +270,7 @@ class TrimClipCommand:
 
     def apply(self, state: ProjectState) -> ProjectState:
         if self.edge != "right":
-            raise CommandError("STEP 10 canonical trim supports right edge only")
+            raise CommandError("canonical trim currently supports right edge only")
         if self.trim_frames <= 0:
             raise CommandError("trim_frames must be positive")
         for track in state.tracks:
@@ -175,6 +289,48 @@ class TrimClipCommand:
                 clips = (*track.clips[:index], trimmed, *track.clips[index + 1 :])
                 return _replace_track(state, replace(track, clips=clips))
         raise CommandError(f"unknown clip: {self.clip_id}")
+
+
+@dataclass(frozen=True, slots=True)
+class AddMarkerCommand:
+    marker: Marker
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if any(item.marker_id == self.marker.marker_id for item in state.markers):
+            raise CommandError(f"duplicate marker id: {self.marker.marker_id}")
+        candidate = replace(state, markers=(*state.markers, self.marker))
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class UpdateMarkerCommand:
+    marker_id: str
+    frame: FrameTime
+    label: str
+    marker_type: str = "marker"
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        state.marker(self.marker_id)
+        updated = Marker(self.marker_id, self.frame, self.label, self.marker_type)
+        markers = tuple(
+            updated if marker.marker_id == self.marker_id else marker for marker in state.markers
+        )
+        candidate = replace(state, markers=markers)
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class DeleteMarkerCommand:
+    marker_id: str
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        state.marker(self.marker_id)
+        markers = tuple(marker for marker in state.markers if marker.marker_id != self.marker_id)
+        candidate = replace(state, markers=markers)
+        candidate.validate()
+        return candidate
 
 
 @dataclass(frozen=True, slots=True)
@@ -203,6 +359,14 @@ class CommandBus:
     @property
     def state(self) -> ProjectState:
         return self._state
+
+    @property
+    def can_undo(self) -> bool:
+        return bool(self._undo)
+
+    @property
+    def can_redo(self) -> bool:
+        return bool(self._redo)
 
     def execute(self, batch: CommandBatch) -> ProjectState:
         if batch.expected_revision != self._state.revision:

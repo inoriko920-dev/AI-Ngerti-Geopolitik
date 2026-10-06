@@ -1,7 +1,7 @@
-"""Application-facing UI intents for SF-STEP 09.
+"""Application-facing UI intents.
 
-STEP 09 only routes presentation intent. It deliberately does not perform project
-mutation, media work, persistence, Gemini calls, or rendering.
+The presentation layer emits semantic intents only. Product mutation is owned by
+application services and the canonical CommandBus.
 """
 
 from __future__ import annotations
@@ -25,10 +25,22 @@ class UiIntentType(StrEnum):
     OPEN_VALIDATION = "open_validation"
     SELECT_SCENE = "select_scene"
     SELECT_ASSET = "select_asset"
+    SELECT_CLIP = "select_clip"
     SET_LAYOUT = "set_layout"
     SPLIT_CUE = "split_cue"
     MERGE_CUE = "merge_cue"
     RELOAD_SRT = "reload_srt"
+    PLAYBACK_PLAY = "playback_play"
+    PLAYBACK_PAUSE = "playback_pause"
+    PLAYBACK_SEEK = "playback_seek"
+    TIMELINE_REORDER = "timeline_reorder"
+    TIMELINE_SET_DURATION = "timeline_set_duration"
+    TIMELINE_SPLIT = "timeline_split"
+    TIMELINE_DELETE = "timeline_delete"
+    TIMELINE_SET_IN = "timeline_set_in"
+    TIMELINE_SET_OUT = "timeline_set_out"
+    TIMELINE_CLEAR_RANGE = "timeline_clear_range"
+    TIMELINE_ADD_MARKER = "timeline_add_marker"
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,7 +54,7 @@ class UiIntentSink(Protocol):
 
 
 class RecordingIntentSink:
-    """Small deterministic sink used by the STEP 09 shell and Qt tests."""
+    """Small deterministic sink used by the shell and Qt tests."""
 
     def __init__(self) -> None:
         self.intents: list[UiIntent] = []
