@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QCheckBox, QComboBox, QPushButton, QSlider
 
 from ai_ngerti_geopolitik.application.commands import (
@@ -137,4 +138,37 @@ def test_real_qt_controls_route_into_canonical_w2_controller(qtbot, tmp_path: Pa
     qtbot.mouseClick(marker, Qt.MouseButton.LeftButton)
     assert controller.state.markers[0].marker_id == "M001"
     assert controller.state.markers[0].frame.frames == 30
+    window.close()
+
+
+def test_timeline_shortcut_and_context_actions_route_through_command_bus(qtbot, tmp_path: Path) -> None:
+    controller, _transport = _controller(tmp_path)
+    router = TimelineIntentRouter(controller)
+    window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
+    qtbot.addWidget(window.window)
+    window.show()
+    current = window.stack.currentWidget()
+
+    controller.select_clip("C001")
+    duplicate = current.findChild(QAction, "action_timeline_duplicate")
+    delete = current.findChild(QAction, "action_timeline_delete")
+    marker = current.findChild(QAction, "action_timeline_marker")
+    assert duplicate is not None and delete is not None and marker is not None
+    assert duplicate.shortcut().toString() == "Ctrl+D"
+    assert delete.shortcut().toString() == "Del"
+
+    duplicate.trigger()
+    assert controller.selected_clip_id == "C003"
+    assert controller.state.clip("C003").timeline_start.frames == 120
+
+    marker.trigger()
+    assert controller.state.markers[0].marker_id == "M001"
+
+    delete.trigger()
+    assert controller.selected_clip_id is None
+    assert all(
+        clip.clip_id != "C003"
+        for track in controller.state.tracks
+        for clip in track.clips
+    )
     window.close()

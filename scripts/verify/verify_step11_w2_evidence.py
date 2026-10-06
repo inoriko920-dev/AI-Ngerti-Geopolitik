@@ -9,6 +9,9 @@ REQUIRED = (
     "01_timeline.json",
     "02_interaction.json",
     "03_preview_export.json",
+    "04_semantics.json",
+    "05_stress.json",
+    "w2_multitrack_semantics.angproj",
     "w2_timeline.angproj",
     "w2_edited_timeline.mp4",
 )
@@ -72,6 +75,33 @@ def main() -> int:
         marker = timeline.get("marker")
         if not isinstance(marker, dict) or marker.get("id") != "M001":
             errors.append("W2 persisted marker evidence missing")
+
+
+    semantics = load_json(root / "04_semantics.json")
+    if not isinstance(semantics, dict) or semantics.get("status") != "PASS":
+        errors.append("W2 complete semantics report is not PASS")
+    else:
+        if semantics.get("track_ids") != ["V2", "V1"]:
+            errors.append(f"W2 track ordering evidence mismatch: {semantics.get('track_ids')!r}")
+        if semantics.get("v2_name") != "B-roll":
+            errors.append("W2 track rename evidence missing")
+        if semantics.get("v2_muted") is not True or semantics.get("v2_visible") is not False:
+            errors.append("W2 track mute/visibility evidence missing")
+        if semantics.get("c003_track") != "V2":
+            errors.append("W2 stable cross-track clip identity evidence missing")
+        if semantics.get("all_mutations_undo_redo_checked") is not True:
+            errors.append("W2 undo/redo coverage marker missing")
+        if semantics.get("save_reopen_hash_match") is not True:
+            errors.append("W2 multitrack save/reopen mismatch")
+
+    stress = load_json(root / "05_stress.json")
+    if not isinstance(stress, dict) or stress.get("status") != "PASS":
+        errors.append("W2 stress budget did not pass")
+    else:
+        if int(stress.get("total_clips", 0)) < 1000:
+            errors.append("W2 stress fixture must cover at least 1000 clips")
+        if float(stress.get("elapsed_ms", 1e12)) > float(stress.get("budget_ms", 0)):
+            errors.append("W2 stress elapsed time exceeds budget")
 
     if not isinstance(interaction, dict):
         errors.append("W2 interaction evidence missing")
