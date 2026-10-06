@@ -266,7 +266,19 @@ class MainWindow:
                 raise RuntimeError(f"STEP 10 timeline block {index + 1} not found")
             block.setText(f"{clip.clip_id}  {clip.timeline_start_frame}-{clip.timeline_end_frame}f")
             block.setMinimumWidth(max(90, clip.duration_frames * 2))
+            block.setProperty("clip_id", clip.clip_id)
             block.setVisible(True)
+
+        from PySide6.QtWidgets import QSlider
+
+        scrubber = current.findChild(QSlider, "timeline_scrubber")
+        if scrubber is not None:
+            timeline_end = max(
+                (clip.timeline_end_frame for clip in projection.clips),
+                default=1,
+            )
+            scrubber.setRange(0, max(0, timeline_end - 1))
+            scrubber.setValue(min(scrubber.value(), scrubber.maximum()))
         self.window.setProperty("step10_project_revision", projection.project_revision)
 
     def apply_step10_preview(self, result: Any) -> None:
