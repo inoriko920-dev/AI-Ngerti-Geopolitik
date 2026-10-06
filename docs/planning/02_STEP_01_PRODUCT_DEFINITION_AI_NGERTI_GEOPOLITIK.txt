@@ -1,0 +1,1391 @@
+AI NGERTI GEOPOLITIK  |  SOFTWARE FACTORY  |  SF-STEP 01
+AI NGERTI GEOPOLITIK
+SF-STEP 01 — PRODUCT DEFINITION
+Baseline Produk Resmi Sebelum Discovery, UI Inventory, Arsitektur, dan Coding
+
+	Field
+	Nilai
+
+	Document ID
+	ANG-SF-STEP01-PRODUCT-DEFINITION-v1.0
+
+	Active Role
+	ASTRA
+
+	Product Definition Status
+	BASELINE_CONFIRMED dengan provisional teknis non-blocking
+
+	Gate Candidate
+	PASS WITH PROVISIONAL
+
+	STEP 00 Baseline
+	PASS WITH RECORDED OPEN ITEMS
+
+	Repository
+	inoriko920-dev/AI-Ngerti-Geopolitik
+
+	Repo HEAD saat mulai STEP 01
+	4b6140aee7eb157c3046fefc6cbc833085b85671
+
+	Code Status
+	NONE — belum ada source aplikasi
+
+	UI Decision
+	AAVC UI = VISUAL_CONTRACT 1:1 (owner decision terbaru)
+
+	Next Step jika gate PASS
+	SF-STEP 02 — Existing Solution / GitHub / Upstream Discovery
+
+
+
+	BATAS STEP 01
+Dokumen ini mendefinisikan WHAT dan pengalaman produk. Ia tidak memilih framework final, tidak menyalin source UI, tidak membuat gambar UI, tidak mengimplementasikan engine, dan tidak menjalankan discovery formal STEP 02. Repo AI-Automatic-Video-Composer tetap READ-ONLY.
+
+
+
+
+
+1. Baseline, Provenance, dan Cara Membaca
+	Sumber
+	Level Bukti
+	Peran
+
+	Instruksi pengguna terbaru
+	USER_DECISION
+	Prioritas tertinggi untuk keputusan produk sesi ini.
+
+	DECISIONS_LOCKED.md D-001..D-015
+	DOCUMENTED_REQUIREMENT
+	Keputusan yang tidak boleh diubah diam-diam.
+
+	SF-STEP 00 Intake
+	DOCUMENTED_REQUIREMENT
+	Project identity, safety, constraints, source-of-truth.
+
+	Master Blueprint ANG v1.0
+	DOCUMENTED_REQUIREMENT
+	Baseline produk sangat detail; dipetakan dan divalidasi, bukan ditulis ulang.
+
+	AAVC repo/UI freeze/source
+	VERIFIED_EXISTING_BEHAVIOR / VISUAL_CONTRACT
+	Feature parity dan UI 1:1; repo read-only.
+
+	OpenShot/libopenshot research awal
+	PRIOR EVIDENCE / PROVISIONAL
+	Belum final; diaudit ulang pada SF-STEP 02.
+
+	Inferensi ASTRA
+	AI_PROVISIONAL
+	Hanya jika reversible dan tidak mengubah keputusan material.
+
+
+
+	Keputusan UI terbaru
+AAVC UI bukan lagi sekadar inspirasi. Untuk AI Ngerti Geopolitik, UI AAVC ditetapkan sebagai VISUAL_CONTRACT 1:1 sedekat mungkin. Branding boleh berubah menjadi AI Ngerti Geopolitik, tetapi hierarchy/layout/panel/style/spacing/warna/flow tidak boleh didesain ulang tanpa change record.
+
+
+
+2. Product Statement
+AI Ngerti Geopolitik adalah aplikasi desktop Windows untuk creator/editor video geopolitik dan dokumenter yang menyusun draft edit otomatis dari Scene DOCX, aset Axxx, narasi, dan subtitle, lalu memberi kontrol manual penuh untuk review, koreksi, validasi, dan export final yang stabil; produk mempertahankan workflow penting AAVC dan memakai UI AAVC sebagai target visual 1:1, tanpa menjadikan pengguna operator FFmpeg atau membangun NLE umum dari nol.
+	Field
+	Nilai
+
+	Masalah
+	Produksi video naratif mengandung banyak pekerjaan mekanis berulang; pendekatan AAVC lama juga terlalu banyak membuat timeline/preview/render behavior custom sehingga maintenance dan parity sulit.
+
+	Primary User
+	Creator/editor dokumenter, geopolitik, sejarah, explainer; tidak harus programmer.
+
+	Primary Value
+	Dari input terstruktur ke draft edit yang layak direview, dapat dikoreksi manual, dan dapat diekspor secara repeatable.
+
+	Platform
+	Windows 11 x64 V1.
+
+	Distribution
+	Portable folder multi-file dalam satu ZIP; bukan installer/single-file sebagai default V1.
+
+	UI Contract
+	AAVC frozen UI/UI implementation menjadi target 1:1; tidak redesign.
+
+
+
+3. Product Goals
+G-001 — Mengurangi pekerjaan mekanis penyusunan puluhan/ratusan visual berdasarkan struktur scene dan Asset ID.
+G-002 — Memberi draft otomatis yang konsisten tetapi seluruh keputusan penting tetap dapat dikoreksi manual.
+G-003 — Meningkatkan stabilitas dibanding pendekatan editor custom lama dengan memisahkan kebutuhan khas produk dari primitive multimedia umum.
+G-004 — Membuat preview, timeline, persistence, recovery, dan export dapat dipercaya untuk project nyata, bukan hanya demo/test tipis.
+G-005 — Menyediakan AI editing yang bounded, tervalidasi, undoable, dan tidak mempunyai jalur mutasi tersembunyi.
+G-006 — Mempertahankan pengalaman UI AAVC agar pengguna tidak perlu belajar tampilan baru saat berpindah ke repo baru.
+G-007 — Menghasilkan build Windows portable yang dapat dipakai tanpa tool developer.
+G-008 — Menjaga proyek dapat dilanjutkan lintas AI/sesi melalui source-of-truth, decisions, tests, dan handoff.
+4. Actors dan Context of Use
+	Actor
+	Kemampuan Teknis
+	Tujuan
+	Context
+	Jangan dibebankan
+
+	ACT-001 Primary Creator/Editor
+	Pemula–menengah; familiar dengan editor video tetapi tidak wajib coding
+	Menghasilkan video dokumenter/geopolitik dengan lebih sedikit kerja mekanis
+	Windows desktop, banyak file lokal, mouse/keyboard, project dapat panjang
+	Terminal, FFmpeg CLI, JSON editing, dependency/toolchain setup
+
+	ACT-002 Reviewer/Director (secondary)
+	Non-programmer
+	Mereview draft, mengubah pacing/motion/subtitle, lalu approve export
+	Satu project yang sudah terstruktur
+	Men-debug provider/engine atau memahami internal schema
+
+
+
+5. User Outcomes / Jobs-to-be-Done
+	ID
+	Context/Need
+	Success Observation
+
+	OUT-001
+	Ketika Scene DOCX dan folder aset sudah siap, saya ingin project tersusun otomatis sesuai urutan agar saya tidak memasukkan visual satu per satu.
+	Project terbuka dengan jumlah scene/binding benar dan validation summary.
+
+	OUT-002
+	Ketika draft pertama belum ada, saya ingin AUTO EDIT memberi pacing/motion yang wajar agar video langsung layak direview.
+	Edit Plan tervalidasi dapat diterapkan dan di-Undo.
+
+	OUT-003
+	Ketika hasil otomatis kurang pas, saya ingin memperbaiki manual melalui timeline/inspector yang familiar agar saya tetap punya kontrol.
+	Perubahan manual bekerja, tersimpan, dan terlihat konsisten di preview/export.
+
+	OUT-004
+	Ketika file pindah/rusak, saya ingin tahu apa yang salah dan relink tanpa membuat project ulang.
+	Blocker jelas dan relink memulihkan project.
+
+	OUT-005
+	Ketika SRT/narasi tersedia, saya ingin semuanya masuk ke project yang sama agar timing dan output sinkron.
+	Subtitle/narration terdengar/terlihat benar di output.
+
+	OUT-006
+	Ketika project siap, saya ingin export full/selection dan mendapat file final valid tanpa tool developer.
+	Output dapat diputar/probe dan project tetap aman.
+
+	OUT-007
+	Ketika pindah dari AAVC ke ANG, saya ingin tampilan tetap sama agar tidak belajar ulang UI.
+	UI actual memenuhi visual parity contract AAVC.
+
+
+
+
+
+6. Primary dan Supporting Workflows
+WF-001 — PRIMARY: Buat Project sampai Editor Siap
+Trigger: pengguna memiliki Scene DOCX dan folder aset.
+Preconditions: aplikasi berjalan; input dapat dipilih; project baru belum aktif.
+Inputs: Scene DOCX, folder aset; narration/SRT opsional.
+Happy path: Proyek Baru → pilih DOCX → pilih folder aset → aplikasi parse/bind/validate → review import → tambah narration/SRT opsional → pilih lokasi project → save atomic → timeline/editor terbuka.
+Alternatives: user dapat membuka project ANG yang sudah ada; legacy importer terpisah bila diaktifkan.
+Errors/recovery: DOCX invalid, missing/corrupt asset, media unsupported, atau save path gagal menghasilkan error actionable dan tidak membuat fake success.
+Output: project aktif yang tersimpan, timeline canonical, validation status.
+Completion: editor terbuka dengan scene pertama/keadaan valid dan project dapat disimpan kembali.
+WF-002 — AUTO EDIT
+Trigger: user meminta AUTO EDIT pada project yang lolos preflight.
+Preconditions: project valid; provider credential tersedia bila AI digunakan; manual editor tetap tersedia bila AI offline.
+Flow: context builder → request Gemini → structured Edit Plan → schema/semantic/stale validation → dry run → apply sebagai transaction → preview hasil → Undo bila tidak sesuai.
+AI dilarang mengubah credential, project path, output folder, atau user lock tanpa policy/izin.
+Failure: timeout/quota/key invalid/invalid plan tidak boleh menghasilkan partial mutation atau project korup.
+WF-003 — Review dan Koreksi Manual
+User seek/play preview, memilih scene/asset, mengubah order/duration/split/motion/subtitle/marker/In-Out/relink sesuai fitur yang didukung.
+Semua perubahan project masuk history dan dapat Undo/Redo.
+UI mengikuti AAVC 1:1 sehingga lokasi/hierarchy workflow tetap familiar.
+Preview menampilkan keadaan canonical yang sama yang menjadi basis export sejauh engine memungkinkan.
+WF-004 — Validation dan Relink
+Aplikasi menampilkan issue severity, target, dan tindakan recovery.
+User dapat memilih file/folder pengganti; binding diperbarui setelah validasi.
+Blocker penting mencegah export; warning tidak disamarkan sebagai success.
+WF-005 — Save, Reopen, dan Recovery
+Save menulis project secara atomic; unsaved guard mencegah kehilangan perubahan.
+Close/reopen mempertahankan state penting.
+Jika crash terjadi, recovery snapshot dapat ditawarkan tanpa menimpa project sumber secara korup.
+WF-006 — Export
+Preflight validation → pilih full/selection + preset → render background job → progress/cancel → verify output → success state hanya bila file final valid.
+Cancel/failure tidak boleh meninggalkan status success palsu atau merusak project.
+WF-007 — Jalankan Build Portable
+User mengunduh satu ZIP, mengekstrak seluruh folder, menjalankan executable utama, lalu open/create project tanpa memasang Python/dev tools.
+Normal operation tidak mengharuskan admin atau path drive tertentu.
+WF-008 — Migrasi Legacy AAVC (SHOULD)
+User memilih project AAVC lama; importer membaca source secara read-only.
+Aplikasi memetakan behavior EXACT/APPROX/UNSUPPORTED dan memberi compatibility report.
+File legacy sumber tidak diubah.
+
+
+7. Feature Inventory dan Prioritas
+	ID
+	Feature
+	Priority
+	Scope
+	Workflow
+	Acceptance ringkas
+
+	F-001
+	Project New/Open/Save/Save As + unsaved guard
+	MUST
+	Core path
+	WF-001/WF-005
+	Project dapat dibuat, disimpan atomic, dibuka ulang tanpa kehilangan state penting.
+
+	F-002
+	Scene DOCX import
+	MUST
+	Core path
+	WF-001
+	DOCX valid menghasilkan jumlah scene dan source quote yang benar; invalid berhenti dengan error yang dapat ditindaklanjuti.
+
+	F-003
+	Canonical Axxx asset binding
+	MUST
+	Core path
+	WF-001/WF-004
+	A001 dst. dipetakan deterministik; missing/corrupt/duplicate terlihat jelas.
+
+	F-004
+	SINGLE/DOUBLE scene workflow
+	MUST
+	Parity
+	WF-001/WF-003
+	Scene 1 atau 2 aset mempertahankan hasil penggunaan AAVC.
+
+	F-005
+	Timeline editing inti
+	MUST
+	Core path
+	WF-003
+	Reorder, resize duration, split, selection, In/Out, marker, snap, zoom, follow, navigator bekerja dan undoable.
+
+	F-006
+	Undo/Redo transaction
+	MUST
+	Core path
+	WF-002/WF-003
+	Satu niat manual/AI dapat Undo/Redo tanpa partial mutation.
+
+	F-007
+	Manual animation/motion
+	MUST
+	Parity
+	WF-003
+	User dapat pilih preset/intensity/lock hanya untuk preset render-backed.
+
+	F-008
+	Deterministic random animation
+	MUST
+	Parity
+	WF-002/WF-003
+	Seed sama menghasilkan assignment sama dan lock dihormati.
+
+	F-009
+	AI bounded animation/auto edit
+	MUST
+	Automation
+	WF-002
+	Gemini menghasilkan Edit Plan tervalidasi; unknown/unsupported action ditolak sebelum mutation.
+
+	F-010
+	Subtitle SRT workspace
+	MUST
+	Parity
+	WF-001/WF-003
+	Import, edit cue/timing, overlap, style, animation, burn-in/export behavior tersedia.
+
+	F-011
+	Narration import
+	MUST
+	Parity
+	WF-001
+	Audio narasi dapat dibind dan terdengar pada preview/export.
+
+	F-012
+	Microphone narration record
+	MUST
+	Parity
+	WF-003
+	Rekaman menghasilkan media narasi nyata dan dapat digunakan project.
+
+	F-013
+	Validation Center + relink
+	MUST
+	Reliability
+	WF-004/WF-006
+	Blocker/warning terlihat; missing asset dapat direlink tanpa membuat ulang project.
+
+	F-014
+	Recovery/autosave snapshot
+	MUST
+	Reliability
+	WF-005
+	Crash recovery tersedia dan tidak menimpa source project secara korup.
+
+	F-015
+	Secure Gemini credential slots 1–100
+	MUST
+	Integration
+	WF-002
+	Import/manage credential tanpa plaintext di project/repo/log; failure graceful.
+
+	F-016
+	Background jobs
+	MUST
+	Quality
+	WF-002/WF-006
+	AI/render/import berat tidak membuat GUI hang; progress/cancel/status jelas.
+
+	F-017
+	Preview/playback terpercaya
+	MUST
+	Core path
+	WF-002/WF-003
+	Preview memakai state timing/transform canonical yang sama dengan jalur export sejauh engine memungkinkan.
+
+	F-018
+	Export project/selection
+	MUST
+	Core path
+	WF-006
+	H.264/H.265, 1080p/1440p/4K, 30/60fps, quality preset dan selection render benar-benar menghasilkan file valid.
+
+	F-019
+	Windows portable build
+	MUST
+	Release
+	WF-007
+	ZIP multi-file berjalan di clean Windows tanpa runtime developer.
+
+	F-020
+	Diagnostics/redacted logs
+	SHOULD
+	Support
+	WF-004/WF-006
+	Error dapat ditelusuri tanpa membocorkan key/content sensitif.
+
+	F-021
+	Legacy AAVC project importer
+	SHOULD
+	Migration
+	WF-008
+	File lama dibaca read-only bila schema valid dan menghasilkan compatibility report.
+
+	F-022
+	Advanced AI pacing/transform/transition
+	SHOULD
+	Post-core
+	WF-002
+	Hanya command yang telah dibuktikan manual/render-backed boleh diaktifkan.
+
+	F-023
+	Arbitrary background/video tracks
+	COULD
+	Future
+	-
+	Hanya setelah ada use case nyata; bukan syarat V1 core.
+
+	F-024
+	Provider AI selain Gemini
+	OUT_OF_SCOPE
+	V1
+	-
+	Tidak masuk V1 kecuali keputusan owner baru.
+
+
+
+	Prioritas release
+MUST = tanpa fitur ini V1.0 gagal memenuhi north-star workflow atau parity yang sudah dikunci. SHOULD = penting tetapi dapat dipindah sesudah core bila tidak menghambat usable release. COULD/FUTURE tidak boleh menarik fokus dari V1.0.
+
+
+
+8. Functional Requirements
+	ID
+	Judul
+	Statement
+	Priority
+	Related
+	Acceptance
+
+	FR-001
+	Project lifecycle
+	Sistem harus memungkinkan pengguna membuat, membuka, menyimpan, Save As, dan menutup project dengan unsaved guard.
+	MUST
+	WF-001/WF-005
+	State yang disimpan dapat dibuka ulang dengan hasil konsisten; save failure tidak merusak file sumber.
+
+	FR-002
+	Scene DOCX parsing
+	Sistem harus membaca Scene DOCX yang memenuhi contract dan membentuk scene berurutan tanpa menebak struktur invalid.
+	MUST
+	WF-001
+	DOCX fixture valid menghasilkan scene/binding yang sesuai; invalid ditolak dengan error spesifik.
+
+	FR-003
+	Asset binding
+	Sistem harus memetakan asset ID Axxx ke file nyata dan menampilkan READY/MISSING/CORRUPT/DUPLICATE.
+	MUST
+	WF-001/WF-004
+	Status akurat dan relink memperbaiki reference tanpa recreating project.
+
+	FR-004
+	SINGLE/DOUBLE semantics
+	Sistem harus mendukung scene dengan satu atau dua visual utama sesuai workflow AAVC.
+	MUST
+	WF-001/WF-003
+	Single dan double dapat dipreview, diedit, dan diekspor.
+
+	FR-005
+	Timeline edit
+	Sistem harus mendukung reorder, duration resize, split, selection, In/Out, marker, snap, zoom, follow playhead, dan navigator.
+	MUST
+	WF-003
+	Setiap operasi memodifikasi state benar dan dapat diuji/di-Undo bila mengubah project.
+
+	FR-006
+	Undo/Redo
+	Semua perubahan project penting dari UI dan AI harus masuk transaction history.
+	MUST
+	WF-002/WF-003
+	Undo mengembalikan state sebelumnya; Redo menerapkan kembali tanpa drift.
+
+	FR-007
+	Manual motion
+	User harus dapat menerapkan animation/motion preset yang didukung serta intensity dan lock.
+	MUST
+	WF-003
+	Preset yang terlihat di UI benar-benar memengaruhi preview/export atau tidak ditampilkan.
+
+	FR-008
+	Random planner
+	Sistem harus menyediakan random animation deterministik yang menghormati lock dan cooldown/repetition policy.
+	MUST
+	WF-002
+	Seed sama => assignment sama; locked target tidak berubah.
+
+	FR-009
+	AI Edit Plan
+	Gemini harus menghasilkan plan terstruktur yang divalidasi sebelum project berubah.
+	MUST
+	WF-002
+	Unknown command/target/value invalid/stale revision ditolak tanpa partial mutation.
+
+	FR-010
+	AI manual parity
+	AI hanya boleh memanggil command yang juga dimiliki application/manual editing layer.
+	MUST
+	WF-002/WF-003
+	Tidak ada jalur mutasi AI-only ke project state.
+
+	FR-011
+	Subtitle import/edit
+	Sistem harus mengimpor SRT dan menyediakan cue edit/timing/style/animation yang render-backed.
+	MUST
+	WF-001/WF-003
+	Sample SRT tampil pada preview/export dan save-copy tidak diam-diam menimpa source bila flow memilih salinan.
+
+	FR-012
+	Narration
+	Sistem harus mendukung import narasi dan rekam mikrofon sebagai media project.
+	MUST
+	WF-001/WF-003
+	Audio terdengar dan tersinkron pada preview/export.
+
+	FR-013
+	Validation
+	Sistem harus melakukan preflight dan memblokir export saat blocker kritis belum selesai.
+	MUST
+	WF-004/WF-006
+	Missing/invalid required media mencegah export dan memberi recovery path.
+
+	FR-014
+	Recovery
+	Sistem harus menyediakan recovery snapshot/autosave tanpa merusak file project sumber.
+	MUST
+	WF-005
+	Fault injection recovery dapat memulihkan session valid.
+
+	FR-015
+	Credential management
+	Sistem harus mendukung sampai 100 credential Gemini dengan penyimpanan aman dan masking.
+	MUST
+	WF-002
+	Credential tidak muncul plaintext di repo/project/log/error; key failure tidak crash app.
+
+	FR-016
+	Background jobs
+	Operasi AI/render/import berat harus berjalan tanpa membekukan interaksi editor normal.
+	MUST
+	WF-002/WF-006
+	UI menunjukkan progress/cancel dan tetap responsif.
+
+	FR-017
+	Render/export
+	Sistem harus mengekspor project penuh atau selection ke preset yang didukung.
+	MUST
+	WF-006
+	Output file non-empty, dapat diprobe/dibuka, durasi/res/fps sesuai tolerance.
+
+	FR-018
+	Project reopen
+	Project tersimpan harus dapat ditutup lalu dibuka kembali dengan scene, binding, timing, edit, subtitle, narasi, lock, dan setting relevan tetap konsisten.
+	MUST
+	WF-005
+	Golden E2E save-close-reopen lulus.
+
+	FR-019
+	UI visual parity AAVC
+	UI ANG harus mengikuti UI AAVC sebagai VISUAL_CONTRACT 1:1 sedekat mungkin.
+	MUST
+	All UI workflows
+	Screenshot actual-vs-reference memenuhi parity review; tidak ada redesign tanpa change record.
+
+	FR-020
+	Brand substitution
+	Nama/branding AAVC boleh diganti menjadi AI Ngerti Geopolitik tanpa mengubah hierarchy visual/flow.
+	MUST
+	All UI workflows
+	Brand ANG tampil tetapi layout/interaction tetap sesuai visual contract.
+
+	FR-021
+	Portable Windows usage
+	Release pertama harus dapat dipakai dengan ekstrak ZIP dan jalankan executable utama tanpa environment developer.
+	MUST
+	WF-007
+	Clean-machine smoke test launch/open/preview/export pass.
+
+	FR-022
+	Legacy migration
+	Jika legacy importer V1 diaktifkan, ia harus read-only terhadap file AAVC sumber dan memberi compatibility report.
+	SHOULD
+	WF-008
+	File lama tidak berubah; unsupported mapping dilaporkan.
+
+
+
+
+
+9. Quality / Non-Functional Requirements
+	ID
+	Quality
+	Scenario/Target
+	Verification
+	Status
+
+	NFR-001
+	Reliability
+	Project/media source tidak rusak akibat save/import/AI/render gagal.
+	Fault injection + atomic save/recovery E2E
+	CONFIRMED
+
+	NFR-002
+	Responsiveness
+	Operasi berat tidak membuat editor tampak hang tanpa status.
+	AI/render/import workload dengan UI interaction
+	CONFIRMED
+
+	NFR-003
+	Determinism
+	Random planner dengan seed sama menghasilkan hasil sama; command AI diterapkan deterministik setelah plan valid.
+	Repeat fixture / state diff
+	CONFIRMED
+
+	NFR-004
+	Preview-export trust
+	Timing/transform canonical tidak memiliki dua source of truth berbeda.
+	Golden frame/time comparison
+	CONFIRMED
+
+	NFR-005
+	Performance
+	Project 20/100/300 scene tetap usable; angka final ditetapkan setelah benchmark.
+	Benchmark open/seek/scroll/AI plan/export
+	TARGET_TO_MEASURE
+
+	NFR-006
+	Security
+	Credential dan sensitive context tidak bocor melalui project/log/error/repo.
+	Secret scan + redaction tests
+	CONFIRMED
+
+	NFR-007
+	Portability
+	Build berjalan di clean Windows x64 tanpa Python/dev tools.
+	Packaged E2E
+	CONFIRMED
+
+	NFR-008
+	Recovery
+	Crash/restart memiliki jalur recovery yang jelas dan tidak merusak source.
+	Crash simulation
+	CONFIRMED
+
+	NFR-009
+	Usability
+	Primary workflow dapat dilakukan dari UI tanpa terminal/FFmpeg knowledge.
+	Owner E2E walkthrough
+	CONFIRMED
+
+	NFR-010
+	Visual fidelity
+	UI ANG harus sangat dekat dengan UI AAVC frozen reference pada 1920×1080.
+	Screenshot diff/review states UI-002/003/010/013/014/027/035/041
+	CONFIRMED
+
+	NFR-011
+	Maintainability
+	Keputusan besar, requirement, command, ownership, status, dan handoff terdokumentasi.
+	Docs/source-of-truth audit
+	CONFIRMED
+
+	NFR-012
+	Compatibility
+	Schema project versioned dan migration behavior eksplisit.
+	Open older fixtures + migration tests
+	PROVISIONAL
+
+
+
+10. Product I/O Inventory
+	ID
+	Dir
+	Input/Output
+	Format
+	Required?
+	User Action
+	Invalid/Missing Behavior
+
+	IO-001
+	INPUT
+	Scene DOCX
+	.docx
+	Required untuk north-star create flow
+	Pilih/drag file
+	Invalid/unreadable => flow berhenti dengan error actionable.
+
+	IO-002
+	INPUT
+	Folder aset
+	PNG/JPG dan media visual yang didukung
+	Required untuk scene visual
+	Pilih folder
+	Missing/corrupt/duplicate => validation issue; tidak menebak.
+
+	IO-003
+	INPUT
+	Narration audio
+	Audio format supported by engine
+	Optional
+	Import file
+	Unsupported/corrupt => error; project tetap dapat dibuka.
+
+	IO-004
+	INPUT
+	Subtitle SRT
+	.srt
+	Optional
+	Import file
+	Invalid timing/encoding => warning/block sesuai severity.
+
+	IO-005
+	INPUT
+	Microphone audio
+	Recorded WAV/media
+	Optional
+	Record dari UI
+	Device unavailable => user-visible error; tidak membuat fake clip.
+
+	IO-006
+	INPUT
+	Gemini credentials
+	Text import/manual entry then secure storage
+	Optional until AI used
+	Import/manage
+	Invalid/unavailable => AI feature unavailable, manual editor tetap bekerja.
+
+	IO-007
+	INPUT
+	Legacy AAVC project
+	.aavcproj
+	Optional/SHOULD
+	Open/import legacy
+	Read-only source; unsupported mapping menghasilkan report.
+
+	IO-008
+	OUTPUT
+	ANG project
+	Versioned project file, format final later
+	Required untuk persistence
+	Save/Save As
+	Atomic write; overwrite guarded.
+
+	IO-009
+	OUTPUT
+	Final video
+	MP4 H.264/H.265
+	Primary output
+	Export full/selection
+	Fail => no false success; partial/temp handled safely.
+
+	IO-010
+	OUTPUT
+	Subtitle copy/export
+	SRT / burn-in behavior
+	Optional
+	Save copy/export
+	Source tidak ditimpa diam-diam.
+
+	IO-011
+	OUTPUT
+	Diagnostic bundle
+	Redacted logs/metadata
+	Optional
+	Explicit support action
+	No raw API keys/full private content by default.
+
+
+
+11. Data & Persistence Expectations
+DATA-001 — Project State: scene order, duration, asset binding, transform/motion assignment, lock, subtitle/narration references, markers/range, render settings, history/recovery metadata yang relevan harus dapat dipersist.
+DATA-002 — External Media: media user tidak harus disalin ke project; reference harus dapat dideteksi saat hilang dan mempunyai relink flow.
+DATA-003 — Credential: raw Gemini key tidak boleh berada dalam file project, repo, diagnostics, screenshot, atau log. Penyimpanan aman final ditentukan pada arsitektur.
+DATA-004 — Recovery: snapshot boleh transient/cache tetapi harus mampu memulihkan state valid setelah crash; tidak boleh menggantikan source project diam-diam.
+DATA-005 — Cache: thumbnails/proxy/index/engine cache boleh diregenerasi dan bukan source of truth.
+DATA-006 — Schema: project format harus versioned; migration behavior eksplisit. Detail schema bukan keputusan STEP 01.
+12. AI / Automation Product Contract
+	Contract
+	Aturan Produk
+
+	AI-001 Optional core
+	Manual editor tetap dapat digunakan tanpa Gemini; AI menambah automation, bukan membuat app unusable saat provider gagal.
+
+	AI-002 Structured plan
+	AI menghasilkan Edit Plan/commands; tidak direct mutate project JSON/state/engine.
+
+	AI-003 Command parity
+	AI hanya memakai command yang juga sah untuk application/manual layer.
+
+	AI-004 Validation
+	Schema, semantic, target, supported preset, lock, bounds, project revision/stale result harus diperiksa sebelum apply.
+
+	AI-005 Undo
+	Applied AI plan harus menjadi transaction yang dapat di-Undo/Redo.
+
+	AI-006 Confirmation
+	Perubahan high-impact/large plan harus mempunyai preview/ringkasan dampak sesuai policy yang difinalkan nanti.
+
+	AI-007 Cloud data
+	Kirim hanya context yang diperlukan untuk task; media/file penuh tidak dikirim otomatis tanpa requirement/izin eksplisit.
+
+	AI-008 Failure
+	Timeout/quota/key error/invalid response tidak mengubah project dan memberi fallback manual.
+
+	AI-009 Provider V1
+	Gemini saja pada V1; provider lain out-of-scope tanpa change decision.
+
+	AI-010 Credential pool
+	Hingga 100 slot untuk resiliency/operational management yang sah; bukan untuk mengakali rate limit/provider policy.
+
+
+
+
+
+13. Constraints Register
+	ID
+	Constraint
+	Source
+	Status
+
+	CON-001
+	Platform V1 = Windows 11 x64.
+	USER_DECISION/D-009
+	MUST
+
+	CON-002
+	Distribusi default = portable folder multi-file dalam satu ZIP; bukan installer/single-file.
+	Software Factory + D-009
+	MUST
+
+	CON-003
+	Repo AI-Automatic-Video-Composer = READ-ONLY reference.
+	D-003
+	MUST
+
+	CON-004
+	UI AAVC = VISUAL_CONTRACT 1:1; tidak redesign.
+	USER_DECISION + D-015
+	MUST
+
+	CON-005
+	Gemini adalah provider AI V1; raw credential tidak plaintext.
+	D-010
+	MUST
+
+	CON-006
+	Feature parity dan stabilitas didahulukan sebelum ekspansi besar.
+	D-006
+	MUST
+
+	CON-007
+	AI edit harus command-based, validated, undoable.
+	D-007
+	MUST
+
+	CON-008
+	Tidak membangun NLE umum/Filmora clone sebagai tujuan produk.
+	D-008
+	MUST
+
+	CON-009
+	Tidak ada fake capability/unsupported controls di UI/docs.
+	D-011
+	MUST
+
+	CON-010
+	Seluruh planning/reference DOCX dan handoff harus berada di repo sebelum coding.
+	D-012
+	MUST
+
+	CON-011
+	SF-STEP dan TECH-WAVE berbeda; tidak boleh lompat phase.
+	D-013
+	MUST
+
+	CON-012
+	Repo saat ini docs-only; keberadaannya bukan izin implementasi.
+	D-014
+	MUST
+
+	CON-013
+	Cara reuse OpenShot/libopenshot belum final sampai discovery/license/architecture gate.
+	STEP 00 open item
+	MUST PROCESS
+
+
+
+14. UI / UX Intent — AAVC 1:1 Visual Contract
+	OWNER DECISION — LOCKED
+“Aku ingin UI-nya kamu copas dari AI-Automatic-Video-Composer karena ku ingin UI-nya sama persis saja.” Keputusan ini mengalahkan interpretasi lama yang hanya menjadikan AAVC sebagai inspirasi.
+
+
+
+Reference canonical: AAVC docs/UI_FREEZE.md — UIF-AAVC-v1.0, 42 reference UI (UI-001 sampai UI-042), viewport 1920×1080, Bahasa Indonesia, light professional editor, white surfaces + restrained blue accents.
+Representative parity states yang sudah dicatat AAVC: UI-002, UI-003, UI-010, UI-013, UI-014, UI-027, UI-035, UI-041.
+Design tokens existing AAVC menjadi acuan: app_bg #F4F7FB, surface #FFFFFF, panel #F8FAFD, border #D8E2EE, primary #2563EB, selection #DBEAFE, text #172033, muted #64748B; Segoe UI 12px baseline; title/menu/toolbar/panel/timeline/status metrics AAVC menjadi referensi.
+Home, New Project wizard, Editor shell, timeline, inspector, subtitle screen, validation/export/settings/AI surfaces yang ada harus dipetakan pada SF-STEP 03 dari AAVC, bukan didesain ulang.
+Brand “AI Automatic Video Composer” boleh diganti menjadi “AI Ngerti Geopolitik”; istilah/file extension legacy boleh disesuaikan hanya bila requirement ANG memerlukannya.
+Jangan memakai PNG sebagai static runtime UI. Implementasi final tetap widget nyata dan interaktif.
+Jika engine matang memerlukan perbedaan teknis, visual/hierarchy harus dipertahankan sejauh mungkin. Perubahan yang terlihat user harus mempunyai change record dan alasan jelas.
+SF-STEP 04/05 tidak bertujuan mencari gaya baru; tujuannya memastikan reference coverage AAVC lengkap, mereplikasi/melengkapi state yang benar-benar dibutuhkan ANG, lalu freeze target 1:1.
+	Candidate Surface
+	Role pada STEP 03
+
+	Home
+	Map AAVC Home 1:1; brand substitution only.
+
+	New Project Wizard
+	Map langkah Scene DOCX → Folder Aset → Media sesuai AAVC.
+
+	Main Editor
+	Map menu/toolbar/left tabs/preview/right inspector/timeline/status 1:1.
+
+	Timeline interaction states
+	Selection, split, In/Out, marker, snap, zoom, follow, navigator, drag/reorder/resize.
+
+	Subtitle workspace
+	Map SRT source, cue editor, style, animation, preview relationship.
+
+	Animation inspector
+	Manual/random/AI mode + lock states.
+
+	Validation/Relink
+	Issue states + recovery actions.
+
+	Render/Export
+	Preset/selection/progress/cancel/success/failure.
+
+	AI Agent / Auto Edit
+	Natural language + plan/progress/error/undo states sesuai requirement baru namun visually integrated ke AAVC shell.
+
+	Settings/Credential management
+	Up to 100 Gemini slots; follow AAVC visual language/hierarchy.
+
+
+
+
+
+15. Non-Goals / Anti-Scope-Creep
+NG-001 — Tidak menjadi editor video umum setara Filmora/Premiere/DaVinci sebagai tujuan V1.
+NG-002 — Tidak membuat color grading profesional, VFX node graph, 3D editor, atau motion graphics suite umum.
+NG-003 — Tidak membuat cloud collaboration/multi-user pada V1.
+NG-004 — Tidak membuat Android/mobile build pada V1.
+NG-005 — Tidak membuat plugin marketplace.
+NG-006 — Tidak menambah provider AI selain Gemini pada V1 tanpa change decision.
+NG-007 — Tidak menjadikan generative image/video di dalam editor sebagai requirement V1.
+NG-008 — Tidak menyalin seluruh fitur OpenShot yang tidak dibutuhkan workflow ANG.
+NG-009 — Tidak merancang UI baru atau “memodernkan” AAVC secara kreatif; UI contract 1:1.
+NG-010 — Tidak mewarisi custom FFmpeg compositor/timeline architecture lama hanya demi kesamaan internal.
+16. Release Target
+	Field
+	Nilai
+
+	Release Target
+	V1.0 — Stable Parity + Safe Auto Edit
+
+	RELEASE_MUST
+	North-star create/import → auto/manual edit → validate → save/reopen → export + portable Windows + UI parity AAVC.
+
+	POST_RELEASE_SHOULD
+	Performance polish, preset dokumenter tambahan, migration breadth, richer AI commands setelah manual/render-backed equivalents stabil.
+
+	FUTURE_IDEAS
+	Arbitrary video/background tracks, richer AI Director, provider expansion hanya jika ada use case baru dan change decision.
+
+
+
+17. Success Criteria dan Product Done
+SC-001 — User dapat menyelesaikan primary workflow dari Scene DOCX/folder aset sampai video final tanpa terminal atau editing JSON.
+SC-002 — Semua MUST requirement V1 mempunyai test/evidence atau explicit owner-approved exception.
+SC-003 — Save/reopen/recovery tidak merusak source project pada test yang dirancang.
+SC-004 — Preview/export timing/geometry tidak memiliki defect mayor yang diketahui pada golden fixtures.
+SC-005 — AI invalid/stale/failed plan tidak menyebabkan mutation project; valid plan undoable.
+SC-006 — Missing/corrupt media menghasilkan validation/relink path, bukan crash atau silent guess.
+SC-007 — UI actual ANG memenuhi AAVC 1:1 visual contract pada representative states; perbedaan yang disetujui terdokumentasi.
+SC-008 — Portable Windows clean-machine smoke: launch, create/open, preview/seek, validate, export small sample, close/reopen.
+SC-009 — Tidak ada raw secret pada repo/project/log/release artifact.
+SC-010 — Owner dapat mencoba app nyata dan menyelesaikan workflow tanpa bantuan developer.
+	PRODUCT DONE
+Produk V1 dianggap selesai ketika workflow nyata dapat dijalankan repeatable dan stabil dari input sampai output dengan parity AAVC yang disyaratkan, bukan ketika sekadar semua file/STEP sudah ada.
+
+
+
+
+
+18. Glossary
+	Term
+	Definisi
+
+	ANG
+	AI Ngerti Geopolitik, aplikasi baru.
+
+	AAVC
+	AI Automatic Video Composer, repo lama/read-only baseline.
+
+	Scene
+	Unit naratif yang mengelompokkan visual dan durasi.
+
+	Asset ID
+	Identifier canonical seperti A001.
+
+	SINGLE/DOUBLE
+	Workflow scene dengan satu atau dua visual utama.
+
+	Edit Plan
+	Rencana command terstruktur dari AI sebelum mutation.
+
+	Command
+	Operasi editing tervalidasi yang dapat masuk transaction/Undo.
+
+	Visual Contract 1:1
+	AAVC menjadi target UI sedekat mungkin, bukan sekadar inspirasi.
+
+	Render-backed
+	Control/preset yang benar-benar didukung output final.
+
+	Parity
+	Kesetaraan workflow/hasil user-facing, bukan kesamaan arsitektur.
+
+	SF-STEP
+	Tahap governance Software Factory 00–15.
+
+	TECH-WAVE
+	Roadmap teknis Bab 31 Blueprint; bukan SF-STEP.
+
+	Golden Project
+	Fixture nyata untuk E2E/regression.
+
+	Stale Result
+	Hasil async dibuat untuk revision lama dan tidak boleh diterapkan.
+
+
+
+19. Open Questions / Provisional Items
+	ID
+	Question
+	Impact
+	Owner
+	Decision Point
+	Provisional Default
+	Status
+
+	Q-001
+	Strategi reuse OpenShot/libopenshot yang legal dan paling stabil?
+	High
+	ASTRA/Owner
+	SF-STEP 02/06
+	Audit opsi upstream + lisensi; jangan copy besar sebelum keputusan.
+	OPEN NON-BLOCKING
+
+	Q-002
+	Lisensi source AI Ngerti Geopolitik dan notices distribusi?
+	High
+	Owner + technical/legal review
+	SF-STEP 06 sebelum substantial copyleft reuse
+	Tetap docs-only dan belum release.
+	OPEN NON-BLOCKING
+
+	Q-003
+	Apakah semua 21 legacy animation effect dapat dipetakan exact?
+	Medium
+	ASTRA/SOL
+	SF-STEP 02/06/11
+	Klasifikasi EXACT/APPROX/UNSUPPORTED; jangan tampilkan unsupported.
+	OPEN NON-BLOCKING
+
+	Q-004
+	Project schema/file extension final?
+	Medium
+	ASTRA
+	SF-STEP 06/07
+	Versioned schema; nama final belum dikunci.
+	OPEN NON-BLOCKING
+
+	Q-005
+	Angka performa final pada target PC?
+	Medium
+	ASTRA/SOL
+	Sesudah benchmark spike
+	Gunakan workload 20/100/300 scene sebagai target ukur.
+	OPEN NON-BLOCKING
+
+	Q-006
+	Apakah legacy AAVC importer wajib V1.0 atau dapat V1.1?
+	Medium
+	Owner
+	Sebelum release scope freeze final
+	SHOULD sementara; tidak memblokir core new-project workflow.
+	PROVISIONAL
+
+
+
+20. Conflict Register
+	ID
+	Source A
+	Source B
+	Impact
+	Resolution
+	Status
+
+	CR-001
+	Master Blueprint Bab 31 memakai STEP 00–16
+	Software Factory memakai SF-STEP 00–15
+	Risiko AI melompat fase
+	RESOLVED: namespace TECH-WAVE untuk Bab 31; SF-STEP untuk governance.
+	RESOLVED
+
+	CR-002
+	Blueprint awal membayangkan strategi UI baru/engine matang
+	Owner terbaru meminta UI AAVC sama persis
+	Risiko redesign yang tidak diinginkan
+	RESOLVED: AAVC UI menjadi VISUAL_CONTRACT 1:1; internal engine boleh berubah tanpa redesign visual.
+	RESOLVED
+
+	CR-003
+	AAVC UI_FREEZE menyebut frozen images sebagai evidence/inspiration dan boleh normalisasi artifact
+	Owner terbaru meminta sama persis
+	Tingkat toleransi fidelity
+	RESOLVED: owner terbaru lebih tinggi prioritas; target 1:1 sedekat mungkin. Normalisasi hanya untuk bug/artifact/requirement ANG yang memang berbeda.
+	RESOLVED
+
+
+
+
+
+21. MUST Traceability Matrix
+	Req
+	Source
+	Outcome
+	Workflow
+	Feature
+	Pri
+	Acceptance
+	Release
+	Status
+
+	FR-001
+	Blueprint + D-006
+	OUT-001
+	WF-001/005
+	F-001
+	MUST
+	Save/reopen stable
+	V1.0
+	CONFIRMED
+
+	FR-002
+	Blueprint Bab 6/7
+	OUT-001
+	WF-001
+	F-002
+	MUST
+	Valid DOCX => scene mapping correct
+	V1.0
+	CONFIRMED
+
+	FR-003
+	Blueprint Bab 6/7
+	OUT-001/004
+	WF-001/004
+	F-003/F-013
+	MUST
+	Status + relink
+	V1.0
+	CONFIRMED
+
+	FR-004
+	D-006
+	OUT-001
+	WF-001/003
+	F-004
+	MUST
+	Single/double preview/edit/export
+	V1.0
+	CONFIRMED
+
+	FR-005
+	D-006
+	OUT-003
+	WF-003
+	F-005
+	MUST
+	Timeline operations work/undoable
+	V1.0
+	CONFIRMED
+
+	FR-006
+	D-007
+	OUT-003
+	WF-002/003
+	F-006
+	MUST
+	Undo/redo manual+AI transaction
+	V1.0
+	CONFIRMED
+
+	FR-009
+	D-007
+	OUT-002
+	WF-002
+	F-009
+	MUST
+	Invalid/stale AI plan rejected
+	V1.0
+	CONFIRMED
+
+	FR-011
+	D-006
+	OUT-005
+	WF-001/003
+	F-010
+	MUST
+	SRT visible in export
+	V1.0
+	CONFIRMED
+
+	FR-012
+	D-006
+	OUT-005
+	WF-001/003
+	F-011/F-012
+	MUST
+	Narration audible/synced
+	V1.0
+	CONFIRMED
+
+	FR-013
+	Blueprint Validation
+	OUT-004
+	WF-004/006
+	F-013
+	MUST
+	Blocker prevents unsafe export
+	V1.0
+	CONFIRMED
+
+	FR-015
+	D-010
+	OUT-002
+	WF-002
+	F-015
+	MUST
+	No plaintext keys
+	V1.0
+	CONFIRMED
+
+	FR-017
+	D-006
+	OUT-006
+	WF-006
+	F-018
+	MUST
+	Valid final video full/selection
+	V1.0
+	CONFIRMED
+
+	FR-019
+	USER_DECISION + D-015
+	OUT-003
+	All
+	UI contract
+	MUST
+	Actual-vs-reference parity
+	V1.0
+	CONFIRMED
+
+	FR-021
+	D-009
+	OUT-006
+	WF-007
+	F-019
+	MUST
+	Clean Windows portable smoke pass
+	V1.0
+	CONFIRMED
+
+
+
+22. Product Decisions Recorded in STEP 01
+DEC-001 — Master Blueprint v1.0 menjadi baseline produk yang dipetakan/dites terhadap gate STEP 01; tidak ditulis ulang dari nol.
+DEC-002 — Core product status = BASELINE_CONFIRMED untuk WHAT; detail teknologi tetap provisional sampai STEP 02/06.
+DEC-003 — AAVC UI menjadi VISUAL_CONTRACT 1:1 berdasarkan keputusan owner terbaru; tidak ada redesign kreatif.
+DEC-004 — Feature parity praktis AAVC tetap MUST untuk area yang sudah dikunci D-006; parity adalah behavior, bukan architecture copy.
+DEC-005 — AI Auto Edit V1 harus bounded/command-based/undoable dan manual editor tetap canonical fallback.
+DEC-006 — Legacy importer diturunkan menjadi SHOULD pada Product Definition baseline karena core user outcome dapat tercapai tanpa migration; owner dapat menaikkannya kembali ke MUST sebelum release scope freeze.
+DEC-007 — OpenShot/libopenshot tetap candidate direction, bukan Product Definition requirement; discovery formal akan menilai ulang pada STEP 02.
+23. Gate Decision — SF-STEP 01
+	Field
+	Nilai
+
+	STEP 00 precondition
+	PASS WITH RECORDED OPEN ITEMS — satisfied
+
+	Product Statement
+	PASS
+
+	Primary user/outcomes
+	PASS
+
+	Primary workflow end-to-end
+	PASS
+
+	MUST vs SHOULD/COULD/OOS
+	PASS
+
+	Functional requirements testable
+	PASS
+
+	NFR/constraints
+	PASS; performance numbers intentionally TARGET_TO_MEASURE
+
+	I/O/persistence
+	PASS
+
+	Privacy/security/cloud/cost
+	PASS at product level; implementation details deferred
+
+	UI reference role
+	PASS — AAVC locked as VISUAL_CONTRACT 1:1
+
+	Non-goals
+	PASS
+
+	Success criteria/release scope
+	PASS
+
+	Material conflicts
+	RESOLVED
+
+	Open questions
+	Non-blocking; allocated to later STEP
+
+	Traceability
+	PASS for core MUST set
+
+	Gate Status
+	PASS WITH PROVISIONAL
+
+
+
+	GATE RESULT
+SF-STEP 01 = PASS WITH PROVISIONAL. Core product scope, primary workflow, MUST requirements, UI contract, constraints, I/O, AI behavior, and success criteria cukup jelas untuk melanjutkan ke SF-STEP 02. Provisional items tidak mengubah WHAT produk dan tidak memblokir discovery.
+
+
+
+
+
+24. Handoff SF-STEP 01 → SF-STEP 02
+	Field
+	Nilai
+
+	Product
+	AI Ngerti Geopolitik
+
+	Product Definition
+	v1.0 — BASELINE_CONFIRMED / Gate PASS WITH PROVISIONAL
+
+	Primary Purpose
+	Menyusun video geopolitik/dokumenter otomatis dari input terstruktur, lalu memberi manual correction dan export stabil.
+
+	Primary User
+	Creator/editor dokumenter/geopolitik non-programmer sampai menengah.
+
+	Primary Workflow
+	Scene DOCX + aset → project → optional narration/SRT → AUTO EDIT/review → manual correction → validate → save/reopen → export.
+
+	MUST UI Constraint
+	AAVC UI = VISUAL_CONTRACT 1:1; same layout/hierarchy/panel/style/spacing/color/flow sedekat mungkin; brand ANG boleh mengganti nama.
+
+	MUST AI Constraint
+	Gemini V1; structured command plan; validate/dry-run/stale check; undoable; manual fallback.
+
+	MUST Persistence
+	Atomic save, reopen consistency, recovery, relink, no source corruption.
+
+	MUST Release
+	Windows 11 x64 portable multi-file ZIP; clean-machine smoke.
+
+	Non-goals
+	General-purpose NLE clone, mobile, cloud collaboration, plugin marketplace, non-Gemini V1, UI redesign.
+
+	Canonical Product Definition
+	docs/planning/02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.docx + .txt
+
+
+
+24.1 Discovery Questions untuk SF-STEP 02
+Verifikasi OpenShot/openshot-qt dan libopenshot baseline terkini, activity, license, Windows compatibility, bindings, timeline/playback/export primitives, packaging burden, dan maintainability.
+Cari alternatif matang yang mungkin memenuhi product requirements lebih baik tanpa mengubah tujuan produk.
+Klasifikasikan kandidat sebagai EXACT_BASE / STRONG_BASE / COMPONENT_ONLY / REFERENCE_ONLY / BUILD_FROM_SCRATCH.
+Audit lisensi terutama bila ingin reuse/copy substantial UI/editor code.
+Petakan feature parity ANG ke primitive yang sudah tersedia vs yang harus menjadi layer khusus ANG.
+Cari evidence untuk preview/export single-source behavior, audio/subtitle support, keyframes, undo/history, project persistence, Windows build/release cadence.
+Jangan memilih repo hanya karena populer; discovery harus tunduk pada Product Definition ini.
+24.2 Do-Not-Change Without Owner Approval
+Nama produk AI Ngerti Geopolitik.
+Repo AAVC tetap read-only.
+AAVC UI sebagai VISUAL_CONTRACT 1:1.
+Feature parity/stability first.
+Gemini sebagai provider V1.
+AI command-based + undoable.
+Windows portable multi-file ZIP V1.
+Specialized documentary/geopolitics editor, bukan general-purpose NLE clone.
+24.3 Exact Next Action
+Setelah pengguna berkata “lanjutkan”, jalankan SF-STEP 02 — Existing Solution / GitHub / Upstream Discovery saja. Jangan membuat UI, jangan coding, jangan fork/copy upstream. Gunakan Product Definition v1.0 sebagai kontrak pencarian dan evaluasi. Setelah STEP 02 selesai, buat DOCX + mirror TXT + update status/handoff lalu berhenti.
+	STOP POINT
+SF-STEP 02 BELUM DIKERJAKAN DALAM DOKUMEN INI.
+
+
+
+PRODUCT DEFINITION v1.0  •  06 Oktober 2026  •  PRE-IMPLEMENTATION

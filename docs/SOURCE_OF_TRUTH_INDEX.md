@@ -13,6 +13,8 @@ Dokumen ini membantu AI/sesi baru menemukan sumber kebenaran proyek tanpa mengan
    - mirror machine-readable: `00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.txt`
    - `01_STEP_00_PROJECT_INTAKE_AI_NGERTI_GEOPOLITIK.docx`
    - mirror machine-readable: `01_STEP_00_PROJECT_INTAKE_AI_NGERTI_GEOPOLITIK.txt`
+   - `02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.docx`
+   - mirror machine-readable: `02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.txt`
 5. `/HANDOFF.md`
 6. `/docs/PROJECT_STATUS.md`
 7. `/docs/DECISIONS_LOCKED.md`
@@ -30,5 +32,8 @@ Jika runtime dapat membaca DOCX, baca DOCX. Jika runtime tidak dapat membaca DOC
 - fase: pre-implementation;
 - code aplikasi: belum ada;
 - SF-STEP 00: PASS WITH RECORDED OPEN ITEMS;
-- next exact action: SF-STEP 01 Product Definition;
+- SF-STEP 01: PASS WITH PROVISIONAL / Product Definition v1.0 BASELINE_CONFIRMED untuk WHAT;
+- UI AAVC: VISUAL_CONTRACT 1:1;
+- code aplikasi: belum ada;
+- next exact action: SF-STEP 02 Existing Solution / GitHub / Upstream Discovery;
 - repo lama AI-Automatic-Video-Composer: read-only reference.

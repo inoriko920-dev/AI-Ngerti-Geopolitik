@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION — SF-STEP 00 PASS, NEXT SF-STEP 01 — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION — SF-STEP 01 PASS WITH PROVISIONAL, NEXT SF-STEP 02 — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -27,6 +27,11 @@ Dokumen perencanaan, Software Factory, status STEP, keputusan terkunci, dan hand
 - Belum ada source code aplikasi.
 - Belum ada implementasi UI.
 - Belum ada build/release.
-- SF-STEP 00 Project Intake sudah PASS. Exact next action: SF-STEP 01 Product Definition setelah perintah pengguna.
+- SF-STEP 00 selesai. SF-STEP 01 Product Definition selesai dengan PASS WITH PROVISIONAL. Exact next action: SF-STEP 02 Existing Solution / GitHub / Upstream Discovery setelah perintah pengguna.
 
 Lihat `HANDOFF.md` dan `docs/PROJECT_STATUS.md` untuk posisi terakhir.
+
+
+## UI contract
+
+UI target untuk AI Ngerti Geopolitik adalah UI AI-Automatic-Video-Composer sebagai **VISUAL_CONTRACT 1:1**. SF-STEP 03–05 akan memetakan dan membekukannya secara formal; tidak ada redesign kreatif.

@@ -1,77 +1,91 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Status dokumen:** aktif  
 **Fase:** PRE-IMPLEMENTATION  
-**SF-STEP terakhir:** 00 — Project Intake & Safety Gate  
-**Gate:** PASS WITH RECORDED OPEN ITEMS  
+**SF-STEP terakhir:** 01 — Product Definition  
+**Gate:** PASS WITH PROVISIONAL  
+**Product Definition:** v1.0 / BASELINE_CONFIRMED untuk WHAT  
 **Coding:** BELUM DIIZINKAN  
-**Repo target:** `inoriko920-dev/AI-Ngerti-Geopolitik`  
-**STEP 00 output commit:** `bbbb084a73c7cc34e01f1472c95151ac42bae973`
+**Repo target:** `inoriko920-dev/AI-Ngerti-Geopolitik`
 
 ## Baca sebelum melanjutkan
 
-Mulai dari `AGENTS.md` dan ikuti `docs/SOURCE_OF_TRUTH_INDEX.md`. Verifikasi HEAD aktual sebelum bekerja.
+Mulai dari `AGENTS.md` dan `docs/SOURCE_OF_TRUTH_INDEX.md`. Verifikasi HEAD aktual sebelum bekerja.
 
 ## Yang baru selesai
 
-SF-STEP 00 telah diselesaikan dan didokumentasikan di:
+SF-STEP 01 telah menyusun Product Definition canonical:
 
-- `docs/planning/01_STEP_00_PROJECT_INTAKE_AI_NGERTI_GEOPOLITIK.docx`
-- `docs/planning/01_STEP_00_PROJECT_INTAKE_AI_NGERTI_GEOPOLITIK.txt`
+- `docs/planning/02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.docx`
+- `docs/planning/02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.txt`
 
-Hasil utama:
-- project identity, input registry, source-of-truth, working agreement, capability matrix, safety boundary, risk register, acceptance checklist, dan handoff tersedia;
-- repo target sudah ada tetapi **docs-only**; ini bukan bukti SF-STEP 08 selesai;
-- source code aplikasi = NONE;
-- repo `AI-Automatic-Video-Composer` tetap READ-ONLY;
-- SF-STEP dan TECH-WAVE telah dipisahkan agar tidak salah fase;
-- keputusan teknis OpenShot/libopenshot yang belum melewati discovery/license/architecture formal tetap provisional/open.
+Core produk dinilai cukup jelas untuk discovery. Tidak ada blocker product-definition.
 
-## Keputusan baru yang dikunci pada STEP 00
+## Definisi satu kalimat
 
-**D-013 — Namespace STEP**  
-SF-STEP 00–15 = Software Factory governance. Roadmap Bab 31 Master Blueprint disebut TECH-WAVE 00–16. TECH-WAVE tidak boleh dipakai untuk melompati SF-STEP.
+AI Ngerti Geopolitik adalah aplikasi desktop Windows untuk creator/editor video geopolitik/dokumenter yang menyusun draft edit otomatis dari input terstruktur, tetapi tetap menyediakan manual correction dan export stabil, dengan AI yang hanya bekerja melalui command tervalidasi/undoable.
 
-**D-014 — Repo docs-only**  
-Repo proyek dibuat lebih awal atas instruksi pemilik hanya sebagai source-of-truth checkpoint. Tidak mengotorisasi coding, upstream fork/copy, CI product, build, atau release.
+## MUST product decisions
 
-## Yang belum selesai
+- Windows 11 x64; portable multi-file ZIP release.
+- Scene DOCX + canonical Axxx asset binding.
+- SINGLE/DOUBLE workflow.
+- Timeline/editor manual yang benar-benar dapat dikoreksi.
+- Undo/Redo untuk perubahan manual/AI.
+- Motion manual + random deterministic + lock.
+- Subtitle SRT workspace + style/animation.
+- Narration import + microphone recording.
+- Validation/relink/recovery.
+- Gemini V1; hingga 100 secure credential slots.
+- AI bounded Edit Plan/command; no arbitrary state mutation.
+- Preview/playback yang dapat dipercaya terhadap export.
+- H.264/H.265 export dan selection render sesuai support yang terbukti.
+- Windows portable clean-machine behavior.
+- Feature parity praktis AAVC untuk capability yang sudah dikunci.
+- **UI AAVC = VISUAL_CONTRACT 1:1 sedekat mungkin; tidak ada redesign kreatif.**
 
-- SF-STEP 01 Product Definition;
-- SF-STEP 02 formal upstream/GitHub discovery + license assessment;
-- SF-STEP 03 UI/UX inventory;
-- SF-STEP 04 UI prompts/generation;
-- SF-STEP 05 UI freeze/reference pack;
-- SF-STEP 06 architecture & technology decision final;
-- SF-STEP 07 code constitution/repository architecture;
-- SF-STEP 08+ implementation/CI;
-- seluruh coding, build, test product, packaging, dan release.
+## UI owner decision terbaru
+
+AAVC UI sebelumnya sempat diperlakukan sebagai inspiration/reference. Keputusan owner terbaru mengalahkan interpretasi itu:
+
+**Untuk ANG, AAVC UI adalah VISUAL_CONTRACT 1:1.**
+
+Yang boleh berubah hanya:
+- branding/nama menjadi AI Ngerti Geopolitik;
+- control/state yang memang wajib berubah karena requirement ANG atau karena control lama tidak valid pada engine baru;
+- perubahan tersebut harus dicatat dan tidak boleh menjadi redesign diam-diam.
+
+SF-STEP 03–05 tetap dijalankan untuk inventory, coverage, review, dan freeze; bukan untuk menciptakan gaya baru.
+
+## Provisional/open non-blocking
+
+- exact OpenShot/libopenshot reuse strategy;
+- license/source-license/distribution obligations;
+- exact Windows native dependency strategy;
+- exact project schema/file extension;
+- exact mapping 21 legacy effects ke supported engine primitives;
+- exact benchmark numbers untuk 100–300 scene;
+- scope akhir legacy AAVC project importer;
+- exact Gemini model/runtime behavior yang harus diverifikasi saat tahap relevan.
 
 ## Exact next action
 
-Setelah pemilik mengatakan **"lanjutkan"**, kerjakan **SF-STEP 01 — Product Definition** saja.
+Jika owner berkata **"lanjutkan"**, kerjakan **SF-STEP 02 — Existing Solution / GitHub / Upstream Discovery** saja.
 
-Gunakan:
-1. Master Software Factory;
-2. Master Blueprint AI Ngerti Geopolitik;
-3. STEP 00 Project Intake;
-4. DECISIONS_LOCKED;
-5. PROJECT_STATUS.
+Discovery questions:
+1. Apakah OpenShot/openshot-qt masih kandidat editor infrastructure yang paling cocok untuk UI/workflow ANG tanpa memaksa produk menjadi clone OpenShot?
+2. Apakah libopenshot menyediakan primitives timeline/playback/keyframe/audio/render yang cukup matang pada Windows dan Python binding?
+3. Apa license obligations aktual dari openshot-qt, libopenshot, FFmpeg, Qt/PySide dan dependency yang relevan?
+4. Apakah reuse sebaiknya full fork, selective reuse, component-only engine, atau reference-only?
+5. Repo/library alternatif mana yang layak dibandingkan agar keputusan tidak bias?
+6. Bagaimana mempertahankan AAVC UI 1:1 di atas foundation matang?
+7. Bagian feature parity apa yang engine dukung langsung, perlu adapter, atau tetap ANG-specific?
 
-Pada STEP 01:
-- **jangan menulis ulang visi dari nol**;
-- petakan/validasi blueprint yang sudah matang;
-- pastikan problem statement, target user, primary workflow, input/output, mandatory vs optional features, non-goals, success criteria, dan Product Done konsisten dan dapat diuji;
-- buat satu DOCX planning detail + mirror TXT;
-- commit ke repo;
-- update PROJECT_STATUS + HANDOFF;
-- **berhenti sebelum SF-STEP 02** sampai pengguna berkata “lanjutkan”.
+Discovery tidak boleh:
+- mengubah nama/tujuan produk;
+- mengubah AAVC UI VISUAL_CONTRACT 1:1;
+- mengubah Gemini-only V1;
+- memperluas produk menjadi general-purpose NLE;
+- coding/fork/copy upstream;
+- menyentuh repo AAVC selain membaca evidence.
 
-## Larangan penting
-
-- Jangan mengubah `AI-Automatic-Video-Composer`.
-- Jangan coding.
-- Jangan generate/finalize UI pada STEP 01.
-- Jangan fork/copy upstream OpenShot.
-- Jangan meminta Gemini API key.
-- Jangan menganggap keputusan arsitektur blueprint otomatis final sebelum STEP formal.
+Setelah STEP 02 selesai: buat DOCX + TXT, commit, update state/handoff, lalu berhenti sebelum SF-STEP 03.
