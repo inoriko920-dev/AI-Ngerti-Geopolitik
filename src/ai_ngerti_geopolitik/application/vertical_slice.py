@@ -1,4 +1,4 @@
-"""STEP 10 application use-cases and UI-intent routing."""
+"""STEP 10 application use-cases and UI-intent routing with hardened E2E evidence."""
 
 from __future__ import annotations
 
