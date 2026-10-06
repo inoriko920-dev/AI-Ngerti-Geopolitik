@@ -1,0 +1,93 @@
+name: S09 Windows UI Shell
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/s09-windows-ui.yml"
+      - "docs/ui_reference/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  ui-quality:
+    name: UI quality, tests and visual evidence
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q
+      - name: Capture representative AAVC parity states
+        run: uv run python scripts/capture_step09_ui.py --output artifacts/step09_actual
+      - name: Verify capture set
+        run: uv run python scripts/verify/verify_step09_capture_set.py --root . --actual artifacts/step09_actual
+      - name: Build actual-vs-reference evidence
+        run: uv run python scripts/build_step09_visual_evidence.py --root . --actual artifacts/step09_actual --output artifacts/step09_visual
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S09-UI-Evidence
+          path: |
+            artifacts/step09_actual/*.png
+            artifacts/step09_visual/*.png
+          if-no-files-found: error
+          retention-days: 14
+
+  package-ui-shell:
+    name: Portable UI shell
+    needs: ui-quality
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group package
+      - name: Build portable STEP 09 UI shell
+        shell: pwsh
+        run: ./scripts/package/build_step09_ui.ps1
+      - name: Smoke portable STEP 09 UI shell
+        shell: pwsh
+        run: ./scripts/package/smoke_step09_ui.ps1
+      - name: SHA-256
+        shell: pwsh
+        run: Get-FileHash ./dist/AI-Ngerti-Geopolitik-UI-Shell-Windows-x64.zip -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AI-Ngerti-Geopolitik-S09-UI-Shell-Windows-x64
+          path: dist/AI-Ngerti-Geopolitik-UI-Shell-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 14

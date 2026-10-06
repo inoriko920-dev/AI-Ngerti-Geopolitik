@@ -1,1 +1,1 @@
-"""Composition-root package. No business logic belongs here."""
+"""Application composition/bootstrap package."""

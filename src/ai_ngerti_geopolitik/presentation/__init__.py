@@ -1,1 +1,1 @@
-"""PySide6 presentation boundary; product UI starts in SF-STEP 09."""
+"""PySide6 presentation layer for AI Ngerti Geopolitik."""
