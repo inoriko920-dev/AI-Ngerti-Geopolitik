@@ -1,60 +1,72 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Last completed:** SF-STEP 11 — Wave 0 Regression Lock & Engine Qualification  
-**W0 gate:** **PASS**  
-**Accepted W0 HEAD:** `02108d91159f53b52ce6ca6f909ed52aab16f094`  
-**Accepted W0 run:** `37534876853` — SUCCESS  
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Next exact wave:** **W1 — Project, Media & Persistence Foundation**
+**Last completed wave:** **W1 — PASS**  
+**Accepted W1 HEAD:** `1f354cddc68eb9f129ba22d0410480964c6b1b85`  
+**Accepted W1 run:** `37536861625` — SUCCESS  
+**Next exact wave:** **W2 — Timeline, Playback & Core Editing**
 
-## W0 proven
+## W1 proven
 
-Regression:
-- 31 tests PASS;
-- Import Linter 4/4;
-- architecture PASS;
-- source-of-truth 70/70;
-- UI references 42/42;
-- STEP 10 E2E rerun PASS;
-- STEP 10 evidence 22/22.
+Project lifecycle:
+- new/open/close;
+- dirty-state tracking by semantic hash;
+- unsaved close guard.
 
-MLT Windows qualification:
-- actual package `mingw-w64-x86_64-mlt 7.40.0-2`;
-- runtime `melt.exe 7.40.0`;
-- `mlt7` Python binding import PASS;
-- seek 0/10/50/98 frames exact;
-- SDL2 continuous/seek/edited-playlist smoke ran;
-- MLT avformat render produced H.264 + AAC at 30 fps.
+Persistence:
+- atomic Save;
+- Save As;
+- previous successful Save preserved as `.angproj.bak`;
+- backward-compatible schema-v1 round-trip.
 
-Artifacts:
-- regression `11444509597`;
-- MLT qualification `11444689616`.
+Media foundation:
+- real video/audio/image probing and import;
+- stable Axxx identities;
+- media metadata;
+- online/offline/missing availability state;
+- media-bin search/filter/sort/selection.
 
-Detailed evidence:
-`docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`.
+Project settings:
+- resolution;
+- FPS;
+- aspect ratio;
+- persisted in .angproj.
 
-## Engine direction after evidence
+Autosave:
+- separate revision/hash-addressed snapshot;
+- canonical project never silently overwritten;
+- dirty state is not falsely cleared.
 
-MLT is now the **primary production-engine implementation candidate for STEP 11
-feature work**. Direct libopenshot production binding remains blocked by
-Windows/package/license evidence. ProjectState/CommandBus/MediaEnginePort remain
-unchanged.
+Missing-media safety:
+- missing A001 remains canonical;
+- existing C001 remains linked to A001;
+- no silent clip deletion.
 
-Final clean-machine native MLT bundling and actual binary license closure remain
-release gates; they are not silently claimed complete.
+Evidence:
+`docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`.
+
+Artifact:
+`11446054538` — `ANG-S11-W1-Project-Media-Persistence`.
+
+## Regression lock
+
+On the accepted W1 HEAD:
+- W1: `37536861625` — SUCCESS;
+- W0: `37536861597` — SUCCESS;
+- S10: `37536861677` — SUCCESS;
+- S09: `37536861608` — SUCCESS;
+- S08: `37536861662` — SUCCESS.
+
+## Engine direction
+
+Unchanged:
+- MLT = primary production-engine implementation candidate;
+- ProjectState + CommandBus + MediaEnginePort remain canonical;
+- libopenshot direct production binding remains blocked pending stronger
+  Windows/package/license evidence.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **W1 only**:
-Project/Media/Persistence hardening.
+On owner **"lanjutkan"**, execute **W2 only — Timeline, Playback & Core Editing**.
 
-Do not enter W2 until W1 is green.
-
-
-## Final regression lock on accepted W0 HEAD
-
-The final W0 checkpoint also re-verified all earlier implementation layers:
-- S11 W0: `37534876853` — SUCCESS;
-- S10 real E2E: `37534876885` — SUCCESS;
-- S09 Windows UI shell: `37534877053` — SUCCESS;
-- S08 Windows foundation: `37534876828` — SUCCESS.
+Do not enter W3 or SF-STEP 12 until W2 is green.

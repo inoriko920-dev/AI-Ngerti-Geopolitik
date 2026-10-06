@@ -1,66 +1,62 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11  
-**Last completed wave:** W0 — PASS  
-**Accepted W0 HEAD:** `02108d91159f53b52ce6ca6f909ed52aab16f094`  
-**Accepted W0 run:** `37534876853` — SUCCESS  
-**Next exact wave:** W1 — Project, Media & Persistence Foundation
+**Last completed wave:** W1 — PASS  
+**Accepted W1 HEAD:** `1f354cddc68eb9f129ba22d0410480964c6b1b85`  
+**Accepted W1 run:** `37536861625` — SUCCESS  
+**Next exact wave:** W2 — Timeline, Playback & Core Editing
 
 ## Read first
 
-Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`. Read STEP 08–10
-evidence plus
-`docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`.
+Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
-## W0 outcome
+Read:
+- STEP 08–10 evidence;
+- `docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`;
+- `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`.
 
-The green baseline remains intact and MLT Windows qualification is real.
+## W1 outcome
 
-Proven:
-- 31 tests;
-- STEP 10 E2E evidence 22/22;
-- frozen UI 42/42;
-- MLT 7.40.0-2 / melt 7.40.0;
-- Python `mlt7` binding;
-- exact seek samples;
-- SDL2 transport smoke;
-- avformat H.264/AAC render.
+Verified:
+- project new/open/close + dirty guard;
+- atomic Save/Save As + .bak previous-save policy;
+- video/audio/image real probe/import;
+- stable Axxx media identity;
+- persisted project resolution/FPS/aspect;
+- media-bin query/filter/sort/selection;
+- separate autosave snapshots;
+- online/offline/missing state;
+- missing media never silently deletes clips.
 
-Artifacts:
-- regression `11444509597`;
-- MLT `11444689616`.
+W1 artifact:
+- ID `11446054538`;
+- digest
+  `sha256:24fb98071bd1a1ee86cc1e4e2552fa2eb424cf4200a02fe3700b01241dc3e6b9`.
 
-## Locked engine interpretation
+## Regression IDs on W1 HEAD
 
-For STEP 11 implementation priority:
-- MLT = primary production-engine candidate;
-- libopenshot direct binding = BLOCKED pending stronger Windows/package/license evidence;
-- FFmpeg STEP 10 adapter = qualification/reference adapter;
-- ProjectState + CommandBus + MediaEnginePort stay canonical.
+- W1: `37536861625`;
+- W0: `37536861597`;
+- S10: `37536861677`;
+- S09: `37536861608`;
+- S08: `37536861662`.
 
-Real Qt continuous playback integration is still W2 work. Final native DLL
-closure/license packaging is a later release gate.
+All are SUCCESS.
+
+## Locked interpretation carried forward
+
+- ProjectState remains canonical truth.
+- All canonical mutation remains CommandBus/CommandBatch.
+- MLT remains the primary production-engine implementation candidate.
+- MediaEnginePort stays the boundary.
+- Missing/offline assets retain identity and clip references.
+- Autosave is never a silent overwrite of the canonical project.
+- AAVC UI-001..UI-042 remains frozen 1:1.
 
 ## Next exact action
 
-Execute W1 serially:
-1. project new/open/close + dirty state;
-2. Save/Save As backup policy;
-3. video/audio/image media import + offline states;
-4. media-bin query/selection wiring;
-5. project settings persistence;
-6. autosave snapshot foundation;
-7. missing/offline state with no silent clip deletion.
+Execute **W2 only — Timeline, Playback & Core Editing** after owner says
+`lanjutkan`.
 
-Do not start W2 or STEP 12.
-
-
-## Final green regression IDs
-
-- S11 W0: `37534876853`;
-- S10 E2E: `37534876885`;
-- S09 UI: `37534877053`;
-- S08 foundation: `37534876828`.
-
-All four are SUCCESS on accepted W0 HEAD
-`02108d91159f53b52ce6ca6f909ed52aab16f094`.
+W2 must build on W1 persistence/media identity rather than creating a second
+project/media model. Do not start W3 or STEP 12.

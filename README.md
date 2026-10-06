@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0 PASS — NEXT W1 PROJECT/MEDIA/PERSISTENCE**
+> **STATUS: SF-STEP 11 ACTIVE — W0 PASS — W1 PASS — NEXT W2**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -8,26 +8,29 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## Current verified baseline
 
-W0 run `37533447729` passed on
-`f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`.
+W1 run `37536861625` passed on
+`1f354cddc68eb9f129ba22d0410480964c6b1b85`.
 
-Verified:
-- regression baseline + STEP 10 E2E;
-- 31 tests;
-- UI references 42/42;
-- MLT Windows runtime;
-- Python `mlt7` binding and exact seek;
-- continuous/edited-playlist transport smoke;
-- H.264/AAC MLT render.
+W1 now verifies:
+- safe project new/open/close + dirty state;
+- atomic Save and Save As;
+- previous successful Save backup;
+- real video/audio/image import;
+- stable media IDs and metadata;
+- media-bin query/selection;
+- persisted resolution/FPS/aspect;
+- separate autosave snapshots;
+- online/offline/missing media states;
+- no silent clip deletion when media disappears.
 
-Actual CI MLT package:
-`mingw-w64-x86_64-mlt 7.40.0-2`.
+All earlier W0/S10/S09/S08 regression workflows are also green on the same
+accepted code HEAD.
 
-MLT is now the primary STEP 11 production-engine implementation candidate.
+MLT remains the primary STEP 11 production-engine implementation candidate.
 Final portable native dependency/license closure remains a later release gate.
 
 ## Next
 
-**W1 — Project, Media & Persistence Foundation.**
+**W2 — Timeline, Playback & Core Editing.**
 
-Do not jump to W2, Gemini/STEP12, or final release packaging.
+Do not jump to W3, Gemini/STEP12, or final release packaging.
