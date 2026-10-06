@@ -158,3 +158,26 @@ Owner correction yang dikunci:
 - runtime wajib real interactive widgets; PNG reference tidak boleh dijadikan static UI.
 
 Gate STEP 05 = **PASS_WITH_PROVISIONAL**. Planning STEP 06 boleh dimulai. Production coding tetap diblokir sampai exact full-resolution UI visual/reference pack benar-benar berada di repo dan diverifikasi, selain gate STEP 06–07.
+
+
+## D-020 — SF-STEP 06 Architecture baseline
+SF-STEP 06 menetapkan baseline arsitektur ANG berikut.
+
+- Desktop stack: **Python 3.12 x64 family + PySide6 / Qt 6 Widgets**. Exact patch pin dilakukan setelah build qualification.
+- Arsitektur: modular monolith dengan dependency direction `presentation -> application -> domain`; adapter eksternal mengimplementasikan port ke arah dalam.
+- Source-of-truth edit: **ANG-owned ProjectState**, bukan Qt, Gemini, libopenshot/MLT, atau FFmpeg.
+- Native project format: versioned UTF-8 JSON **`.angproj`** dengan atomic save, autosave/recovery terpisah, dan migration pipeline.
+- Canonical time: rational/frame-aware; float seconds bukan persisted source-of-truth.
+- Semua mutasi manual/AI: semantic **CommandBus / CommandBatch** dengan validation, expected revision, grouped Undo/Redo, dan stale-plan rejection.
+- Media boundary **MediaEnginePort** adalah FROZEN. **libopenshot v1.0.1** menjadi primary qualification candidate, bukan unconditional final engine; **MLT 7.42** adalah fallback bila primary gagal qualification yang didefinisikan.
+- Preview harus engine-derived dari semantic graph yang sama; jangan membangun hand-written preview compositor kedua.
+- Render memakai immutable ProjectState snapshot dan isolated child worker; temp output diverifikasi sebelum final move.
+- Gemini berada di belakang `AIProviderPort` memakai official `google-genai` family + structured EditPlan/tool calls. AI dilarang mutate ProjectState langsung.
+- Credential pool 1–100 memakai `CredentialPort` + Windows generic credential storage/keyring backend; raw secret tidak masuk project/settings/log/repo. Wajib ada 100-slot qualification test.
+- Windows distribution: standalone multi-file portable folder -> ZIP. `pyside6-deploy`/Nuitka preferred; PyInstaller onedir fallback bila evidence packaging native lebih kuat.
+- Exact bundled dependency/license manifest + THIRD_PARTY_NOTICES + SHA-256 required for release.
+
+### Material license gate
+`libopenshot` sendiri LGPL-3.0-or-later, tetapi audio dependency `libopenshot-audio` adalah GPLv3 dan upstream juga menyebut opsi commercial license. Karena ANG membutuhkan narration/audio, actual Windows dependency tree dan source/distribution license strategy **wajib** diselesaikan sebelum engine-dependent distribution. `openshot-qt` tetap REFERENCE_ONLY dan tidak boleh dicopy sebagai shortcut.
+
+D-020 adalah architecture baseline. Exact dependency versions, final packager, exact preview isolation mechanics, dan final libopenshot-vs-MLT production adoption ditetapkan berdasarkan qualification evidence tanpa mengubah ProductState/port/UI freeze contracts.

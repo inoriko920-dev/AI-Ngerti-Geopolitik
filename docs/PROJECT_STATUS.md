@@ -1,67 +1,71 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Last known phase:** PRE-IMPLEMENTATION / UI FROZEN  
-**Formal Software Factory completed:** SF-STEP 05 — UI Freeze & Product Blueprint  
+**Last known phase:** PRE-IMPLEMENTATION / ARCHITECTURE BASELINE DEFINED  
+**Formal Software Factory completed:** SF-STEP 06 — Architecture & Technology Decision  
 **Gate:** PASS_WITH_PROVISIONAL  
-**FREEZE-A:** SPEC_FROZEN — PASS  
-**FREEZE-B:** RASTER_FROZEN — PASS, AAVC UI-001..UI-042 = 42/42  
-**FREEZE-C:** IMPLEMENTATION_CONFORMED — FUTURE STEP 09/13  
-**UI Bible:** UIB-ANG-v1.0  
-**Formal next STEP:** SF-STEP 06 — Architecture & Technology Decision  
+**FREEZE-A/B:** ACTIVE / AAVC UI-001..UI-042 42/42  
+**Primary UI stack:** Python 3.12 x64 family + PySide6 / Qt 6 Widgets  
+**Architecture:** modular monolith, presentation -> application -> domain  
+**Project source-of-truth:** ANG ProjectState / versioned JSON .angproj  
+**Media boundary:** MediaEnginePort  
+**Primary engine qualification candidate:** libopenshot v1.0.1  
+**Engine fallback:** MLT 7.42  
+**Formal next STEP:** SF-STEP 07 — Code Constitution & Repository Architecture  
 **Code status:** NONE / FORBIDDEN  
 **Build:** NONE  
 **Release:** NONE
 
-## STEP 05 evidence
+## STEP 06 evidence
 
-Canonical blueprint:
-- `docs/planning/06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx`
-- machine-readable mirror: `docs/planning/06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.txt`
+Canonical architecture decision:
+- `docs/planning/07_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_AI_NGERTI_GEOPOLITIK.docx`
+- machine-readable mirror: `docs/planning/07_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_AI_NGERTI_GEOPOLITIK.txt`
 
-UI source:
-- `docs/ui_reference/UI_REFERENCE_MANIFEST.md`
-- `docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
-- AAVC canonical visual set UI-001..UI-042 (42/42 reviewed/frozen)
+## Frozen architecture decisions
 
-## Locked correction
+- PySide6/Qt Widgets keeps the frozen AAVC UI without web/QML redesign.
+- ANG owns ProjectState, semantic CommandBus/CommandBatch, grouped Undo/Redo and .angproj persistence.
+- Engine graph is derived and rebuildable from ProjectState.
+- Preview must be engine-derived; no second hand-written preview compositor.
+- Render uses immutable project revision snapshot in an isolated child worker.
+- Gemini uses AIProviderPort + structured plan/tool calls and cannot mutate state directly.
+- 1–100 API-key slots use OS credential storage; raw keys are never project/settings/log data.
+- Portable release is a standalone multi-file folder packaged as ZIP.
+- UI-001..UI-042 remain frozen direct AAVC references; the void 42-prompt batch remains DO NOT USE.
 
-The accidentally created `AI_NGERTI_GEOPOLITIK_42_UI_PROMPTS_5_BATCH.zip` and its 42 newly written ANG image prompts are **VOID / NON-AUTHORITATIVE / DO NOT USE**.
+## Mandatory qualification before engine-dependent claims
 
-Reason: owner requires direct AAVC UI reuse 1:1. Re-generating the same baseline UI would create visual drift.
+The primary libopenshot candidate must pass:
+- clean Windows binding/DLL import;
+- 300-scene seek/play stress;
+- SINGLE/DOUBLE composition golden cases;
+- 21-effect compatibility mapping;
+- narration/audio sync;
+- repeated preview lifecycle stress;
+- reference render verification;
+- safe cancel;
+- clean-machine portable package;
+- exact dependency/license manifest.
 
-For baseline UI-001..UI-042:
-- PROMPT_ID = N/A / REUSE_EXISTING
-- NEW IMAGE GENERATION = NO
-- RASTER AUTHORITY = existing AAVC canonical reference
-- STATUS = FROZEN
+## Material license gate
 
-## Frozen scope
+libopenshot is LGPL-3.0-or-later, but libopenshot-audio is GPLv3 upstream. Because ANG needs audio/narration, final project/source license and bundled dependency strategy must be resolved before distributable engine build. MLT remains the defined fallback behind the same MediaEnginePort.
 
-- 17 Screen IDs
-- 42 canonical raster references
-- AAVC design tokens and shell geometry
-- shared components and control semantics
-- timeline interaction contract
-- AI Agent / AI Director plan-approval-apply-undo-fallback contract
-- subtitle/audio/background/preview UX
-- validation/relink/recovery
-- export/render states
-- copy/state/accessibility rules
-- post-freeze change governance
-- future runtime screenshot conformance rules
+## Pre-coding blockers
 
-## Pre-coding blocker
+Production coding remains forbidden until:
+1. SF-STEP 07 is completed;
+2. exact full-resolution UI reference pack is in repo and verified;
+3. repository/source-of-truth pre-coding checks pass.
 
-The exact full-resolution UI visual binary/raw pack is locally verified but still not fully stored in repo through the current connector path. Connector-safe index + hashes are in repo.
-
-This does **not** block STEP 06–07 planning. It **does block production coding** until the exact visual pack is committed/verified, together with completion of STEP 06–07.
+The engine qualification spike is mandatory before making engine-dependent stability/distribution claims.
 
 ## Exact next action
 
-After owner says **"lanjutkan"**, execute **SF-STEP 06 — Architecture & Technology Decision only**.
+After owner says **"lanjutkan"**, execute **SF-STEP 07 — Code Constitution & Repository Architecture only**.
 
 Do not:
 - code production app;
-- redesign AAVC UI;
-- use the void 42-prompt batch;
-- start SF-STEP 07 in the same turn.
+- run SF-STEP 08;
+- copy openshot-qt source;
+- redesign frozen UI.

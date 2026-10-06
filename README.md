@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION — SF-STEP 05 PASS WITH PROVISIONAL / UI FROZEN, NEXT SF-STEP 06 — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION — SF-STEP 06 PASS WITH PROVISIONAL, NEXT SF-STEP 07 — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -65,3 +65,10 @@ SF-STEP 05 is complete:
 - FREEZE-C / IMPLEMENTATION_CONFORMED is future STEP 09/13
 
 The accidentally created ANG 42-prompt image batch is VOID and must not be used. Baseline UI is direct AAVC 1:1 reuse. Production coding remains blocked until the exact full-resolution UI reference pack is committed/verified and STEP 06–07 are complete.
+
+
+## Architecture baseline — SF-STEP 06
+
+SF-STEP 06 selects Python/PySide6 Qt Widgets, ANG-owned ProjectState + semantic commands/Undo, versioned `.angproj`, and a replaceable MediaEnginePort. libopenshot v1.0.1 is the primary qualification candidate; MLT 7.42 is fallback. Gemini is isolated behind AIProviderPort, secrets behind Windows credential storage, and release intent remains a standalone multi-file ZIP.
+
+A material pre-distribution gate remains: libopenshot-audio is GPLv3 upstream, so the actual dependency tree and project/source-license strategy must be resolved before distributable engine work.

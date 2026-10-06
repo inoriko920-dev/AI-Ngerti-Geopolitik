@@ -1,0 +1,167 @@
+AI NGERTI GEOPOLITIK — SF-STEP 06 ARCHITECTURE & TECHNOLOGY DECISION
+Document ID: ANG-SF-STEP06-ARCH-TECH-v1.0
+Date: 06 Oktober 2026
+Role: ASTRA
+Repo baseline: main @ 997026e9e9313f408435c572b1b54160cc23d99e
+Gate: PASS_WITH_PROVISIONAL
+Coding: FORBIDDEN
+Next: SF-STEP 07 only
+
+EXECUTIVE DECISION
+ANG is a modular-monolith native Windows desktop app. Primary UI family is Python 3.12 x64 + PySide6/Qt 6 Widgets. ANG owns ProjectState, semantic commands, Undo/Redo, validation, AI planning and .angproj persistence. Media access is behind MediaEnginePort. libopenshot v1.0.1 remains the first qualification candidate; MLT 7.42 is the defined fallback. No production engine source is copied at STEP 06.
+
+FROZEN PRINCIPLES
+- AAVC FREEZE-A/B remains authoritative; no silent redesign.
+- dependency direction: presentation -> application -> domain; adapters implement inward ports.
+- ProjectState is source-of-truth; UI/Gemini/media engine are not.
+- engine graph is derived and rebuildable.
+- manual and AI edits use same semantic CommandBus/CommandBatch.
+- long work never blocks UI thread.
+- render uses immutable committed ProjectState snapshot revision.
+- no plaintext secrets.
+- no fake capability; UI uses CapabilityRegistry evidence.
+
+ADR-001 DESKTOP UI
+SELECTED: PySide6/Qt Widgets + QSS/custom widgets. No Electron/web UI. No QML migration without ADR. Exact patch pins at STEP 08 clean-build smoke.
+
+ADR-002 MEDIA ENGINE
+Boundary: MediaEnginePort.
+Primary qualification candidate: OpenShot/libopenshot v1.0.1.
+Fallback: MLT 7.42 if primary fails defined gates.
+libopenshot technical reasons: Timeline/Clip/Keyframe, compositing, time mapping, audio, Python bindings, Qt player, FFmpeg support.
+MATERIAL LICENSE GATE: libopenshot is LGPL-3.0-or-later, but libopenshot-audio is GPLv3 / commercial-license option upstream. ANG requires audio/narration, so actual Windows dependency tree and distribution license strategy must be reviewed before engine-dependent production implementation/distribution.
+openshot-qt remains REFERENCE_ONLY.
+
+MANDATORY ENGINE QUALIFICATION
+ENG-Q1 binding/native DLL import on clean Windows.
+ENG-Q2 300-scene timeline seek/play stress.
+ENG-Q3 SINGLE/DOUBLE/composition golden cases.
+ENG-Q4 map 21 effects to native/adapter/unsupported.
+ENG-Q5 narration/audio mixing/sync.
+ENG-Q6 lifecycle play/seek/stop/project-switch.
+ENG-Q7 1080p reference render + metadata/sample-frame validation.
+ENG-Q8 safe cancel.
+ENG-Q9 standalone package on clean Windows.
+ENG-Q10 dependency/license manifest.
+
+ADR-003 DOMAIN
+ANG-owned ProjectState with stable Project/Scene/Asset/Layout/Animation/Subtitle/Audio/Background/RenderSettings entities. Axxx identity survives relink. Canonical time is rational/frame-aware, not float seconds.
+
+ADR-004 PERSISTENCE
+Native format: versioned UTF-8 JSON .angproj.
+Save: validate -> temp -> flush/close -> atomic replace.
+Autosave/recovery separate.
+Engine graph is not persisted as source-of-truth.
+.aavcproj compatibility is optional importer/migration adapter.
+
+ADR-005 COMMAND / UNDO
+All user/AI mutations through semantic commands.
+Expected project revision + stable IDs.
+One material user intent or approved AI plan = one transaction.
+AI apply grouped as one Undo history entry.
+Stale AI plans rejected.
+Engine sync occurs after commit and does not silently change canonical edit.
+
+ADR-006 PREVIEW / PLAYBACK
+ProjectState -> EngineCompiler -> engine graph.
+Preview must derive from engine semantics, not a separate hand-written compositor.
+Serialized EngineSession; stale engine revisions are visible/rebuilt.
+Exact in-process worker vs out-of-process frame host remains spike-driven behind same port.
+
+ADR-007 RENDER
+Export UI -> immutable RenderJobSpec snapshot -> child render worker -> temp output -> probe/verify -> atomic move.
+Failure/cancel leaves project intact and never labels partial output final.
+FFmpeg/ffprobe can be capability/probe/verification substrate; do not keep a second independent layout/animation renderer.
+
+ADR-008 JOB MODEL
+UI thread: presentation only.
+Project command: fast application transaction.
+Parsing/scan/probe: background worker.
+Preview: dedicated serialized engine worker.
+Gemini: background network worker.
+Render: child process.
+JobManager owns lifecycle/cancel/progress/stale-result protection.
+
+ADR-009 GEMINI
+Official google-genai family behind AIProviderPort.
+Structured EditPlan/function-call schema.
+ContextBuilder -> Gemini -> PlanVerifier -> risk/confirmation -> CommandBatch.
+AI never receives raw key and never mutates ProjectState directly.
+Manual mode works without AI.
+Provider errors distinguish invalid key, 429/rate limit, network/timeout, malformed plan, stale plan.
+
+CREDENTIAL POOL
+Logical slots: 1–100.
+Raw keys: Windows generic credential storage via CredentialPort/keyring WinVault backend.
+Settings store only slot metadata.
+Mandatory 100-slot add/get/test/delete persistence qualification.
+Rotation/resilience must follow provider policy and is not documented as quota circumvention.
+
+ADR-010 VALIDATION/RELINK/RECOVERY
+Typed validators and Issue model.
+DOCX/SRT parser -> DTO -> domain validation.
+MediaProbePort normalizes metadata/error.
+Relink preserves Axxx.
+Recovery never silently overwrites source.
+Engine graph can be rebuilt from ProjectState.
+
+ADR-011 SECURITY / ERROR
+Typed error taxonomy: ValidationError, ImportError, MediaProbeError, EngineError, PreviewError, PersistenceError, ProviderError, CredentialError, RenderError, ConfigurationError, SecurityError, PackagingError.
+Treat project/DOCX/SRT/media/AI text as untrusted.
+External processes use argument arrays, shell=False and allowlisted options.
+Secrets redacted from logs/diagnostics/screenshots/tests.
+Export uses normalized paths + overwrite confirmation + temp output.
+
+ADR-012 WINDOWS PACKAGING
+Portable multi-file standalone folder -> ZIP.
+Preferred: pyside6-deploy/Nuitka standalone.
+Fallback: PyInstaller onedir if evidence is stronger for native SWIG/DLL staging.
+Explicit staging for Qt plugins, Python runtime, engine bindings/DLLs and codec dependencies.
+Clean Windows 11 VM launch/smoke is required.
+Release must contain THIRD_PARTY_NOTICES + dependency/license manifest + SHA-256 checksums.
+
+LICENSE STRATEGY
+Qt/PySide6: LGPLv3/GPL terms; module allowlist and compliance review.
+libopenshot: LGPL-3.0-or-later.
+libopenshot-audio: GPLv3 / commercial option upstream; major gate.
+openshot-qt: GPL, reference-only.
+MLT: fallback; module-level license inventory.
+FFmpeg: LGPL default family; enabling GPL parts changes obligations; exact bundled build must be audited.
+This is engineering compliance planning, not legal advice.
+
+TEST ARCHITECTURE
+- domain unit tests
+- command/undo/redo/stale revision
+- persistence round-trip/migrations/corruption/atomic save
+- DOCX/SRT malformed fixtures
+- MediaEnginePort contract tests
+- preview lifecycle/golden frames
+- render golden project + ffprobe metadata + sampled frames
+- AI plan validation/error/lock/429
+- 100 credential slots + redaction
+- Qt widget/control tests
+- representative UI screenshot parity during STEP 09; all relevant 42 before conformance claim
+- 100/300 scene stress
+- clean-machine package smoke
+- bundled dependency/license manifest test
+
+TECHNOLOGY STATUS
+FROZEN FAMILY: PySide6/Qt Widgets.
+FROZEN: AAVC UI freeze; ANG ProjectState; semantic commands; .angproj; MediaEnginePort.
+PROVISIONAL-FROZEN: libopenshot v1.0.1 primary candidate.
+FALLBACK: MLT 7.42.
+FROZEN FAMILY: FFmpeg/ffprobe, google-genai.
+FROZEN STRATEGY: Windows keyring/WinVault credential storage.
+PREFERRED: pyside6-deploy/Nuitka standalone; PyInstaller onedir fallback.
+PROVISIONAL: exact preview isolation mechanics.
+OPEN MATERIAL BEFORE DISTRIBUTION: project/source license compatible with selected engine/audio dependency.
+DEFERRED: exact dependency patch versions to STEP 08 compatibility/build spike.
+
+STEP 06 GATE
+PASS_WITH_PROVISIONAL.
+STEP 07 may define repository architecture and code constitution.
+Production coding remains forbidden until STEP 07 completes, the exact UI visual pack is committed/verified, and applicable pre-coding gates are satisfied.
+
+NEXT EXACT ACTION
+SF-STEP 07 — Code Constitution & Repository Architecture only.
+Do not start STEP 08 in the same turn.

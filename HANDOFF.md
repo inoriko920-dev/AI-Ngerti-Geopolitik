@@ -1,89 +1,80 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Fase:** PRE-IMPLEMENTATION / UI FROZEN  
-**SF-STEP terakhir:** 05 — UI Freeze & Product Blueprint  
+**Fase:** PRE-IMPLEMENTATION / ARCHITECTURE DEFINED  
+**SF-STEP terakhir:** 06 — Architecture & Technology Decision  
 **Gate:** PASS_WITH_PROVISIONAL  
-**FREEZE-A:** SPEC_FROZEN  
-**FREEZE-B:** RASTER_FROZEN 42/42  
 **Coding:** FORBIDDEN
 
 ## Read first
 
 1. AGENTS.md
 2. Software Factory master + guide
-3. docs/planning/00..06 in order
+3. docs/planning/00..07 in order
 4. docs/ui_reference/UI_REFERENCE_MANIFEST.md
 5. DECISIONS_LOCKED.md
 6. PROJECT_STATUS.md
 7. this HANDOFF.md
 
-## Frozen UI rule
+## Architecture baseline
 
-AI Ngerti Geopolitik must implement the AAVC UI **1:1 as closely as practical**:
-- AAVC UIF-AAVC-v1.0
-- UI-001..UI-042
-- 1920x1080 canonical reference
-- Indonesian
-- white/light + restrained blue
-- real widgets, not screenshot UI
-- branding may become AI Ngerti Geopolitik
+- UI: Python 3.12 x64 family + PySide6 / Qt 6 Widgets.
+- UI freeze: AAVC 42/42 direct reuse; no redesign; 42-prompt ANG ZIP remains VOID.
+- Dependency direction: presentation -> application -> domain; adapters implement inward ports.
+- Product source-of-truth: ANG-owned ProjectState.
+- Project format: versioned UTF-8 JSON `.angproj`.
+- Time: rational/frame-aware.
+- Mutation: semantic CommandBus / CommandBatch + grouped Undo/Redo.
+- Media: frozen `MediaEnginePort`; libopenshot v1.0.1 primary qualification candidate; MLT 7.42 fallback.
+- Preview: engine-derived, serialized EngineSession; no second manual compositor.
+- Render: committed state snapshot -> isolated child worker -> temp -> verify -> atomic final.
+- AI: AIProviderPort + official google-genai family + strict structured EditPlan/tool calls.
+- Credentials: CredentialPort + Windows generic credential storage/keyring; 1–100 logical slots; no plaintext fallback.
+- Jobs: long work off UI thread; stale revision/results rejected.
+- Packaging: standalone folder -> ZIP; pyside6-deploy/Nuitka preferred, PyInstaller onedir fallback.
 
-## Owner correction — mandatory
+## Material open item
 
-The 42 ANG prompts/ZIP created after STEP 04 are **VOID / NON-AUTHORITATIVE**.
+libopenshot-audio is GPLv3 upstream while ANG needs narration/audio. Actual Windows dependency tree + source/distribution license strategy must be qualified before a distributable engine build. openshot-qt remains REFERENCE_ONLY.
 
-Do not:
-- regenerate UI-001..UI-042;
-- use those prompts as source-of-truth;
-- commit them as canonical planning;
-- redesign baseline UI.
+## Engine qualification contract
 
-For the baseline, use the already existing 42 AAVC canonical references directly.
+STEP 07 repository architecture must preserve an isolated qualification path for:
+ENG-Q1 clean import/native DLL,
+ENG-Q2 300-scene seek/play,
+ENG-Q3 composition golden cases,
+ENG-Q4 21 effects mapping,
+ENG-Q5 audio,
+ENG-Q6 preview lifecycle,
+ENG-Q7 render,
+ENG-Q8 cancel,
+ENG-Q9 portable clean machine,
+ENG-Q10 license manifest.
 
-Only a true new ANG-visible surface without AAVC coverage may receive `UI-ANG-Dxx` + prompt + image + review + change record.
-
-## Freeze model
-
-**FREEZE-A / SPEC_FROZEN**
-- screen/state registry
-- design tokens/shell hierarchy
-- components/control semantics
-- timeline interactions
-- AI command/approval/undo/fallback
-- subtitle/audio/background
-- validation/recovery
-- render/export
-- copy/state/accessibility
-- change governance
-
-**FREEZE-B / RASTER_FROZEN**
-- UI-001..UI-042 = 42/42
-- hashes in UI_REFERENCE_MANIFEST
-- later parity references UI-038..042 remain frozen evidence
-
-**FREEZE-C / IMPLEMENTATION_CONFORMED**
-- future STEP 09/13 after actual runtime screenshots and interaction QA.
+Do not execute production engine work in STEP 07.
 
 ## Pre-coding gate
 
-Exact full-resolution visual/raw reference pack still must be present in repo and verified before production coding. Current repo has connector-safe index + hashes. This does not block STEP 06–07 planning.
+Before production code:
+- STEP 07 must pass;
+- all required planning/reference DOCX must remain in repo;
+- exact full-resolution UI reference/raw pack must be committed and verified;
+- status must explicitly authorize implementation.
 
 ## Exact next action
 
-If owner says **"lanjutkan"**, execute **SF-STEP 06 — Architecture & Technology Decision** only.
+On a NEW owner **"lanjutkan"**, execute **SF-STEP 07 — Code Constitution & Repository Architecture only**.
 
-STEP 06 must decide:
-- primary framework/UI stack;
-- libopenshot vs fallback decision/integration boundary;
-- domain/project state ownership;
-- command/history/Undo-Redo architecture;
-- preview/playback/render bridge;
-- persistence/project schema strategy;
-- validation/relink/recovery boundaries;
-- worker/background job model;
-- Gemini provider/credential security boundary;
-- Windows portable packaging and native DLL strategy;
-- dependency/license compliance strategy;
-- test architecture and performance/stability evidence plan.
+STEP 07 should define:
+- final repository tree;
+- module/package ownership;
+- public ports/contracts;
+- dependency rules/enforcement;
+- naming and file responsibility rules;
+- config/path/log/error conventions;
+- tests/fixtures/golden/evidence layout;
+- build/package/third-party manifest layout;
+- docs/ADR/task/state structure;
+- explicit no-duplicate-service / no-god-file / search-before-create rules;
+- AI/SOL handoff rules.
 
-Preserve FREEZE-A/B. No production coding and no STEP 07 in the same turn.
+STOP before SF-STEP 08. No production code or engine spike in STEP 07.
