@@ -1,0 +1,2086 @@
+AI NGERTI GEOPOLITIK  |  SOFTWARE FACTORY  |  SF-STEP 03
+SF-STEP 03 — UI/UX INVENTORY & USER FLOW
+AI Ngerti Geopolitik
+AAVC 1:1 Visual Contract • Screen Registry • Flow • State • Traceability • UI Image Coverage
+	Field
+	Value
+
+	Document ID
+	ANG-SF-STEP03-UIUX-INVENTORY-v1.0
+
+	Role
+	ASTRA
+
+	Gate
+	PASS_WITH_PROVISIONAL
+
+	Baseline repo
+	inoriko920-dev/AI-Ngerti-Geopolitik
+
+	Baseline HEAD
+	7d1ecc46532e5805714820a6e7ea71da87da83ac
+
+	Product Definition
+	SF-STEP 01 v1.0 — BASELINE_CONFIRMED for WHAT
+
+	Discovery
+	SF-STEP 02 — BUILD_FROM_SCRATCH_WITH_COMPONENTS
+
+	UI contract
+	AAVC UI = VISUAL_CONTRACT 1:1 — NO REDESIGN
+
+	Reference viewport
+	1920×1080 desktop
+
+	Coding / image generation
+	TIDAK DILAKUKAN pada STEP ini
+
+	Next exact STEP
+	SF-STEP 04 — UI Design System & All UI Prompts, setelah owner berkata lanjutkan
+
+
+PERAN: ASTRA. Target sesi: STEP 03 UI/UX Inventory & User Flow. Bukti selesai: inventory, flow, state, traceability, gate, dan handoff STEP 04 yang dapat dilanjutkan tanpa membaca percakapan lama.
+0. Ringkasan Eksekutif
+STEP 03 memetakan seluruh permukaan UI/UX AI Ngerti Geopolitik sebelum satu pun prompt/gambar UI ANG dibuat. Karena owner telah mengunci UI AAVC sebagai VISUAL_CONTRACT 1:1, tahap ini bukan desain baru: struktur visual, hierarchy, panel, flow, warna, spacing, dan pola interaksi AAVC menjadi baseline. Branding diganti ke AI Ngerti Geopolitik; perubahan lain hanya boleh berupa DELTA_FROM_AAVC yang diperlukan requirement ANG atau no-fake-capability.
+AAVC repository tetap READ-ONLY; source hanya dibaca sebagai evidence.
+AAVC UI freeze menyatakan 42 canonical references UI-001..UI-042 pada viewport 1920×1080.
+Current AAVC source main menjadi behavioral/structural authority ketika image-generation artifact lama saling bertentangan.
+SF-STEP 03 tidak membuat image, tidak membuat prompt final, tidak coding, dan tidak memilih framework final.
+Hasil akhir: 8 screen/view utama, 14 panel/global surfaces, 17 dialog/overlay/message surfaces, 11 navigation edges, 10 P0/P1 flows, 28 critical actions, state matrix, reference registry, 42-image coverage contract, gate, dan handoff.
+1. Baseline Check & Source of Truth
+	Source
+	Evidence Level
+	STEP 03 Use
+
+	Owner decision / D-015
+	LOCKED
+	AAVC UI harus 1:1; tidak redesign.
+
+	SF-STEP 01 Product Definition
+	VERIFIED
+	FR-019 UI parity + FR-020 brand substitution; NFR-010 visual fidelity.
+
+	SF-STEP 02 Discovery
+	VERIFIED
+	BUILD_FROM_SCRATCH_WITH_COMPONENTS; engine choice tidak boleh mengubah UI contract.
+
+	AAVC docs/UI_FREEZE.md
+	AUTHORITATIVE VISUAL CONTRACT
+	42 refs UI-001..042; 1920×1080; Indonesian; light white/blue.
+
+	AAVC current PySide6 source
+	AUTHORITATIVE BEHAVIOR/STRUCTURE
+	Home, new-project, editor shell, subtitle, validation, export, AI, narration, help, timeline.
+
+	AAVC USER_GUIDE.md
+	VERIFIED BEHAVIOR
+	Actual runtime navigation, timeline, validation, subtitle, export, recovery constraints.
+
+	Recovered Library images batches
+	TARGET EVIDENCE
+	UI visual batches recovered for UI-001..037-like states; some generation artifacts conflict.
+
+	UI-038..UI-042 original PNGs
+	GAP / NOT DIRECTLY RECOVERED
+	Freeze confirms existence; exact old PNG mapping must not be invented; source implementation covers required surfaces.
+
+
+Conflict policy: owner decision + current AAVC runtime/source wins over older inconsistent generated mockups. Visual references remain useful for composition/detail, but fake or unsupported controls must not be resurrected merely because an old image contained them.
+2. Locked UX Decisions & DELTA Policy
+	ID
+	Area
+	Decision
+
+	UX-LOCK-001
+	Brand
+	AI Automatic Video Composer → AI Ngerti Geopolitik only; hierarchy unchanged.
+
+	UX-LOCK-002
+	Visual language
+	Light professional editor; white surfaces; restrained blue accent; Segoe UI baseline; 1920×1080 reference.
+
+	UX-LOCK-003
+	Global editor composition
+	Top menu/toolbar + left context panel + central preview + right inspector + lower timeline/status.
+
+	UX-LOCK-004
+	No redesign
+	No alternative sidebar, dark mode, new visual system, or Filmora/OpenShot skin.
+
+	UX-LOCK-005
+	No fake capability
+	Controls that are not render-backed/implemented may be omitted/disabled with explicit DELTA record; never fake success.
+
+	UX-LOCK-006
+	Real widgets
+	Reference PNGs are not shipped as static screens.
+
+	UX-LOCK-007
+	Engine invisible
+	libopenshot/MLT choice must not visibly transform ANG into OpenShot/Shotcut/Kdenlive.
+
+	UX-LOCK-008
+	State continuity
+	Scene selection, playhead, history, dirty state, validation, and background jobs remain visible and understandable.
+
+
+3. Product Lifecycle Model
+	ID
+	Phase
+	User Outcome
+	Primary Surface
+
+	LC-01
+	Launch
+	Home / reopen / recovery decision
+	SCR-001, DLG-009
+
+	LC-02
+	Create
+	Scene DOCX → folder aset → optional media → save project
+	SCR-002
+
+	LC-03
+	Edit
+	Editor overview, selection, timeline, layout, motion
+	SCR-003 + PNLs
+
+	LC-04
+	Automate
+	Random / Auto AI plan → validate → apply/undo
+	SCR-003 + PNL-008 + DLG-012
+
+	LC-05
+	Subtitle/Narration
+	SRT edit/style/animation; audio import/record
+	SCR-004, SCR-006
+
+	LC-06
+	Validate/Relink
+	Issue review → relink/revalidate
+	DLG-001, DLG-008
+
+	LC-07
+	Persist
+	Save/Save As/autosave/recovery snapshot
+	Global + DLG-007/009
+
+	LC-08
+	Export
+	Export settings → progress → success/failure
+	DLG-002..006
+
+	LC-09
+	Close
+	Unsaved guard; active job guard
+	DLG-007/DLG-013
+
+	LC-10
+	Reopen
+	Load project / migration / missing asset handling
+	SCR-001 → SCR-003 + validation
+
+
+4. User-Facing Requirement Extraction
+	Req
+	User-facing meaning
+	Surface expectation
+	Priority
+
+	FR-001
+	Project lifecycle
+	Home/new project/open/save/Save As/close guard
+	P0
+
+	FR-002
+	Scene DOCX parsing
+	Wizard DOCX selection + actionable invalid state
+	P0
+
+	FR-003
+	Asset binding
+	Asset grid/status/detail + validation/relink
+	P0
+
+	FR-004
+	SINGLE/DOUBLE
+	Layout inspector + preview
+	P0
+
+	FR-005
+	Timeline edit
+	Timeline, ruler, navigator, marker, In/Out, snap, zoom/follow
+	P0
+
+	FR-006
+	Undo/Redo
+	Global toolbar/menu + history feedback
+	P0
+
+	FR-007
+	Manual motion
+	Animation inspector + picker + lock
+	P0
+
+	FR-008
+	Random planner
+	Random panel + deterministic scope/options/result
+	P0
+
+	FR-009/010
+	AI Edit Plan + parity
+	AI panel/plan preview/apply/reject/stale/error
+	P0
+
+	FR-011
+	Subtitle
+	Subtitle workspace cue/style/animation/timing
+	P0
+
+	FR-012
+	Narration
+	Import media + record narration dialog
+	P0
+
+	FR-013
+	Validation
+	Validation Center + blocker before export
+	P0
+
+	FR-014
+	Recovery
+	Recovery-found and corrupt/incompatible state
+	P0
+
+	FR-015
+	Credentials
+	Gemini key status/add/change/delete/masked states
+	P0
+
+	FR-016
+	Background jobs
+	Progress/cancel/busy/error surfaces
+	P0
+
+	FR-017
+	Render/export
+	Settings/progress/success/failure/selection
+	P0
+
+	FR-018
+	Reopen
+	Persist state, load failure, missing asset states
+	P0
+
+	FR-019/020
+	AAVC UI parity + brand
+	All surfaces; visual diff contract
+	P0
+
+	FR-021
+	Portable usage
+	First-run dependency error/readiness only if required
+	P0
+
+	FR-022
+	Legacy migration
+	Compatibility report surface if enabled
+	P1 / SHOULD
+
+
+5. Information Architecture & Global Surfaces
+Canonical global composition follows the AAVC editor shell: top application menu; toolbar actions; left Scene/Aset context; central preview; right inspector/context tabs; bottom timeline/navigation; status line. Home and New Project are separate routes inside the same application window. Dialogs float above the owner context and must return to the same selection/scroll/playhead when dismissed.
+	ID
+	Screen/View
+	Purpose
+	Entry
+	Exit / primary action
+	States
+	Trace
+	Status
+
+	SCR-001
+	Home / Mulai Proyek
+	Create or open project; quick help.
+	Launch/no project; Tampilan→Beranda
+	New Project/Open/Help
+	HOME_EMPTY, ERROR_OPEN
+	FR-001/018/020
+	CONFIRMED
+
+	SCR-002
+	New Project Wizard
+	Create project from Scene DOCX + assets + optional media.
+	Home→Proyek Baru
+	Back/Cancel/Continue→Editor
+	DOCX_EMPTY, DOCX_SELECTED, INVALID_DOCX, ASSET_SCAN, MEDIA_OPTIONAL, SAVE_ERROR
+	FR-001/002/003/012
+	CONFIRMED + steps 2–3 structurally mapped
+
+	SCR-003
+	Main Editor / Overview
+	Review/edit project using AAVC shell.
+	Open/create project; Tampilan→Editor
+	Home/Subtitle/Validation/Export
+	READY, SELECTED, DIRTY, WORKING, WARNING, ERROR, STALE
+	FR-003..010/016/018/019
+	CONFIRMED
+
+	SCR-004
+	Subtitle Workspace
+	Edit cues/style/animation/timing without losing project context.
+	Tambah Teks / Tampilan→Subtitle
+	Back Editor; save copy/apply state
+	READY, OVERLAP_WARNING, DIRTY_WORKING_COPY, MISSING_SRT, PARSE_ERROR
+	FR-011/019
+	CONFIRMED
+
+	SCR-005
+	Animation Workspace / Inspector
+	Manual/random/AI-native motion assignment and lock.
+	Editor inspector/menu Animasi
+	Return same editor scene/asset
+	MANUAL, RANDOM, AI_PLAN, LOCKED, UNSUPPORTED_PRESET, PREVIEWING
+	FR-007/008/009/010
+	CONFIRMED as editor-context surface
+
+	SCR-006
+	Narration / Audio Workspace
+	Import/record narration and bind to project.
+	Toolbar Rekam Narasi / Impor Media
+	Return editor
+	IDLE, RECORDING, PAUSED/STOPPED, DEVICE_ERROR, SAVE_ERROR
+	FR-012/016
+	CONFIRMED
+
+	SCR-007
+	Preview Focus / Playback View
+	Large preview while retaining transport and exit-to-editor context.
+	Preview focus/fullscreen action
+	Return editor same playhead
+	READY, PLAYING, PAUSED, MISSING_MEDIA
+	FR-004/005/019
+	REFERENCE-CONFIRMED
+
+	SCR-008
+	Legacy Compatibility Report
+	Show migration mapping if importer enabled.
+	Open legacy AAVC project/import action
+	Cancel or open migrated copy
+	SUPPORTED, APPROX, UNSUPPORTED, ERROR
+	FR-022
+	PROVISIONAL / SHOULD
+
+
+6. Panel / Inspector Registry
+	ID
+	Surface
+	Owner
+	Semantics
+	Priority
+
+	PNL-001
+	Scene List
+	SCR-003
+	Select scene, show mode/duration/asset IDs; sync timeline.
+	P0
+
+	PNL-002
+	Asset Library
+	SCR-003
+	Search/filter READY/MISSING/CORRUPT/DUPLICATE; select asset.
+	P0
+
+	PNL-003
+	Asset Detail / Properties
+	SCR-003
+	Metadata, relink/replace, transform/layout tabs.
+	P0
+
+	PNL-004
+	Scene Inspector
+	SCR-003
+	Mode, duration, project context; apply duration via history.
+	P0
+
+	PNL-005
+	Preview + Transport
+	SCR-003/004/005
+	Canonical preview; seek/play/pause/volume/fit.
+	P0
+
+	PNL-006
+	Timeline
+	SCR-003
+	Scene blocks, playhead, In/Out, marker, snap, zoom/follow, navigator.
+	P0
+
+	PNL-007
+	Layout Inspector
+	SCR-003
+	SINGLE/DOUBLE parameters; apply/reset.
+	P0
+
+	PNL-008
+	Animation Inspector
+	SCR-003/005
+	Manual/Random/AI; intensity; lock; preview/apply.
+	P0
+
+	PNL-009
+	AI Agent / Plan
+	SCR-003
+	Natural-language request → plan summary → apply/reject; no direct state mutation.
+	P0
+
+	PNL-010
+	Subtitle Inspector
+	SCR-004
+	Cue list + Gaya + Animasi + Edit Cue.
+	P0
+
+	PNL-011
+	Project Overview / Validation badge
+	SCR-003
+	Project summary, READY count, narration/subtitle status, issues.
+	P0
+
+	PNL-012
+	History / Riwayat
+	SCR-003
+	Undo/redo event history; reference visual support.
+	P1
+
+	PNL-013
+	Audio/Narration Controls
+	SCR-006
+	Input device/file, level/duration, record/import/preview.
+	P0
+
+	PNL-014
+	Background/Media Control
+	SCR-003
+	AAVC visual slot preserved only when render-backed; no fake track controls.
+	P1 / CONDITIONAL
+
+
+7. Dialog / Overlay / Message Registry
+	ID
+	Name
+	Trigger
+	Behavior / consequence
+	Priority
+
+	DLG-001
+	Validation Center
+	Toolbar/menu validation
+	Modal/live issues; Validasi Ulang; Relink; tabs All/Project/Media/Scene/AI/Render.
+	P0
+
+	DLG-002
+	Export Settings
+	Ekspor Video
+	Codec/res/fps/quality/sharpen/subtitle/selection; invalid config blocks.
+	P0
+
+	DLG-003
+	Render Progress
+	Start render
+	Progress + stage + cancel; UI remains responsive.
+	P0
+
+	DLG-004
+	Render Success
+	Render completes
+	Output path, open folder/play/re-render/return.
+	P0
+
+	DLG-005
+	Render Failure
+	Render/preflight error
+	Actionable error; logs; retry/back; no fake success.
+	P0
+
+	DLG-006
+	Project Settings
+	Project settings action/reference
+	Resolution/fps/internal autosave/naming; no unsupported controls.
+	P1
+
+	DLG-007
+	Unsaved Changes Guard
+	New/open/close/exit while dirty
+	Save / Discard / Cancel; save failure cancels destructive action.
+	P0
+
+	DLG-008
+	Relink Asset / Scan Folder
+	Validation issue Relink
+	Select file/folder; progress; cancel; preserve Axxx.
+	P0
+
+	DLG-009
+	Recovery Found
+	Startup/recovery snapshot
+	Recover / open source / discard snapshot; never overwrite source silently.
+	P0
+
+	DLG-010
+	Gemini Credential Status
+	AI menu Status Gemini
+	Masked slot counts/health; never raw API key.
+	P0
+
+	DLG-011
+	Gemini Add/Change/Delete
+	AI credential actions
+	Slot 1–100, password field, confirmation delete.
+	P0
+
+	DLG-012
+	AI Edit Plan Approval
+	AI plan ready
+	Show scope/commands/locks; Apply / Reject / revise; stale plan cannot apply.
+	P0
+
+	DLG-013
+	Active Job / Busy Guard
+	Second AI/render or close while job active
+	Explain active job; cancel/wait/back; no duplicate long job.
+	P0
+
+	DLG-014
+	Quick Help / Shortcuts
+	Bantuan menu
+	Live QAction shortcuts + timeline gestures; OK.
+	P1
+
+	DLG-015
+	Narration Recording
+	Rekam Narasi
+	Device, meter, record/stop/save/cancel; failure keeps project unchanged.
+	P0
+
+	OVR-001
+	Timeline Context Menu
+	Right-click scene/timeline
+	Split/move/marker/In-Out/context actions limited to valid scope.
+	P1
+
+	MSG-001
+	Validation Badge/Toast
+	State changes
+	Green/yellow/red with text/icon; not color-only.
+	P0
+
+
+8. Navigation Map
+	ID
+	Edge
+	Trigger
+	Precondition / blocked
+	Back/context semantics
+
+	NAV-001
+	SCR-001 → SCR-002
+	Proyek Baru
+	No blocker / no active destructive state
+	Cancel returns Home
+
+	NAV-002
+	SCR-001 → SCR-003
+	Buka Proyek
+	Load succeeds
+	Failure keeps Home/current session
+
+	NAV-003
+	SCR-002 → SCR-003
+	Finish create/save
+	DOCX/assets valid; save succeeds
+	Failure stays wizard
+
+	NAV-004
+	SCR-003 → SCR-001
+	Tampilan→Beranda
+	Project may remain active
+	Return editor restores selection
+
+	NAV-005
+	SCR-003 → SCR-004
+	Tambah Teks / Subtitle
+	subtitle_source available
+	Back restores editor context
+
+	NAV-006
+	SCR-003 → DLG-001
+	Validasi
+	Project active
+	Close returns same editor state
+
+	NAV-007
+	SCR-003 → DLG-002
+	Ekspor
+	Preflight can run
+	Cancel returns editor; blocker routes Validation
+
+	NAV-008
+	SCR-003 ↔ SCR-005
+	Animation context
+	Scene/asset selected
+	Preserve selection/history
+
+	NAV-009
+	SCR-003 ↔ SCR-006
+	Narration
+	Project active
+	Cancel = no project mutation
+
+	NAV-010
+	Any project route → DLG-007
+	Replace/close dirty session
+	Dirty=true
+	Save/Discard/Cancel semantics
+
+	NAV-011
+	Startup → DLG-009 → SCR-003
+	Recovery snapshot exists
+	Valid recoverable snapshot
+	Source project never overwritten silently
+
+
+9. Critical User Flow Registry
+	ID
+	Flow
+	Pri
+	Happy Path
+	Failure/Cancel
+	Completion Evidence
+
+	FLOW-001
+	Create project
+	P0
+	Home → DOCX → assets → optional SRT/narration → save → Editor
+	Invalid input stops with actionable error; cancel returns Home
+	Project active + validation summary
+
+	FLOW-002
+	Open existing project
+	P0
+	Home/Open → load → validation → Editor
+	Corrupt/incompatible keeps previous session
+	Editor shows persisted state
+
+	FLOW-003
+	Manual edit/review
+	P0
+	Select scene → seek → reorder/duration/split/layout/motion → preview → save
+	Invalid operation rejected; Undo restores
+	State + preview/timeline synced
+
+	FLOW-004
+	Random animation
+	P0
+	Select scope → random settings → preview/generate → apply transaction
+	Locks respected; cancel no mutation
+	Deterministic assignments saved
+
+	FLOW-005
+	AI Auto Edit
+	P0
+	Request → background job → validated Edit Plan → approval/apply → Undo available
+	No key/429/network/malformed/stale => no mutation
+	Applied transaction or explicit failure
+
+	FLOW-006
+	Subtitle workflow
+	P0
+	Import/open SRT → cue edit → style/animation → apply → save copy/project
+	Missing/parse/overlap warning; reload guard
+	Render-backed subtitle config
+
+	FLOW-007
+	Narration
+	P0
+	Import or record → preview → bind → save
+	Device/encode/save failure leaves project valid
+	Narration bound and audible
+
+	FLOW-008
+	Validation/relink
+	P0
+	Validate → issue → Relink → revalidate
+	Cancel relink keeps original reference
+	Blocker cleared or remains explicit
+
+	FLOW-009
+	Export
+	P0
+	Preflight → settings → background render → progress → success
+	Cancel/fail => no success state; project intact
+	Output verified + discoverable
+
+	FLOW-010
+	Recovery/reopen
+	P0
+	Crash/start → recovery prompt → recover → validate → save copy if needed
+	Corrupt snapshot falls back safely
+	Valid session restored
+
+
+10. Screen State Matrix
+	Surface
+	Normal States
+	Failure/Async States
+	Required UX
+
+	SCR-001
+	EMPTY/READY
+	OPEN_ERROR
+	No project demo data; open failure actionable.
+
+	SCR-002
+	DOCX_EMPTY/SELECTED, ASSET_READY
+	INVALID_DOCX, ASSET_MISSING/CORRUPT, SAVE_ERROR
+	Lanjut disabled until required input valid.
+
+	SCR-003
+	READY/SELECTED/DIRTY
+	WORKING/PARTIAL/WARNING/ERROR/STALE
+	Selection+timeline+preview remain synchronized; busy jobs show status.
+
+	SCR-004
+	READY/DIRTY_WORKING_COPY
+	OVERLAP_WARNING/MISSING_SRT/PARSE_ERROR
+	Reload requires discard confirmation if dirty.
+
+	SCR-005
+	MANUAL/RANDOM/AI_PLAN/LOCKED
+	UNSUPPORTED/STALE_PROVIDER/NO_KEY
+	Unsupported preset not shown as working.
+
+	SCR-006
+	IDLE/RECORDING/SAVED
+	DEVICE_ERROR/SAVE_ERROR
+	Cancel/failed record makes no project mutation.
+
+	DLG-001
+	VALID/ERRORS/WARNINGS
+	RELINK_REQUIRED
+	Error count controls export gate.
+
+	DLG-002..005
+	CONFIG/WORKING/SUCCESS
+	INVALID/CANCELLED/FAILURE
+	Distinct success/failure; progress cancellable.
+
+	DLG-009
+	RECOVERY_AVAILABLE/RECOVERED
+	CORRUPT_SNAPSHOT
+	Source preserved.
+
+	DLG-010..012
+	KEYS_READY/PLAN_READY
+	NO_KEY/429/NETWORK/MALFORMED/STALE
+	Secrets masked; plan cannot apply stale.
+
+
+11. Action & Consequence Matrix
+	ID
+	Action
+	Owner
+	Immediate Feedback
+	Side Effect
+	Reversible
+
+	ACT-001
+	New Project
+	Home
+	Open wizard
+	No project mutation until saved
+	No
+
+	ACT-002
+	Open Project
+	Home
+	Load file
+	Replace session only after successful load
+	Potential
+
+	ACT-003
+	Save / Save As
+	Global
+	Progress/status
+	Atomic persistence; error keeps source
+	Yes/rollback
+
+	ACT-004
+	Select Scene/Asset
+	Editor
+	Highlight + preview sync
+	Context only
+	Yes
+
+	ACT-005
+	Reorder Scene
+	Timeline
+	Block moves
+	Project history transaction
+	Undo
+
+	ACT-006
+	Resize Duration
+	Inspector/timeline
+	Geometry update
+	Changes total timing
+	Undo
+
+	ACT-007
+	Split Scene
+	Timeline
+	Two valid units
+	Changes project structure
+	Undo
+
+	ACT-008
+	Set/Clear In-Out
+	Timeline
+	Range overlay
+	Selection/render scope
+	Yes
+
+	ACT-009
+	Add/Jump Marker
+	Timeline
+	Marker/seek
+	Navigation metadata
+	Undo if persisted
+
+	ACT-010
+	Set Layout
+	Inspector
+	Preview update
+	Scene transform/layout
+	Undo
+
+	ACT-011
+	Manual Animation
+	Animation
+	Preview/apply
+	Motion assignment
+	Undo
+
+	ACT-012
+	Randomize
+	Animation
+	Preview/generated result
+	Batch assignment; locks preserved
+	Undo
+
+	ACT-013
+	AI Request
+	AI panel
+	Working status
+	External call; no mutation yet
+	Cancel/stale
+
+	ACT-014
+	Apply AI Plan
+	AI plan
+	Applied summary
+	Batch project transaction
+	Undo
+
+	ACT-015
+	Lock Animation
+	Animation
+	Lock indicator
+	Prevents random/AI replacement
+	Undo/manual policy
+
+	ACT-016
+	Import SRT
+	Media/subtitle
+	Source status
+	Binds subtitle source
+	Undo
+
+	ACT-017
+	Edit Subtitle
+	Subtitle
+	Cue dirty/preview
+	Working copy/project subtitle settings
+	Undo/guard
+
+	ACT-018
+	Record Narration
+	Narration
+	Meter/timer/progress
+	Create WAV then bind after success
+	Cancel safe
+
+	ACT-019
+	Validate
+	Toolbar
+	Badge + dialog
+	No destructive mutation
+	Repeatable
+
+	ACT-020
+	Relink Asset
+	Validation
+	Asset READY/update preview
+	Updates canonical reference
+	Undo
+
+	ACT-021
+	Manage Gemini Key
+	AI menu
+	Masked slot status
+	External credential store
+	Delete confirm
+
+	ACT-022
+	Export
+	Toolbar
+	Render settings/progress
+	Creates output only after preflight
+	Cancel safe
+
+	ACT-023
+	Cancel Render
+	Progress
+	Cancelled status
+	Partial temp output not success
+	N/A
+
+	ACT-024
+	Recover Snapshot
+	Startup
+	Recovered session
+	Does not overwrite source automatically
+	Save copy possible
+
+	ACT-025
+	Undo/Redo
+	Global
+	State/preview refresh
+	History navigation
+	Bidirectional
+
+	ACT-026
+	Zoom/Follow/Navigator
+	Timeline
+	Viewport changes
+	View-only unless settings persisted
+	Yes
+
+	ACT-027
+	Quick Help
+	Help
+	Modal help
+	No mutation
+	Yes
+
+	ACT-028
+	Close/Exit
+	Global
+	Unsaved/job guard
+	May close app only after decision
+	Cancel available
+
+
+12. Special Desktop / File / Media Flows
+File/folder paths with spaces and Unicode must remain readable. A stale path is surfaced; never silently redirected.
+Missing/corrupt/duplicate media appears as explicit asset status and validation issue. Relink preserves canonical Axxx identity.
+Long DOCX parse/asset scan/media probe must show WORKING/progress and allow cancel when implementation supports safe cancellation.
+Output collision must not overwrite existing user output silently; behavior is confirmed later in architecture/export implementation.
+Low/full disk or unwritable output becomes actionable render/persistence error; existing project/source remains intact.
+Portable folder move must not depend on hard-coded C:/D: developer paths.
+Bundled/external media dependency unavailable must show readiness error; normal user is not instructed to install developer runtime.
+Large projects (20/100/300 scenes) require scrolling/selection/timeline virtualization behavior that remains understandable; exact performance targets are benchmarked later.
+13. AI / API / Credential UX Contract
+AI panel shows scope before request (project/scene/asset where relevant).
+Gemini request runs as background job; editor remains responsive.
+AI response becomes structured Edit Plan. Unknown command/target/value, user lock conflict, unsupported render primitive, or stale project revision must reject before mutation.
+Apply is one clear history transaction or documented grouped intent; Undo must be visible/available.
+No-key, invalid credential, 401/403, 429/quota, network, provider 5xx, and malformed response are distinguishable user-visible failures.
+Credential UI supports slots 1–100, but normal saved-state UI shows slot/status only, never raw key.
+AI must not change credential/output folder/project path as part of Auto Edit.
+Manual editing remains available when AI is unavailable.
+14. Persistence / Recovery UX
+Dirty indicator appears in window title/project state after unsaved mutation.
+New/Open/Close/Exit while dirty invokes Save / Discard / Cancel. Save failure cancels destructive continuation.
+Recovery snapshot is separate from source project and presented as recoverable candidate; source is never overwritten silently.
+Relink changes and AI/manual edits enter history before persistent save.
+Subtitle cue save-copy must not silently overwrite source SRT when the flow is defined as copy.
+Project reopen must restore scene order, timing, binding, subtitle/narration, locks, and relevant settings.
+Legacy migration (if enabled) is read-only against legacy source and produces compatibility report.
+15. Keyboard, Accessibility, DPI, Large Data
+	Area
+	Constraint
+	Priority
+
+	Focus order
+	Menu/toolbar → left context → preview/transport → right inspector → timeline; modal traps focus.
+	P0
+
+	Enter
+	Activates focused safe primary action only; must not trigger destructive operation accidentally.
+	P0
+
+	Esc
+	Dismiss modal/popover if safe; unsaved/destructive confirmation remains explicit.
+	P0
+
+	Visible focus
+	Keyboard focus indicator remains visible on controls.
+	P1
+
+	Status semantics
+	READY/MISSING/error/lock/job status uses text/icon in addition to color.
+	P0
+
+	Long text/path
+	Wrap/ellipsize with tooltip/details; no layout clipping.
+	P0
+
+	Large lists
+	Scene/asset/key lists scroll/search/filter; selection remains visible.
+	P0
+
+	DPI
+	Reference is 1920×1080; layout must remain usable at Windows scaling without clipped controls.
+	P0
+
+	Minimum window
+	AAVC current source uses 1280×720 minimum; final ANG must preserve usability or record change.
+	P1
+
+
+16. Reference Registry
+	ID
+	Reference
+	Classification
+	Use / Restriction
+
+	REF-UI-001
+	AAVC docs/UI_FREEZE.md
+	AUTHORITATIVE
+	42 refs UI-001..042; viewport/language/direction; source package identity.
+
+	REF-UI-002
+	AAVC current PySide6 presentation source
+	AUTHORITATIVE
+	Runtime structure/behavior; source wins over contradictory older generated artifact.
+
+	REF-UI-003
+	AAVC USER_GUIDE.md
+	AUTHORITATIVE BEHAVIOR
+	Runtime feature truth and no-fake limitations.
+
+	REF-UI-004
+	Recovered UI batch UI-001..010-like
+	TARGET EVIDENCE
+	Asset/scene/layout/manual/random/AI animation editor states.
+
+	REF-UI-005
+	Recovered UI batch UI-011..020-like
+	TARGET EVIDENCE
+	AI plan/provider/history/timeline/subtitle/audio/background/preview states.
+
+	REF-UI-006
+	Recovered UI batch UI-021..030-like
+	TARGET EVIDENCE
+	Settings/provider/history/export/render/recovery/relink states.
+
+	REF-UI-007
+	Recovered UI batch UI-031..037-like
+	TARGET EVIDENCE
+	Validation/help/subtitle advanced/render advanced states; contains older-generation structural variance.
+
+	REF-UI-008
+	Library showcase/storyboard collages
+	INSPIRATION/CONFLICT EVIDENCE
+	Useful detail but not canonical where IDs/content conflict with frozen/current source.
+
+	REF-UI-009
+	OpenShot/Shotcut/Kdenlive UIs
+	REJECTED AS VISUAL TARGET
+	Technical maturity only; must not influence ANG visual layout.
+
+
+17. AAVC Frozen Reference Coverage — UI-001..UI-042
+The following mapping is the STEP 03 coverage registry. UI-001..UI-037 labels are derived from recovered batch order and current AAVC structure. UI-038..UI-042 original frozen PNGs were not directly recoverable from repo/library during this STEP; therefore those exact old-image titles are marked PROVISIONAL_MAPPING and must be reconciled in STEP 04 from the original prompt package if recovered. This is not permission to invent a new design: current AAVC source remains the authority.
+	Ref
+	Mapped Surface / State
+	Evidence
+	Pri
+
+	UI-001
+	Asset Library + Asset Detail
+	Recovered target
+	P0
+
+	UI-002
+	Scene List + Scene Detail / editor context
+	Recovered target / representative parity
+	P0
+
+	UI-003
+	Layout SINGLE selected
+	Recovered target / representative parity
+	P0
+
+	UI-004
+	Layout DOUBLE scene
+	Recovered target
+	P0
+
+	UI-005
+	Asset transform/layout properties
+	Recovered target
+	P0
+
+	UI-006
+	Manual animation inspector
+	Recovered target
+	P0
+
+	UI-007
+	Visual effect picker
+	Recovered target
+	P1
+
+	UI-008
+	Random animation settings
+	Recovered target
+	P0
+
+	UI-009
+	Random animation result preview
+	Recovered target
+	P1
+
+	UI-010
+	AI Animation Director / plan
+	Recovered target / representative parity
+	P0
+
+	UI-011
+	AI Agent conversation
+	Recovered target
+	P0
+
+	UI-012
+	AI action plan preview
+	Recovered target
+	P0
+
+	UI-013
+	AI plan execution success
+	Recovered target / representative parity
+	P0
+
+	UI-014
+	Gemini provider/quota/key health
+	Recovered target / representative parity
+	P0
+
+	UI-015
+	Main editor + scene properties / tracks
+	Recovered target
+	P0
+
+	UI-016
+	Timeline context menu
+	Recovered target
+	P1
+
+	UI-017
+	Subtitle cue editor
+	Recovered target
+	P0
+
+	UI-018
+	Audio / Narration controls
+	Recovered target
+	P0
+
+	UI-019
+	Background control
+	Recovered target; conditional no-fake
+	P1
+
+	UI-020
+	Preview / playback focus
+	Recovered target
+	P1
+
+	UI-021
+	Project Settings
+	Recovered target
+	P1
+
+	UI-022
+	Application Settings
+	Recovered target
+	P1
+
+	UI-023
+	Provider & API Key settings
+	Recovered target
+	P0
+
+	UI-024
+	History / Riwayat
+	Recovered target
+	P1
+
+	UI-025
+	Export Settings
+	Recovered target
+	P0
+
+	UI-026
+	Render Progress
+	Recovered target
+	P0
+
+	UI-027
+	Render Success
+	Recovered target / representative parity
+	P0
+
+	UI-028
+	Render Failure
+	Recovered target
+	P0
+
+	UI-029
+	Recovery Found
+	Recovered target
+	P0
+
+	UI-030
+	Relink Folder Scan
+	Recovered target
+	P0
+
+	UI-031
+	Validation Center
+	Recovered target
+	P0
+
+	UI-032
+	Shortcut & Quick Help
+	Recovered target
+	P1
+
+	UI-033
+	Subtitle Style
+	Recovered target
+	P0
+
+	UI-034
+	Subtitle Animation
+	Recovered target
+	P0
+
+	UI-035
+	Subtitle per-word timing/highlight editor
+	Recovered target / representative parity
+	P0
+
+	UI-036
+	Subtitle advanced animation/highlight
+	Recovered target
+	P1
+
+	UI-037
+	Advanced Render Settings reference
+	Recovered target; controls require runtime support
+	P1
+
+	UI-038
+	Home / Start Project
+	PROVISIONAL_MAPPING from current source
+	P0
+
+	UI-039
+	New Project — Scene DOCX
+	PROVISIONAL_MAPPING from current source
+	P0
+
+	UI-040
+	New Project — Assets / Media continuation
+	PROVISIONAL_MAPPING from product flow
+	P0
+
+	UI-041
+	Main Editor Overview canonical
+	PROVISIONAL_MAPPING; representative parity confirms importance
+	P0
+
+	UI-042
+	Narration Recording / final missing frozen state
+	PROVISIONAL_MAPPING; exact frozen title must be recovered
+	P0
+
+
+18. Requirement ↔ UI Traceability Audit
+	Requirement
+	Surface
+	Flow
+	Audit
+
+	FR-001
+	SCR-001/002/003 + DLG-007
+	FLOW-001/002/010
+	Covered
+
+	FR-002
+	SCR-002
+	FLOW-001
+	Covered
+
+	FR-003
+	PNL-002/003 + DLG-001/008
+	FLOW-001/008
+	Covered
+
+	FR-004
+	PNL-005/007
+	FLOW-003
+	Covered
+
+	FR-005
+	PNL-006 + OVR-001
+	FLOW-003
+	Covered
+
+	FR-006
+	Global/history PNL-012
+	FLOW-003/005
+	Covered
+
+	FR-007
+	SCR-005/PNL-008
+	FLOW-003
+	Covered
+
+	FR-008
+	PNL-008
+	FLOW-004
+	Covered
+
+	FR-009/010
+	PNL-009 + DLG-012
+	FLOW-005
+	Covered
+
+	FR-011
+	SCR-004/PNL-010
+	FLOW-006
+	Covered
+
+	FR-012
+	SCR-006/DLG-015
+	FLOW-007
+	Covered
+
+	FR-013
+	DLG-001 + export gate
+	FLOW-008/009
+	Covered
+
+	FR-014
+	DLG-009
+	FLOW-010
+	Covered
+
+	FR-015
+	DLG-010/011
+	FLOW-005
+	Covered
+
+	FR-016
+	MSG/progress DLG-003 + AI busy
+	FLOW-005/009
+	Covered
+
+	FR-017
+	DLG-002..005
+	FLOW-009
+	Covered
+
+	FR-018
+	SCR-001/003 + DLG-009
+	FLOW-002/010
+	Covered
+
+	FR-019/020
+	All + REF-UI-001..008
+	All
+	Covered / visual parity contract
+
+	FR-021
+	Startup/readiness errors
+	FLOW-001/009
+	UI feedback covered; packaging later
+
+	FR-022
+	SCR-008
+	Migration flow
+	P1 provisional
+
+
+19. UX Open Items, Gaps & Conflicts
+	ID
+	Item
+	Resolution / Next Point
+	Status
+
+	GAP-UX-001
+	Original frozen PNG/source prompt mapping for UI-038..UI-042 not directly recovered in current repo/library.
+	Non-blocking for structure because current AAVC source covers required screens. STEP 04 should recover prompt package if possible before writing exact prompts.
+	OPEN_NON_BLOCKING
+
+	CONFLICT-UX-001
+	Older generated UI collages contain inconsistent UI-021..030 meanings and controls.
+	Resolve in favor of UIF-AAVC-v1.0 + current source/USER_GUIDE + owner 1:1 decision.
+	RESOLVED
+
+	CONFLICT-UX-002
+	Owner asks 1:1 UI while D-011 forbids fake capability.
+	Preserve appearance/hierarchy, but unsupported controls may not pretend to work; any visible omission/disabled state = DELTA_FROM_AAVC with record.
+	RESOLVED POLICY
+
+	Q-UX-001
+	Should Background panel remain visible if ANG engine parity does not implement arbitrary background editing?
+	Latest decision point SF-STEP 05/06. Provisional: keep only render-backed behavior; no fake track editor.
+	OPEN_NON_BLOCKING
+
+	Q-UX-002
+	Exact ANG project extension/name replacing .aavcproj.
+	Architecture STEP 06/07; UI wording can remain generic Project until final.
+	OPEN_NON_BLOCKING
+
+	Q-UX-003
+	Exact mapping of all legacy 21 animation effects to libopenshot primitives.
+	STEP 06/11; UI picker only lists supported/render-backed presets.
+	OPEN_NON_BLOCKING
+
+	ASSUMP-UX-001
+	Home/New Project remain separate routes in one QMainWindow-like shell.
+	Matches current AAVC source; reversible only by owner/change record.
+	PROVISIONAL_CONFIRMED
+
+	ASSUMP-UX-002
+	Validation Center remains modal/dialog overlay, not permanent dock.
+	Matches current AAVC runtime/reference.
+	PROVISIONAL_CONFIRMED
+
+
+20. UI Image Coverage Matrix — STEP 04 Contract
+Because ANG must copy AAVC 1:1, STEP 04 does not invent a new set of image IDs. The 42 frozen AAVC reference IDs are carried forward as the base coverage contract. Brand-substituted ANG reference images may be generated only where needed to make the target unambiguous. Existing AAVC images are AUTHORITATIVE/TARGET reference; missing exact frozen assets are regenerated from current source + recovered prompt package, not from imagination.
+	Variant
+	Owner/Target
+	Image?
+	Pri
+	Visible State
+	Ref Authority
+	Prompt STEP04
+	Reason
+
+	UI-001
+	Asset Library + Asset Detail
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-002
+	Scene List + Scene Detail / editor context
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-003
+	Layout SINGLE selected
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-004
+	Layout DOUBLE scene
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-005
+	Asset transform/layout properties
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-006
+	Manual animation inspector
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-007
+	Visual effect picker
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-008
+	Random animation settings
+	YES
+	P0
+	AI/RANDOM WORKING/PLAN
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-009
+	Random animation result preview
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-010
+	AI Animation Director / plan
+	YES
+	P0
+	AI/RANDOM WORKING/PLAN
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-011
+	AI Agent conversation
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-012
+	AI action plan preview
+	YES
+	P0
+	AI/RANDOM WORKING/PLAN
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-013
+	AI plan execution success
+	YES
+	P0
+	AI/RANDOM WORKING/PLAN
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-014
+	Gemini provider/quota/key health
+	YES
+	P0
+	AI/RANDOM WORKING/PLAN
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-015
+	Main editor + scene properties / tracks
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-016
+	Timeline context menu
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-017
+	Subtitle cue editor
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-018
+	Audio / Narration controls
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-019
+	Background control
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-020
+	Preview / playback focus
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-021
+	Project Settings
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-022
+	Application Settings
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-023
+	Provider & API Key settings
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-024
+	History / Riwayat
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-025
+	Export Settings
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-026
+	Render Progress
+	YES
+	P0
+	WORKING
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-027
+	Render Success
+	YES
+	P0
+	SUCCESS
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-028
+	Render Failure
+	YES
+	P0
+	ERROR
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-029
+	Recovery Found
+	YES
+	P0
+	RECOVERY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-030
+	Relink Folder Scan
+	YES
+	P0
+	RELINK WORKING
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-031
+	Validation Center
+	YES
+	P0
+	WARNING/ERROR
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-032
+	Shortcut & Quick Help
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-033
+	Subtitle Style
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-034
+	Subtitle Animation
+	YES
+	P0
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-035
+	Subtitle per-word timing/highlight editor
+	YES
+	P0
+	SUBTITLE ADVANCED
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-036
+	Subtitle advanced animation/highlight
+	YES
+	P1
+	SUBTITLE ADVANCED
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-037
+	Advanced Render Settings reference
+	YES
+	P1
+	READY
+	AUTHORITATIVE/TARGET
+	NO — reuse existing reference
+	Existing 1:1 reference must be preserved
+
+	UI-038
+	Home / Start Project
+	YES
+	P0
+	READY
+	TARGET-PROVISIONAL
+	YES — only if exact original cannot be recovered
+	Missing frozen mapping must be reconciled; source-defined visual target
+
+	UI-039
+	New Project — Scene DOCX
+	YES
+	P0
+	READY
+	TARGET-PROVISIONAL
+	YES — only if exact original cannot be recovered
+	Missing frozen mapping must be reconciled; source-defined visual target
+
+	UI-040
+	New Project — Assets / Media continuation
+	YES
+	P0
+	READY
+	TARGET-PROVISIONAL
+	YES — only if exact original cannot be recovered
+	Missing frozen mapping must be reconciled; source-defined visual target
+
+	UI-041
+	Main Editor Overview canonical
+	YES
+	P0
+	READY
+	TARGET-PROVISIONAL
+	YES — only if exact original cannot be recovered
+	Missing frozen mapping must be reconciled; source-defined visual target
+
+	UI-042
+	Narration Recording / final missing frozen state
+	YES
+	P0
+	READY
+	TARGET-PROVISIONAL
+	YES — only if exact original cannot be recovered
+	Missing frozen mapping must be reconciled; source-defined visual target
+
+
+21. STEP 04 Generation / Recovery Batch Recommendation
+Recommended handling is reference-first rather than design-first:
+	Batch
+	IDs
+	STEP 04 Action
+
+	Batch A
+	UI-001–010
+	Recover/reuse AAVC assets; brand substitution only if ANG-specific reference image is needed.
+
+	Batch B
+	UI-011–020
+	Recover/reuse AI/editor/audio/background/preview references; no new layout.
+
+	Batch C
+	UI-021–030
+	Recover/reuse settings/export/recovery/relink references.
+
+	Batch D
+	UI-031–040
+	Recover exact frozen references first; use current AAVC source when old generated artifacts conflict.
+
+	Batch E
+	UI-041–042
+	Recover exact frozen prompt/image if possible; if unavailable, create ANG target from current AAVC runtime source with explicit PROVISIONAL_REFERENCE mapping.
+
+
+HARD OWNER RULE FOR STEP 04: after all UI image prompts are prepared, STOP. Do not continue to STEP 05 merely because owner says “lanjutkan” unless all required images are actually available, reviewed, corrected, and consolidated into one final UI Reference DOCX.
+22. STEP 03 Gate
+	Criterion
+	Result
+	Evidence
+
+	Core flow coverage
+	PASS
+	Create/open/edit/AI/subtitle/narration/validation/export/recovery mapped.
+
+	Screen inventory
+	PASS
+	8 views + global panels/dialogs cover MUST product behavior.
+
+	State coverage
+	PASS
+	Async/failure/dirty/stale/permission/recovery states mapped.
+
+	Navigation/back semantics
+	PASS
+	11 edges preserve context and guards.
+
+	Action consequence
+	PASS
+	28 critical actions with side effect/reversibility semantics.
+
+	Permissions/privacy
+	PASS
+	Credential/AI plan boundaries and masking mapped.
+
+	Save/recovery
+	PASS
+	Dirty guard, atomic save expectation, recovery source protection mapped.
+
+	Traceability
+	PASS
+	All MUST FR-001..021 map to UI or feedback surface.
+
+	Reference coverage
+	PASS_WITH_PROVISIONAL
+	42 IDs preserved; exact old UI-038..042 asset titles need recovery/reconciliation.
+
+	UI image coverage
+	PASS_WITH_PROVISIONAL
+	Coverage contract defined; image generation is STEP 04, not performed here.
+
+
+FINAL GATE — PASS_WITH_PROVISIONAL. STEP 04 may begin when owner says lanjutkan. The provisional reference gap does not block STEP 04 because current AAVC source and frozen contract preserve the structural target. It DOES forbid inventing a new design for missing references.
+23. Handoff → SF-STEP 04
+	Handoff Field
+	Value
+
+	Project / repo / baseline
+	AI Ngerti Geopolitik / inoriko920-dev/AI-Ngerti-Geopolitik / STEP03 baseline HEAD 7d1ecc4…
+
+	Product Definition
+	SF-STEP 01 v1.0 — PASS_WITH_PROVISIONAL / WHAT confirmed
+
+	Discovery
+	SF-STEP 02 — BUILD_FROM_SCRATCH_WITH_COMPONENTS; libopenshot primary candidate
+
+	STEP 03 gate
+	PASS_WITH_PROVISIONAL
+
+	Confirmed screens
+	SCR-001 Home; SCR-002 New Project; SCR-003 Main Editor; SCR-004 Subtitle; SCR-005 Animation; SCR-006 Narration; SCR-007 Preview focus.
+
+	Provisional screen
+	SCR-008 Legacy Compatibility Report (SHOULD).
+
+	Global surfaces
+	PNL-001..014; DLG-001..015; OVR-001; MSG-001.
+
+	Critical P0 flows
+	FLOW-001 create, 002 open, 003 manual edit, 004 random, 005 AI, 006 subtitle, 007 narration, 008 validation/relink, 009 export, 010 recovery.
+
+	UI image coverage
+	UI-001..UI-042 carried as frozen 1:1 coverage contract.
+
+	Authoritative references
+	AAVC UI_FREEZE + current PySide6 presentation source + USER_GUIDE + recovered frozen-target images.
+
+	Do-not-invent
+	No new visual style, no OpenShot/Shotcut UI, no fake controls, no new product scope.
+
+	Gap
+	Exact original mapping/assets UI-038..042 should be recovered from PROMPT_GAMBAR_UI_STEP_04_PER_10.zip if available.
+
+	Design order
+	Reference recovery → shared AAVC design tokens → brand substitution → state-specific prompt only where required.
+
+	STEP 04 acceptance
+	Every P0/P1 target has reference/prompt, stable ID, visible state, AAVC 1:1 constraints, and no unsupported capability.
+
+	Next exact action
+	SF-STEP 04 — UI Design System & All UI Prompts ONLY, after owner says lanjutkan. Then HARD STOP after prompts until images are made/reviewed/revised + one UI Reference DOCX.
+
+
+Appendix A — Design Tokens Preserved from AAVC
+	Token
+	AAVC Value
+
+	app_bg
+	#F4F7FB
+
+	surface
+	#FFFFFF
+
+	panel
+	#F8FAFD
+
+	border
+	#D8E2EE
+
+	primary
+	#2563EB
+
+	primary_hover
+	#1D4ED8
+
+	selection
+	#DBEAFE
+
+	text
+	#172033
+
+	muted
+	#64748B
+
+	success
+	#16A34A
+
+	warning
+	#F59E0B
+
+	error
+	#DC2626
+
+	monitor_matte
+	#171C24
+
+
+	Metric
+	AAVC Value
+
+	title_bar_h
+	32
+
+	menu_h
+	34
+
+	toolbar_h
+	48
+
+	left_ref_w
+	300
+
+	left_min_w
+	240
+
+	right_ref_w
+	360
+
+	right_max_w
+	480
+
+	timeline_ref_h
+	300
+
+	timeline_min_h
+	180
+
+	status_h
+	26
+
+	radius
+	8
+
+	spacing
+	8
+
+
+Appendix B — Hard Stop Reminder
+STOP POINT — SF-STEP 03 selesai. SF-STEP 04 belum dijalankan.
+Pada SF-STEP 04 nanti, setelah prompt seluruh gambar UI selesai dibuat, proses wajib berhenti total sampai semua gambar UI benar-benar tersedia, diperiksa, direvisi bila perlu, dan dikumpulkan menjadi satu DOCX UI Reference final. Coding tetap dilarang sampai seluruh planning/reference pra-coding berada di repo dan gate berikutnya mengizinkan.
+UI/UX Inventory & User Flow  •  PRE-IMPLEMENTATION  •  06 Oktober 2026

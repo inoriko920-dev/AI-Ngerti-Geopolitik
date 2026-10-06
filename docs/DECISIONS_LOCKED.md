@@ -113,3 +113,17 @@ Makna keputusan:
 - OpenCut tidak dipilih sebagai basis karena current rewrite masih dalam perubahan arsitektur besar.
 
 D-016 adalah **discovery baseline**, bukan final architecture. SF-STEP 06 tetap harus memutuskan stack/integration detail dan dapat mengganti primary engine hanya jika evidence/spike menunjukkan blocker atau pilihan yang lebih kuat.
+
+
+## D-017 — STEP 03 UI inventory baseline
+SF-STEP 03 menetapkan inventory UI/UX ANG berdasarkan **AAVC VISUAL_CONTRACT 1:1**.
+
+Keputusan:
+- Screen/panel/dialog/flow ANG harus dipetakan dari AAVC frozen UI + current AAVC presentation behavior, bukan didesain ulang.
+- Coverage ID resmi tetap `UI-001` sampai `UI-042`.
+- Pemetaan UI-001..UI-037 sudah mempunyai reference/source evidence yang memadai untuk masuk STEP 04.
+- Exact old frozen mapping/assets UI-038..UI-042 masih `OPEN_NON_BLOCKING`; STEP 04 wajib mencoba recovery dari source prompt/image lama sebelum membuat substitute.
+- Jika exact old reference tetap tidak ditemukan, substitute hanya boleh diturunkan dari current AAVC source/product flow dan diberi status `PROVISIONAL_REFERENCE` sampai owner review.
+- Generated collage lama yang bertentangan dengan `UI_FREEZE.md` atau current AAVC source adalah secondary evidence, bukan authority.
+- Requirement “1:1” tidak mengizinkan fake capability: kontrol yang benar-benar tidak supported harus dihilangkan/disabled secara transparan dan dicatat sebagai `DELTA_FROM_AAVC`, bukan dibuat seolah berfungsi.
+- SF-STEP 04 adalah titik prompt/image work; setelah seluruh prompt dibuat berlaku hard stop owner sampai image review + final UI Reference DOCX selesai.

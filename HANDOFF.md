@@ -1,103 +1,104 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Fase:** PRE-IMPLEMENTATION  
-**SF-STEP terakhir:** 02 — Existing Solution / GitHub / Upstream Discovery  
+**SF-STEP terakhir:** 03 — UI/UX Inventory & User Flow  
 **Gate:** PASS_WITH_PROVISIONAL  
-**Adoption:** BUILD_FROM_SCRATCH_WITH_COMPONENTS  
-**Coding:** BELUM DIIZINKAN
+**Coding:** BELUM DIIZINKAN  
+**Next exact action:** SF-STEP 04 — UI Design System & All UI Prompts
 
-## Discovery decision
+## STEP 03 selesai
 
-Tidak ada EXACT_BASE yang layak dijadikan aplikasi utama tanpa membawa UI/scope/license debt.
+Canonical outputs:
+- `docs/planning/04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.docx`
+- `docs/planning/04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.txt`
 
-**Primary engine candidate**
-- OpenShot/libopenshot v1.0.1
-- tag SHA: `1c46200eaedeebce3fbce74b5584dc0c04d70903`
-- role: COMPONENT_SOURCE
-- license screening: LGPL-3.0-or-later
-- alasan: Timeline/Clip/KeyFrame/QtPlayer/FFmpeg/audio + Python binding + UI freedom
+Inventory mencakup:
+- SCR-001 Home
+- SCR-002 New Project Wizard
+- SCR-003 Main Editor / Overview
+- SCR-004 Subtitle Workspace
+- SCR-005 Animation Workspace / Inspector
+- SCR-006 Narration / Audio Workspace
+- SCR-007 Preview Focus / Playback
+- SCR-008 Legacy Compatibility Report (SHOULD / provisional)
 
-**Fallback / benchmark**
-- MLT v7.42.0
-- tag SHA: `11e84ecf42e1a7bc885953afa58ba35d228a76ad`
-- role: COMPONENT_SOURCE fallback
-- license screening: LGPL-2.1 framework; modules must be inventoried
+Global surfaces mencakup Scene/Aset/Inspector/Preview/Timeline/Layout/Animation/AI Agent/Subtitle/History/Audio/Background, Validation Center, Export, render jobs, recovery, relink, credential manager, narration recording, unsaved guard, and help.
 
-**Reference client**
-- openshot-qt v4.0.1
-- tag SHA: `5b0588ca36beedebe790e9ed4f48d105a1752f18`
-- GPL-3.0-or-later
-- role: REFERENCE_ONLY
-- selective source reuse: HOLD sampai license decision explicit
+## UI authority
 
-**Other references**
-- Shotcut v26.9.27 — GPLv3 / MLT production + Windows ZIP evidence
-- Kdenlive 26.08.1 — GPLv3 / MLT large-editor evidence
-- OpenCut current rewrite — MIT but architecture still being redesigned
+**AAVC UI = VISUAL_CONTRACT 1:1. No redesign.**
 
-## Critical interpretation
+Authority order untuk STEP 04:
+1. owner decision terbaru / D-015;
+2. AAVC `docs/UI_FREEZE.md`;
+3. exact frozen image/prompt asset jika berhasil direcover;
+4. current AAVC PySide6 presentation source + USER_GUIDE;
+5. STEP 03 registry/coverage;
+6. generated collage lama hanya secondary evidence dan tidak boleh mengalahkan frozen/source contract.
 
-BUILD_FROM_SCRATCH_WITH_COMPONENTS **bukan** berarti membuat media engine sendiri.
+Known frozen contract:
+- 42 IDs UI-001..UI-042;
+- reference viewport 1920x1080;
+- Indonesian;
+- light professional editor;
+- white surfaces + restrained blue;
+- existing AAVC design tokens preserved.
 
-ANG-owned:
-- AAVC 1:1 UI shell
-- Scene DOCX / Axxx / SINGLE-DOUBLE
-- semantic project model
-- command/history/Undo-Redo
-- AI Edit Plan + validation
-- validation/relink/recovery workflow
-- product-specific subtitle/narration/animation workflow
+## Reference gap
 
-Engine-owned candidate:
-- timeline/clip/layers
-- keyframes/compositing
-- playback/frame generation
-- audio mixing
-- codec/read/write/render primitives
+Exact old frozen mapping/assets UI-038..UI-042 belum sepenuhnya berhasil direcover.
 
-## What is NOT proven
+Ini **tidak memberi izin untuk berkreasi**.
+STEP 04 harus:
+- search/recover exact prompt/reference first;
+- bila masih unavailable, derive only from current AAVC source/product flow;
+- label substitute `PROVISIONAL_REFERENCE`;
+- owner review required before it can be final UI reference.
 
-Belum ada:
-- ANG + libopenshot Windows build;
-- portable clean-machine run;
-- Python binding load in ANG package;
-- 100–300 scene stress;
-- preview/export golden parity;
-- final 21-effect compatibility mapping.
+## Flows yang wajib tercakup
 
-Jangan menyebut engine stabil untuk ANG sampai evidence implementasi nanti lulus.
+- FLOW-001 create project
+- FLOW-002 open existing project
+- FLOW-003 manual edit/timeline
+- FLOW-004 random animation
+- FLOW-005 AI edit/plan/apply/undo
+- FLOW-006 subtitle edit
+- FLOW-007 narration
+- FLOW-008 validation/relink
+- FLOW-009 export
+- FLOW-010 recovery
 
-## UI constraint for next STEP
+## Do not invent
 
-**AAVC UI = VISUAL_CONTRACT 1:1.**
-
-SF-STEP 03 bukan tempat desain baru. Gunakan:
-- AAVC `docs/UI_FREEZE.md`;
-- UI-001..UI-042;
-- AAVC current PySide6 screens/widgets/design tokens;
-- existing workflow behavior.
-
-Setiap perbedaan harus diberi label `DELTA_FROM_AAVC`.
+- No new visual style.
+- No OpenShot/Shotcut/Kdenlive UI.
+- No new product scope.
+- No fake/unsupported controls.
+- No coding.
+- No source copy/fork.
 
 ## Exact next action
 
-Jika owner berkata **"lanjutkan"**, jalankan **SF-STEP 03 — UI/UX Inventory & User Flow** saja.
+Jika owner berkata **"lanjutkan"**, jalankan **SF-STEP 04 — UI Design System & All UI Prompts**.
 
-Output STEP 03:
-- detailed planning DOCX + TXT mirror;
-- screen IDs;
-- state IDs;
-- flow map;
-- interaction inventory;
-- UI reference/image coverage matrix;
-- Product MUST → UI surface mapping;
-- status/handoff update.
+STEP 04 output must include:
+- AAVC-preserved design system;
+- exact per-ID reference recovery register;
+- stable image/prompt list;
+- prompt batches;
+- prompt text for every image that actually requires generation/reconstruction;
+- review criteria.
 
-Setelah STEP 03 selesai, **STOP sebelum STEP 04** sampai owner berkata lanjutkan.
+## NON-NEGOTIABLE HARD STOP
 
-Larangan:
-- no coding;
-- no fork/copy upstream;
-- no UI implementation;
-- no redesign AAVC;
-- no SF-STEP 04 dalam sesi yang sama.
+Setelah **semua prompt gambar UI selesai dibuat**, STOP.
+
+Jangan menjalankan SF-STEP 05 hanya karena owner berkata “lanjutkan”.
+
+Proses baru boleh diteruskan setelah:
+1. semua gambar yang dibutuhkan sudah dibuat/recovered;
+2. semuanya diperiksa;
+3. yang salah direvisi/regenerate;
+4. seluruh gambar final dimasukkan ke satu **DOCX UI Reference final**.
+
+Sampai empat kondisi itu selesai, state proyek tetap berada pada SF-STEP 04 / UI IMAGE REVIEW.

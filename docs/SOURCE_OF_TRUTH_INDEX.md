@@ -17,6 +17,8 @@ Dokumen ini membantu AI/sesi baru menemukan sumber kebenaran proyek tanpa mengan
    - mirror machine-readable: `02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.txt`
    - `03_STEP_02_EXISTING_SOLUTION_GITHUB_DISCOVERY_AI_NGERTI_GEOPOLITIK.docx`
    - mirror machine-readable: `03_STEP_02_EXISTING_SOLUTION_GITHUB_DISCOVERY_AI_NGERTI_GEOPOLITIK.txt`
+   - `04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.docx`
+   - mirror machine-readable: `04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.txt`
 5. `/HANDOFF.md`
 6. `/docs/PROJECT_STATUS.md`
 7. `/docs/DECISIONS_LOCKED.md`
@@ -36,7 +38,8 @@ Jika runtime dapat membaca DOCX, baca DOCX. Jika runtime tidak dapat membaca DOC
 - SF-STEP 00: PASS WITH RECORDED OPEN ITEMS;
 - SF-STEP 01: PASS WITH PROVISIONAL / Product Definition v1.0 BASELINE_CONFIRMED untuk WHAT;
 - SF-STEP 02: PASS WITH PROVISIONAL / BUILD_FROM_SCRATCH_WITH_COMPONENTS;
+- SF-STEP 03: PASS WITH PROVISIONAL / AAVC UI 1:1 inventory complete;
 - UI AAVC: VISUAL_CONTRACT 1:1;
 - code aplikasi: belum ada;
-- next exact action: SF-STEP 03 UI/UX Inventory & User Flow;
+- next exact action: SF-STEP 04 UI Design System & All UI Prompts;
 - repo lama AI-Automatic-Video-Composer: read-only reference.
