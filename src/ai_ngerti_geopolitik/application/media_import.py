@@ -33,9 +33,7 @@ def next_asset_id(state: ProjectState) -> str:
 def _duration_frames(state: ProjectState, result: ProbeResult) -> int:
     if result.media_type == "video":
         if result.fps != state.fps:
-            raise ValueError(
-                f"media FPS {result.fps} does not match project FPS {state.fps}"
-            )
+            raise ValueError(f"media FPS {result.fps} does not match project FPS {state.fps}")
         return result.duration_frames
     if result.media_type == "image":
         return 1

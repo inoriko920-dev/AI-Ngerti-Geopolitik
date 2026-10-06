@@ -37,18 +37,14 @@ class JsonProjectRepository:
         if path.suffix.lower() != ".angproj":
             raise ProjectFormatError("project file must use .angproj")
         data = state.semantic_dict(include_revision=True)
-        payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "
-"
-
+        payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\\n"\n
         temp_path: Path | None = None
         backup_temp: Path | None = None
         try:
             with tempfile.NamedTemporaryFile(
                 "w",
                 encoding="utf-8",
-                newline="
-",
-                dir=path.parent,
+                newline="\\n",\n                dir=path.parent,
                 prefix=f".{path.name}.",
                 suffix=".tmp",
                 delete=False,
@@ -144,7 +140,7 @@ class JsonProjectRepository:
         return state
 
     @staticmethod
-    def _decode_asset(item: dict[str, Any], fps: int) -> Asset:
+    def _decode_asset(item: dict[str, Any], _fps: int) -> Asset:
         path_ref = str(item["path_ref"])
         return Asset(
             asset_id=str(item["asset_id"]),

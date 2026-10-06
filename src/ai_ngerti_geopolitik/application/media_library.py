@@ -61,17 +61,25 @@ class MediaBinController:
         needle = query.text.casefold().strip()
         selected = set(self.selected_asset_ids)
         assets = [
-            asset
-            for asset in self._state_provider().assets
-            if self._matches(asset, query, needle)
+            asset for asset in self._state_provider().assets if self._matches(asset, query, needle)
         ]
-        key_map = {
-            "id": lambda asset: asset.asset_id.casefold(),
-            "name": lambda asset: (asset.source_name or asset.path_ref).casefold(),
-            "type": lambda asset: (asset.media_type, asset.asset_id),
-            "availability": lambda asset: (asset.availability, asset.asset_id),
-        }
-        assets.sort(key=key_map[query.sort_by], reverse=query.descending)
+        if query.sort_by == "id":
+            assets.sort(key=lambda asset: asset.asset_id.casefold(), reverse=query.descending)
+        elif query.sort_by == "name":
+            assets.sort(
+                key=lambda asset: (asset.source_name or asset.path_ref).casefold(),
+                reverse=query.descending,
+            )
+        elif query.sort_by == "type":
+            assets.sort(
+                key=lambda asset: (asset.media_type, asset.asset_id),
+                reverse=query.descending,
+            )
+        else:
+            assets.sort(
+                key=lambda asset: (asset.availability, asset.asset_id),
+                reverse=query.descending,
+            )
         return tuple(
             MediaBinItem(
                 asset_id=asset.asset_id,
