@@ -55,7 +55,7 @@ def create_home_screen(
     title.setAlignment(Qt.AlignmentFlag.AlignCenter)
     title.setStyleSheet("font-size:34px; font-weight:750; margin-top:10px;")
     subtitle = muted_label(
-        "Buat proyek baru atau buka proyek yang sudah ada\\nuntuk mulai mengedit video dengan bantuan AI."
+        "Buat proyek baru atau buka proyek yang sudah ada\\n"\n        "untuk mulai mengedit video dengan bantuan AI."
     )
     subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
     subtitle.setStyleSheet("font-size:15px; color:#64748B;")
