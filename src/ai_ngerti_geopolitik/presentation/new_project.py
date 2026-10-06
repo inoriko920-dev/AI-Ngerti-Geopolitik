@@ -83,7 +83,7 @@ def create_new_project_screen(
     stepper = QHBoxLayout()
     stepper.setSpacing(10)
     steps = [("1", "Scene DOCX", True), ("2", "Folder Aset", False), ("3", "Media", False)]
-    for index, (number, label, active) in enumerate(steps):
+    for index, (number, step_name, active) in enumerate(steps):
         circle = QLabel(number)
         circle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         circle.setFixedSize(36, 36)
@@ -95,10 +95,10 @@ def create_new_project_screen(
                 "border-radius:18px; font-weight:700;"
             )
         )
-        step_label = QLabel(label)
-        step_label.setStyleSheet("font-weight:650; color:#1D4ED8;" if active else "color:#64748B;")
+        step_text_widget: Any = QLabel(step_name)
+        step_text_widget.setStyleSheet("font-weight:650; color:#1D4ED8;" if active else "color:#64748B;")
         stepper.addWidget(circle)
-        stepper.addWidget(step_label)
+        stepper.addWidget(step_text_widget)
         if index < len(steps) - 1:
             line = QFrame()
             line.setFixedHeight(1)
