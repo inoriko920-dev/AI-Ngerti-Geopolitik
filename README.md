@@ -1,38 +1,35 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 08 — S08-T03 FINAL CHECKPOINT — PRODUCT UI BELUM DIMULAI**
+> **STATUS: SF-STEP 08 PASS — NEXT SF-STEP 09 APP SHELL / UI IMPLEMENTATION**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
 Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
-## Foundation evidence
+## Foundation verified
 
-Windows workflow run `37499102659` succeeded end-to-end on CPython 3.12.10.
+Final Windows checkpoint run: `37500196775` — **SUCCESS**.
 
 Verified:
-- real `uv.lock`;
-- Ruff format/lint;
-- mypy;
-- Import Linter;
-- pytest 7 tests;
-- PySide6 Qt smoke;
-- UI references 42/42 SHA-256;
-- secret scans;
-- pip-audit with no known vulnerabilities;
-- PyInstaller onedir foundation build;
-- Windows executable smoke;
-- portable foundation artifact.
+- CPython 3.12.10;
+- uv 0.12.21 + committed `uv.lock`;
+- PySide6 6.11.1;
+- Ruff/mypy/Import Linter;
+- pytest + Qt smoke;
+- UI references 42/42;
+- secret scans + pip-audit;
+- PyInstaller portable foundation build;
+- Windows executable smoke.
 
-The portable foundation is deliberately **not the product editor**. It proves build/package infrastructure only.
+The artifact is a **foundation proof only**, not the finished product editor.
 
 ## Frozen product decisions
 
-- UI = AAVC 1:1, `UI-001..UI-042`.
+- UI = AAVC 1:1, exact `UI-001..UI-042`.
 - prompt regeneration set is VOID.
 - ProjectState + semantic CommandBus/Undo are ANG-owned.
 - media remains behind MediaEnginePort.
 - Gemini later only through validated EditPlan/commands.
 - final distribution target = Windows portable multi-file ZIP.
 
-After the final checkpoint CI is green, SF-STEP 08 closes and the next step is **SF-STEP 09 — App Shell / UI Implementation**.
+**Next: SF-STEP 09 — implement the real PySide6 app shell from frozen AAVC references, with screenshot parity evidence.**

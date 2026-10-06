@@ -1,23 +1,16 @@
 # S08-T03 — WINDOWS CI & PORTABLE PACKAGING SCAFFOLD
 
-Status: **CANDIDATE PASS — final checkpoint run pending after workflow trigger hardening**
+Status: **PASS**
 
-## Successful implementation run
+## Final checkpoint
 
 Workflow: **S08 Windows Foundation**  
-Run ID: `37499102659`  
-Run number: 4  
-Commit: `c708bdf219ca93d31cb2cc5ec7d44692498e2d89`  
+Final run ID: `37500196775`  
+Run number: 5  
+Verified commit: `dcb1326ac2fececdf229190b4d62a5c35cbf33fc`  
 Result: **SUCCESS**
 
-Windows environment:
-- `windows-latest`, x64;
-- CPython **3.12.10**;
-- uv **0.12.21**;
-- PySide6 **6.11.1**;
-- PyInstaller **6.22.3**.
-
-PASS jobs:
+All mandatory jobs PASS:
 - Resolve lock;
 - Quality and architecture;
 - Tests;
@@ -26,55 +19,83 @@ PASS jobs:
 - Security and dependency audit;
 - Portable foundation.
 
-Quality evidence:
-- Ruff format PASS;
-- Ruff lint PASS;
-- mypy PASS — 8 source files, 0 issues;
-- Import Linter PASS — 4 contracts kept, 0 broken;
-- custom architecture verifier PASS;
-- source-of-truth PASS — 70/70.
+## Verified environment
 
-Test/UI evidence:
-- pytest PASS — 7 tests;
-- dedicated Qt lifecycle smoke PASS;
-- frozen UI references PASS — 42/42 SHA-256.
+- GitHub-hosted Windows x64;
+- CPython **3.12.10**;
+- uv **0.12.21**;
+- PySide6 **6.11.1**;
+- PyInstaller **6.22.3**.
 
-Security evidence:
-- detect-secrets scoped source/config scan PASS;
-- custom secret verifier PASS;
-- pip-audit PASS — no known vulnerabilities found.
+## Quality / architecture
 
-Resolved lock:
-- committed `uv.lock`;
-- run-4 lock artifact ID: `11428502590`;
-- artifact wrapper digest: `sha256:641b9efb973707714f9c5a6e2eb6615d06bd95df3b3af75020658a23f3f83d54`;
-- extracted `uv.lock` size: 103,889 bytes;
-- extracted `uv.lock` SHA-256: `6a6776743f3965171b3466bccad5d7c8c2ef968ef5af9b70303d24f21a35b5bd`.
+PASS:
+- Ruff format;
+- Ruff lint;
+- mypy;
+- Import Linter — 4 contracts kept, 0 broken;
+- custom architecture verifier;
+- source-of-truth verifier — 70/70.
 
-Portable foundation:
-- PyInstaller onedir build PASS;
-- Windows executable smoke PASS;
-- output: `AI Ngerti Geopolitik foundation ready; product UI is not implemented in SF-STEP 08.`;
-- inner portable ZIP SHA-256: `03a2aa9dcbe8eb9197ba889630d8b13472f9bec3031cf4559ccf17013323dc0f`;
-- inner portable ZIP size: 8,448,103 bytes;
-- GitHub artifact ID: `11429540449`;
+## Test / UI
+
+PASS:
+- pytest — 7 tests;
+- dedicated PySide6/pytest-qt lifecycle smoke;
+- frozen UI references — 42/42 SHA-256.
+
+## Security
+
+PASS:
+- detect-secrets scoped source/config scan;
+- custom secret-pattern verifier;
+- pip-audit — no known vulnerabilities.
+
+## Lock
+
+The resolver-generated `uv.lock` is committed and checked with `uv lock --check`.
+
+Final-run lock artifact:
+- artifact ID: `11428808891`;
+- wrapper size: 31,078 bytes;
+- wrapper digest: `sha256:cf7864b614e313b8eb417af569e90b747269840d264127881a859ea139ba84db`.
+
+## Portable foundation
+
+Windows build and executable smoke PASS.
+
+Smoke output:
+`AI Ngerti Geopolitik foundation ready; product UI is not implemented in SF-STEP 08.`
+
+Final inner portable ZIP:
+- file: `AI-Ngerti-Geopolitik-Foundation-Windows-x64.zip`;
+- size: **8,449,161 bytes**;
+- SHA-256: `d981fcdec0dd66193d3e1827ea02e6ddf3e5c1a803b1651f0dd8a79a7626cdb8`.
+
+Final GitHub artifact:
+- artifact ID: `11428789310`;
 - artifact name: `AI-Ngerti-Geopolitik-S08-Foundation-Windows-x64`;
-- artifact wrapper size: 8,417,926 bytes;
-- artifact wrapper digest: `sha256:5949a943ff20e9bbc2af58b8c661d80f439575185a8e211fd524c74c8db3a518`.
+- wrapper size: **8,419,032 bytes**;
+- wrapper digest: `sha256:825d603adea1b6dc6a49f9779ccf49b7111220d04846493a1cd12c99a6164faa`.
 
-## Failure history retained
+## Root-cause history
 
-Run 1 (`37497820132`) and run 2 (`37498380436`) failed on real foundation defects; no check was disabled to obtain green. Run 3 (`37498681106`) isolated the last Ruff lint issue. Each root cause was fixed before run 4 achieved full green.
+Earlier runs failed on genuine foundation defects (UI-manifest parsing, formatting/lint, secret-scan scope). No mandatory gate was disabled or broadly ignored. The defects were fixed, then run 4 passed end-to-end. Run 5 re-verified the final workflow-hardening checkpoint and also passed end-to-end.
 
 ## Scope truth
 
-This artifact is **foundation-only**, not the ANG editor:
-- no 42-screen production UI;
-- no libopenshot/MLT production integration;
-- no Gemini editing;
-- no real video render/export feature;
-- no release claim.
+This is **foundation/package evidence only**.
 
-The workflow trigger is now hardened so later status/evidence-only commits do not create meaningless CI loops, while source, tests, configuration, UI references/manifests, planning, dependencies and workflow changes still trigger CI.
+NOT IMPLEMENTED in STEP 08:
+- production AAVC 1:1 app shell/screens;
+- libopenshot/MLT production media integration;
+- Gemini editing;
+- real project video render/export;
+- final product release.
 
-A final workflow run on the workflow-hardening checkpoint is required before closing S08-T03.
+## Gate
+
+**S08-T03 = PASS.**  
+**SF-STEP 08 = PASS.**
+
+Next exact action after owner says `lanjutkan`: **SF-STEP 09 — App Shell / UI Implementation**, starting with the real AAVC-frozen shell using fixture/dummy state. Do not jump directly to engine/Gemini/render feature work.

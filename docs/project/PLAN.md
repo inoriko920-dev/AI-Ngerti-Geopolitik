@@ -1,14 +1,18 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-Active: **SF-STEP 08 / S08-T03 final checkpoint**.
+**SF-STEP 08 = PASS.**
 
 Completed:
-- S08-T01 PASS.
-- S08-T02 foundation completed.
-- S08-T03 implementation run 4 PASS on Windows.
+- source-of-truth + exact UI gate;
+- repository/source/test foundation;
+- resolver-generated committed lock;
+- Windows CI;
+- Qt smoke;
+- architecture/security/UI integrity gates;
+- portable foundation artifact + EXE smoke.
 
-Pending before STEP 08 closes:
-- final CI run after workflow trigger hardening;
-- final status/evidence checkpoint.
+Next: **SF-STEP 09 — App Shell / UI Implementation**.
 
-After that: **SF-STEP 09 — App Shell / UI Implementation** only. STEP 09 begins from frozen AAVC UI references and fixture data; it does not jump directly to media-engine/Gemini feature implementation.
+STEP 09 starts with real PySide6 visual implementation from frozen AAVC references and fixture state. It must produce screenshot evidence and visual comparison before broad feature work.
+
+Do not skip directly to engine, Gemini, or final export implementation.

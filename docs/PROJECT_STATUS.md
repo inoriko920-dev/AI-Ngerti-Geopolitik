@@ -1,41 +1,50 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Phase:** SF-STEP 08 — final S08-T03 checkpoint  
+**Phase completed:** SF-STEP 08 — Repository Foundation + UI Reference + CI  
+**SF-STEP 08 gate:** **PASS**  
 **S08-T01:** PASS  
 **S08-T02:** foundation complete  
-**S08-T03:** **CANDIDATE PASS** — run 4 fully green; final workflow-hardening run pending  
-**Product UI/features:** NOT STARTED
+**S08-T03:** PASS  
+**Next exact STEP:** SF-STEP 09 — App Shell / UI Implementation  
+**Product UI/features:** NOT YET IMPLEMENTED
 
-## Proven Windows foundation
+## Final Windows evidence
 
-Successful run: `37499102659` on commit `c708bdf219ca93d31cb2cc5ec7d44692498e2d89`.
+Final checkpoint:
+- run ID: `37500196775`;
+- verified commit: `dcb1326ac2fececdf229190b4d62a5c35cbf33fc`;
+- conclusion: **SUCCESS**.
 
 PASS:
-- CPython 3.12.10 + uv 0.12.21 frozen environment;
+- CPython 3.12.10 + uv 0.12.21;
 - real committed `uv.lock`;
-- Ruff format + lint;
+- Ruff format/lint;
 - mypy;
-- Import Linter 4/4 contracts;
-- custom architecture verifier;
+- Import Linter 4/4;
+- architecture verifier;
 - source-of-truth 70/70;
-- pytest 7 tests;
-- PySide6/pytest-qt Windows smoke;
-- UI reference 42/42 SHA-256;
-- detect-secrets + custom secret gate;
+- pytest 7;
+- PySide6 Qt smoke;
+- UI reference SHA 42/42;
+- secret scans;
 - pip-audit: no known vulnerabilities;
 - PyInstaller onedir foundation build;
-- Windows EXE smoke;
-- portable foundation artifact upload.
+- Windows executable smoke;
+- portable artifact upload.
 
-Portable inner ZIP SHA-256:
-`03a2aa9dcbe8eb9197ba889630d8b13472f9bec3031cf4559ccf17013323dc0f`.
+Final portable foundation inner ZIP:
+- size: 8,449,161 bytes;
+- SHA-256: `d981fcdec0dd66193d3e1827ea02e6ddf3e5c1a803b1651f0dd8a79a7626cdb8`.
 
-Evidence: `docs/evidence/packaging/S08_T03_WINDOWS_CI.md`.
+Evidence:
+`docs/evidence/packaging/S08_T03_WINDOWS_CI.md`.
 
-## Important scope
+## Scope truth
 
-The artifact is only a foundation proof. It is not the final app, has no product UI, no media engine, no Gemini editing and no real render/export.
+The Windows artifact is a **foundation smoke**, not the product editor. No real ANG app shell/screens, media engine, Gemini edit workflow, or video render/export is claimed complete.
 
 ## Exact next action
 
-Inspect the final CI run triggered by this workflow-hardening checkpoint. If all mandatory jobs PASS, close S08-T03 + SF-STEP 08 as PASS and stop before SF-STEP 09.
+When owner says **"lanjutkan"**, execute **SF-STEP 09 only — App Shell / UI Implementation**.
+
+First STEP 09 wave must implement the actual PySide6 shell from the frozen AAVC references using fixture/dummy state and produce actual-vs-reference screenshot evidence. Do not jump to full media-engine/Gemini/render features.

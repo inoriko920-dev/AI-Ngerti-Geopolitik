@@ -19,17 +19,16 @@
 12. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
 13. actual source/tests/config/workflows/evidence.
 
-DOCX planning/reference stays in repo; TXT mirror is the machine-readable fallback.
+DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 
 ## Current state
 
-- STEP 00–07 planning present.
-- S08-T01 PASS.
-- exact UI raw 42/42 present + verified.
-- S08-T02 foundation present.
-- S08-T03 run 4 fully green on Windows; final checkpoint CI pending after workflow trigger hardening.
-- real uv.lock committed.
-- portable foundation scaffold proven; this is not the product editor.
-- product UI/features NOT STARTED.
-- 42-prompt UI regeneration VOID / DO NOT USE.
-- AAVC repo read-only.
+- STEP 00–07 planning: present.
+- SF-STEP 08: **PASS**.
+- UI raw references: 42/42 exact + verified.
+- repository/toolchain/Windows CI foundation: verified.
+- portable foundation smoke: verified.
+- product UI/features: NOT YET IMPLEMENTED.
+- next exact STEP: **SF-STEP 09 — App Shell / UI Implementation**.
+- 42-prompt UI regeneration: VOID / DO NOT USE.
+- AAVC repo: read-only.
