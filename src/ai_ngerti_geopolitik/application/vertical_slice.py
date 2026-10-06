@@ -14,6 +14,10 @@ from ai_ngerti_geopolitik.application.commands import (
     SplitClipCommand,
     TrimClipCommand,
 )
+from ai_ngerti_geopolitik.application.media_import import (
+    build_asset_from_probe,
+    next_asset_id,
+)
 from ai_ngerti_geopolitik.application.ports import (
     CancellationToken,
     ExportResult,
@@ -23,7 +27,7 @@ from ai_ngerti_geopolitik.application.ports import (
     ProjectRepositoryPort,
 )
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentType
-from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, ProjectState
+from ai_ngerti_geopolitik.domain import Clip, FrameTime, ProjectState
 
 
 class VerticalSliceError(RuntimeError):
@@ -79,9 +83,6 @@ class VerticalSliceSession:
     def state(self) -> ProjectState:
         return self.bus.state
 
-    def _next_asset_id(self) -> str:
-        return f"A{len(self.state.assets) + 1:03d}"
-
     def _next_clip_id(self) -> str:
         count = sum(len(track.clips) for track in self.state.tracks)
         return f"C{count + 1:03d}"
@@ -98,21 +99,11 @@ class VerticalSliceSession:
 
     def import_media(self, path: Path) -> str:
         result = self.probe.probe(path)
-        if result.fps != self.state.fps:
-            raise VerticalSliceError(
-                f"fixture FPS {result.fps} does not match project FPS {self.state.fps}"
-            )
-        asset_id = self._next_asset_id()
-        asset = Asset(
-            asset_id=asset_id,
-            path_ref=str(result.path),
-            media_type="video",
-            duration=FrameTime(result.duration_frames, result.fps),
-            width=result.width,
-            height=result.height,
-            has_audio=result.has_audio,
-            fingerprint_sha256=result.fingerprint_sha256,
-        )
+        asset_id = next_asset_id(self.state)
+        try:
+            asset = build_asset_from_probe(self.state, result, asset_id)
+        except ValueError as exc:
+            raise VerticalSliceError(str(exc)) from exc
         self._execute("Import media", ImportAssetCommand(asset))
         return asset_id
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from ai_ngerti_geopolitik.application.commands import (
     CommandBatch,
@@ -19,7 +20,7 @@ class MediaStatusService:
     def refresh(self, session: CommandSession) -> tuple[str, ...]:
         changed: list[str] = []
         for asset in session.state.assets:
-            status = self.availability.status(__import__("pathlib").Path(asset.path_ref))
+            status = self.availability.status(Path(asset.path_ref))
             if status == asset.availability:
                 continue
             batch = CommandBatch(

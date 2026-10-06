@@ -60,6 +60,14 @@ def _seconds_string(frames: int, fps: int) -> str:
     return f"{frames / fps:.6f}"
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class ProcessResult:
     stdout: str
@@ -147,32 +155,81 @@ class FfprobeMediaProbe:
             ),
             None,
         )
-        if video is None:
-            raise MediaToolError("video stream missing")
-        rate = str(video.get("avg_frame_rate") or video.get("r_frame_rate") or "0/1")
-        fps_fraction = _fraction(rate)
-        if fps_fraction.denominator != 1:
-            raise MediaToolError(f"STEP 10 requires integer FPS, got {rate}")
-        fps = fps_fraction.numerator
-        format_data = data.get("format")
-        duration = video.get("duration") if isinstance(video, dict) else None
-        if duration is None and isinstance(format_data, dict):
-            duration = format_data.get("duration")
-        if duration is None:
-            raise MediaToolError("media duration missing")
-        fingerprint = hashlib.sha256(path.read_bytes()).hexdigest()
-        return ProbeResult(
-            path=path,
-            duration_frames=_frames_from_seconds(str(duration), fps),
-            fps=fps,
-            width=int(video["width"]),
-            height=int(video["height"]),
-            has_audio=any(
-                isinstance(stream, dict) and stream.get("codec_type") == "audio"
+        audio = next(
+            (
+                stream
                 for stream in streams
+                if isinstance(stream, dict) and stream.get("codec_type") == "audio"
             ),
-            fingerprint_sha256=fingerprint,
+            None,
         )
+        format_data = data.get("format")
+        format_duration = format_data.get("duration") if isinstance(format_data, dict) else None
+        fingerprint = _sha256_file(path)
+        file_size = path.stat().st_size
+        image_suffixes = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
+
+        if video is not None and path.suffix.lower() in image_suffixes:
+            return ProbeResult(
+                path=path,
+                duration_frames=1,
+                fps=0,
+                width=int(video["width"]),
+                height=int(video["height"]),
+                has_audio=False,
+                fingerprint_sha256=fingerprint,
+                media_type="image",
+                duration_seconds=0.0,
+                file_size=file_size,
+            )
+
+        if video is not None:
+            rate = str(video.get("avg_frame_rate") or video.get("r_frame_rate") or "0/1")
+            fps_fraction = _fraction(rate)
+            if fps_fraction.denominator != 1:
+                raise MediaToolError(f"current project model requires integer FPS, got {rate}")
+            fps = fps_fraction.numerator
+            duration = video.get("duration")
+            if duration is None:
+                duration = format_duration
+            if duration is None:
+                raise MediaToolError("media duration missing")
+            duration_seconds = float(duration)
+            return ProbeResult(
+                path=path,
+                duration_frames=_frames_from_seconds(str(duration), fps),
+                fps=fps,
+                width=int(video["width"]),
+                height=int(video["height"]),
+                has_audio=audio is not None,
+                fingerprint_sha256=fingerprint,
+                media_type="video",
+                duration_seconds=duration_seconds,
+                file_size=file_size,
+                sample_rate=int(audio.get("sample_rate", 0)) if isinstance(audio, dict) else 0,
+            )
+
+        if audio is not None:
+            duration = audio.get("duration")
+            if duration is None:
+                duration = format_duration
+            if duration is None:
+                raise MediaToolError("audio duration missing")
+            return ProbeResult(
+                path=path,
+                duration_frames=0,
+                fps=0,
+                width=0,
+                height=0,
+                has_audio=True,
+                fingerprint_sha256=fingerprint,
+                media_type="audio",
+                duration_seconds=float(duration),
+                file_size=file_size,
+                sample_rate=int(audio.get("sample_rate", 0)),
+            )
+
+        raise MediaToolError("supported video/audio/image stream missing")
 
 
 class MutableCancellationToken:
