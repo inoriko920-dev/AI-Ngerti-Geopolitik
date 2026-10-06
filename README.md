@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION / DOCUMENTATION FOUNDATION — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION — SF-STEP 00 PASS, NEXT SF-STEP 01 — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -27,6 +27,6 @@ Dokumen perencanaan, Software Factory, status STEP, keputusan terkunci, dan hand
 - Belum ada source code aplikasi.
 - Belum ada implementasi UI.
 - Belum ada build/release.
-- Formal Software Factory belum boleh dilompati.
+- SF-STEP 00 Project Intake sudah PASS. Exact next action: SF-STEP 01 Product Definition setelah perintah pengguna.
 
 Lihat `HANDOFF.md` dan `docs/PROJECT_STATUS.md` untuk posisi terakhir.
