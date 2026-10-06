@@ -53,8 +53,8 @@ def create_new_project_screen(
         ("⚙", "Pengaturan", False),
         ("?", "Bantuan", False),
     ]
-    for icon, text, active in items:
-        item = QLabel(f"{icon}   {text}")
+    for icon, item_text, active in items:
+        item = QLabel(f"{icon}   {item_text}")
         item.setMinimumHeight(44)
         if active:
             item.setStyleSheet(
@@ -95,10 +95,12 @@ def create_new_project_screen(
                 "border-radius:18px; font-weight:700;"
             )
         )
-        text = QLabel(label)
-        text.setStyleSheet("font-weight:650; color:#1D4ED8;" if active else "color:#64748B;")
+        step_label = QLabel(label)
+        step_label.setStyleSheet(
+            "font-weight:650; color:#1D4ED8;" if active else "color:#64748B;"
+        )
         stepper.addWidget(circle)
-        stepper.addWidget(text)
+        stepper.addWidget(step_label)
         if index < len(steps) - 1:
             line = QFrame()
             line.setFixedHeight(1)
