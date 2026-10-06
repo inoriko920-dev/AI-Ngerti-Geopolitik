@@ -1,56 +1,37 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Phase:** SF-STEP 08  
-**Completed:** S08-T01 PASS; S08-T02 PASS_WITH_PROVISIONAL  
-**Next exact task:** S08-T03 — Windows CI & Portable Packaging Scaffold  
-**Product features:** NOT STARTED
+**Phase:** SF-STEP 08 / S08-T03 final checkpoint  
+**Last fully green implementation run:** `37499102659`  
+**Green commit:** `c708bdf219ca93d31cb2cc5ec7d44692498e2d89`  
+**Next exact action:** inspect final workflow-hardening CI run; then close STEP 08 if green.
 
-## Read first
+## Proven in run 4
 
-AGENTS -> Software Factory -> planning -> docs/project contracts -> TASKS -> S08 evidence -> status/handoff -> current source/tests.
+All mandatory jobs PASS:
+- Resolve lock
+- Quality and architecture
+- Tests
+- Qt smoke
+- UI reference integrity
+- Security and dependency audit
+- Portable foundation
 
-## S08-T02 result
-
-Foundation exists at `src/ai_ngerti_geopolitik/` with bootstrap/domain/application/presentation/infrastructure boundaries and a truthful no-feature bootstrap.
-
-Verifiers:
-- `verify_architecture.py`
-- `verify_source_of_truth.py`
-- `verify_ui_reference_manifest.py`
-- `verify_no_secrets.py`
-- `run_foundation_checks.py`
-
-Local PASS:
-- entrypoint;
-- 6 pytest tests;
-- architecture + deliberate-violation rejection;
-- UI 42/42 SHA;
-- source-of-truth;
-- secret scan;
-- compileall.
-
-Evidence: `docs/evidence/tests/S08_T02_FOUNDATION.md`.
-
-## Target toolchain
-
-- CPython 3.12.10 x64
+Important results:
+- Python 3.12.10
+- uv 0.12.21
 - PySide6 6.11.1
-- uv resolver/lock family
-- candidate direct quality/test pins in pyproject
+- PyInstaller 6.22.3
+- pytest 7 PASS
+- Import Linter 4 kept / 0 broken
+- UI references 42/42 PASS
+- pip-audit: no known vulnerabilities
+- portable EXE smoke PASS
+- portable inner ZIP SHA256 `03a2aa9dcbe8eb9197ba889630d8b13472f9bec3031cf4559ccf17013323dc0f`
 
-## Provisional
+## Scope
 
-Current runner has Python 3.13.5 and no dependency network. Therefore no truthful uv.lock or target-Windows third-party-tool evidence exists. Never fabricate the lock.
+No product UI, media engine feature stack, Gemini editing or real render/export has been implemented.
 
-## Next exact action
+## After final checkpoint passes
 
-On **"lanjutkan"**, run S08-T03 only:
-1. Windows CI foundation on Python 3.12.10;
-2. install/pin uv and resolve dependencies;
-3. generate/commit real `uv.lock`;
-4. run quality/type/import/test/security/UI gates;
-5. add minimal portable multi-file foundation scaffold;
-6. record real workflow/artifact evidence;
-7. stop before STEP 09.
-
-Do not implement product UI, media-engine features, Gemini editing or real render/export.
+Mark S08-T03 + SF-STEP 08 PASS. The next owner command `lanjutkan` will enter **SF-STEP 09 — App Shell / UI Implementation**, starting with the real AAVC-frozen shell using fixture data. Do not begin STEP 09 automatically.

@@ -3,6 +3,14 @@ name: S08 Windows Foundation
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/evidence/**"
+      - "docs/PROJECT_STATUS.md"
+      - "docs/project/PLAN.md"
+      - "docs/project/TASKS.md"
+      - "HANDOFF.md"
+      - "README.md"
+      - "docs/SOURCE_OF_TRUTH_INDEX.md"
   workflow_dispatch:
 
 permissions:

@@ -205,3 +205,18 @@ STEP 08 task order is locked:
 3. `S08-T03` Windows CI & Portable Packaging Scaffold.
 
 The exact full-resolution UI-001..UI-042 raw/reference set must be committed and hash-verified in S08-T01 **before production source coding**. STEP 07 does not claim source/test/CI/build implementation.
+
+
+## D-021 — Verified STEP 08 Windows toolchain baseline
+S08-T03 Windows CI verifies the foundation toolchain baseline:
+- CPython 3.12.10 x64;
+- uv 0.12.21 with committed resolver-generated `uv.lock`;
+- PySide6 6.11.1;
+- Ruff 0.16.10;
+- mypy 2.4.0;
+- Import Linter 2.15;
+- pytest 9.1.1 + pytest-qt 4.5.0;
+- detect-secrets 1.5.0 + pip-audit 2.10.1;
+- PyInstaller 6.22.3 onedir for the **foundation packaging scaffold**.
+
+This locks the STEP 08 foundation toolchain, not the final media-engine/native dependency set. A material toolchain switch requires evidence and review.

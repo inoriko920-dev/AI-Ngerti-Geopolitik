@@ -1,24 +1,22 @@
 # TASKS
 
 ## S08-T01 — DONE / PASS
-Exact planning/reference pack and 42/42 raw frozen UI references are in GitHub and verified.
+Source-of-truth and exact frozen UI references are committed and verified 42/42.
 
 ## S08-T02 — DONE / PASS_WITH_PROVISIONAL
-Foundation source/package boundaries, test harness, architecture verifier, UI SHA verifier, source-of-truth verifier, secret verifier, and concise operational docs are committed.
+Repository/source/test/tool foundation exists and local non-target checks passed. Its former Windows/toolchain provisional items are now resolved by S08-T03 CI evidence.
 
-Verified locally:
-- package entrypoint smoke;
-- 6 pytest tests;
-- architecture boundary + deliberate violation detection;
-- UI reference SHA 42/42;
-- source-of-truth existence;
-- secret-pattern scan;
-- Python compileall.
+## S08-T03 — ACTIVE / CANDIDATE PASS
+Run 4 (`37499102659`) is fully green on Windows x64 / Python 3.12.10:
+- lock PASS;
+- quality/architecture PASS;
+- tests PASS;
+- Qt smoke PASS;
+- UI 42/42 PASS;
+- security/audit PASS;
+- portable foundation build + executable smoke PASS.
 
-Provisional:
-- target CPython 3.12.10 environment was unavailable locally;
-- `uv.lock` was not fabricated;
-- Ruff/mypy/Import Linter/detect-secrets/pip-audit installed-tool runs remain for Windows CI/toolchain resolution.
+A final checkpoint CI run is required because this task also hardens the workflow trigger. After that run succeeds, mark S08-T03 and SF-STEP 08 PASS.
 
-## S08-T03 — READY
-Windows CI & Portable Packaging Scaffold. Start by resolving Python 3.12.10 with uv, generate/commit a real `uv.lock`, run mandatory quality/test/import/security/UI gates on Windows, then build a truthful portable foundation scaffold. No final-release claim.
+## NEXT AFTER SF-STEP 08 PASS
+SF-STEP 09 — App Shell / UI Implementation. First wave must implement the real AAVC-frozen shell with fixture/dummy data, not engine/Gemini/render features.

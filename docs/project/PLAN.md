@@ -1,10 +1,14 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-Active Software Factory phase: SF-STEP 08.
+Active: **SF-STEP 08 / S08-T03 final checkpoint**.
 
-Serial tasks:
-- S08-T01 Source-of-Truth & Exact UI Reference Gate — PASS.
-- S08-T02 Repository Skeleton, Toolchain & Architecture Fitness — PASS_WITH_PROVISIONAL.
-- S08-T03 Windows CI & Portable Packaging Scaffold — NEXT.
+Completed:
+- S08-T01 PASS.
+- S08-T02 foundation completed.
+- S08-T03 implementation run 4 PASS on Windows.
 
-Do not start STEP 09 until the full STEP 08 gate is complete.
+Pending before STEP 08 closes:
+- final CI run after workflow trigger hardening;
+- final status/evidence checkpoint.
+
+After that: **SF-STEP 09 — App Shell / UI Implementation** only. STEP 09 begins from frozen AAVC UI references and fixture data; it does not jump directly to media-engine/Gemini feature implementation.

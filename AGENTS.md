@@ -35,19 +35,32 @@ Jika DOCX tidak dapat dibaca, gunakan TXT mirror di folder yang sama.
 - No plaintext secret, hardcoded developer path, fake feature, fake green, atau static-image runtime UI.
 - Material architecture exception requires ADR/Astra review.
 
-## Foundation commands verified S08-T02
+## Canonical verified foundation commands
+
+Verified on GitHub Actions Windows x64 / CPython 3.12.10:
 
 ```text
-PYTHONPATH=src python -m ai_ngerti_geopolitik
-PYTHONPATH=src python -m pytest -q
-python scripts/verify/run_foundation_checks.py --root .
-python scripts/verify/verify_architecture.py --root .
-python scripts/verify/verify_ui_reference_manifest.py --root .
-python scripts/verify/verify_no_secrets.py --root .
-python -m compileall -q src
+uv sync --frozen --group quality --group test --group package
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy
+uv run lint-imports
+uv run pytest -q
+uv run pytest tests/qt -q
+uv run python scripts/verify/verify_architecture.py --root .
+uv run python scripts/verify/verify_source_of_truth.py --root .
+uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+uv run python scripts/verify/verify_no_secrets.py --root .
+uv export --frozen --all-groups --no-hashes --no-emit-project --output-file requirements-audit.txt
+uv run pip-audit -r requirements-audit.txt
 ```
 
-uv/Ruff/mypy/Import Linter/detect-secrets/pip-audit commands become fully authoritative after S08-T03 produces the real lock and Windows CI evidence.
+Portable foundation scaffold:
+
+```text
+powershell -ExecutionPolicy Bypass -File scripts/package/build_foundation.ps1
+powershell -ExecutionPolicy Bypass -File scripts/package/smoke_foundation.ps1
+```
 
 ## Astra review triggers
 
