@@ -13,6 +13,7 @@ from ai_ngerti_geopolitik.domain import (
     Asset,
     Clip,
     FrameTime,
+    Marker,
     ProjectSettings,
     ProjectState,
     Track,
@@ -128,6 +129,18 @@ class JsonProjectRepository:
                     clips=clips,
                 )
             )
+        markers = tuple(
+            Marker(
+                marker_id=str(item["marker_id"]),
+                frame=FrameTime(
+                    int(item["frame"]["frames"]),
+                    int(item["frame"]["fps"]),
+                ),
+                label=str(item["label"]),
+                marker_type=str(item.get("marker_type", "marker")),
+            )
+            for item in raw.get("markers", [])
+        )
         state = ProjectState(
             project_id=str(raw["project_id"]),
             name=str(raw["name"]),
@@ -136,6 +149,7 @@ class JsonProjectRepository:
             revision=int(raw["revision"]),
             assets=assets,
             tracks=tuple(tracks),
+            markers=markers,
             settings=settings,
         )
         state.validate()
