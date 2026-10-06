@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION / UI HARD STOP — SF-STEP 04 PASS WITH PROVISIONAL — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION — SF-STEP 05 PASS WITH PROVISIONAL / UI FROZEN, NEXT SF-STEP 06 — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -55,3 +55,13 @@ SF-STEP 03 registers 17 major surfaces, 15 states, 16 core flows, and **42/42 AA
 ## SF-STEP 04 UI reference adoption
 
 UIB-ANG-v1.0 selesai. Semua 42 AAVC frozen references diadopsi 1:1 dan berstatus APPROVED_FOR_FREEZE. Full visual reference DOCX telah lulus render QA 43 halaman. Repo menyimpan connector-safe reference index + SHA manifest. Exact full-resolution visual binary/raw pack tetap merupakan mandatory pre-coding gate.
+
+
+## UI Freeze baseline
+
+SF-STEP 05 is complete:
+- FREEZE-A / SPEC_FROZEN
+- FREEZE-B / RASTER_FROZEN, AAVC UI-001..UI-042 = 42/42
+- FREEZE-C / IMPLEMENTATION_CONFORMED is future STEP 09/13
+
+The accidentally created ANG 42-prompt image batch is VOID and must not be used. Baseline UI is direct AAVC 1:1 reuse. Production coding remains blocked until the exact full-resolution UI reference pack is committed/verified and STEP 06–07 are complete.

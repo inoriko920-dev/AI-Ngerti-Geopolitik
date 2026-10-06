@@ -21,6 +21,8 @@ Dokumen ini membantu AI/sesi baru menemukan sumber kebenaran proyek tanpa mengan
    - mirror machine-readable: `04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.txt`
    - `05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.docx`
    - mirror machine-readable: `05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.txt`
+   - `06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx`
+   - mirror machine-readable: `06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.txt`
    - `/docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
    - `/docs/ui_reference/UI_REFERENCE_MANIFEST.md`
 5. `/HANDOFF.md`
@@ -44,8 +46,9 @@ Jika runtime dapat membaca DOCX, baca DOCX. Jika runtime tidak dapat membaca DOC
 - SF-STEP 02: PASS WITH PROVISIONAL / BUILD_FROM_SCRATCH_WITH_COMPONENTS;
 - SF-STEP 03: PASS WITH PROVISIONAL / AAVC UI 1:1 inventory complete;
 - SF-STEP 04: PASS WITH PROVISIONAL / UIB-ANG-v1.0 / 42/42 APPROVED_FOR_FREEZE;
+- SF-STEP 05: PASS WITH PROVISIONAL / FREEZE-A SPEC_FROZEN + FREEZE-B RASTER_FROZEN 42/42;
 - UI AAVC: VISUAL_CONTRACT 1:1;
 - code aplikasi: belum ada;
-- HARD STOP: SF-STEP 04 complete;
-- next exact action after a NEW explicit owner continuation: SF-STEP 05 UI Freeze & Product Blueprint;
+- UI baseline prompt regeneration: VOID / DO NOT USE; direct AAVC reuse only;
+- next exact action after a NEW explicit owner continuation: SF-STEP 06 Architecture & Technology Decision;
 - repo lama AI-Automatic-Video-Composer: read-only reference.

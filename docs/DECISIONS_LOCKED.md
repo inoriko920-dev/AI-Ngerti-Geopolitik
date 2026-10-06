@@ -141,3 +141,20 @@ Keputusan:
 - full-resolution Final UI Reference DOCX telah dibuat dan QA 43 halaman;
 - repository menyimpan connector-safe reference index + SHA manifest;
 - **exact full-resolution visual binary/raw pack tetap mandatory pre-coding gate** sampai benar-benar berada di repo dan diverifikasi.
+
+
+## D-019 — SF-STEP 05 UI Freeze
+SF-STEP 05 membekukan UI ANG pada dua level aktif:
+- **FREEZE-A / SPEC_FROZEN:** shell hierarchy, screen/state IDs, design tokens, component/control semantics, copy/status language, manual/AI behavior, timeline/validation/render/recovery UX.
+- **FREEZE-B / RASTER_FROZEN:** AAVC canonical `UI-001..UI-042`, 42/42, sebagai visual baseline ANG 1:1.
+
+`FREEZE-C / IMPLEMENTATION_CONFORMED` baru dinilai pada STEP 09/13 setelah aplikasi nyata dirender dan dibandingkan terhadap FREEZE-A + FREEZE-B.
+
+Owner correction yang dikunci:
+- file/ZIP **42 prompt UI ANG** yang sempat dibuat setelah STEP 04 adalah **VOID / NON-AUTHORITATIVE / DO NOT USE**;
+- baseline ANG **tidak memerlukan prompt baru dan tidak memerlukan image generation ulang** untuk UI-001..UI-042;
+- prompt/gambar baru hanya boleh dibuat untuk true ANG-only visible delta yang belum memiliki reference AAVC, memakai `UI-ANG-Dxx` + change record + review;
+- implementer dilarang redesign hanya karena framework/engine berbeda;
+- runtime wajib real interactive widgets; PNG reference tidak boleh dijadikan static UI.
+
+Gate STEP 05 = **PASS_WITH_PROVISIONAL**. Planning STEP 06 boleh dimulai. Production coding tetap diblokir sampai exact full-resolution UI visual/reference pack benar-benar berada di repo dan diverifikasi, selain gate STEP 06–07.

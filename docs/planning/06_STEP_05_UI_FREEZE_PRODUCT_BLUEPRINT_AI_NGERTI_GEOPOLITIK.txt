@@ -1,0 +1,1200 @@
+AI NGERTI GEOPOLITIK | SOFTWARE FACTORY | SF-STEP 05
+AI NGERTI GEOPOLITIK
+SF-STEP 05 — UI FREEZE & PRODUCT BLUEPRINT
+Specification Freeze • Raster Freeze • Screen & Control Contract • Change Governance
+	Field
+	Nilai
+
+	Document ID
+	ANG-SF-STEP05-UI-FREEZE-PB-v1.0
+
+	Tanggal
+	06 Oktober 2026
+
+	Peran aktif
+	ASTRA
+
+	Repo baseline
+	main @ 4f78854f126d2254a0c18f173c51fcbc806cb807
+
+	UI Bible
+	UIB-ANG-v1.0
+
+	Visual source
+	AAVC UIF-AAVC-v1.0 / UI-001..UI-042
+
+	Gate
+	PASS_WITH_PROVISIONAL
+
+	Freeze A
+	SPEC_FROZEN — PASS
+
+	Freeze B
+	RASTER_FROZEN — PASS, 42/42
+
+	Freeze C
+	IMPLEMENTATION_CONFORMED — FUTURE STEP 09/13
+
+	Coding
+	FORBIDDEN
+
+	Next
+	SF-STEP 06 — Architecture & Technology Decision
+
+
+
+OWNER CORRECTION LOCKED
+Paket 42 prompt gambar yang sempat dibuat setelah STEP 04 adalah NON-AUTHORITATIVE / VOID. ANG tidak membuat ulang UI AAVC. Baseline resmi adalah 42 visual AAVC yang sudah ada dan direuse 1:1. Prompt baru hanya boleh ada untuk true ANG-only visual delta yang belum mempunyai reference AAVC.
+
+0. Tujuan, Baseline, dan Batas STEP
+STEP 05 mengubah hasil STEP 03-04 menjadi blueprint implementasi UI yang stabil. Tujuannya bukan menambah ide visual, melainkan membekukan hierarchy, layout, behavior, copy, state, dan reference supaya implementer berikutnya tidak melakukan redesign diam-diam.
+Membekukan AAVC 1:1 sebagai visual/workflow authority untuk ANG.
+Membekukan hubungan Screen ID <-> UI reference <-> state <-> interaction <-> control semantics.
+Membedakan bagian immutable, resizable/adaptive, dan provisional teknis.
+Mengunci kebijakan manual UI dan AI Agent agar menuju semantic command layer yang sama.
+Menentukan change-control pasca-freeze dan future implementation-conformance gate.
+Tidak memilih framework/engine/detail architecture — itu milik SF-STEP 06.
+Tidak menulis source code, tidak fork/copy upstream, tidak membuat build.
+1. Model Freeze — Tiga Level
+	Level
+	Nama
+	Isi
+	Status
+
+	FREEZE-A
+	SPEC_FROZEN
+	Tokens, shell hierarchy, screens/states, component/control semantics, copy/status language, AI/manual behavior.
+	ACTIVE / PASS
+
+	FREEZE-B
+	RASTER_FROZEN
+	AAVC UI-001..UI-042, 42/42 approved references + SHA-256 manifest.
+	ACTIVE / PASS
+
+	FREEZE-C
+	IMPLEMENTATION_CONFORMED
+	Screenshot runtime ANG dibandingkan terhadap FREEZE-A + FREEZE-B, termasuk interaction QA.
+	FUTURE — STEP 09/13
+
+
+
+STEP 06-08 wajib menganggap FREEZE-A dan FREEZE-B sebagai source-of-truth. Framework/engine boleh dipilih berdasarkan kualitas teknis, tetapi tidak boleh mengubah visual hierarchy hanya agar implementasi lebih mudah.
+2. Authority Order untuk UI Freeze
+	Priority
+	Authority
+	Rule
+
+	1
+	Instruksi owner terbaru
+	UI ANG = copy AAVC sedekat mungkin 1:1; tidak perlu prompt/generate ulang.
+
+	2
+	D-015 + D-018
+	VISUAL_CONTRACT + UIB-ANG-v1.0; 42/42 approved.
+
+	3
+	AAVC docs/UI_FREEZE.md
+	UIF-AAVC-v1.0; UI-001..042; 1920×1080; Indonesian; light white/blue.
+
+	4
+	AAVC 42 canonical PNG
+	Raster authority untuk geometry/hierarchy/state presentation.
+
+	5
+	AAVC presentation source + design_tokens.py
+	Resolver bila generated sample text/icon collision tidak konsisten.
+
+	6
+	STEP 01-03 ANG
+	Product behavior, screen/state/flow/requirement traceability.
+
+	7
+	Generated sample text/content
+	Flexible; tidak lebih authoritative daripada product/source contract.
+
+
+
+3. Correction Register — Prompt Batch yang Dibatalkan
+Setelah STEP 04 selesai, sempat dibuat ZIP “AI_NGERTI_GEOPOLITIK_42_UI_PROMPTS_5_BATCH.zip” berdasarkan permintaan batch 10 prompt. Owner kemudian mengoreksi bahwa hal itu tidak perlu karena UI seharusnya langsung dicopy dari AAVC.
+	Item
+	Keputusan Freeze
+
+	42 UI prompt ZIP
+	VOID / NON-AUTHORITATIVE / DO NOT USE
+
+	Prompt UI-001..UI-042 baru
+	NOT REQUIRED
+
+	Image generation ANG baseline
+	NOT REQUIRED
+
+	Canonical raster baseline
+	AAVC UI-001..UI-042
+
+	Future prompt
+	Hanya UI-ANG-Dxx untuk visible ANG-only delta yang benar-benar tidak ada di AAVC
+
+
+
+Koreksi ini tidak mengurangi coverage. Justru 42 raster AAVC yang sudah direview adalah target paling tepat untuk requirement 1:1. Re-generation akan menciptakan visual drift dan dianggap pelanggaran freeze.
+4. Product / UX Invariants yang Dibekukan
+	ID
+	Invariant
+
+	INV-001
+	ANG adalah desktop editor/automation workflow geopolitik/dokumenter Windows, bukan web app.
+
+	INV-002
+	AAVC shell/hierarchy/visual language direuse 1:1; branding berubah menjadi AI Ngerti Geopolitik.
+
+	INV-003
+	Manual editing tetap usable tanpa Gemini.
+
+	INV-004
+	AI Agent bukan generic chatbot; AI menghasilkan validated Edit Plan/Commands.
+
+	INV-005
+	Manual dan AI menuju command/history layer yang sama; perubahan material undoable.
+
+	INV-006
+	Tidak ada fake controls/capabilities.
+
+	INV-007
+	Scene DOCX + Axxx + SINGLE/DOUBLE tetap first-class workflow.
+
+	INV-008
+	Timeline, preview, inspector, subtitle, narration, validation/relink, export/recovery tetap visible product surfaces.
+
+	INV-009
+	Credential secret tidak pernah ditampilkan raw di UI/log/reference.
+
+	INV-010
+	Raster reference adalah target implementasi, bukan runtime PNG screen.
+
+	INV-011
+	Engine internals tidak boleh memaksa redesign user-facing.
+
+	INV-012
+	Status/error/loading/success harus factual dan actionable.
+
+	INV-013
+	UI changes pasca-freeze wajib change record + impact analysis.
+
+	INV-014
+	UI copy utama Bahasa Indonesia; istilah teknis familiar boleh tetap.
+
+	INV-015
+	Target canonical parity viewport 1920×1080 @100%.
+
+
+
+5. Frozen Design Tokens & Shell Geometry
+	Token
+	Frozen Value
+
+	App background
+	#F4F7FB
+
+	Surface
+	#FFFFFF
+
+	Panel
+	#F8FAFD
+
+	Border
+	#D8E2EE
+
+	Primary
+	#2563EB
+
+	Primary hover
+	#1D4ED8
+
+	Selection
+	#DBEAFE
+
+	Text
+	#172033
+
+	Muted
+	#64748B
+
+	Success
+	#16A34A
+
+	Warning
+	#F59E0B
+
+	Error
+	#DC2626
+
+	Preview matte
+	#171C24
+
+	Font baseline
+	Segoe UI ~12 px
+
+	Radius
+	8 px baseline
+
+	Border width
+	1 px baseline
+
+
+
+	Geometry
+	Reference
+
+	Title bar
+	32 px ref
+
+	Menu
+	34 px ref
+
+	Toolbar
+	48 px ref
+
+	Left workspace
+	300 px ref / 240 px min
+
+	Right inspector / AI
+	360 px ref / 480 px max
+
+	Timeline
+	300 px ref / 180 px min
+
+	Status bar
+	26 px ref
+
+	Spacing unit
+	8 px
+
+	Canonical viewport
+	1920×1080 @100%
+
+
+
+Ukuran tersebut adalah parity geometry, bukan alasan untuk hardcode tanpa DPI handling. STEP 06/09 boleh memilih layout mechanics yang adaptif selama relative hierarchy dan reference parity dipertahankan.
+6. Frozen Screen Registry — SCR-001..SCR-017
+	Screen ID
+	Surface
+	Priority
+	Freeze
+
+	SCR-001
+	Home / Project Entry
+	P1
+	FROZEN
+
+	SCR-002
+	New Project / Project Setup
+	P0
+	FROZEN
+
+	SCR-003
+	Main Editor Shell
+	P0
+	FROZEN
+
+	SCR-004
+	Asset / Media Workspace
+	P0
+	FROZEN
+
+	SCR-005
+	Scene Workspace
+	P0
+	FROZEN
+
+	SCR-006
+	Layout Inspector
+	P0
+	FROZEN
+
+	SCR-007
+	Animation Workspace
+	P0
+	FROZEN
+
+	SCR-008
+	Subtitle Workspace
+	P0
+	FROZEN
+
+	SCR-009
+	Audio / Narration Workspace
+	P0
+	FROZEN
+
+	SCR-010
+	Background Workspace
+	P1
+	FROZEN
+
+	SCR-011
+	AI Agent Workspace
+	P0
+	FROZEN
+
+	SCR-012
+	Validation Center / Relink
+	P0
+	FROZEN
+
+	SCR-013
+	Settings & API Key Manager
+	P0
+	FROZEN
+
+	SCR-014
+	History / Recovery
+	P1
+	FROZEN
+
+	SCR-015
+	Export / Render
+	P0
+	FROZEN
+
+	SCR-016
+	Full-screen Preview
+	P1
+	FROZEN
+
+	SCR-017
+	Help / Shortcut Center
+	P1
+	FROZEN
+
+
+
+7. UI Freeze Manifest — 42 Canonical References
+Semua 42 reference dibekukan sebagai existing canonical raster. PROMPT_ID untuk baseline ANG = N/A_REUSE_EXISTING. Ini sengaja: source visual-nya sudah ada di AAVC, sehingga prompt baru bukan bagian authority.
+	UI ID
+	Reference / State
+	Screen
+	Prompt
+	SHA-256
+	Role
+	Status
+
+	UI-001
+	Asset Workspace — Aset Terpilih
+	SCR-004
+	N/A / REUSE
+	de8ea60f323f...
+	CANONICAL
+	FROZEN
+
+	UI-002
+	Scene Workspace — Scene Terpilih
+	SCR-005
+	N/A / REUSE
+	874d44ce844a...
+	CANONICAL
+	FROZEN
+
+	UI-003
+	Layout SINGLE — Transform Aset
+	SCR-006
+	N/A / REUSE
+	71437e564f5a...
+	CANONICAL
+	FROZEN
+
+	UI-004
+	Layout DOUBLE — Scene
+	SCR-006
+	N/A / REUSE
+	2b4c3b2fe1fd...
+	CANONICAL
+	FROZEN
+
+	UI-005
+	Layout DOUBLE — Layer Transform
+	SCR-006
+	N/A / REUSE
+	92173c4e612c...
+	CANONICAL
+	FROZEN
+
+	UI-006
+	Animasi Manual — Inspector
+	SCR-007
+	N/A / REUSE
+	56a76f0d2c25...
+	CANONICAL
+	FROZEN
+
+	UI-007
+	Picker 21 Efek Animasi
+	SCR-007
+	N/A / REUSE
+	311464319d62...
+	CANONICAL
+	FROZEN
+
+	UI-008
+	Animasi Random — Pengaturan
+	SCR-007
+	N/A / REUSE
+	553ccf826012...
+	CANONICAL
+	FROZEN
+
+	UI-009
+	Animasi Random — Hasil Preview
+	SCR-007
+	N/A / REUSE
+	5190c02becca...
+	CANONICAL
+	FROZEN
+
+	UI-010
+	AI Director / AI Otomatis
+	SCR-007 / SCR-011
+	N/A / REUSE
+	6510f42b793f...
+	CANONICAL
+	FROZEN
+
+	UI-011
+	AI Agent — Ready / Chat
+	SCR-011
+	N/A / REUSE
+	27268196ccde...
+	CANONICAL
+	FROZEN
+
+	UI-012
+	AI Agent — Rencana Aksi
+	SCR-011
+	N/A / REUSE
+	f5319455869b...
+	CANONICAL
+	FROZEN
+
+	UI-013
+	AI Agent — Perubahan Diterapkan
+	SCR-011
+	N/A / REUSE
+	9f644e0cfe00...
+	CANONICAL
+	FROZEN
+
+	UI-014
+	AI Agent — Provider Tidak Tersedia
+	SCR-011 / SCR-013
+	N/A / REUSE
+	5dfd75efeb26...
+	CANONICAL
+	FROZEN
+
+	UI-015
+	Editor Overview / Properti Scene
+	SCR-003 / SCR-005
+	N/A / REUSE
+	8bbe0b33f1d7...
+	CANONICAL
+	FROZEN
+
+	UI-016
+	Timeline Context Menu
+	SCR-003
+	N/A / REUSE
+	c5d93a19309b...
+	CANONICAL
+	FROZEN
+
+	UI-017
+	Subtitle Editor — Cue & Teks
+	SCR-008
+	N/A / REUSE
+	b0cfdf95bd33...
+	CANONICAL
+	FROZEN
+
+	UI-018
+	Audio / Narasi Workspace
+	SCR-009
+	N/A / REUSE
+	d4c0870ec04e...
+	CANONICAL
+	FROZEN
+
+	UI-019
+	Background Workspace
+	SCR-010
+	N/A / REUSE
+	1fdb78681305...
+	CANONICAL
+	FROZEN
+
+	UI-020
+	Focused / Full Preview
+	SCR-016
+	N/A / REUSE
+	fa104c445193...
+	CANONICAL
+	FROZEN
+
+	UI-021
+	Pengaturan Project
+	SCR-002 / SCR-013
+	N/A / REUSE
+	1010bd4151a0...
+	CANONICAL
+	FROZEN
+
+	UI-022
+	Pengaturan Aplikasi
+	SCR-013
+	N/A / REUSE
+	bf17ad4a022f...
+	CANONICAL
+	FROZEN
+
+	UI-023
+	Provider & API Key Manager
+	SCR-013
+	N/A / REUSE
+	40f5ca95513e...
+	CANONICAL
+	FROZEN
+
+	UI-024
+	Riwayat / Undo-Redo
+	SCR-014
+	N/A / REUSE
+	d808efc2d70e...
+	CANONICAL
+	FROZEN
+
+	UI-025
+	Ekspor Video
+	SCR-015
+	N/A / REUSE
+	001ff8270722...
+	CANONICAL
+	FROZEN
+
+	UI-026
+	Render Progress
+	SCR-015
+	N/A / REUSE
+	790fdffde54a...
+	CANONICAL
+	FROZEN
+
+	UI-027
+	Render Selesai
+	SCR-015
+	N/A / REUSE
+	e18b4d86ab8b...
+	CANONICAL
+	FROZEN
+
+	UI-028
+	Render Gagal
+	SCR-015 / SCR-012
+	N/A / REUSE
+	4bd3a419c296...
+	CANONICAL
+	FROZEN
+
+	UI-029
+	Pemulihan Project
+	SCR-014
+	N/A / REUSE
+	214827740179...
+	CANONICAL
+	FROZEN
+
+	UI-030
+	Memindai Folder Aset
+	SCR-004
+	N/A / REUSE
+	8d48f6767695...
+	CANONICAL
+	FROZEN
+
+	UI-031
+	Pusat Error / Validasi
+	SCR-012
+	N/A / REUSE
+	3dc2b44dd188...
+	CANONICAL
+	FROZEN
+
+	UI-032
+	Shortcut & Bantuan Cepat
+	SCR-017
+	N/A / REUSE
+	3e5b5fc2c275...
+	CANONICAL
+	FROZEN
+
+	UI-033
+	Subtitle Style
+	SCR-008
+	N/A / REUSE
+	14ca0dde7c3d...
+	CANONICAL
+	FROZEN
+
+	UI-034
+	Subtitle Animation
+	SCR-008
+	N/A / REUSE
+	e8e3de206ae7...
+	CANONICAL
+	FROZEN
+
+	UI-035
+	Timing Subtitle Per Kata
+	SCR-008
+	N/A / REUSE
+	f3885c7205ee...
+	CANONICAL
+	FROZEN
+
+	UI-036
+	Karaoke Highlight
+	SCR-008
+	N/A / REUSE
+	7682b3a1e1ee...
+	CANONICAL
+	FROZEN
+
+	UI-037
+	Pengaturan Render Lanjutan
+	SCR-015
+	N/A / REUSE
+	2aa556db39f7...
+	CANONICAL
+	FROZEN
+
+	UI-038
+	Render Gagal — Final Parity Variant
+	SCR-015 / SCR-012
+	N/A / REUSE
+	375ed4d2d46e...
+	FINAL-PARITY
+	FROZEN
+
+	UI-039
+	Pemulihan Project — Final Parity Variant
+	SCR-014
+	N/A / REUSE
+	3d5fd0e4c109...
+	FINAL-PARITY
+	FROZEN
+
+	UI-040
+	Asset Scan — Final Parity Variant
+	SCR-004
+	N/A / REUSE
+	bb0485aab70f...
+	FINAL-PARITY
+	FROZEN
+
+	UI-041
+	Validation Center — Final Parity Variant
+	SCR-012
+	N/A / REUSE
+	9878511d410d...
+	FINAL-PARITY
+	FROZEN
+
+	UI-042
+	Shortcut & Help — Final Parity Variant
+	SCR-017
+	N/A / REUSE
+	e0f57b1f37ed...
+	FINAL-PARITY
+	FROZEN
+
+
+
+UI-038..UI-042 adalah later/final parity variants untuk error/recovery/scan/validation/help families. Bila ada overlap fungsi dengan UI-028..UI-032, implementer harus mengutamakan later parity geometry/copy behavior tanpa menghapus kebutuhan state yang dibuktikan reference lama.
+8. Raster Evidence Overview
+Contact sheets dan 42 reference individual telah direview terpisah. Authority primer tetap setiap file UI-001..UI-042 dan SHA-256 pada manifest. Final UI Reference DOCX terpisah memuat cover + 42 halaman image dan telah lolos render QA.
+UI-038..UI-042 termasuk dalam set 42/42 yang dibekukan dan dicatat APPROVED/FROZEN pada manifest.
+9. Shared Component Contract
+	ID
+	Component
+	Frozen Contract
+
+	CMP-001
+	Main Window Shell
+	Menu/toolbar/workspaces/timeline/status
+
+	CMP-002
+	Menu & Toolbar
+	Project/media/text/narration/AI/validation/export actions
+
+	CMP-003
+	Buttons
+	Primary/secondary/destructive/icon states
+
+	CMP-004
+	Tabs & Segmented Controls
+	Active state non-color-only
+
+	CMP-005
+	Fields
+	Text/number/dropdown/slider/toggle with disabled/error states
+
+	CMP-006
+	Asset Card
+	Thumbnail + Axxx + status + selection
+
+	CMP-007
+	Scene/List Row
+	Scene ID/status/layout/selection
+
+	CMP-008
+	Preview & Transport
+	Frame + timecode + playback + zoom/focus
+
+	CMP-009
+	Inspector
+	Context properties; no fake property
+
+	CMP-010
+	Timeline
+	Tracks/clips/playhead/markers/snap/zoom/context
+
+	CMP-011
+	Status Bar
+	Autosave/project/time/validation factual status
+
+	CMP-012
+	Validation UI
+	Issue severity + scope + actionable fix
+
+	CMP-013
+	Dialog System
+	Modal hierarchy/confirm/error/recovery/settings
+
+	CMP-014
+	Progress/Job
+	Render/scan busy state + cancel where supported
+
+	CMP-015
+	AI Agent
+	Chat/scope/plan/approval/result/fallback
+
+	CMP-016
+	Subtitle Controls
+	Cue/style/animation/word timing
+
+	CMP-017
+	Credential Manager
+	Masked key slots/status/test/enable/disable
+
+	CMP-018
+	Render Result
+	Success/failure/output/log/retry/recovery
+
+
+
+10. Control-Level Behavior Contract
+	Control / Intent
+	Semantics
+
+	Simpan
+	Persist current project state; status reflects success/failure, never fake green.
+
+	Undo/Redo
+	Moves shared history pointer; manual and AI transactions participate.
+
+	Import/Relink
+	Never changes stable Axxx identity silently; validation rechecks affected links.
+
+	Lock
+	Random/AI must respect lock unless explicit unlock/override confirmation.
+
+	Preview
+	Shows current project state; stale preview must be indicated or rebuilt.
+
+	Split/Trim/Resize/Move
+	Creates deterministic timeline command + history entry.
+
+	AI Terapkan
+	Applies only validated non-stale plan as transaction.
+
+	AI Batal
+	No domain mutation.
+
+	Validasi Ulang
+	Reruns validation and refreshes issue list; does not auto-delete user data.
+
+	Render
+	Requires validation of blocking issues and captures deterministic render plan.
+
+	Batalkan Render
+	Stops job safely; temporary output cannot be labelled final.
+
+	Recovery Pulihkan
+	Loads recovery state without silently destroying original file.
+
+	API Test
+	Tests masked credential slot; never exposes secret after import.
+
+
+
+11. Frozen Timeline Interaction Blueprint
+Canonical selection synchronizes timeline, preview, scene/asset list, and inspector.
+Drag/reorder/move, trim/resize, split, In/Out, markers, magnetic snap, zoom, follow-playhead, navigator/scroll, play-selection, context menu, and lock are user-facing contracts.
+Magnetic snap must have visible feedback; follow-playhead must not fight intentional manual scrolling.
+Long-project timeline must remain operable with many scenes; exact virtualization/threading belongs to STEP 06.
+Every mutating action maps to semantic command/history entry; direct widget mutation is not authoritative domain state.
+12. Frozen AI Agent / AI Director UX Blueprint
+	State
+	Required UX
+
+	READY
+	Scope visible; natural-language input; examples/suggestions optional; manual editor remains editable.
+
+	PLAN
+	Concrete edits listed by scene/asset/control semantics; impact visible; stale plan detectable.
+
+	APPROVAL
+	Material change waits approval where required; cancel mutates nothing.
+
+	APPLYING
+	Busy state; prevent duplicate apply; transaction tracked.
+
+	SUCCESS
+	Summary + Undo/Lihat Timeline; no exaggerated capability claim.
+
+	PROVIDER_ERROR
+	Distinguish no key, invalid, rate-limit, network/provider; provide manual fallback.
+
+	LOCK_CONFLICT
+	Explain locked target; do not silently override.
+
+	STALE
+	Reject or rebuild plan when project state changed.
+
+
+
+AI must not mutate arbitrary ProjectState/JSON. It produces Edit Plan -> validator -> typed command(s) -> transaction/history. UI and AI therefore share domain semantics rather than two separate editing systems.
+13. Frozen Subtitle Blueprint
+Cue list + editable text + start/out timing + split/merge/reload SRT.
+Style: typography, color, outline, shadow/background box, alignment/safe-area.
+Animation presets only when backed by real runtime effect.
+Per-word timing editor and karaoke/highlight variants represented by UI-035/036.
+Preview must show relevant cue/state; final render parity validated later.
+Source text must not be silently rewritten by style/timing operations.
+14. Frozen Asset, Scene, Audio, Background Blueprint
+	Area
+	Frozen UX Contract
+
+	Asset
+	Axxx stable ID, thumbnail/status/search/filter, detail, relink, transform where applicable.
+
+	Scene
+	Scene identity, SINGLE/DOUBLE, linked asset IDs, duration, selection, layout state.
+
+	Audio/Narration
+	Import/record, visible waveform/list, volume/mute/fade/normalize only if supported, preview.
+
+	Background
+	Source + fit/fill/loop/opacity/color fallback, timeline relationship.
+
+	Preview
+	Central playback reference; editor/focus mode; factual timecode/state.
+
+
+
+15. Frozen Validation, Relink & Recovery Blueprint
+Blocking input/missing media issues identify exact Scene/Asset ID and actionable fix.
+Validation Center groups errors/warnings by scope; severity not color-only.
+Relink changes file binding while preserving canonical identity unless user explicitly remaps identity.
+Recovery shows autosave age/path/source and never silently overwrites sole usable original.
+Scan/import progress shows current progress/file and cancel behavior if supported.
+Diagnostics/log views redact credentials and do not replace human-readable primary message.
+16. Frozen Render / Export Blueprint
+	State
+	Contract
+
+	SETUP
+	Output path/name, codec H.264/H.265 where supported, resolution/FPS, quality, subtitle/narration, full/selection scope.
+
+	ADVANCED
+	Only real codec/audio/subtitle/color controls; no fake GPU toggle.
+
+	PROGRESS
+	Progress/stage/time/status factual; cancel safe; project remains intact.
+
+	SUCCESS
+	Output path/metadata + open/play/folder actions only after final artifact exists.
+
+	FAILURE
+	Specific cause + affected asset/scene when known + retry/fix/log/back actions; partial file not final.
+
+
+
+17. State Language, Copy, Accessibility & Feedback
+	State
+	Meaning
+
+	EMPTY
+	No content yet; explain next useful action.
+
+	READY
+	Usable and current.
+
+	DIRTY
+	Unsaved changes.
+
+	BUSY
+	Operation in progress; duplicate action guarded.
+
+	PARTIAL
+	Some inputs/results available.
+
+	WARNING
+	Non-blocking problem.
+
+	BLOCKED
+	Cannot continue until required issue fixed.
+
+	ERROR
+	Operation failed; state preserved where possible.
+
+	SUCCESS
+	Operation verified complete.
+
+	OFFLINE_NO_PROVIDER
+	Manual path remains.
+
+	STALE
+	Preview/plan/result older than project state.
+
+	RECOVERY
+	Recovery decision required.
+
+	LOCKED
+	Protected from random/AI/manual action as defined.
+
+	SELECTED
+	Current target across coordinated surfaces.
+
+	VALIDATING
+	Validation running.
+
+
+
+Active/selected state uses shape/border/icon/text as well as color.
+Primary action remains visually distinguishable but destructive actions are not styled as primary positive action.
+Error message says what happened + where + next action, not only “gagal”.
+Generated sample typo/text is not frozen if it conflicts with canonical runtime copy; geometry/hierarchy remain frozen.
+Keyboard focus, tab order, text scaling/DPI behavior must be considered in implementation without redesigning layout.
+18. Immutable vs Adaptive vs Provisional
+	Class
+	Items
+	Rule
+
+	IMMUTABLE
+	Shell hierarchy, main panel ownership, white/blue design language, primary workflows, Screen/UI IDs, command semantics, AI approval/fallback, key masking.
+	Change only by owner-approved change record or hard technical/legal blocker.
+
+	ADAPTIVE
+	Panel resizing within bounds, scrollbar/overflow, DPI scaling, text wrapping, long-list virtualization, exact pixel allocation below canonical viewport.
+	May adapt without changing hierarchy or meaning.
+
+	PROVISIONAL_TECH
+	Exact Qt/PySide/libopenshot/MLT integration, native player bridge, project schema format, threading, packaging, effect implementation mapping.
+	Decide SF-STEP 06; cannot invalidate frozen UX silently.
+
+
+
+19. Implementation Conformance Rules — Future FREEZE-C
+	ID
+	Acceptance Rule
+
+	VIS-001
+	Screenshot actual at canonical 1920×1080 compared with relevant frozen reference.
+
+	VIS-002
+	Major regions/panel ownership/order match reference.
+
+	VIS-003
+	Design tokens and visual density are within reasonable parity tolerance.
+
+	VIS-004
+	No missing real control required by frozen workflow; no extra fake control.
+
+	VIS-005
+	Selected/disabled/error/success states are visible and non-color-only.
+
+	VIS-006
+	Timeline/preview/inspector coordination behaves as blueprint.
+
+	VIS-007
+	Dialogs/modals preserve action hierarchy and project safety semantics.
+
+	VIS-008
+	AI Agent plan/apply/undo/fallback states match frozen contract.
+
+	VIS-009
+	No screenshot/PNG is used as interactive runtime surface.
+
+	VIS-010
+	Any intentional difference has DELTA_FROM_AAVC change record and owner/Astra acceptance.
+
+
+
+20. Post-Freeze Change Governance
+Setelah STEP 05, “lebih bagus menurut developer” bukan alasan perubahan. Setiap visible/behavioral change harus dilacak.
+	Field
+	Required
+
+	CHANGE_ID
+	UI-CHANGE-YYYYMMDD-NNN
+
+	Source
+	Owner request / technical blocker / legal blocker / verified defect
+
+	Affected IDs
+	SCR / CMP / UI reference / flow / requirement
+
+	Before
+	Frozen behavior/reference
+
+	After
+	Proposed behavior/reference
+
+	Reason
+	Concrete evidence, not preference
+
+	Risk
+	Behavioral/visual/test/license impact
+
+	Approval
+	Owner for product-visible change; Astra review when broad
+
+	Evidence
+	Updated spec/reference/screenshot/test as appropriate
+
+
+
+21. Architecture Constraints Handed to SF-STEP 06
+Architecture may choose libopenshot primary candidate, MLT fallback, or justified alternative based on evidence, but must preserve frozen UX.
+Qt/PySide integration should favor real widgets and deterministic command/domain boundaries.
+Playback/render engine state is not UI state; adapters must prevent engine-specific objects leaking across domain/presentation boundaries.
+Project state, render plan, validation, provider credentials, background jobs, and undo/history need explicit ownership.
+Native dependency and Windows portable packaging strategy must account for FFmpeg/libopenshot/Qt licensing and DLL loading.
+21 AAVC legacy animation effects require exact/approx/unsupported mapping; unsupported visible control cannot remain fake.
+Preview/export parity and 100-300 scene stability require later evidence; UI must expose honest busy/error/degraded states.
+22. Pre-Coding Source-of-Truth Gate
+Owner rule remains stronger than repo convenience: before production coding, all planning/reference documents and UI reference material must be present in repo and readable by future AI sessions.
+	Item
+	Current State
+	Coding Gate
+
+	Planning DOCX/TXT STEP 00-05
+	Repo-synced after this STEP
+	PASS after commit
+
+	Decision/status/handoff/index
+	Repo-synced after this STEP
+	PASS after commit
+
+	UI reference manifest/index
+	In repo
+	PASS
+
+	Exact full-resolution UI visual binary/raw pack
+	Locally verified; connector-safe repo index exists; exact pack still not in repo
+	BLOCKING BEFORE CODING
+
+	Architecture STEP 06
+	Not yet done
+	Required
+
+	Repository architecture STEP 07
+	Not yet done
+	Required
+
+	Prompt batch ZIP created after correction
+	VOID; must NOT become source-of-truth
+	Do not commit/use
+
+
+
+23. SF-STEP 05 Gate Decision
+	Result
+	Gate Item
+
+	PASS
+	Owner 1:1 AAVC direction unambiguous.
+
+	PASS
+	FREEZE-A SPEC_FROZEN complete.
+
+	PASS
+	FREEZE-B RASTER_FROZEN 42/42 complete.
+
+	PASS
+	42 reference hashes traceable.
+
+	PASS
+	Screen/component/control/AI/timeline/render/recovery contracts frozen.
+
+	PASS
+	Prompt regeneration mistake explicitly voided.
+
+	PASS
+	Change governance defined.
+
+	PASS
+	STEP 06 constraints defined.
+
+	PROVISIONAL
+	Exact full-resolution visual binary/raw pack still must be committed before coding.
+
+	FUTURE
+	FREEZE-C implementation conformance belongs STEP 09/13.
+
+
+
+FINAL SF-STEP 05 GATE: PASS_WITH_PROVISIONAL. Tidak ada blocker untuk memulai SF-STEP 06 planning. Ada blocker keras sebelum production coding: exact full-resolution UI visual/reference pack harus berada di repo dan diverifikasi.
+24. Handoff ASTRA -> SF-STEP 06
+	Handoff Field
+	Value
+
+	Project
+	AI Ngerti Geopolitik
+
+	Last completed
+	SF-STEP 05 — UI Freeze & Product Blueprint
+
+	Freeze
+	FREEZE-A SPEC_FROZEN + FREEZE-B RASTER_FROZEN
+
+	UI
+	AAVC 1:1 / 42 canonical refs / UIB-ANG-v1.0
+
+	Prompt status
+	Baseline ANG prompt generation NOT REQUIRED; accidental 42-prompt ZIP VOID
+
+	Code
+	NONE / FORBIDDEN
+
+	Next
+	SF-STEP 06 — Architecture & Technology Decision only
+
+	STEP 06 must decide
+	Framework, engine integration boundary, domain/state schema, command/history, preview/playback/render bridge, background jobs, credential storage, Windows packaging, license strategy, testing architecture.
+
+	Do not do
+	No production coding, no UI redesign, no STEP 07 in same turn.
+
+
+
+STOP POINT — SF-STEP 05 selesai. Tunggu perintah owner “lanjutkan” berikutnya sebelum menjalankan SF-STEP 06.
+UI FREEZE & PRODUCT BLUEPRINT • PRE-IMPLEMENTATION • 06 OKTOBER 2026

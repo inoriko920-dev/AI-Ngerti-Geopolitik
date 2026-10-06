@@ -1,30 +1,89 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Fase:** PRE-IMPLEMENTATION / UI HARD STOP  
-**SF-STEP terakhir:** 04 — UI Design System & Reference Adoption  
+**Fase:** PRE-IMPLEMENTATION / UI FROZEN  
+**SF-STEP terakhir:** 05 — UI Freeze & Product Blueprint  
 **Gate:** PASS_WITH_PROVISIONAL  
-**UI Bible:** UIB-ANG-v1.0  
-**UI review:** 42/42 APPROVED_FOR_FREEZE  
+**FREEZE-A:** SPEC_FROZEN  
+**FREEZE-B:** RASTER_FROZEN 42/42  
 **Coding:** FORBIDDEN
 
-## Completed
-- AAVC UI remains VISUAL_CONTRACT 1:1.
-- UI-001..UI-042 recovered, hashed and visually reviewed.
-- Full visual reference DOCX passed render QA: 43 pages (cover + 42 references).
-- Baseline ANG image generation = 0 because exact AAVC images are reused.
-- UI-038..042 recovery gap is resolved.
-- Design tokens, shell metrics, components, state language and copy vocabulary are formalized.
+## Read first
 
-## Repository artifacts
-- docs/planning/05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.docx
-- docs/planning/05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.txt
-- docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx
-- docs/ui_reference/UI_REFERENCE_MANIFEST.md
-- docs/ui_reference/README.md
+1. AGENTS.md
+2. Software Factory master + guide
+3. docs/planning/00..06 in order
+4. docs/ui_reference/UI_REFERENCE_MANIFEST.md
+5. DECISIONS_LOCKED.md
+6. PROJECT_STATUS.md
+7. this HANDOFF.md
 
-The repo index is connector-safe. Exact full-resolution visual binary/raw pack remains a mandatory pre-coding upload/checkpoint.
+## Frozen UI rule
 
-## HARD STOP
-Do not start SF-STEP 05 in this turn.
+AI Ngerti Geopolitik must implement the AAVC UI **1:1 as closely as practical**:
+- AAVC UIF-AAVC-v1.0
+- UI-001..UI-042
+- 1920x1080 canonical reference
+- Indonesian
+- white/light + restrained blue
+- real widgets, not screenshot UI
+- branding may become AI Ngerti Geopolitik
 
-On a NEW explicit owner `lanjutkan`, execute SF-STEP 05 — UI Freeze & Product Blueprint only. Do not redesign. Preserve the pre-coding binary gate, produce STEP 05 DOCX + TXT, update state/handoff, then STOP before STEP 06.
+## Owner correction — mandatory
+
+The 42 ANG prompts/ZIP created after STEP 04 are **VOID / NON-AUTHORITATIVE**.
+
+Do not:
+- regenerate UI-001..UI-042;
+- use those prompts as source-of-truth;
+- commit them as canonical planning;
+- redesign baseline UI.
+
+For the baseline, use the already existing 42 AAVC canonical references directly.
+
+Only a true new ANG-visible surface without AAVC coverage may receive `UI-ANG-Dxx` + prompt + image + review + change record.
+
+## Freeze model
+
+**FREEZE-A / SPEC_FROZEN**
+- screen/state registry
+- design tokens/shell hierarchy
+- components/control semantics
+- timeline interactions
+- AI command/approval/undo/fallback
+- subtitle/audio/background
+- validation/recovery
+- render/export
+- copy/state/accessibility
+- change governance
+
+**FREEZE-B / RASTER_FROZEN**
+- UI-001..UI-042 = 42/42
+- hashes in UI_REFERENCE_MANIFEST
+- later parity references UI-038..042 remain frozen evidence
+
+**FREEZE-C / IMPLEMENTATION_CONFORMED**
+- future STEP 09/13 after actual runtime screenshots and interaction QA.
+
+## Pre-coding gate
+
+Exact full-resolution visual/raw reference pack still must be present in repo and verified before production coding. Current repo has connector-safe index + hashes. This does not block STEP 06–07 planning.
+
+## Exact next action
+
+If owner says **"lanjutkan"**, execute **SF-STEP 06 — Architecture & Technology Decision** only.
+
+STEP 06 must decide:
+- primary framework/UI stack;
+- libopenshot vs fallback decision/integration boundary;
+- domain/project state ownership;
+- command/history/Undo-Redo architecture;
+- preview/playback/render bridge;
+- persistence/project schema strategy;
+- validation/relink/recovery boundaries;
+- worker/background job model;
+- Gemini provider/credential security boundary;
+- Windows portable packaging and native DLL strategy;
+- dependency/license compliance strategy;
+- test architecture and performance/stability evidence plan.
+
+Preserve FREEZE-A/B. No production coding and no STEP 07 in the same turn.

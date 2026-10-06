@@ -1,26 +1,67 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Last known phase:** PRE-IMPLEMENTATION / UI HARD STOP  
-**Formal Software Factory completed:** SF-STEP 04 — UI Design System & Reference Adoption  
+**Last known phase:** PRE-IMPLEMENTATION / UI FROZEN  
+**Formal Software Factory completed:** SF-STEP 05 — UI Freeze & Product Blueprint  
 **Gate:** PASS_WITH_PROVISIONAL  
+**FREEZE-A:** SPEC_FROZEN — PASS  
+**FREEZE-B:** RASTER_FROZEN — PASS, AAVC UI-001..UI-042 = 42/42  
+**FREEZE-C:** IMPLEMENTATION_CONFORMED — FUTURE STEP 09/13  
 **UI Bible:** UIB-ANG-v1.0  
-**Visual contract:** AAVC UIF-AAVC-v1.0 / UI-001..UI-042 / REUSE_1_TO_1  
-**Final UI visual review:** 42/42 APPROVED_FOR_FREEZE  
-**Full visual DOCX QA:** 43 pages PASS  
-**Formal next STEP:** SF-STEP 05 — UI Freeze & Product Blueprint, only after a NEW explicit owner continuation  
-**Code status:** NONE / FORBIDDEN
+**Formal next STEP:** SF-STEP 06 — Architecture & Technology Decision  
+**Code status:** NONE / FORBIDDEN  
+**Build:** NONE  
+**Release:** NONE
 
-## STEP 04 evidence
-- `docs/planning/05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.docx`
-- mirror TXT with the same STEP contract
-- `docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
+## STEP 05 evidence
+
+Canonical blueprint:
+- `docs/planning/06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx`
+- machine-readable mirror: `docs/planning/06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_AI_NGERTI_GEOPOLITIK.txt`
+
+UI source:
 - `docs/ui_reference/UI_REFERENCE_MANIFEST.md`
-- `docs/ui_reference/README.md`
+- `docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
+- AAVC canonical visual set UI-001..UI-042 (42/42 reviewed/frozen)
 
-42/42 frozen references were recovered, hashed, reviewed and approved for freeze. No new baseline images were generated because the owner explicitly requires 1:1 AAVC reuse. The full visual reference DOCX was generated and passed 43-page render QA.
+## Locked correction
 
-## PRE-CODING BINARY GATE
-The current connector cannot upload the large local full-resolution binary DOCX directly. Repository contains a traceable connector-safe index + hashes. The exact visual binary/raw pack remains mandatory in the repo before production coding. Planning STEP 05–07 may continue; coding may not.
+The accidentally created `AI_NGERTI_GEOPOLITIK_42_UI_PROMPTS_5_BATCH.zip` and its 42 newly written ANG image prompts are **VOID / NON-AUTHORITATIVE / DO NOT USE**.
 
-## HARD STOP
-SF-STEP 04 is complete. Do not start SF-STEP 05 in this turn.
+Reason: owner requires direct AAVC UI reuse 1:1. Re-generating the same baseline UI would create visual drift.
+
+For baseline UI-001..UI-042:
+- PROMPT_ID = N/A / REUSE_EXISTING
+- NEW IMAGE GENERATION = NO
+- RASTER AUTHORITY = existing AAVC canonical reference
+- STATUS = FROZEN
+
+## Frozen scope
+
+- 17 Screen IDs
+- 42 canonical raster references
+- AAVC design tokens and shell geometry
+- shared components and control semantics
+- timeline interaction contract
+- AI Agent / AI Director plan-approval-apply-undo-fallback contract
+- subtitle/audio/background/preview UX
+- validation/relink/recovery
+- export/render states
+- copy/state/accessibility rules
+- post-freeze change governance
+- future runtime screenshot conformance rules
+
+## Pre-coding blocker
+
+The exact full-resolution UI visual binary/raw pack is locally verified but still not fully stored in repo through the current connector path. Connector-safe index + hashes are in repo.
+
+This does **not** block STEP 06–07 planning. It **does block production coding** until the exact visual pack is committed/verified, together with completion of STEP 06–07.
+
+## Exact next action
+
+After owner says **"lanjutkan"**, execute **SF-STEP 06 — Architecture & Technology Decision only**.
+
+Do not:
+- code production app;
+- redesign AAVC UI;
+- use the void 42-prompt batch;
+- start SF-STEP 07 in the same turn.
