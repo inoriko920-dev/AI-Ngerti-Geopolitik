@@ -390,6 +390,7 @@ class RemoveClipCommand:
             )
             if index is None:
                 continue
+            _require_track_editable(track)
             removed = ordered.pop(index)
             if self.ripple:
                 for later_index in range(index, len(ordered)):
@@ -431,6 +432,7 @@ class SplitClipCommand:
             for index, clip in enumerate(track.clips):
                 if clip.clip_id != self.clip_id:
                     continue
+                _require_track_editable(track)
                 start = clip.timeline_start.frames
                 end = clip.timeline_end_frame
                 if not start < self.split_timeline_frame < end:
