@@ -13,7 +13,9 @@ def test_schema_v1_checkpoint_fixture_loads() -> None:
 def test_future_schema_is_rejected(tmp_path: object) -> None:
     import ai_ngerti_geopolitik.infrastructure.persistence as persistence
 
-    fixture = persistence.Path(__file__).parents[1] / "fixtures" / "step11_schema_v1_minimal.angproj"
+    fixture = (
+        persistence.Path(__file__).parents[1] / "fixtures" / "step11_schema_v1_minimal.angproj"
+    )
     payload = fixture.read_text(encoding="utf-8").replace(
         '"schema_version": 1',
         '"schema_version": 2',
