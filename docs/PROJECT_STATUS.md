@@ -1,69 +1,74 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Last completed wave:** **W2 — PASS**  
-**Accepted W2 implementation HEAD:** `4486da29883bc42e9cd12d5d13a7784f347dc2d3`  
-**Accepted W2 run:** `37542485728` — SUCCESS  
-**Next exact wave:** **W3 — Properties: Video, Audio, Color & Speed**
+**Last completed wave:** **W3 — PASS**  
+**Accepted W3 implementation HEAD:** `79217e687a9930087260e7dd3203b6ab8492b477`  
+**Accepted W3 run:** `37545032247` — SUCCESS  
+**Next exact wave:** **W4 — Titles / Transitions / Effects**
 
-## W2 proven
+## W3 proven
 
-Canonical timeline/editing:
-- multi-track video create/delete/rename/order;
-- track lock/mute/visibility state;
-- stable clip selection/move/duplicate/delete;
-- ripple duration/delete policy + collision rejection;
-- split + left/right trim;
-- marker + IN/OUT;
-- snap, zoom and follow;
-- keyboard/context actions through semantic intents;
-- CommandBus Undo/Redo for core W2 mutations;
-- persistence round-trip for W2 state.
+Canonical properties:
+- inspector context binding: project / track / asset / clip;
+- clip video position, scale, rotation, opacity;
+- crop/basic composition;
+- audio volume, pan, fade-in/fade-out;
+- brightness, exposure, contrast, saturation, temperature, tint;
+- uniform speed 25%–400%;
+- speed-aware timeline duration and source-frame mapping;
+- ripple of later clips after speed duration change;
+- all property mutations through CommandBus;
+- cross-property Undo/Redo;
+- .angproj persistence + old-schema safe defaults.
 
-Playback:
-- play/pause/scrub/seek;
-- edit while playing auto-pauses;
-- preview evidence around edit boundaries;
-- real MLT Windows canonical playback/render projection;
-- ffprobe confirms rendered video + audio.
+Runtime/UI:
+- real PySide6 property inspector emits semantic intents;
+- Reverse is visibly disabled, not faked.
 
-Stress:
-- 4 tracks × 250 clips = **1000 clips**;
-- 40 reorder/Undo/Redo cycles;
-- **63.04 ms** measured semantic stress;
-- budget 8000 ms;
-- PASS.
+Real media evidence:
+- baseline preview and property preview differ;
+- real W3 export = 1920×1080, 30 fps, 180 frames;
+- canonical timeline = 180 frames;
+- audio stream present;
+- evidence verifier PASS 8/8.
 
 Evidence:
-`docs/evidence/features/S11_W2_TIMELINE_PLAYBACK_CORE.md`.
+`docs/evidence/features/S11_W3_PROPERTIES_VIDEO_AUDIO_COLOR_SPEED.md`.
 
-Artifacts:
-- `11449376822` — W2 core evidence;
-- `11448897281` — MLT canonical projection.
+Artifact:
+- ID `11449982099`;
+- digest
+  `sha256:81077bc180eb29506aca3b4a7d1720675082e09759650de829083bca3ecb8533`.
 
 ## Regression lock
 
-On accepted W2 implementation HEAD:
-- W2: `37542485728` — SUCCESS;
-- W1: `37542485911` — SUCCESS;
-- W0: `37542485906` — SUCCESS;
-- S10: `37542485819` — SUCCESS;
-- S09: `37542485810` — SUCCESS;
-- S08: `37542485951` — SUCCESS.
+On accepted W3 implementation HEAD:
+- W3: `37545032247` — SUCCESS;
+- W2: `37545032183` — SUCCESS;
+- W1: `37545031989` — SUCCESS;
+- W0: `37545032172` — SUCCESS;
+- S10: `37545032214` — SUCCESS;
+- S09: `37545032107` — SUCCESS;
+- S08: `37545032095` — SUCCESS.
 
 ## Engine direction
 
 Unchanged:
 - MLT = primary production-engine implementation candidate;
 - ProjectState + CommandBus + MediaEnginePort remain canonical;
-- direct libopenshot production binding remains blocked pending stronger
-  Windows/package/license evidence.
+- FFmpeg W3 is a real qualification adapter, not an engine switch;
+- final production MLT property mapping/native DLL closure remains a later
+  hardening/release gate.
 
-W2 MLT proof currently covers the canonical contiguous V1 video projection.
-Do not misstate this as final arbitrary multitrack/audio-property engine support.
+## Reverse
+
+Reverse remains intentionally **disabled** because it has not passed safe W3
+backend qualification. Do not expose it as functional until real evidence
+exists.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **W3 only — Properties: Video, Audio, Color & Speed**.
+On owner **"lanjutkan"**, execute **W4 only — Titles / Transitions / Effects**.
 
-Do not enter W4 or SF-STEP 12 until W3 is green.
+Do not enter W5, W8/Gemini, SF-STEP 12, or final release work until W4 is
+completed or explicitly gated.

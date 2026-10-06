@@ -296,3 +296,33 @@ Remaining release gate:
 W0 does not approve a final distributable MLT DLL bundle. The exact native DLL
 closure, required plugin subset, codec/license obligations, notices/source
 obligations and clean-machine package smoke remain mandatory before release.
+
+
+## D-025 — STEP 11 W3 property semantics
+SF-STEP 11 W3 locks the canonical property model and no-fake-capability policy.
+
+Accepted implementation:
+- HEAD `79217e687a9930087260e7dd3203b6ab8492b477`;
+- W3 run `37545032247` — SUCCESS;
+- artifact `11449982099`.
+
+Locked interpretation:
+- video/audio/color/speed values belong to canonical clip state, not Qt or an
+  engine-specific object;
+- property mutation uses CommandBus/CommandBatch and participates in the same
+  Undo/Redo history as timeline edits;
+- W3 persistence is backward-compatible: schema-v1 clips without property data
+  load with safe default values;
+- uniform speed supports 25%–400% and changes effective timeline duration;
+- ripple behavior shifts later clips when speed changes duration;
+- Reverse remains **unsupported/disabled** until a later real backend
+  qualification proves it safe;
+- W3 color controls are semantic editor values; the real FFmpeg qualification
+  mapping proves preview/export impact but does not become presentation truth;
+- D-024 remains active: MLT is still the primary production-engine
+  implementation candidate and W3 does not silently switch the production
+  engine to FFmpeg.
+
+Enabling Reverse, changing property ownership, or replacing MLT as primary
+production candidate requires new evidence and the appropriate architecture
+decision/update.

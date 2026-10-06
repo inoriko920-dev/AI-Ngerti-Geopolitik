@@ -1,83 +1,75 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11  
-**Last completed wave:** W2 — PASS  
-**Accepted W2 implementation HEAD:** `4486da29883bc42e9cd12d5d13a7784f347dc2d3`  
-**Accepted W2 run:** `37542485728` — SUCCESS  
-**Next exact wave:** W3 — Properties: Video, Audio, Color & Speed
+**Last completed wave:** W3 — PASS  
+**Accepted W3 implementation HEAD:** `79217e687a9930087260e7dd3203b6ab8492b477`  
+**Accepted W3 run:** `37545032247` — SUCCESS  
+**Next exact wave:** W4 — Titles / Transitions / Effects
 
 ## Read first
 
 Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
-Read:
-- STEP 08–10 evidence;
-- `docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`;
-- `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`;
-- `docs/evidence/features/S11_W2_TIMELINE_PLAYBACK_CORE.md`.
+Read STEP 08–10 evidence, then:
+- `S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`;
+- `S11_W1_PROJECT_MEDIA_PERSISTENCE.md`;
+- `S11_W2_TIMELINE_PLAYBACK_CORE.md`;
+- `S11_W3_PROPERTIES_VIDEO_AUDIO_COLOR_SPEED.md`.
 
-## W2 outcome
+## W3 outcome
 
-Verified:
-- video-track CRUD/order/lock/mute/visibility;
-- clip move/duplicate/delete/selection with stable IDs;
-- ripple/collision policy;
-- split and left/right trim;
-- Undo/Redo through CommandBus;
-- playback play/pause/seek/scrub;
-- marker, IN/OUT, snap, zoom, follow;
-- Qt keyboard/context actions routed semantically;
-- save/reopen of W2 state;
-- real MLT Windows playback/render projection;
-- 1000-clip deterministic stress fixture.
+Verified canonical W3 behavior:
+- inspector binding to project/track/asset/clip;
+- video position/scale/rotation/opacity;
+- crop/basic composition;
+- audio volume/pan/fades;
+- basic color controls;
+- speed 25%–400% with duration recompute/ripple;
+- semantic Qt property intents;
+- CommandBus Undo/Redo;
+- persistence and old-schema default compatibility;
+- preview reflects property change;
+- real export reflects W3 state and retains audio.
 
-W2 core artifact:
-- ID `11449376822`;
+Real evidence export:
+- 1920×1080;
+- 30 fps;
+- 180 canonical frames = 180 probed frames;
+- SHA-256
+  `faf166bb5d78e997d264d104fcc76bb72f4f5415081511b1a4a14376afb3b48b`.
+
+W3 artifact:
+- ID `11449982099`;
 - digest
-  `sha256:1c7a5812b7d249caf51af294f14ce734cc3e58bc314cdf76b5a45ab543641e83`.
-
-MLT artifact:
-- ID `11448897281`;
-- digest
-  `sha256:c27584b57760121eff068040345aedf95ebd6bfe36a49af691030cfe9b8a3846`.
-
-## Regression IDs on accepted W2 implementation HEAD
-
-- W2: `37542485728`;
-- W1: `37542485911`;
-- W0: `37542485906`;
-- S10: `37542485819`;
-- S09: `37542485810`;
-- S08: `37542485951`.
-
-All are SUCCESS.
+  `sha256:81077bc180eb29506aca3b4a7d1720675082e09759650de829083bca3ecb8533`.
 
 ## Locked interpretation carried forward
 
 - ProjectState remains canonical truth.
-- All canonical mutation remains CommandBus/CommandBatch.
+- Property mutation remains CommandBus/CommandBatch.
+- Presentation may emit intents but not mutate concrete engines.
 - MLT remains the primary production-engine implementation candidate.
-- MediaEnginePort stays the boundary.
-- Presentation does not mutate engine/project objects directly.
+- FFmpeg remains a real qualification adapter behind MediaEnginePort.
 - AAVC UI-001..UI-042 remains frozen 1:1.
-- W2 canonical tracks are video-track semantics; richer audio/property behavior
-  is not falsely backfilled into W2.
-- MLT W2 evidence is a real canonical V1 projection, not final arbitrary
-  multitrack production support.
+- Reverse is **not supported** in W3 and must remain visibly disabled until a
+  later real backend qualification proves it safe.
+- W3 does not claim that final distributable MLT DLL/property mapping is done.
+
+## Regression IDs on accepted W3 implementation HEAD
+
+- W3: `37545032247`;
+- W2: `37545032183`;
+- W1: `37545031989`;
+- W0: `37545032172`;
+- S10: `37545032214`;
+- S09: `37545032107`;
+- S08: `37545032095`.
+
+All are SUCCESS.
 
 ## Next exact action
 
-Execute **W3 only — Properties: Video, Audio, Color & Speed** after owner says
-`lanjutkan`.
+After owner says `lanjutkan`, execute **W4 only — Titles / Transitions /
+Effects**.
 
-W3 should cover serially:
-1. inspector binding by selected object type;
-2. video position/scale/rotation/opacity;
-3. crop/basic composition;
-4. audio volume/pan/fade in/out;
-5. brightness/exposure/contrast/saturation/WB/tint policy;
-6. uniform speed + duration recompute;
-7. reverse only if engine qualification is safe, otherwise explicitly disabled;
-8. cross-property Undo/Redo + project reload + preview/output evidence.
-
-Do not start W4 or STEP 12.
+Do not start W5, AI/Gemini coverage, SF-STEP 12, or final release packaging.

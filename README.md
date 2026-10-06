@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2 PASS — NEXT W3**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3 PASS — NEXT W4**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -8,38 +8,39 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## Current verified baseline
 
-W2 accepted implementation:
-- HEAD `4486da29883bc42e9cd12d5d13a7784f347dc2d3`;
-- W2 workflow `37542485728` — SUCCESS.
+W3 accepted implementation:
+- HEAD `79217e687a9930087260e7dd3203b6ab8492b477`;
+- W3 workflow `37545032247` — SUCCESS;
+- evidence artifact `11449982099`.
 
-W2 now verifies:
-- canonical multi-track video state;
-- track create/delete/rename/reorder/lock/mute/visibility;
-- clip select/move/duplicate/delete/reorder;
-- collision rejection and ripple policy;
-- split + left/right trim;
-- markers and IN/OUT;
-- snap, zoom and follow;
-- semantic Qt shortcuts/context actions;
-- Undo/Redo and project round-trip;
-- play/pause/scrub/seek;
-- real Windows MLT canonical playback/render projection;
-- ffprobe video + audio;
-- 1000-clip deterministic stress fixture: 63.04 ms vs 8000 ms budget.
+W3 now verifies:
+- inspector binding for project/track/asset/clip;
+- video transform/opacity/crop;
+- audio volume/pan/fade;
+- basic color controls;
+- uniform speed 25%–400% with duration recompute/ripple;
+- semantic UI intents + canonical CommandBus mutation;
+- cross-property Undo/Redo;
+- project save/reopen;
+- old-schema safe property defaults;
+- real preview property impact;
+- real 1920×1080 / 30 fps / 180-frame export with audio.
 
-All S08/S09/S10/W0/W1 regression workflows are also green on the same
-accepted implementation HEAD.
+Reverse remains **disabled** until real backend qualification says otherwise.
+
+All S08/S09/S10/W0/W1/W2 regression workflows are green on the same accepted
+W3 implementation HEAD.
 
 ## Engine direction
 
 MLT remains the primary STEP 11 production-engine implementation candidate.
 ProjectState + CommandBus + MediaEnginePort remain canonical boundaries.
 
-The W2 MLT evidence is a real contiguous V1 canonical projection. It is not a
-claim that arbitrary multitrack/audio/color property behavior is already done.
+The W3 real FFmpeg property preview/export is qualification evidence behind the
+existing port. It is not a production-engine switch.
 
 ## Next
 
-**W3 — Properties: Video, Audio, Color & Speed.**
+**W4 — Titles / Transitions / Effects.**
 
-Do not jump to W4, Gemini/STEP 12, or final release packaging.
+Do not jump to W5, Gemini/AI coverage, SF-STEP 12, or final release packaging.
