@@ -1,59 +1,54 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Last known phase:** PRE-IMPLEMENTATION / CODE CONSTITUTION DEFINED  
+**Last known phase:** SF-STEP 08 / S08-T01 IN PROGRESS — BLOCKED ON EXACT BINARY PUSH  
 **Formal Software Factory completed:** SF-STEP 07 — Code Constitution & Repository Architecture  
-**Gate:** PASS_WITH_PROVISIONAL  
+**Active STEP:** SF-STEP 08 — Repository Foundation & UI Reference Gate  
+**Active task:** S08-T01 — Source-of-Truth & Exact UI Reference Gate  
+**S08-T01 result:** BLOCKED (partial evidence PASS; remote binary gate not yet satisfied)  
 **Code Constitution:** CC-ANG-v1.0  
 **Repository Map:** REPO-ANG-v1.0  
 **Architecture:** ANG-SF-STEP06-ARCH-TECH-v1.0  
-**UI:** FREEZE-A/B ACTIVE — AAVC UI-001..UI-042 42/42  
 **Application source:** NONE  
-**Build/CI product:** NONE  
-**Formal next STEP:** SF-STEP 08 — Repository Foundation & UI Reference Gate  
-**First STEP 08 task:** S08-T01  
-**Production coding:** BLOCKED until S08-T01 passes
+**Production coding:** FORBIDDEN
 
-## STEP 07 evidence
+## S08-T01 verified evidence
 
-Canonical planning:
-- `docs/planning/08_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_AI_NGERTI_GEOPOLITIK.docx`
-- mirror: `docs/planning/08_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_AI_NGERTI_GEOPOLITIK.txt`
+Repository baseline verified:
+- repo: `inoriko920-dev/AI-Ngerti-Geopolitik`
+- branch: `main`
+- baseline HEAD: `47942565c6b34f5d5d70dc4eed8f732f6f5c5643`
 
-## Frozen repository constitution
+Planning/source-of-truth:
+- STEP 00–07 planning DOCX + TXT pairs are present under `docs/planning/`.
+- Master Blueprint DOCX + TXT are present.
+- UI manifest/index and Software Factory docs are present.
+- No application source has been created.
 
-- package: `src/ai_ngerti_geopolitik/`
-- boundaries: domain / application / presentation / infrastructure / bootstrap
-- dependency direction: presentation -> application -> domain
-- infrastructure implements application ports
-- bootstrap wires concrete adapters only
-- one concern = one canonical owner
-- all project mutation = semantic CommandBus / CommandBatch
-- ProjectState = source-of-truth
-- no Qt/provider/engine/filesystem implementation in domain
-- no concrete infrastructure access from presentation
-- no hidden mutable global project state
-- no long job on Qt UI thread
-- no plaintext secrets
-- no silent UI redesign
-- no fake green/capability
+Exact UI references:
+- 42 exact original AAVC PNG files were recovered as `UI-001.png` through `UI-042.png`.
+- each local raw PNG was SHA-256 + byte-size checked against the authoritative STEP 04/05 manifest;
+- result: **42/42 PASS**;
+- deterministic local transfer pack created: `ANG_UI_REFERENCE_RAW_42_EXACT.zip`;
+- pack SHA-256: `2fc3e43b5625b0ec709095b53549c6c098f0dbd9c32a0789eb6e2683e59feef2`;
+- pack size: `65,497,507 bytes`.
 
-## STEP 08 READY tasks
+Evidence record:
+- `docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
 
-**S08-T01 — Source-of-Truth & Exact UI Reference Gate**  
-Commit/verify STEP00–07 planning DOCX+TXT and exact full-resolution UI-001..UI-042 raw references. 42/42 hashes must match manifest. **No product source code in this task.**
+## Why S08-T01 is still BLOCKED
 
-**S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness**  
-Only after T01 PASS. Materialize minimal src-layout, Python/tooling, tests and import/secret/source-truth checks. No feature UI/engine/Gemini implementation.
+The exact 42 PNG bytes are verified locally, but the currently available GitHub connector exposes text/blob creation and does not expose a binary-file upload handoff from the model container/conversation file reference into the repository.
 
-**S08-T03 — Windows CI & Portable Packaging Scaffold**  
-Only after T02 PASS. Windows CI + minimal portable scaffold/evidence; no final release claim.
+The existing connector-safe SHA manifest **does not substitute** for the required raw visual pack.
 
-## Pre-coding blocker
+Therefore:
+- do **not** mark S08-T01 PASS;
+- do **not** begin S08-T02;
+- do **not** create product source code;
+- do **not** claim the pre-coding UI reference gate is satisfied.
 
-Exact full-resolution UI visual/raw pack is still not fully committed/verified in repo. This is now the explicit first task of STEP 08 and blocks production source coding.
+## Exact remaining action for S08-T01
 
-## Exact next action
+Push the exact verified raw reference pack (either the 42 PNG files under `docs/ui_reference/raw/` or an explicitly approved exact archive whose extracted PNG hashes equal the manifest) into GitHub, then re-verify 42/42 from the remote commit and flip S08-T01 to PASS.
 
-After owner says **"lanjutkan"**, SOL executes **SF-STEP 08 beginning S08-T01 only**.
-
-Do not jump to UI implementation, media-engine feature implementation, Gemini features, or STEP 09 before the STEP 08 foundation gate is completed.
+Until that happens, **S08-T02 and product coding remain blocked**.

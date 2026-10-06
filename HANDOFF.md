@@ -1,95 +1,68 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Fase:** PRE-IMPLEMENTATION / STEP 07 COMPLETE  
-**SF-STEP terakhir:** 07 — Code Constitution & Repository Architecture  
-**Gate:** PASS_WITH_PROVISIONAL  
-**Code Constitution:** CC-ANG-v1.0  
-**Repository Map:** REPO-ANG-v1.0  
+**Fase:** SF-STEP 08 / S08-T01 BLOCKED  
+**Active task:** S08-T01 — Source-of-Truth & Exact UI Reference Gate  
+**Task status:** BLOCKED ON REMOTE BINARY UPLOAD  
 **Application source:** NONE  
-**Next role:** SOL  
-**Next STEP:** SF-STEP 08  
-**First task:** S08-T01
+**Production coding:** FORBIDDEN
 
 ## Read first
 
-1. AGENTS.md
+1. `AGENTS.md`
 2. Software Factory master + guide
-3. docs/planning/00..08 in order
-4. docs/ui_reference/UI_REFERENCE_MANIFEST.md
-5. docs/DECISIONS_LOCKED.md
-6. docs/PROJECT_STATUS.md
-7. docs/REPOSITORY_RULES.md
-8. this HANDOFF.md
+3. `docs/planning/00..08` in order
+4. `docs/ui_reference/UI_REFERENCE_MANIFEST.md`
+5. `docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
+6. `docs/DECISIONS_LOCKED.md`
+7. `docs/PROJECT_STATUS.md`
+8. `docs/REPOSITORY_RULES.md`
+9. this `HANDOFF.md`
 
-## Core constitution
+## S08-T01 work completed
 
-Canonical package: `src/ai_ngerti_geopolitik/`.
+Verified repo baseline:
+- repo: `inoriko920-dev/AI-Ngerti-Geopolitik`
+- branch: `main`
+- starting HEAD: `47942565c6b34f5d5d70dc4eed8f732f6f5c5643`
 
-Dependency:
-- presentation -> application -> domain
-- infrastructure -> application ports + domain contract types
-- bootstrap -> all for construction only
+Source-of-truth verification:
+- Master Blueprint DOCX+TXT present.
+- STEP 00–07 DOCX+TXT present.
+- STEP 04/05 UI manifest/index present.
+- no product source code exists.
 
-Rules:
-- ProjectState is truth.
-- All manual/AI mutations through semantic CommandBus.
-- No generic god service/manager.
-- Presentation cannot directly call engine/provider/persistence/credential adapters.
-- Domain cannot import Qt/libopenshot/MLT/FFmpeg/Gemini/keyring/subprocess/filesystem I/O.
-- Long work stays off UI thread.
-- Worker results are revision/task validated.
-- Secrets never enter project/settings/log/repo.
-- UI remains AAVC 1:1 and real widgets.
-- Search -> Understand -> Modify before create.
+Exact visual verification:
+- recovered exact original `UI-001.png..UI-042.png`;
+- local SHA-256/size verification against authoritative manifest: **42/42 PASS**;
+- local exact pack: `ANG_UI_REFERENCE_RAW_42_EXACT.zip`;
+- pack SHA-256: `2fc3e43b5625b0ec709095b53549c6c098f0dbd9c32a0789eb6e2683e59feef2`;
+- pack size: `65,497,507 bytes`.
 
-## STEP 08 exact order
+## Blocker
 
-### S08-T01 — FIRST / P0
-Source-of-Truth & Exact UI Reference Gate.
+The available GitHub connector cannot ingest the exact local binary files/pack from the model working container. It can write UTF-8 files and Git blobs from supplied text/base64, but there is no connector file-reference/binary upload bridge exposed for these 65 MB of already-verified PNG bytes.
 
-Goal:
-- ensure STEP00–07 planning DOCX+TXT are in repo;
-- commit exact full-resolution UI-001..UI-042 raw/reference files;
-- verify 42/42 SHA-256 against manifest;
-- update source-of-truth index/status/handoff;
-- **do not create product source code yet**.
+This is a **tooling transport blocker**, not a missing-design blocker.
 
-PASS evidence:
-- 42/42 hash verification;
-- planning 00–07 present/readable;
-- commit SHA;
-- pre-coding docs/UI gate explicitly PASS.
+Do not weaken the gate by treating the existing hash manifest, compressed preview JPGs, reconstructed DOCX, or VOID prompt batch as the raw UI pack.
 
-### S08-T02
-After T01 PASS only: minimal src-layout + Python/toolchain + architecture fitness checks.
+## Exact next action
 
-### S08-T03
-After T02 PASS only: Windows CI + portable packaging scaffold.
+Continue **S08-T01 only** when an exact binary upload path is available.
 
-## Important architecture
+Required completion:
+1. commit exact raw UI reference payload to GitHub;
+2. verify remote-extracted `UI-001..UI-042` SHA-256 = existing manifest, 42/42;
+3. update status/handoff to S08-T01 PASS;
+4. only then activate S08-T02.
 
-- UI: PySide6/Qt Widgets.
-- Project: versioned .angproj JSON.
-- Media: MediaEnginePort; libopenshot v1.0.1 qualification candidate; MLT fallback.
-- AI: AIProviderPort + Gemini structured plans -> PlanVerifier -> CommandBatch.
-- Credentials: Windows credential adapter, 1–100 logical slots.
-- Render: snapshot -> isolated child worker.
-- Portable: standalone multi-file folder -> ZIP.
+## Still forbidden
 
-## Do not do in first STEP 08 task
-
-- no UI coding;
-- no engine feature;
-- no Gemini feature;
-- no rendering feature;
-- no upstream source copy;
-- no new design;
-- no use of the VOID 42 ANG prompt ZIP.
-
-## Astra review triggers
-
-Stop/review on: new top-level layer/service, dependency exception, breaking schema/port, engine switch, new native dependency, frozen UI structural delta, new AI destructive permission family, secret backend change, packaging-model change.
-
-## Next exact action
-
-On owner **"lanjutkan"**, execute **S08-T01 only** and report its PASS/FAIL evidence before proceeding to T02.
+- no product source code;
+- no UI implementation;
+- no libopenshot/MLT feature implementation;
+- no Gemini implementation;
+- no render feature;
+- no STEP 09;
+- no UI regeneration;
+- no use of the VOID 42-prompt ZIP.
