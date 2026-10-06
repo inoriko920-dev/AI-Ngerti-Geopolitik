@@ -44,11 +44,7 @@ def _absolute_imports(tree: ast.AST, module_parts: tuple[str, ...]) -> list[tupl
             found.extend((node.lineno, alias.name) for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
             if node.level:
-                base = (
-                    list(module_parts[: -node.level])
-                    if node.level <= len(module_parts)
-                    else []
-                )
+                base = list(module_parts[: -node.level]) if node.level <= len(module_parts) else []
                 if node.module:
                     base.extend(node.module.split("."))
                 name = ".".join(base)
