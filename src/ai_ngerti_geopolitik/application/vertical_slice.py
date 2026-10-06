@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ai_ngerti_geopolitik.application.commands import (
     AddClipCommand,
+    Command,
     CommandBatch,
     CommandBus,
     ImportAssetCommand,
@@ -69,7 +70,7 @@ class VerticalSliceSession:
         count = sum(len(track.clips) for track in self.state.tracks)
         return f"C{count + 1:03d}"
 
-    def _execute(self, label: str, command: object) -> ProjectState:
+    def _execute(self, label: str, command: Command) -> ProjectState:
         batch = CommandBatch(
             batch_id=f"B{self.state.revision + 1:03d}",
             label=label,
