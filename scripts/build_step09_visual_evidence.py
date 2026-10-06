@@ -27,8 +27,9 @@ def fit_rect(
 
 def main() -> int:
     from PySide6.QtCore import QRect, Qt
-    from PySide6.QtGui import QColor, QFont, QImage, QPainter
+    from PySide6.QtGui import QColor, QFont, QGuiApplication, QImage, QPainter
 
+    _app = QGuiApplication([])
     parser = argparse.ArgumentParser(
         description="Build actual-vs-reference STEP 09 visual evidence"
     )
