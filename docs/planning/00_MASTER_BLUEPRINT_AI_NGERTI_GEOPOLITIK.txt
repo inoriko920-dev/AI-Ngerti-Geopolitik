@@ -1,0 +1,1661 @@
+<PARSED TEXT FOR PAGE: 1 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 1
+00
+MASTER BLUEPRINT
+AI NGERTI GEOPOLITIK
+Spesifikasi Produk, Arsitektur, Feature-Parity, AI Editing, QA, dan Handoff Sebelum
+Coding
+Repository target: inoriko920-dev/AI-Ngerti-Geopolitik
+Status saat dokumen dibuat: repository baru / kosong — belum ada implementasi
+Tanggal: 6 Oktober 2026 | Versi dokumen: 1.0
+TUJUAN DOKUMEN — Menjadi sumber kebenaran awal agar AI/developer yang melanjutkan 
+proyek memahami masalah yang hendak diselesaikan, batas produk, keputusan arsitektur, fitur 
+wajib, standar stabilitas, serta urutan implementasi sebelum menulis kode.
+CATATAN PENTING
+Repo AI-Automatic-Video-Composer adalah REFERENSI BACA SAJA. Dokumen ini tidak memberi
+izin untuk mengubah, menghapus, memindahkan, atau melakukan commit apa pun ke repo lama.
+<PARSED TEXT FOR PAGE: 2 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 2
+0. Kontrol Dokumen dan Aturan Membaca
+Item Nilai
+Nama dokumen 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.d
+ocx
+Produk AI Ngerti Geopolitik
+Versi 1.0 — Blueprint sebelum coding
+Repo target inoriko920-dev/AI-Ngerti-Geopolitik
+Repo referensi lama inoriko920-dev/AI-Automatic-Video-Composer — 
+READ ONLY
+Target platform utama Windows 11 x64
+Tujuan utama Editor otomatis khusus video geopolitik/dokumenter 
+yang stabil, dapat dikoreksi manual, dan tidak 
+membangun ulang engine video dari nol
+Pemilik keputusan produk Pengguna / repository owner
+Status coding BELUM DIMULAI berdasarkan blueprint ini
+0.1 Instruksi wajib untuk AI/developer yang melanjutkan
+ Baca dokumen ini dari awal sampai akhir sebelum membuat file kode baru.
+ Jangan menganggap repo lama sebagai basis yang harus diteruskan. Repo lama adalah 
+sumber feature-parity, bukti kebutuhan, dan pelajaran arsitektur.
+ Jangan mengubah repo AI-Automatic-Video-Composer. Semua eksperimen dan implementasi
+dilakukan di AI-Ngerti-Geopolitik setelah owner menyetujui tahap coding.
+ Jangan membuat ulang subsistem editor video tingkat rendah yang sudah disediakan engine 
+matang tanpa alasan teknis yang dapat dibuktikan.
+ Setiap fitur baru harus mempunyai owner modul, acceptance criteria, test, dan alasan 
+mengapa fitur tersebut termasuk scope.
+ Jika terjadi konflik antara kode yang kelak ada dan keputusan LOCKED dalam dokumen ini, 
+hentikan perubahan dan angkat konflik sebagai keputusan eksplisit; jangan diam-diam 
+mengubah arsitektur.
+LOCKED — Produk ini adalah specialized AI documentary/geopolitics editor, bukan upaya 
+membuat NLE umum seperti Filmora/Premiere dari nol.
+<PARSED TEXT FOR PAGE: 3 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 3
+LOCKED — V1 wajib mencapai feature-parity praktis dengan workflow lama sebelum ekspansi 
+fitur besar.
+GATE — Reuse kode openshot-qt hanya boleh dimulai setelah strategi lisensi proyek diputuskan. 
+libopenshot tetap kandidat engine utama karena menyediakan binding Python dan engine 
+multimedia matang.
+0.2 Sumber referensi teknis yang dikunci untuk fase awal
+Referensi Baseline Peran
+OpenShot/openshot-qt v4.0.1 — commit 
+5b0588ca36beedebe790e9ed4f48d10
+5a1752f18
+Referensi editor/timeline/UI 
+infrastructure. Selective reuse 
+hanya setelah license gate.
+OpenShot/libopenshot v1.0.1 — commit 
+1c46200eaedeebce3fbce74b5584dc0
+c04d70903
+Engine timeline, clip, layers, 
+keyframe, playback, audio mixing, 
+effects, render, Python binding.
+AI-Automatic-Video-Composer main saat audit awal proyek Referensi fitur, workflow Scene 
+DOCX/Axxx, subtitle, narrasi, 
+Gemini, validation, UX. READ ONLY.
+Referensi di atas adalah baseline agar implementasi tidak mengejar moving target. Upgrade 
+versi hanya dilakukan melalui compatibility review dan test matrix, bukan otomatis karena 
+upstream merilis versi baru.
+<PARSED TEXT FOR PAGE: 4 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 4
+Daftar Isi Ringkas
+1. Ringkasan Eksekutif
+2. Masalah yang Ingin Diselesaikan
+3. Visi Produk dan Prinsip Desain
+4. Siapa Pengguna dan Jobs-to-be-Done
+5. Scope V1, Non-Scope, dan Roadmap
+6. Feature-Parity Wajib dari Repo Lama
+7. User Journey End-to-End
+8. Kontrak Input dan Output
+9. Model Project dan Data
+10. Arsitektur Target
+11. Strategi OpenShot/libopenshot
+12. Timeline dan Editor Manual
+13. Preview, Playback, dan Sinkronisasi
+14. Animasi dan Motion System
+15. Subtitle System
+16. Narration dan Audio
+17. Validation, Relink, dan Recovery
+18. Gemini dan AI Editing
+19. Credential Pool dan Keamanan
+20. Render dan Export
+21. Background Jobs dan Responsiveness
+22. UI/UX Contract
+23. Struktur Repository yang Disarankan
+24. Migration/Compatibility dari AAVC
+25. Non-Functional Requirements
+26. Testing dan Quality Gates
+27. Packaging Windows dan Release
+28. Licensing, Dependency, dan Compliance
+29. Observability dan Diagnostics
+30. Risiko Utama dan Mitigasi
+31. Tahapan Implementasi
+32. Definition of Done
+33. Checklist Handoff AI
+34. Appendix: Command Schema
+35. Appendix: Feature Acceptance Matrix
+36. Appendix: Glosarium
+<PARSED TEXT FOR PAGE: 5 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 5
+1. Ringkasan Eksekutif
+AI Ngerti Geopolitik adalah aplikasi desktop Windows untuk menyusun video 
+geopolitik/dokumenter secara otomatis dari input yang sudah terstruktur, lalu memberi 
+pengguna kendali manual untuk mengoreksi hasil sebelum render final. Fokus produk bukan 
+menyediakan semua fitur editor video umum, melainkan mempercepat pekerjaan berulang 
+yang khas pada produksi video naratif: memetakan Scene ke aset, mengatur pacing, memberi 
+motion yang konsisten, menampilkan subtitle, memasang narasi, melakukan validasi, dan 
+mengekspor video dengan hasil stabil.
+Repo lama membuktikan kebutuhan produk dan sudah memiliki banyak fitur penting, tetapi 
+terlalu banyak subsistem editor dibuat sendiri: timeline interaction, preview, compositing 
+scene, graph FFmpeg, motion, navigation, dan sejumlah behavior UI. Akibatnya jumlah kode 
+presentation/timeline menjadi besar, preview dan final render mempunyai implementation 
+path berbeda, serta test yang hijau belum otomatis membuktikan workflow nyata pada proyek 
+panjang dan media beragam.
+Strategi repo baru adalah memisahkan “hal yang unik bagi produk” dari “masalah multimedia 
+umum”. Hal unik—Scene DOCX, Asset ID Axxx, aturan visual dokumenter, AI planning, 
+validation khusus workflow, dan UX otomatis—tetap menjadi milik AI Ngerti Geopolitik. Hal 
+umum—clip, track/layer, keyframe, playback, audio mixing, render timeline—ditopang engine 
+matang, dengan libopenshot sebagai kandidat engine utama dan openshot-qt sebagai referensi 
+editor infrastructure.
+HASIL YANG DIINGINKAN — Pengguna dapat memasukkan materi video geopolitik, menekan 
+alur otomatis, melihat timeline yang nyata, melakukan koreksi manual bila perlu, lalu 
+mengekspor video final tanpa harus memahami FFmpeg atau menyusun setiap aset satu per 
+satu.
+1.1 Definisi sukses produk
+ Cepat digunakan: project dapat dibuat dari Scene DOCX + folder aset tanpa setup teknis 
+rumit.
+ Stabil: workflow panjang tidak bergantung pada ratusan helper UI/timeline buatan sendiri 
+yang saling menempel.
+ Deterministik: keputusan AI diterapkan sebagai command tervalidasi dan dapat di-Undo.
+ Preview dapat dipercaya: preview dan export memakai data timeline/transform yang sama
+sehingga perbedaan visual diminimalkan dan didokumentasikan.
+ Recoverable: crash, asset berpindah, request AI gagal, atau render dibatalkan tidak merusak
+project sumber.
+ Portable: user dapat memakai build Windows tanpa lingkungan developer.
+ AI-friendly: struktur repo, dokumentasi, kontrak command, dan test membuat AI lain dapat 
+melanjutkan tanpa menebak owner logic.
+<PARSED TEXT FOR PAGE: 6 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 6
+1.2 North-star workflow
+Tahap Aksi pengguna Tanggung jawab aplikasi
+1 Pilih Scene DOCX Parse struktur scene dan source 
+quote secara aman.
+2 Pilih folder aset Bind A001, A002, dst.; tandai 
+missing/corrupt/duplicate.
+3 Tambahkan narrasi/SRT bila 
+tersedia
+Probe media, simpan reference, 
+validasi durasi dan timing.
+4 Buat project Bangun timeline engine dari 
+canonical project model.
+5 AUTO EDIT AI menyusun edit plan dalam batas 
+command yang diizinkan; validator 
+memeriksa seluruh rencana.
+6 Review Preview playback + timeline + 
+inspector menampilkan keadaan 
+nyata.
+7 Koreksi manual Reorder, durasi, split, motion, 
+subtitle, marker, In/Out, relink; 
+semua Undo/Redo.
+8 Validasi Aplikasi menolak export bila 
+terdapat blocker.
+9 Export Engine merender project/selection 
+menggunakan preset yang 
+didukung.
+10 Selesai Output video diverifikasi non￾empty/valid; project tetap dapat 
+dibuka kembali.
+<PARSED TEXT FOR PAGE: 7 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 7
+2. Masalah yang Ingin Diselesaikan
+2.1 Masalah pengguna
+Produksi video geopolitik/dokumenter sering berisi pola yang berulang: naskah dipecah 
+menjadi scene, setiap scene mempunyai satu atau dua visual utama, visual perlu diberi motion 
+agar tidak statis, narasi dan subtitle harus sinkron, dan seluruh scene perlu disusun menjadi 
+video yang ritmenya terasa natural. Bila dikerjakan manual di editor umum, pengguna 
+menghabiskan banyak waktu untuk operasi mekanis yang sebenarnya dapat diprediksi dari 
+struktur naskah dan aset.
+ Memasukkan puluhan/ratusan aset satu per satu dan memastikan urutannya benar.
+ Menyesuaikan durasi scene berdasarkan konteks narasi.
+ Menghindari animasi yang terlalu repetitif atau terlalu agresif.
+ Mengatur dua visual dalam satu scene dengan framing yang konsisten.
+ Mengelola subtitle, narasi, dan timing sambil tetap menjaga keterbacaan.
+ Mengoreksi missing asset atau file yang berpindah tanpa membangun project ulang.
+ Menunggu render atau request AI tanpa membuat UI hang.
+ Memastikan project dapat dilanjutkan setelah aplikasi tertutup/crash.
+2.2 Masalah teknis yang terlihat pada pendekatan repo lama
+Masalah Gejala Dampak Arah solusi repo baru
+Terlalu banyak editor 
+behavior dibuat sendiri
+Banyak modul khusus 
+timeline untuk snap, zoom, 
+navigator, follow, marker, 
+In/Out, seek, resize, reorder.
+Maintenance surface besar; 
+bug interaksi saling 
+memengaruhi.
+Delegasikan primitives 
+timeline/playback ke 
+engine/editor infrastructure
+matang.
+Render graph custom Scene dibangun manual 
+lewat FFmpeg 
+filter_complex, loop image, 
+overlay, fade, concat.
+Setiap fitur visual baru 
+memperbesar kompleksitas 
+graph dan parity preview.
+Gunakan canonical 
+clip/timeline/keyframe 
+engine; export berasal dari 
+model yang sama.
+Preview vs final berbeda 
+jalur
+Preview Qt dan render 
+FFmpeg memiliki evaluator 
+berbeda.
+Apa yang terlihat belum 
+tentu sama dengan hasil 
+final.
+Single source of truth untuk
+transform/timing; parity 
+test frame-sampling.
+Model Scene sempit Scene lama secara domain 
+hanya 1 atau 2 asset.
+Sulit berevolusi tanpa 
+menyentuh banyak layer.
+Pertahankan UX 
+SINGLE/DOUBLE di V1, 
+tetapi internal model 
+memakai clip/layer yang 
+extensible.
+AI terlalu sempit Gemini terutama memilih 
+enter/exit effect dan 
+intensity.
+Belum benar-benar 
+“mengedit” pacing/timeline.
+Bangun Edit Plan berbasis 
+command whitelist dan 
+validation.
+<PARSED TEXT FOR PAGE: 8 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 8
+Masalah Gejala Dampak Arah solusi repo baru
+E2E terlalu tipis Sebagian besar test unit; 
+E2E utama mengecek 
+contract state render plan. →
+CI hijau belum 
+membuktikan project nyata 
+panjang.
+Tambah GUI E2E, render 
+golden project, stress, crash 
+recovery, clean-machine 
+packaging test.
+2.3 Problem statement resmi
+PROBLEM STATEMENT — Bagaimana membuat editor otomatis khusus video geopolitik yang 
+mempertahankan workflow efektif dari AAVC, tetapi mengganti pondasi multimedia yang rapuh 
+dengan engine matang sehingga aplikasi benar-benar stabil untuk project nyata, AI dapat 
+mengambil keputusan editing yang tervalidasi, dan pengguna tetap memiliki kontrol manual 
+serta recovery yang dapat dipercaya?
+2.4 Yang TIDAK dianggap solusi
+ Menambah lebih banyak helper di atas timeline custom lama.
+ Menganggap “semua unit test lulus” sebagai bukti aplikasi siap dipakai.
+ Memberi AI akses bebas untuk memodifikasi JSON project tanpa schema/validator.
+ Meng-copy seluruh OpenShot lalu mengganti logo tanpa memisahkan kebutuhan produk.
+ Mengejar semua fitur Filmora/Premiere yang tidak berhubungan dengan workflow 
+geopolitik.
+ Menambahkan provider AI lain sebelum Gemini flow stabil dan teruji.
+<PARSED TEXT FOR PAGE: 9 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 9
+3. Visi Produk dan Prinsip Desain
+3.1 Visi
+“AI Ngerti Geopolitik” harus terasa seperti asisten editor yang memahami struktur video 
+dokumenter: ia menerima materi yang sudah dipetakan, menyusun draft edit secara masuk 
+akal, menjaga visual tidak membosankan, dan mengerjakan pekerjaan teknis repetitif. 
+Pengguna berperan sebagai director/reviewer, bukan operator yang harus mengatur setiap 
+keyframe dari nol.
+3.2 Prinsip produk
+Prinsip Makna operasional
+Automation first, manual correction second Default flow menghasilkan draft otomatis; semua 
+keputusan penting tetap dapat dikoreksi manual.
+Stable foundation over clever custom code Pilih engine yang sudah menyelesaikan 
+playback/timeline/render daripada membangun ulang.
+One canonical timeline Durasi, posisi, layer, transform, dan timing tidak boleh 
+mempunyai versi berbeda antara preview dan export.
+AI plans, validators decide AI mengusulkan command; aplikasi memvalidasi 
+legalitas sebelum mutasi state.
+Everything important is undoable Satu niat user/AI = satu transaction history yang jelas.
+Fail closed Missing input, invalid media, credential unavailable, 
+atau unsupported action harus menghentikan aksi 
+secara jelas; tidak membuat output palsu.
+Specialized, not bloated Setiap fitur harus menjawab workflow 
+dokumenter/geopolitik.
+Documentation is part of architecture Keputusan penting, schema, commands, dan ownership 
+ditulis agar AI lain tidak membuat parallel 
+implementation.
+3.3 Prinsip teknis
+ Tidak ada business rule di widget Qt.
+ Tidak ada raw API key di project, log, screenshot, atau error text.
+ Tidak ada long-running media/AI job pada GUI thread.
+ Tidak ada direct mutation dari respons AI ke timeline engine.
+ Tidak ada renderer alternatif tersembunyi yang menghasilkan hasil berbeda tanpa test 
+parity.
+ Tidak ada hard-coded developer path.
+ Tidak ada dependency baru tanpa alasan, lisensi, pin versi, dan test.
+<PARSED TEXT FOR PAGE: 10 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 10
+4. Siapa Pengguna dan Jobs-to-be-Done
+4.1 Persona utama
+Pengguna utama adalah creator/editor yang membuat video naratif geopolitik/dokumenter, 
+memiliki naskah yang sudah dipecah menjadi scene dan visual, serta ingin mengurangi 
+pekerjaan mekanis di editor video. Pengguna tidak harus memahami coding, FFmpeg, graph 
+filter, atau detail internal engine.
+4.2 Jobs-to-be-done
+Ketika... Saya ingin... Agar...
+saya sudah punya Scene DOCX dan 
+folder gambar
+aplikasi menyusun semuanya sesuai
+urutan
+saya tidak memasukkan aset satu 
+per satu.
+draft edit pertama dibuat AI memilih pacing dan motion yang 
+wajar
+video langsung layak direview.
+ada bagian kurang pas saya mengubahnya manual di 
+timeline/inspector
+saya tetap mempunyai kontrol 
+penuh.
+aset pindah folder aplikasi menunjukkan yang hilang 
+dan membantu relink
+project tidak perlu dibuat ulang.
+subtitle/narasi tersedia timing dan tampilan masuk ke 
+project yang sama
+preview dan export tetap sinkron.
+render panjang berjalan UI tetap responsif dan bisa melihat 
+progress/cancel
+saya yakin aplikasi tidak macet.
+AI key limit/error pool credential menangani failover 
+aman
+workflow tidak berhenti karena 
+satu key bermasalah.
+<PARSED TEXT FOR PAGE: 11 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 11
+5. Scope V1, Non-Scope, dan Roadmap
+5.1 Scope V1 — harus selesai
+ Create/Open/Save/Save As project yang aman dan atomic.
+ Import Scene DOCX dengan mapping aset Axxx dan validasi structure.
+ Asset browser/binding status READY/MISSING/CORRUPT/DUPLICATE serta relink.
+ Timeline nyata dengan reorder, resize duration, split, selection, In/Out, marker, snap, zoom, 
+follow playhead, navigator, Undo/Redo.
+ SINGLE/DOUBLE scene workflow yang setara dengan kebutuhan lama.
+ Manual animation/motion + deterministic random animation + lock per asset.
+ Subtitle SRT import/edit/timing tools/style/animation/preset dan burn-in/export behavior.
+ Narration import + microphone recording + project binding.
+ Gemini credential secure slots 1–100 dan rotating pool.
+ AI Auto Edit minimal yang aman: animation + pacing/transform command yang telah 
+dibuktikan engine dapat render dan undo.
+ Validation Center, project recovery/autosave, diagnostics.
+ Export project/selection: H.264/H.265, 1080p/1440p/4K, 30/60 fps, quality preset, sharpen yang
+benar-benar didukung.
+ Windows portable build + clean-machine smoke test.
+ Legacy AAVC project importer bila schema sumber valid; tidak mengubah file lama.
+5.2 Non-scope V1
+ NLE umum dengan unlimited arbitrary workflow sebagai tujuan produk utama.
+ Color grading profesional setara DaVinci Resolve.
+ Fusion/VFX node graph.
+ 3D editor atau motion graphics suite umum.
+ Cloud collaboration/multi-user.
+ Mobile/Android build.
+ Plugin marketplace.
+ Provider AI selain Gemini kecuali ada keputusan baru.
+ Generative image/video di dalam editor sebagai requirement V1.
+ Mencopy seluruh fitur OpenShot yang tidak dipakai workflow geopolitik.
+5.3 Roadmap setelah parity
+Fase Tujuan Syarat masuk
+V1.0 Stable parity + AI Auto Edit aman Semua acceptance parity lulus di 
+Windows target.
+V1.1 UX polish, performance, preset 
+dokumenter tambahan
+Tidak ada blocker stabilitas V1.0.
+<PARSED TEXT FOR PAGE: 12 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 12
+Fase Tujuan Syarat masuk
+V1.5 AI Director lebih kaya: scene 
+rhythm, transition reasoning, 
+transform composition
+Command schema stabil dan 
+regression suite kuat.
+V2.0 Eksperimen fitur baru seperti 
+arbitrary background/video tracks 
+bila memang dibutuhkan
+Harus ada use case nyata; tidak 
+otomatis karena engine mampu.
+LOCKED — Feature parity dan stabilitas didahulukan. Fitur baru tidak boleh menjadi alasan 
+menunda core workflow yang sudah terbukti dibutuhkan.
+<PARSED TEXT FOR PAGE: 13 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 13
+6. Feature-Parity Wajib dari Repo Lama
+Feature-parity berarti pengguna yang memahami workflow AAVC tidak kehilangan 
+kemampuan penting ketika pindah ke AI Ngerti Geopolitik. Parity diukur dari hasil dan 
+workflow, bukan dari kesamaan internal class atau file.
+Area Behavior lama Status V1 Implementasi baru
+Project New/Open/Save/Save As, dirty
+state, unsaved guard
+Wajib Project document baru + 
+atomic persistence
+Scene DOCX Parse scene berurutan dan 
+source quote
+Wajib Importer khusus ANG
+Axxx binding A001, A002, dst.; status aset Wajib Asset catalog + validator
+SINGLE/DOUBLE 1 atau 2 aset utama per scene Wajib Template scene di atas 
+clip/layer engine
+Scene order Move up/down dan drag 
+reorder
+Wajib Timeline command
+Duration Inspector + resize edge Wajib Clip/scene duration command
+Split Split di playhead Wajib Transaction command
+In/Out Set/clear/drag/play 
+selection/render selection
+Wajib Timeline range
+Markers Tambah/kelola/jump Wajib Project marker model
+Magnetic snap Toggle, threshold, guide, 
+bypass
+Wajib Engine/editor snapping atau 
+adapter
+Zoom/follow Zoom fit/100%, follow/smooth 
+follow
+Wajib Timeline viewport
+Mini navigator Overview, viewport 
+drag/resize, anchors
+Wajib jika masih dibutuhkan 
+UX
+Boleh diadaptasi, tetapi hasil 
+penggunaan harus setara
+Animation manual Pilih effect/intensity/lock Wajib Keyframe/effect adapter
+Random animation Seed deterministic + 
+cooldown + respect lock
+Wajib ANG animation planner
+AI animation Gemini bounded plan Wajib AI command planner
+Validation Issues + revalidate + relink Wajib Validation Center
+SRT import Bind subtitle source Wajib Subtitle service
+SRT editor Cue, timing, overlap, working 
+history
+Wajib Subtitle workspace
+<PARSED TEXT FOR PAGE: 14 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 14
+Area Behavior lama Status V1 Implementasi baru
+Subtitle style Font/fill/outline/shadow/
+background/alignment/
+margin
+Wajib Subtitle style model
+Subtitle animation Preset + enter/exit/highlight Wajib Render-supported subtitle 
+motion
+Narration import Bind audio media Wajib Audio clip/narration track
+Narration record Mic WAV bind → → Wajib Recorder service
+Gemini credentials Secure slot 1–100 Wajib CredentialStore
+Background jobs AI/render tidak hang GUI Wajib Job system
+Export H.264/H.265, res, fps, 
+CRF/preset, sharpen
+Wajib Engine exporter
+Recovery Snapshot/recovery project Wajib Recovery manager
+Portable Windows Build dapat dijalankan user Wajib Packaging pipeline
+6.1 Fitur lama yang tidak boleh diwarisi secara internal
+ Custom FFmpeg scene compositor sebagai pusat arsitektur.
+ Duplikasi evaluator transform antara preview dan render bila dapat dihindari.
+ Dependensi feature terhadap fixture/demo state yang dapat muncul sebagai data user.
+ Class hierarchy UI yang tumbuh hanya untuk mewariskan satu fitur ke window berikutnya.
+ Parallel owner untuk project state, timeline state, dan render state tanpa contract 
+sinkronisasi.
+<PARSED TEXT FOR PAGE: 15 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 15
+7. User Journey End-to-End
+7.1 Flow membuat project baru
+ User memilih “Proyek Baru”.
+ Aplikasi meminta Scene DOCX. Jika DOCX tidak dapat dibaca atau tidak memenuhi contract 
+minimum, flow berhenti dengan error yang dapat ditindaklanjuti.
+ Aplikasi meminta folder aset. Aset dipindai, di-hash/probe bila diperlukan, lalu dipetakan ke 
+ID canonical.
+ Aplikasi menampilkan review import: jumlah scene, jumlah aset, missing/duplicate/corrupt, 
+dan perkiraan durasi.
+ Opsional: user menambahkan narration audio dan SRT.
+ User memilih lokasi project. Project disimpan secara atomic sebelum dianggap active session.
+ Timeline canonical dibangun dari project model dan engine adapter.
+ Editor terbuka dengan scene pertama terpilih dan validation badge live.
+7.2 Flow AUTO EDIT
+ Preflight memeriksa project siap: tidak ada blocker input, engine tersedia, credential Gemini 
+tersedia bila AI digunakan.
+ Context Builder membuat ringkasan project yang aman dan cukup: source quote per scene, 
+asset metadata, durasi narrasi/subtitle, locked decisions, preset style.
+ Gemini menghasilkan Edit Plan JSON sesuai schema versi yang ditentukan.
+ Parser menolak field asing, command tidak dikenal, target tidak ada, nilai di luar batas, 
+perubahan terhadap locked item, dan command yang engine belum mendukung.
+ Dry-run validator menghitung hasil command tanpa menulis project.
+ Jika semua valid, seluruh plan diterapkan sebagai transaction terkontrol; jika plan besar, 
+dapat dikelompokkan per intent tetapi tetap mempunyai checkpoint Undo yang jelas.
+ UI menampilkan ringkasan perubahan dan memungkinkan Undo.
+7.3 Flow review dan koreksi
+User memutar preview, mencari scene tertentu, menggeser playhead, mengubah urutan/durasi,
+mengatur motion, subtitle, marker, atau melakukan relink. Semua perubahan model masuk 
+melalui command layer. Inspector tidak menulis langsung ke engine object; adapter 
+memperbarui engine setelah state canonical sah.
+7.4 Flow export
+ User memilih Full Project atau Selection In/Out.
+ Export dialog hanya menampilkan kemampuan yang benar-benar didukung.
+ Preflight mengecek media, subtitle, audio, output path, disk space minimum yang masuk 
+akal, codec/profile, dan engine readiness.
+ Render dijalankan sebagai background job dengan progress/cancel.
+ Success hanya diumumkan bila proses selesai, file output ada, dapat diprobe, durasi masuk 
+toleransi, serta size > minimum masuk akal.
+ Failure tidak mengubah project state menjadi seolah-olah berhasil.
+<PARSED TEXT FOR PAGE: 16 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 16
+8. Kontrak Input dan Output
+8.1 Scene DOCX
+V1 harus menerima kontrak Scene DOCX yang kompatibel secara semantik dengan format 
+lama. Parser harus toleran terhadap variasi whitespace/case yang aman, tetapi tidak boleh 
+menebak struktur yang ambigu.
+Elemen Contoh Aturan
+Header scene Tampilan Scene 1: 1 Nomor berurutan; angka terakhir 
+menyatakan jumlah aset utama 1 
+atau 2 untuk template V1.
+Asset row Asset 1: peta Asia Tenggara Nomor asset global berurutan; 
+quote/context dipertahankan.
+Asset ID canonical A001 Dibentuk deterministik dari nomor 
+asset.
+Durasi awal default preset Boleh dihitung dari 
+preset/AI/narration; bukan ditanam 
+permanen di parser.
+8.2 Asset media
+ Gambar minimal: PNG/JPEG/WebP bila engine/provider mendukung dan test lulus.
+ Video asset arbitrary tidak wajib untuk template Scene V1, tetapi engine internal tidak boleh 
+didesain seolah mustahil mendukungnya kelak.
+ Filename canonical A001.ext diutamakan; mapping eksplisit diperbolehkan untuk relink.
+ Path disimpan sebagai reference relinkable; project tidak boleh diam-diam menyalin file 
+besar kecuali ada pilihan user.
+ Probe harus mendeteksi file hilang, unreadable, zero-byte, format unsupported, atau 
+duplicate candidate.
+8.3 Narration
+Format yang diterima mengikuti engine/FFmpeg capabilities yang sudah dibuktikan pada build:
+WAV, MP3, M4A/AAC, FLAC, OGG atau subset yang benar-benar lolos test. Aplikasi tidak boleh 
+mengiklankan format hanya karena library teoritis dapat membacanya.
+8.4 Subtitle
+SRT menjadi format input utama untuk V1. Parser harus menjaga cue index, start/end, multi￾line text, dan mendeteksi overlap/invalid range. Export/burn-in boleh memakai representation 
+internal yang lebih kaya asalkan round-trip text/timing yang didukung tetap dapat dipahami.
+<PARSED TEXT FOR PAGE: 17 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 17
+8.5 Output
+Output Wajib Catatan
+Project file ANG Ya Versioned JSON/structured 
+document; atomic save; schema 
+migration.
+Final MP4 Ya H.264/H.265 sesuai preset.
+Selection MP4 Ya Berdasarkan In/Out valid.
+Subtitle sidecar Opsional sesuai workflow Tidak wajib jika burn-in; export SRT
+bila user memilih.
+Diagnostic bundle On demand Harus redacted; tidak mengandung 
+raw API key.
+<PARSED TEXT FOR PAGE: 18 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 18
+9. Model Project dan Data
+9.1 Canonical project document
+Project document AI Ngerti Geopolitik harus menjadi sumber kebenaran untuk intent editing, 
+sedangkan object libopenshot adalah runtime projection yang dapat dibangun ulang. Ini 
+mencegah project file bergantung pada pointer/object internal library dan memudahkan 
+migration serta testing.
+LOCKED — Project document tidak boleh sekadar menyimpan opaque dump engine tanpa 
+semantic layer ANG. Kita perlu mempertahankan konsep Scene, Asset ID, source quote, lock, AI 
+provenance, dan validation state yang unik bagi produk.
+9.2 Entitas utama
+Entitas Field inti Catatan
+Project schema_version, id, title, canvas, fps, 
+paths, settings, metadata
+Root document.
+Scene id/number, asset references, duration, 
+template, source_quotes, locked flags
+Unit naratif.
+Asset asset_id, source_path, media_type, 
+status, probe metadata
+Reference canonical.
+ClipProjection scene_id, asset_id, layer, in/out, 
+transform, opacity, speed
+Representasi intent clip untuk engine.
+Animation target, preset/effect, 
+keyframes/intensity, lock, 
+source(manual/random/AI)
+Harus render-backed.
+SubtitleTrack source, cues, style, animation settings Working copy + persisted model.
+NarrationTrack source, gain, offset, metadata Track audio utama V1.
+Marker time, label, type Navigasi editor.
+Selection in_time, out_time Editor state persisten bila diinginkan.
+AIEditRecord plan_id, model, commands summary, 
+project_revision, timestamp
+Tanpa prompt sensitif/raw key.
+9.3 Revision dan transaction
+ Setiap successful mutation menaikkan project revision.
+<PARSED TEXT FOR PAGE: 19 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 19
+ Long-running AI job menyimpan revision saat mulai; hasil dibuang bila project berubah dan 
+command tidak lagi aman diterapkan.
+ Compound intent mempunyai transaction_id untuk Undo/Redo.
+ Autosave snapshot terpisah dari source project; jangan overwrite source tanpa successful 
+commit.
+9.4 Extension file
+Nama extension final belum harus dikunci saat blueprint, tetapi direkomendasikan memakai 
+extension khusus seperti .angproj agar tidak bentrok dengan .aavcproj atau .osp. Reader harus 
+memeriksa schema_version, bukan hanya extension.
+<PARSED TEXT FOR PAGE: 20 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 20
+10. Arsitektur Target
+10.1 Layer utama
+Layer Tanggung jawab Tidak boleh
+Presentation (PySide6) Window, widget, view-model binding, 
+intent user, progress, dialogs
+Business rule, provider HTTP, raw file 
+mutation, direct engine logic 
+kompleks.
+Application Commands, queries, transaction, 
+session, AI edit orchestration, 
+import/export use cases
+Qt-specific UI code.
+Domain Project semantics: Scene, Asset, 
+validation rule, command legality, AI 
+command schema
+Filesystem, HTTP, Qt, subprocess.
+Engine Adapter Project libopenshot projection, →
+timeline sync, playback/export adapter
+Menjadi owner semantic Scene/AI.
+Infrastructure Persistence, credential store, path 
+service, logging, job system, recorder, 
+probes
+Menyelinap ke domain.
+Providers Gemini transport, request/response, 
+key pool
+Mutasi project langsung.
+10.2 Dependency direction
+Presentation Application Domain. Engine/Infrastructure/Providers mengimplementasikan → →
+port yang dipanggil Application. Domain tidak mengetahui PySide6, libopenshot, FFmpeg, 
+Gemini, Windows Credential Manager, atau filesystem.
+10.3 Single source of truth
+ Semantic source of truth: ANG ProjectState.
+ Runtime playback/render projection: libopenshot Timeline/Clip/Effect objects.
+ UI state: derived dari session + selection + viewport; tidak menjadi sumber project.
+ AI response: proposal sementara sampai valid dan committed.
+ Render job: snapshot immutable dari revision tertentu.
+10.4 Sync strategy
+Perubahan command memodifikasi ProjectState secara transaction. Setelah commit, 
+EngineProjectionService menerapkan delta terukur ke runtime engine atau rebuild bagian yang
+perlu. Bila engine sync gagal, transaction tidak dianggap selesai tanpa recovery strategy. Untuk 
+operasi besar, lebih aman rebuild projection daripada mempertahankan object graph setengah 
+sinkron.
+<PARSED TEXT FOR PAGE: 21 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 21
+11. Strategi OpenShot / libopenshot
+11.1 Mengapa libopenshot
+ Memiliki Timeline dan Clip primitives yang memang dirancang untuk video editing.
+ Mendukung multi-layer compositing, keyframe animation, time mapping, audio 
+mixing/resampling, effects, dan format berbasis FFmpeg.
+ Menyediakan Python binding sehingga cocok dengan stack Python/PySide6 yang sudah 
+familiar.
+ Menyediakan Qt video playback integration dan unit tests upstream.
+ Mengurangi kebutuhan membuat filter_complex besar secara manual untuk setiap scene.
+11.2 Peran openshot-qt
+openshot-qt adalah referensi penting untuk behavior editor nyata: timeline transactions, 
+undo/redo, clip manipulation, project history, waveform/cache, dan integration dengan 
+libopenshot. Namun pengambilan kode harus selective dan legal. Kita tidak ingin mem-fork 
+seluruh produk hanya untuk membuang sebagian besar fiturnya.
+11.3 License gate
+Pilihan Konsekuensi Rekomendasi
+Reuse kode openshot-qt GPLv3 
+secara langsung
+Project turunan perlu mematuhi 
+kewajiban GPL yang berlaku ketika 
+didistribusikan.
+Cocok bila repo memang open￾source GPL-compatible.
+Gunakan libopenshot LGPL dan 
+implementasikan UI/adapter sendiri
+Lebih banyak kerja UI, tetapi 
+menghindari membawa seluruh 
+codebase GPL openshot-qt.
+Pilihan bila owner ingin fleksibilitas
+lisensi lebih besar.
+Lisensi komersial libopenshot bila 
+relevan
+Perlu pembicaraan dengan pemilik 
+upstream dan biaya/terms terpisah.
+Hanya bila model distribusi 
+memerlukannya.
+GATE — Sebelum copy/import kode openshot-qt ke repo target, owner harus memilih model 
+lisensi proyek. Jangan melakukan copy dulu lalu memikirkan lisensi belakangan.
+11.4 Pinning dan upgrade
+ Baseline awal: openshot-qt v4.0.1 sebagai reference; libopenshot v1.0.1 sebagai engine 
+candidate.
+ Simpan exact version/commit dalam dependency manifest.
+ Upgrade hanya melalui branch/PR terpisah dengan playback, render, project-load, subtitle, 
+audio, dan packaging regression test.
+ Jangan mengandalkan latest/main upstream dalam release build.
+<PARSED TEXT FOR PAGE: 22 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 22
+12. Timeline dan Editor Manual
+12.1 Timeline contract
+Timeline harus menjadi editor nyata terhadap project canonical, bukan visual mock. Semua 
+blok scene/clip yang terlihat harus mempunyai identitas yang dapat ditelusuri ke Scene/Asset. 
+Drag, resize, split, dan reorder harus menghasilkan command domain yang dapat di-Undo.
+12.2 Operasi wajib
+Operasi Behavior Acceptance
+Select scene/clip Klik memilih target dan sinkron ke 
+inspector/preview
+Selection tidak mengubah project 
+revision.
+Reorder Drag atau menu move mengubah 
+urutan scene
+Render order berubah; satu Undo 
+mengembalikan.
+Resize duration Drag edge atau field inspector Durasi tervalidasi; total duration 
+update.
+Split Split pada playhead valid Membuat dua unit dengan timing 
+konsisten; Undo 1 langkah.
+Seek/scrub Ruler/drag/keyboard Preview mengikuti time canonical.
+In/Out Set, drag, clear Selection valid dan dapat dirender.
+Marker Add/edit/delete/jump Marker tidak mengubah render 
+kecuali feature secara eksplisit 
+memakai.
+Snap Toggle + threshold + modifier bypass Guide hanya muncul pada target yang 
+benar.
+Zoom Wheel/controls/fit/100% Anchor zoom dapat diprediksi.
+Follow playhead Off/on/smooth Manual scroll dapat menahan follow 
+sementara.
+12.3 Scene abstraction vs clip engine
+Di UI V1, pengguna tetap berpikir dalam Scene. Di bawahnya, satu Scene dapat diproyeksikan 
+menjadi satu atau beberapa Clip/Layer. Ini penting agar layout SINGLE/DOUBLE mudah 
+dipahami pengguna tanpa membatasi kemampuan engine. Scene boundary adalah semantic 
+boundary; Clip adalah media execution primitive.
+12.4 Undo/Redo
+ Satu drag reorder = satu history entry.
+<PARSED TEXT FOR PAGE: 23 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 23
+ Satu AI Auto Edit batch dapat menjadi satu atau beberapa checkpoint yang dapat dijelaskan; 
+jangan ratusan undo kecil tanpa konteks.
+ Import project, relink batch, dan auto-setup scene harus transactional.
+ History tidak boleh menyimpan raw API key atau object engine yang tidak serializable.
+<PARSED TEXT FOR PAGE: 24 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 24
+13. Preview, Playback, dan Sinkronisasi
+13.1 Target preview
+Preview harus membaca runtime timeline yang berasal dari ProjectState yang sama dengan 
+export. Tujuan utama adalah behavioral parity: posisi, durasi, urutan, transform, opacity, 
+motion, subtitle timing, dan audio timing sedekat mungkin dengan final render.
+13.2 Playback behavior
+ Play/pause/seek tidak memblok UI.
+ Playhead time disimpan dalam satu canonical time representation.
+ Scene selection dan playhead tidak boleh saling menimpa tanpa intent user.
+ Saat user mengedit di tengah playback, rule harus eksplisit: pause otomatis atau apply-safe; 
+jangan race.
+ Asset missing ditampilkan sebagai placeholder yang jelas dan export diblok sesuai severity.
+13.3 Preview vs export parity tests
+Buat beberapa golden projects pendek. Capture frame preview pada timestamp tetap dan frame
+export pada timestamp sama. Bandingkan layout/transform secara visual atau dengan toleransi
+image similarity. Perbedaan karena renderer yang memang tidak identik harus 
+didokumentasikan; perbedaan geometry/timing tidak boleh diterima sebagai “normal”.
+13.4 Proxy/cache
+Proxy/cache hanya ditambahkan setelah profiling menunjukkan kebutuhan. Jika dipakai, cache 
+key harus memasukkan source identity, mtime/hash, transform-relevant settings, dan engine 
+version yang memengaruhi hasil. Cache corruption tidak boleh merusak project; selalu dapat 
+dihapus dan dibangun ulang.
+<PARSED TEXT FOR PAGE: 25 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 25
+14. Animasi dan Motion System
+14.1 Tujuan
+Motion membuat still image terasa hidup tanpa mengganggu narasi. Gaya default harus 
+restrained/documentary, bukan efek acak yang menarik perhatian dari isi.
+14.2 Compatibility preset
+Nama preset dari repo lama dapat dipertahankan sebagai compatibility layer selama setiap 
+preset mempunyai implementasi engine nyata. Contoh registry lama mencakup Rise, Pan, Fade, 
+Pop, Wipe, Blur, Succession, Breathe, Baseline, Drift, Tectonic, Tumble, Neon, Scrapbook, Stomp,
+serta reveal-style effects seperti Brush, Ink, Digital, Spray Paint, Sketch, dan Gradient. Tidak 
+semua nama wajib langsung dipertahankan jika engine tidak dapat menghasilkan hasil yang 
+setara; yang wajib adalah tidak mengiklankan preset palsu.
+14.3 Motion representation
+Konsep Representasi yang disarankan
+Enter/Exit Preset diterjemahkan menjadi keyframe 
+opacity/scale/position/rotation atau effect yang 
+didukung.
+Ken Burns/Pan Keyframe transform dari start crop/scale/position ke 
+end.
+Intensity Parameter normalisasi 0–2 yang dipetakan ke range 
+aman per preset.
+Lock AI/random tidak boleh mengubah target yang locked.
+Seed Random planner deterministic jika seed sama dan 
+project revision/input sama.
+Cooldown Mencegah pola enter effect berulang berdekatan.
+14.4 Rules dokumenter
+ Default movement lambat dan terkontrol.
+ Hindari rotation agresif pada peta, dokumen, foto pemimpin, dan infografik kecuali preset 
+memang diminta.
+ Untuk DOUBLE layout, motion kedua asset tidak boleh membuat visual saling bertabrakan.
+ No motion juga merupakan keputusan valid bila asset sudah padat/informatif.
+ AI tidak boleh memakai effect yang belum mempunyai render-backed implementation dan 
+regression test.
+<PARSED TEXT FOR PAGE: 26 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 26
+15. Subtitle System
+15.1 Scope subtitle V1
+ Import SRT existing.
+ Parse cue dengan error reporting yang jelas.
+ Cue list + timing + text editor.
+ Working-copy history yang terpisah tetapi konsisten dengan project history.
+ Detect/resolve overlap sesuai tool yang disediakan.
+ Shift selected/all cues.
+ Stretch timing terhadap range bila valid.
+ Style preset + manual controls.
+ Animation preset yang benar-benar didukung render.
+ Preview yang cukup representatif dan final render yang deterministik.
+15.2 Style model
+Property Default dokumenter Validation
+Font Readable sans-serif Harus tersedia/fallback jelas.
+Size Responsive terhadap resolution Range aman; jangan keluar canvas.
+Fill Putih Valid color.
+Outline Gelap Width bounded.
+Shadow Ringan Bounded.
+Background box Off default Opacity 0–100.
+Alignment Bottom-center Safe area.
+Margin Safe margin Tidak memotong text.
+15.3 Subtitle animation
+Animation subtitle tidak boleh menjadi sistem efek terpisah yang tidak sinkron dengan final 
+render. Jika engine/libopenshot caption effect digunakan, pastikan parameter yang dibutuhkan 
+tersedia. Bila ASS/libass dipertahankan untuk styling tertentu, harus ada satu compiler 
+canonical dari SubtitleModel dan parity test terhadap preview.
+15.4 Guard
+ Unsaved subtitle edits harus diproteksi sebelum reload/close/switch project.
+ Missing source tidak diganti demo data.
+ Invalid SRT tidak boleh silently truncated.
+ Encoding harus ditangani dengan error yang jelas; jangan mengubah text tanpa user tahu.
+<PARSED TEXT FOR PAGE: 27 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 27
+16. Narration dan Audio
+16.1 Narration track
+Narration adalah audio utama yang mengarahkan pacing video. V1 tidak perlu menjadi DAW 
+multitrack penuh, tetapi narration harus menjadi track nyata dengan timing, gain dasar, 
+mute/solo bila diperlukan untuk review, dan sinkronisasi playback/export yang dapat diuji.
+16.2 Import narration
+ Probe file sebelum commit.
+ Simpan source reference dan metadata durasi/sample rate/channel.
+ Tolak file unreadable/unsupported.
+ Jangan menyalin file besar tanpa kebutuhan.
+16.3 Rekam narasi
+ Pilih input device bila lebih dari satu.
+ Record ke format lossless yang stabil (mis. WAV) sebelum optional transcode.
+ Tampilkan timer dan state Recording/Stopped.
+ Jika record gagal/cancel, project tidak berubah.
+ Setelah file valid, bind ke project sebagai satu history action.
+16.4 Audio/video duration policy
+Aplikasi harus mempunyai policy jelas saat durasi narration lebih panjang/pendek dari total 
+visual. Jangan otomatis memotong narration tanpa persetujuan. AI boleh mengusulkan 
+penyesuaian scene duration untuk mendekati narration timing, tetapi validator membatasi 
+minimum/maximum dan mencegah hasil ekstrem.
+<PARSED TEXT FOR PAGE: 28 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 28
+17. Validation, Relink, dan Recovery
+17.1 Validation Center
+Severity Contoh Behavior
+BLOCKER Scene merujuk asset missing; 
+project schema invalid; output path 
+tidak writable
+Export diblok.
+ERROR Subtitle invalid; narration corrupt; 
+engine cannot load clip
+Action terkait diblok sampai 
+diperbaiki.
+WARNING Aspect ratio ekstrim; subtitle line 
+terlalu panjang; scene terlalu 
+singkat
+User boleh lanjut bila aman.
+INFO Asset relinked; cache rebuilt; AI 
+plan partial
+Tidak memblok.
+17.2 Relink
+ Relink satu asset atau batch directory search.
+ Match prioritas: exact canonical ID basename metadata/hash candidate manual → → →
+choice.
+ Tidak boleh auto-relink ke file berbeda hanya karena nama mirip tanpa confidence yang 
+jelas.
+ Relink adalah command dan dapat di-Undo sampai project disimpan.
+17.3 Autosave/recovery
+ Autosave tidak overwrite file utama secara langsung.
+ Recovery snapshot diberi project_id + revision + timestamp.
+ Saat startup setelah crash, user diberi pilihan memulihkan snapshot atau membuka source 
+project.
+ Recovery corruption tidak menghapus source project.
+ Retention dibatasi agar folder recovery tidak tumbuh tanpa batas.
+17.4 Atomic persistence
+Save = validate serialize write temp flush/close atomic replace bila filesystem → → → →
+mendukung. Jika replace gagal, source lama harus tetap utuh dan error harus menunjukkan 
+remediasi.
+<PARSED TEXT FOR PAGE: 29 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 29
+18. Gemini dan AI Editing
+18.1 Peran AI
+Gemini adalah planner, bukan editor engine. AI membaca context yang dibatasi, menghasilkan 
+Edit Plan terstruktur, lalu aplikasi memutuskan apakah setiap command legal dan dapat 
+dirender. Dengan demikian failure/hallucination AI tidak langsung merusak project.
+18.2 Tingkat kemampuan AI
+Level Kemampuan Status target
+L0 Tidak ada AI; manual editing penuh Fallback wajib selalu tersedia.
+L1 Pilih animation preset/intensity per 
+asset
+Parity wajib.
+L2 Atur scene duration/pacing dalam 
+batas, transform/pan/zoom, 
+transition preset terbatas
+Target V1 jika semua command 
+render-backed.
+L3 Reasoning lintas scene: ritme bab, 
+emphasis, variation, subtitle 
+treatment
+Post-parity / V1.5.
+L4 Agent bebas mengubah semua 
+aspek editor
+Tidak diizinkan tanpa redesign 
+safety/command model.
+18.3 AI context
+ Project title dan global style preset.
+ Scene number/id, source quote, asset IDs, asset type/aspect ratio metadata.
+ Durasi scene saat ini, locked fields, neighboring scene summary.
+ Narration/subtitle timing summary bila tersedia, bukan seluruh data bila tidak perlu.
+ Allowed command list dan parameter ranges.
+ Allowed effect/transition names yang benar-benar supported.
+18.4 AI tidak boleh menerima
+ Raw API key.
+ Unbounded filesystem access.
+ Instruksi untuk mengeksekusi shell/code dari content project.
+ Hak untuk menulis file project langsung.
+ Hidden unsupported effects yang hanya ada di prompt tetapi tidak di engine.
+<PARSED TEXT FOR PAGE: 30 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 30
+18.5 Edit Plan lifecycle
+Langkah Validasi
+Build request Context size, model name, supported schema version.
+Provider response JSON decode; no extra root fields; command list only.
+Schema parse Type/range/enum validation.
+Semantic validation Target exists; not locked; command legal for target.
+Engine capability validation Effect/transition/transform can be projected and 
+rendered.
+Stale check Project revision unchanged or rebase explicitly 
+supported.
+Dry run Resulting state remains valid.
+Commit Transaction + history + UI refresh + audit summary.
+<PARSED TEXT FOR PAGE: 31 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 31
+19. Credential Pool dan Keamanan
+19.1 Requirement
+ Maksimal 100 slot Gemini, identitas slot deterministic.
+ Windows Credential Manager atau secure OS store sebagai production store.
+ Tidak ada plaintext fallback diam-diam.
+ UI status hanya menampilkan slot mana terisi, bukan key value.
+ Provider transport menggunakan header/SDK mechanism yang tidak menaruh key di 
+URL/log.
+ Key rotation/failover membedakan retryable vs permanent failure.
+19.2 Key pool behavior
+Kondisi Behavior
+Success Slot tetap healthy; metrics non-secret boleh diperbarui.
+Rate limit/quota Mark cooldown sesuai policy lalu coba slot berikut bila 
+retry-safe.
+Invalid key/auth Disable/mark unhealthy sampai user memperbaiki.
+Network timeout Retry bounded; jangan loop tanpa batas.
+All keys unavailable Stop dengan pesan actionable; manual editing tetap 
+berfungsi.
+19.3 Bulk import key
+Bulk import TXT bukan feature-parity yang wajib bila repo lama belum membuktikannya 
+sebagai runtime feature. Jika nanti ditambahkan, parser harus satu key per line, deduplicate, 
+tidak menyimpan source TXT, preview jumlah key tanpa menampilkan nilai, dan commit ke 
+secure store per slot. Feature ini ditempatkan setelah secure single-slot flow stabil.
+<PARSED TEXT FOR PAGE: 32 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 32
+20. Render dan Export
+20.1 Prinsip
+Export harus menggunakan timeline/clip/transform yang sama secara semantik dengan 
+preview. Hindari kembali ke pola “preview satu sistem, final render sistem lain” kecuali ada 
+alasan dan test parity yang kuat.
+20.2 Preset V1
+Parameter Pilihan V1 Catatan
+Container MP4 Default.
+Codec H.264 / H.265 Hanya bila build engine 
+menyediakan encoder yang dapat 
+diuji.
+Resolution 1920×1080 / 2560×1440 / 3840×2160 No fake option.
+FPS 30 / 60 Project/target compatible.
+Quality CRF/preset abstraction UI sederhana; mapping 
+terdokumentasi.
+Audio AAC bitrate preset Narration track.
+Sharpen Bounded preset/amount Hanya bila pipeline final benar￾benar menerapkan.
+Subtitle Burn-in on/off + optional sidecar Guard jika source invalid.
+20.3 Render preflight
+ Project schema valid dan tidak ada blocker.
+ Semua media yang dibutuhkan dapat dibuka engine.
+ Output directory writable.
+ Estimated output tidak wajib akurat, tetapi disk free harus dicek dengan margin minimum.
+ Codec/profile tersedia pada build target.
+ Selection In/Out valid bila render selection.
+ Subtitle/narration resource valid.
+20.4 Render result verification
+ Process/engine reports success.
+ Output exists dan size masuk akal.
+ Probe dapat membaca stream video.
+ Resolution/fps/codec sesuai request.
+<PARSED TEXT FOR PAGE: 33 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 33
+ Duration berada dalam toleransi terhadap project/selection.
+ Jika narration diaktifkan, audio stream ada.
+<PARSED TEXT FOR PAGE: 34 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 34
+21. Background Jobs dan Responsiveness
+21.1 Job types
+ AI request
+ Render/export
+ Media probe batch
+ Waveform/proxy generation bila digunakan
+ Large import scan
+ Diagnostic bundle generation
+21.2 Job manager contract
+Concern Rule
+Lifecycle Queued Running Success/Failed/Cancelled. → →
+Progress Structured progress event; UI tidak polling object 
+internal sembarangan.
+Cancellation Best effort; hanya dinyatakan cancelled setelah 
+worker/engine state aman.
+Overlap Policy eksplisit. Render dan AI mutating job dapat 
+dibatasi agar tidak bertabrakan.
+Stale result Worker membawa project/session/revision token; result
+lama dibuang.
+Error Typed exception + user message + diagnostic context 
+tanpa secret.
+21.3 GUI thread rule
+LOCKED — Tidak ada probing media, render, request Gemini, scanning folder besar, hashing 
+besar, atau recording finalization yang memblok Qt GUI thread.
+<PARSED TEXT FOR PAGE: 35 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 35
+22. UI/UX Contract
+22.1 Prinsip UI
+ Bahasa utama Indonesia.
+ Editor desktop profesional, tidak terasa seperti tool developer.
+ Kontrol yang belum berfungsi tidak ditampilkan sebagai seolah-olah feature nyata.
+ Error selalu menyebut apa yang salah dan tindakan berikutnya.
+ Status project, save/dirty, AI job, render, dan validation terlihat jelas tanpa pop-up 
+berlebihan.
+ Manual editing tetap dapat digunakan ketika Gemini tidak tersedia.
+22.2 Layout konseptual
+Area Isi
+Top bar Project actions, Undo/Redo, Import, Auto Edit, Validate, 
+Export.
+Left panel Scene list / media/assets / navigation sesuai mode.
+Center Preview player + playback controls.
+Right inspector Scene/asset transform, animation, subtitle/AI contextual 
+controls.
+Bottom Timeline + ruler + playhead + scene/clip blocks + 
+marker/InOut + navigator bila disetujui.
+Status area Validation badge, job progress, engine/provider status 
+yang tidak mengganggu.
+22.3 UI freeze sebelum coding besar
+Blueprint ini tidak mengunci pixel-perfect UI. Sebelum implementasi presentation besar, buat 
+referensi UI yang disetujui, registri screen/state, serta acceptance screenshot. Setelah UI freeze, 
+perubahan layout besar harus melalui keputusan eksplisit agar AI tidak terus merombak UI 
+saat core engine sedang dibangun.
+<PARSED TEXT FOR PAGE: 36 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 36
+23. Struktur Repository yang Disarankan
+Struktur final dapat berubah setelah spike engine, tetapi ownership berikut harus 
+dipertahankan agar AI tidak membuat duplicate manager/service.
+AI-Ngerti-Geopolitik/
+├─ README.md
+├─ pyproject.toml / dependency manifests
+├─ docs/
+│ ├─ 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx
+│ ├─ ARCHITECTURE.md
+│ ├─ PROJECT_STATE.md
+│ ├─ TASKS.md
+│ ├─ USER_GUIDE.md
+│ ├─ LICENSE_DECISION.md
+│ └─ adr/
+├─ src/ang/
+│ ├─ domain/
+│ │ ├─ project/
+│ │ ├─ timeline/
+│ │ ├─ animation/
+│ │ ├─ subtitle/
+│ │ └─ validation/
+│ ├─ application/
+│ │ ├─ commands/
+│ │ ├─ services/
+│ │ └─ ports/
+│ ├─ engine/
+│ │ └─ openshot_adapter/
+│ ├─ importing/
+│ │ ├─ docx_scene/
+│ │ └─ legacy_aavc/
+│ ├─ providers/
+│ │ └─ gemini/
+│ ├─ infrastructure/
+│ │ ├─ persistence/
+│ │ ├─ credentials/
+│ │ ├─ jobs/
+│ │ ├─ media/
+│ │ ├─ recording/
+│ │ └─ diagnostics/
+│ ├─ presentation/
+│ │ ├─ windows/
+│ │ ├─ widgets/
+│ │ ├─ timeline/
+│ │ └─ viewmodels/
+│ └─ bootstrap/
+├─ tests/
+│ ├─ unit/
+│ ├─ contract/
+│ ├─ integration/
+│ ├─ e2e/
+│ ├─ visual/
+│ ├─ stress/
+│ └─ packaging/
+├─ scripts/
+└─ packaging/
+<PARSED TEXT FOR PAGE: 37 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 37
+23.1 Ownership rules
+ Satu concern satu canonical owner.
+ Search existing owner sebelum membuat file/service baru.
+ Presentation tidak membuat helper engine kedua.
+ Provider Gemini hanya di providers; credential only infrastructure.
+ Legacy importer hanya membaca AAVC; tidak menjadi dependency runtime utama.
+ Engine adapter tidak menyimpan business rule geopolitik.
+<PARSED TEXT FOR PAGE: 38 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 38
+24. Migration / Compatibility dari AAVC
+24.1 Prinsip
+Repo lama tidak disentuh. Compatibility dilakukan dengan membaca file/project lama dari repo
+baru bila user memang ingin migrasi. Original file tetap utuh.
+24.2 Legacy .aavcproj importer
+ Detect schema/version yang dikenal.
+ Map title/canvas/fps/scenes/bindings/narration/subtitle/animation/render quality ke ANG 
+model.
+ Preserve source quote dan asset IDs.
+ Unknown/unsupported field dilaporkan; jangan silently drop bila memengaruhi hasil.
+ Hasil migrasi disimpan sebagai project baru; tidak overwrite .aavcproj.
+24.3 Behavioral migration
+Tidak semua internal effect lama harus memiliki implementation identik. Untuk preset yang 
+sulit dipetakan ke engine, buat compatibility mapping dengan tingkat: EXACT, APPROXIMATE, 
+UNSUPPORTED. UI harus memberi tahu bila project lama memakai effect UNSUPPORTED 
+sebelum export.
+24.4 Data yang jangan dimigrasikan
+ Raw credentials atau path machine-local yang tidak relevan.
+ Fixture/demo state.
+ Cache/recovery snapshot lama sebagai project final.
+ Implementation-specific metadata yang tidak memiliki arti di ANG.
+<PARSED TEXT FOR PAGE: 39 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 39
+25. Non-Functional Requirements
+Kategori Requirement V1
+Stability Project tidak rusak karena failed AI/render/import. 
+Crash recovery tersedia.
+Responsiveness Interaksi editor normal tidak hang karena I/O berat.
+Determinism Random planner dengan seed sama menghasilkan hasil 
+sama; export config reproducible sejauh dependency 
+memungkinkan.
+Performance Timeline proyek target (mis. 100–300 scene still-image) 
+tetap usable; target final ditetapkan setelah benchmark 
+spike.
+Security Credentials secure, untrusted DOCX/SRT/media 
+diperlakukan sebagai input tidak dipercaya.
+Portability Tidak ada developer absolute path; build Windows 
+dapat dijalankan di clean machine target.
+Maintainability Layer boundaries dan ownership dapat diaudit oleh 
+test/static checks.
+Observability Structured logs, job IDs, project/session correlation, 
+redaction.
+Compatibility Schema versioned dan migration path eksplisit.
+Accessibility/UX Keyboard shortcut dasar, focus yang masuk akal, text 
+tidak clipped, error readable.
+25.1 Performance benchmark minimum
+ Open project 20 scene, 100 scene, 300 scene.
+ Scroll/zoom timeline tanpa stutter parah pada target PC.
+ Seek preview acak 100 kali pada project 100 scene.
+ AI plan application 100+ commands tanpa freeze UI.
+ Export sample 30 detik 1080p dan 4K; ukur success dan resource use.
+<PARSED TEXT FOR PAGE: 40 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 40
+26. Testing dan Quality Gates
+26.1 Test pyramid yang wajib
+Layer test Apa yang diuji Contoh
+Unit Pure domain/application behavior Parser, validation, command, random 
+planner, AI response parser.
+Contract Dependency boundaries/schema Presentation tidak import 
+provider/engine secara ilegal; JSON 
+schema stable.
+Integration Real dependency boundary libopenshot create clip/timeline, audio,
+subtitle path, exporter.
+E2E GUI Workflow user nyata New project import edit save → → → →
+reopen export. →
+Visual UI and render parity Screenshot UI state + preview/export 
+sampled frames.
+Stress Skala dan fault handling 300 scene, missing files, cancel render,
+repeated seek, stale AI.
+Packaging Clean Windows artifact Launch EXE, open fixture, preview, 
+export.
+26.2 Golden E2E projects
+Fixture Isi Tujuan
+GOLDEN-01 2 scene, single+double, 3 images Smoke import/layout/render.
+GOLDEN-02 10 scene + narration + SRT Full normal workflow.
+GOLDEN-03 Missing/relink/duplicate assets Validation/recovery.
+GOLDEN-04 Animations + locked + AI plan AI/Undo/render parity.
+GOLDEN-05 Unicode/space paths Windows Path robustness.
+GOLDEN-06 Long 100-scene documentary Performance/stress.
+26.3 Failure injection tests
+ Gemini timeout/rate limit/invalid key/all keys unavailable.
+ Asset deleted after project opened.
+<PARSED TEXT FOR PAGE: 41 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 41
+ Output path becomes unavailable mid-render.
+ User cancels render.
+ Project changes while AI request running.
+ Crash simulation after temp save but before replace.
+ Corrupt recovery snapshot.
+ Engine cannot decode one media file.
+26.4 Release quality gate
+ Compile/type/lint/static dependency checks pass.
+ Unit + contract + integration pass.
+ All canonical E2E pass.
+ Visual regression reviewed.
+ Windows portable clean-machine smoke pass.
+ No secret scan finding.
+ License/dependency manifest current.
+ User guide and project state synchronized.
+LOCKED — “Code ada” bukan DONE. DONE membutuhkan bukti acceptance pada workflow 
+nyata dan artefak build yang dapat diuji.
+<PARSED TEXT FOR PAGE: 42 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 42
+27. Packaging Windows dan Release
+27.1 Target
+Target awal adalah Windows 11 x64 portable distribution. Bentuk packaging final ditentukan 
+oleh dependency native libopenshot/Qt/FFmpeg. Jangan memaksakan single EXE bila onedir 
+jauh lebih stabil dan mudah diverifikasi.
+27.2 Build artifact requirements
+ Executable utama jelas di root portable folder.
+ Semua DLL/native runtime dependency yang legal dan diperlukan tersedia.
+ Dependency FFmpeg/libopenshot mengikuti strategi lisensi/distribusi yang diputuskan.
+ Build info berisi app version, commit, engine version, build date.
+ Checksums tersedia untuk release bundle.
+ Tidak ada source secret, dev path, test credential, atau cache user di bundle.
+27.3 Clean-machine test
+ Ekstrak ZIP ke folder dengan spasi.
+ Launch tanpa Python/dev tools terinstal.
+ Create/open project fixture.
+ Playback/seek.
+ Run validation.
+ Run small export.
+ Close/reopen project.
+27.4 Release channels
+Channel Tujuan
+dev Developer/internal; tidak untuk user umum.
+test/preview Owner testing pada target PC; boleh mempunyai 
+diagnostic extra.
+stable Hanya setelah gates dan direct user acceptance.
+<PARSED TEXT FOR PAGE: 43 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 43
+28. Licensing, Dependency, dan Compliance
+28.1 Hal yang wajib diputuskan sebelum reuse besar
+ Lisensi source AI Ngerti Geopolitik.
+ Apakah ada code openshot-qt GPL yang akan disalin/diadaptasi langsung.
+ Cara distribusi libopenshot, FFmpeg, Qt, dan dependency native lain.
+ Attribution/notice yang wajib ikut bundle.
+28.2 Dependency policy
+Field wajib dependency Contoh isi
+Nama/versi/commit libopenshot 1.0.1 + exact commit.
+License LGPL-3.0-or-later (verifikasi upstream saat integrasi).
+Purpose Timeline/render/playback engine.
+Distribution mode Bundled native libs / external / installer step — harus 
+diputuskan.
+Upgrade policy Manual reviewed upgrade.
+Removal plan Adapter boundary memungkinkan engine upgrade 
+tanpa mengubah domain sebanyak mungkin.
+28.3 No-license ambiguity
+Jangan menerbitkan release baru dengan status lisensi project “belum dipilih” apabila source 
+derivative dari komponen copyleft sudah dimasukkan. Legal clarity adalah bagian dari 
+readiness, bukan dokumentasi opsional.
+<PARSED TEXT FOR PAGE: 44 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 44
+29. Observability dan Diagnostics
+29.1 Structured logging
+ Timestamp, severity, subsystem, action, job_id, project_id/revision bila relevan.
+ Tidak mencatat raw API key.
+ Tidak mencatat seluruh subtitle/narration/prompt secara default.
+ Path user dapat dipangkas/redact di diagnostic bundle bila perlu.
+29.2 Diagnostic bundle
+Isi Boleh? Catatan
+App version/commit/engine 
+versions
+Ya Penting untuk reproduksi.
+OS/CPU/GPU summary Ya Tanpa identifier sensitif yang tidak 
+perlu.
+Recent logs Ya, redacted Bounded size.
+Project schema summary Ya Tanpa media content.
+Raw API keys Tidak Dilarang.
+Full prompt/content Default tidak Hanya explicit diagnostic opt-in bila 
+kelak diperlukan.
+29.3 User-facing error taxonomy
+ ValidationError
+ ImportError
+ MediaProbeError
+ PersistenceError
+ EngineError
+ ProviderError
+ RenderError
+ ConfigurationError
+ SecurityError
+ Packaging/Runtime dependency error
+<PARSED TEXT FOR PAGE: 45 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 45
+30. Risiko Utama dan Mitigasi
+Risiko Severity Mitigasi
+Integrasi libopenshot Windows sulit High Buat spike minimal sebelum UI besar; 
+pin build toolchain; packaging proof 
+early.
+Lisensi openshot-qt tidak cocok 
+dengan rencana distribusi
+High Putuskan license gate sebelum copy 
+code.
+Preview/export masih drift High Gunakan same projection + golden 
+frame tests.
+AI menghasilkan plan invalid High Strict schema + semantic validator + 
+dry run + transaction.
+AI scope melebar terlalu cepat High Level capability; parity first; command
+whitelist.
+Timeline UI custom kembali 
+membesar
+Medium/High Reuse engine/editor patterns; owner 
+boundary; measure before custom 
+widgets.
+Native dependency membuat portable 
+besar
+Medium Terima onedir jika stabil; jangan 
+mengorbankan reliability untuk size.
+Project 100–300 scene lambat Medium Benchmark early; incremental 
+projection/cache; profile before 
+optimize.
+Legacy project effect tidak setara Medium Compatibility mapping 
+EXACT/APPROX/UNSUPPORTED.
+Gemini quota/key failures Medium Pool 1–100, cooldown, typed retry, 
+graceful manual fallback.
+Crash saat save/render Medium Atomic save, immutable render 
+snapshot, recovery.
+30.1 Anti-pattern yang harus diawasi selama coding
+ File UI raksasa yang mengandung provider + persistence + engine.
+ Inheritance window berlapis hanya untuk “menambahkan satu tombol”.
+ Satu feature mempunyai dua service owner berbeda.
+ Hard-coded filter/effect string tersebar di banyak module.
+ Test hanya mengecek object count tanpa menjalankan media nyata.
+ AI response di-parse dengan permissive defaults yang menutupi error.
+ Feature toggle palsu yang belum punya implementation.
+<PARSED TEXT FOR PAGE: 46 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 46
+31. Tahapan Implementasi yang Disarankan
+Step Fokus Exit criteria ringkas
+STEP 00 Freeze blueprint, license decision, 
+dependency baseline
+Dokumen ini disetujui; tidak ada 
+coding produk besar.
+STEP 01 Engine spike Windows Minimal PySide6 + libopenshot: load 
+image/audio, timeline, preview, export
+10 detik.
+STEP 02 Project model + persistence Versioned ANG project, 
+transaction/history, atomic 
+save/recovery skeleton.
+STEP 03 Importer Scene DOCX + asset binding Parse real DOCX; validation/relink 
+basic.
+STEP 04 Editor shell + UI reference freeze UI state nyata, bukan mock data; 
+screen contracts.
+STEP 05 Canonical timeline integration Scene projection, reorder, duration, 
+split, seek, In/Out, marker, snap/zoom.
+STEP 06 Preview/playback parity Playback stable + golden parity 
+foundation.
+STEP 07 Motion/animation system Manual + random + lock + 
+compatibility presets yang supported.
+STEP 08 Subtitle + narration SRT workflow, style, animation, audio 
+import/record.
+STEP 09 Gemini credential + L1 AI Secure 1–100 slots, animation plan.
+STEP 10 AI Auto Edit L2 Pacing/transform/transition bounded 
+commands setelah engine support 
+terbukti.
+STEP 11 Validation/recovery/diagnostics 
+hardening
+Failure paths, relink batch, stale result,
+crash recovery.
+STEP 12 Export matrix H264/H265, resolutions/fps, selection, 
+subtitle/audio; result verification.
+STEP 13 Legacy AAVC importer Read-only migration + compatibility 
+report.
+STEP 14 Stress/E2E/visual QA 100–300 scene, clean Windows, parity 
+frames.
+STEP 15 Portable test build Owner direct testing.
+<PARSED TEXT FOR PAGE: 47 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 47
+Step Fokus Exit criteria ringkas
+STEP 16 Release candidate/stable Hanya setelah acceptance owner.
+31.1 Aturan urutan
+ Jangan membangun UI final sebelum engine spike membuktikan playback/export di 
+Windows target.
+ Jangan membangun AI L2 sebelum manual command yang sama sudah stabil dan undoable.
+ Jangan membangun legacy importer sebelum project schema baru stabil.
+ Jangan menyebut “release ready” sebelum clean-machine package test dan direct owner test.
+<PARSED TEXT FOR PAGE: 48 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 48
+32. Definition of Done
+32.1 Definition of Done per feature
+ Requirement dan acceptance criteria tertulis.
+ Canonical owner jelas.
+ Implementation selesai tanpa parallel duplicate owner.
+ Unit/contract test relevan lulus.
+ Integration/E2E ditambahkan bila menyentuh engine/media/workflow.
+ Error/failure path diuji.
+ Undo/Redo diuji jika feature mengubah project.
+ Docs/user guide diperbarui.
+ Tidak menambah unsupported UI control.
+32.2 Definition of Done V1
+ Semua feature-parity wajib pada Bab 6 berstatus PASS atau mempunyai explicit owner￾approved exception.
+ Golden projects E2E lulus dari create/import sampai export.
+ Preview/export geometry/timing parity tidak mempunyai defect mayor yang diketahui.
+ Gemini L1 stabil; L2 hanya diaktifkan untuk command yang benar-benar lolos test.
+ Crash/recovery/save failure tidak merusak source project pada test yang dirancang.
+ Portable Windows berjalan di clean machine target.
+ Lisensi/dependency notices jelas.
+ Owner dapat mencoba app nyata dan menyelesaikan workflow tanpa bantuan developer.
+KRITERIA UTAMA — Aplikasi dianggap selesai ketika dapat dipakai membuat video nyata 
+secara repeatable dan stabil, bukan ketika jumlah STEP atau file mencapai target tertentu.
+<PARSED TEXT FOR PAGE: 49 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 49
+33. Checklist Handoff untuk AI yang Melanjutkan
+Sebelum coding Pertanyaan wajib
+Konteks Apakah saya sudah membaca seluruh blueprint dan 
+status repo terbaru?
+Scope Apakah task termasuk V1/parity atau feature baru?
+Owner Modul/service mana yang seharusnya memiliki 
+behavior ini?
+Existing code Sudahkah saya search owner/call sites/tests sebelum 
+membuat file baru?
+Engine Apakah libopenshot/OpenShot sudah menyediakan 
+primitive ini?
+License Apakah perubahan melibatkan reuse code berlisensi 
+yang perlu gate?
+State Apakah perubahan masuk via command/transaction?
+Async Apakah pekerjaan berat dipindah dari GUI thread?
+AI Jika respons Gemini terlibat, apakah schema/semantic 
+validation lengkap?
+Tests Apa bukti user workflow yang akan lulus setelah 
+perubahan?
+33.1 Format status yang disarankan setelah tiap task
+ Apa yang diubah.
+ Mengapa diubah.
+ File/modul canonical yang tersentuh.
+ Test yang dijalankan dan hasilnya.
+ Batas/risiko yang masih ada.
+ Exact next action — tanpa mengarang STEP baru dari dokumen lama.
+33.2 Jika AI lain masuk di tengah proyek
+AI harus membaca README, dokumen blueprint ini, ARCHITECTURE/ADR, PROJECT_STATE, 
+TASKS, UI freeze/reference bila sudah ada, serta commit/PR terakhir sebelum melakukan 
+perubahan. Jangan mengandalkan percakapan sebelumnya yang mungkin tidak tersedia.
+<PARSED TEXT FOR PAGE: 50 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 50
+34. Appendix A — Command Schema AI / Manual
+Daftar berikut adalah direction awal. Nama final boleh berubah, tetapi prinsipnya: AI hanya 
+boleh memilih command yang sama dengan yang dapat dipanggil manual/application layer. 
+Tidak ada “AI-only backdoor”.
+Command Parameters Validation
+MoveScene scene_id, target_index Scene exists; index valid; not 
+prohibited by lock.
+SetSceneDuration scene_id, duration Within min/max; resulting project 
+valid.
+SplitScene scene_id, local_time Inside valid range; preserves 
+assets/metadata policy.
+SetAssetTransform scene_id, asset_id, start/end transform Bounds/aspect/safe range.
+SetAnimationPreset scene_id, asset_id, preset, intensity Preset render-backed; target not 
+locked.
+SetAnimationLock target, bool Manual/user policy; AI may be 
+forbidden to unlock.
+SetTransition scene boundary, preset, duration Preset supported; duration not longer 
+than scene constraints.
+SetSubtitleStyle style fields Validated style ranges.
+SetSubtitleAnimation preset/timing Render-backed only.
+SetMarker time,label Time within project.
+SetSelection in,out Valid ordered range.
+SetRenderPreset preset id User/AI policy may limit AI from 
+changing final export without 
+confirmation.
+34.1 AI command policy
+ AI tidak boleh delete source file.
+ AI tidak boleh unlock user-locked assignment kecuali user memerintah eksplisit dan policy 
+mengizinkan.
+ AI tidak boleh mengubah credential, output folder, atau project path sebagai bagian Auto 
+Edit.
+ AI tidak boleh membuat command type baru dari text response.
+ Unknown command = hard reject seluruh plan atau reject unit sesuai atomicity policy yang 
+terdokumentasi; default awal: hard reject agar tidak terjadi partial surprise.
+<PARSED TEXT FOR PAGE: 51 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 51
+35. Appendix B — Feature Acceptance Matrix
+Feature Acceptance Bukti
+Import DOCX Given valid DOCX + assets, project 
+membuka dengan jumlah scene dan 
+binding benar.
+E2E + parser unit
+Missing asset Satu file hilang menghasilkan blocker 
+yang dapat direlink; tidak crash.
+Integration/E2E
+Save/reopen Edit scene lalu save, close, reopen 
+mempertahankan state identik.
+E2E
+Undo/redo Reorder/duration/AI batch kembali 
+dan redo dengan benar.
+Unit + E2E
+Timeline seek Click/drag ruler memindah preview ke
+timestamp yang benar.
+UI integration
+Split Split menghasilkan dua unit valid dan 
+export tetap sinkron.
+Integration/E2E
+In/Out export Output duration sesuai range dalam 
+toleransi.
+Render integration
+Random animation Seed sama assignments sama; locks →
+preserved.
+Unit
+AI invalid plan Unknown effect/target/field ditolak 
+tanpa mutation.
+Unit/provider integration
+AI stale result Project berubah saat request result →
+lama tidak diterapkan.
+Integration
+Subtitle SRT import/edit/style terlihat pada 
+export sample.
+Integration + visual
+Narration Import/record menghasilkan audio di 
+preview/export.
+Integration/E2E
+Render cancel Cancel tidak meninggalkan success 
+state palsu.
+Integration
+Recovery Crash snapshot dapat dipulihkan 
+tanpa merusak source.
+Fault injection
+Portable Clean machine dapat 
+launch/open/export.
+Packaging E2E
+<PARSED TEXT FOR PAGE: 52 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 52
+36. Appendix C — Glosarium
+Istilah Definisi
+ANG AI Ngerti Geopolitik.
+AAVC AI Automatic Video Composer; repo lama yang hanya 
+dibaca sebagai referensi.
+Scene Unit naratif yang mengelompokkan visual dan durasi.
+Asset ID Identifier canonical seperti A001.
+Clip Primitive media pada engine timeline.
+Projection Pemetaan ProjectState semantic menjadi object runtime
+engine.
+Edit Plan JSON terstruktur berisi command AI yang belum 
+committed.
+Command Operasi application/domain yang tervalidasi dan 
+undoable.
+Parity Kesetaraan workflow/hasil user-facing dengan feature 
+lama, bukan kesamaan kode.
+Golden Project Fixture project yang mewakili workflow nyata untuk 
+E2E/regression.
+Stale Result Hasil background job yang dibuat untuk revision lama 
+dan tidak boleh diterapkan.
+Recovery Snapshot Salinan state sementara untuk pemulihan setelah crash.
+Render-backed Feature/preset yang benar-benar dapat dieksekusi final 
+renderer, bukan placeholder UI.
+36.1 Keputusan akhir yang harus diingat
+LOCKED — Jangan mengubah repo AI-Automatic-Video-Composer. Ia adalah baseline referensi 
+baca saja.
+LOCKED — AI Ngerti Geopolitik dibangun sebagai specialized documentary/geopolitics editor 
+dengan automation-first workflow.
+<PARSED TEXT FOR PAGE: 53 / 53>
+AI NGERTI GEOPOLITIK | MASTER BLUEPRINT v1.0
+Dokumen Acuan Proyek • Halaman 53
+LOCKED — Jangan membangun ulang media engine umum dari nol. Gunakan libopenshot 
+sebagai engine candidate utama dan openshot-qt sebagai referensi/editor infrastructure sesuai 
+license decision.
+LOCKED — V1 mencapai feature-parity dan stabilitas lebih dulu; AI feature hanya boleh 
+menggunakan command yang legal, render-backed, dan undoable.
+GATE — Sebelum coding besar: approve blueprint, putuskan lisensi/reuse strategy, lalu buktikan 
+engine spike di Windows.
+36.2 Dokumen ini sebagai source of truth awal
+Dokumen ini sengaja dibuat lebih detail daripada README agar AI/developer tidak perlu 
+menebak tujuan proyek. Setelah implementasi dimulai, detail status runtime harus 
+dipindahkan ke PROJECT_STATE/TASKS/ADR yang lebih sering diperbarui, sementara blueprint 
+ini tetap menjadi baseline produk dan arsitektur awal. Perubahan keputusan LOCKED harus 
+dicatat secara eksplisit, bukan diam-diam melalui kode.
+— END OF MASTER BLUEPRINT v1.0 —
