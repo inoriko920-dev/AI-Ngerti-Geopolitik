@@ -1,0 +1,92 @@
+name: S10 Windows E2E Vertical Slice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/generate_step10_fixture.py"
+      - "scripts/run_step10_e2e.py"
+      - ".github/workflows/s10-windows-e2e.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  vertical-slice:
+    name: Real media vertical slice
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Verify media toolchain
+        shell: pwsh
+        run: |
+          where.exe ffmpeg
+          where.exe ffprobe
+          ffmpeg -version | Select-Object -First 1
+          ffprobe -version | Select-Object -First 1
+          ffmpeg -hide_banner -encoders | Select-String "libx264"
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run pytest -q
+      - name: Generate owned deterministic media fixture
+        run: uv run python scripts/generate_step10_fixture.py --output artifacts/step10/input_fixture.mp4
+      - name: Run canonical 12-stage STEP 10 path
+        run: uv run python scripts/run_step10_e2e.py --fixture artifacts/step10/input_fixture.mp4 --evidence artifacts/step10/evidence
+      - name: Verify exported output independently
+        shell: pwsh
+        run: |
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate -show_entries format=duration -of json artifacts/step10/evidence/10_exported_output.mp4
+          Get-FileHash artifacts/step10/evidence/10_exported_output.mp4 -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S10-E2E-Evidence
+          path: |
+            artifacts/step10/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
+  packaged-regression:
+    name: Portable UI regression
+    needs: vertical-slice
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group package
+      - name: Build existing portable UI shell
+        shell: pwsh
+        run: ./scripts/package/build_step09_ui.ps1
+      - name: Smoke portable UI shell
+        shell: pwsh
+        run: ./scripts/package/smoke_step09_ui.ps1

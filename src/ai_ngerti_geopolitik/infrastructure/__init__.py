@@ -1,1 +1,1 @@
-"""Concrete external adapters boundary."""
+"""Concrete adapters for external processes, storage and providers."""
