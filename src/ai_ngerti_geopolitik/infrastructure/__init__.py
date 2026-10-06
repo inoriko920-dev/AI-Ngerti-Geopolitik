@@ -1,1 +1,1 @@
-"""Concrete adapters for external processes, storage and providers."""
+"""Concrete adapters; STEP 10 adds real probe, persistence and media qualification paths."""
