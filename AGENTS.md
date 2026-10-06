@@ -19,6 +19,13 @@ Sebelum membuat, mengubah, memindahkan, atau menghapus source code, AI **WAJIB**
 
 Jika ada dokumen baru yang kemudian ditetapkan sebagai planning/reference/source-of-truth, dokumen itu juga wajib dibaca.
 
+
+## Machine-readable fallback untuk DOCX
+
+Semua DOCX source-of-truth harus tetap berada di repo. Karena sebagian GitHub/AI connector tidak dapat mengekstrak binary DOCX, repo juga menyimpan mirror `.txt` di folder yang sama. Jika DOCX dapat dibaca, baca DOCX. Jika binary DOCX tidak dapat dibaca oleh runtime, baca mirror TXT secara penuh sebelum bekerja. Jangan melewati dokumen hanya karena tool tidak dapat membuka binary.
+
+Lihat juga `docs/SOURCE_OF_TRUTH_INDEX.md`.
+
 ## 2. Source-of-truth precedence
 
 Jika ada konflik, gunakan urutan berikut:
