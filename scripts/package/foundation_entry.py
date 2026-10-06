@@ -1,4 +1,5 @@
-from ai_ngerti_geopolitik.bootstrap.main import run
+"""PyInstaller foundation entry point."""
 
+from ai_ngerti_geopolitik.bootstrap.main import run
 
 raise SystemExit(run())
