@@ -2,8 +2,8 @@
 
 **Current phase:** SF-STEP 11  
 **Last completed wave:** W0 — PASS  
-**Accepted W0 HEAD:** `f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`  
-**Accepted W0 run:** `37533447729` — SUCCESS  
+**Accepted W0 HEAD:** `02108d91159f53b52ce6ca6f909ed52aab16f094`  
+**Accepted W0 run:** `37534876853` — SUCCESS  
 **Next exact wave:** W1 — Project, Media & Persistence Foundation
 
 ## Read first
@@ -53,3 +53,14 @@ Execute W1 serially:
 7. missing/offline state with no silent clip deletion.
 
 Do not start W2 or STEP 12.
+
+
+## Final green regression IDs
+
+- S11 W0: `37534876853`;
+- S10 E2E: `37534876885`;
+- S09 UI: `37534877053`;
+- S08 foundation: `37534876828`.
+
+All four are SUCCESS on accepted W0 HEAD
+`02108d91159f53b52ce6ca6f909ed52aab16f094`.

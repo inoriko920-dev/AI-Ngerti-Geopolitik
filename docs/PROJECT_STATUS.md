@@ -2,8 +2,8 @@
 
 **Last completed:** SF-STEP 11 — Wave 0 Regression Lock & Engine Qualification  
 **W0 gate:** **PASS**  
-**Accepted W0 HEAD:** `f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`  
-**Accepted W0 run:** `37533447729` — SUCCESS  
+**Accepted W0 HEAD:** `02108d91159f53b52ce6ca6f909ed52aab16f094`  
+**Accepted W0 run:** `37534876853` — SUCCESS  
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Next exact wave:** **W1 — Project, Media & Persistence Foundation**
 
@@ -49,3 +49,12 @@ On owner **"lanjutkan"**, execute **W1 only**:
 Project/Media/Persistence hardening.
 
 Do not enter W2 until W1 is green.
+
+
+## Final regression lock on accepted W0 HEAD
+
+The final W0 checkpoint also re-verified all earlier implementation layers:
+- S11 W0: `37534876853` — SUCCESS;
+- S10 real E2E: `37534876885` — SUCCESS;
+- S09 Windows UI shell: `37534877053` — SUCCESS;
+- S08 Windows foundation: `37534876828` — SUCCESS.

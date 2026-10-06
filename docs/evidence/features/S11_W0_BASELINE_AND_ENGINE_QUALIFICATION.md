@@ -6,11 +6,11 @@ Entry HEAD:
 `3cab97fa8ec05f0f50d35c1c72badb489fb20aa2`.
 
 Accepted implementation/evidence HEAD:
-`f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`.
+`02108d91159f53b52ce6ca6f909ed52aab16f094`.
 
 Accepted workflow:
 - name: `S11 Wave0 Engine Qualification`;
-- run ID: `37533447729`;
+- final run ID: `37534876853`;
 - conclusion: **SUCCESS**.
 
 ## W0 task results
@@ -134,3 +134,16 @@ Next exact wave:
 **W1 — Project, Media & Persistence Foundation.**
 
 Do not begin W2 until W1 evidence is green.
+
+
+## Final checkpoint regression
+
+After recording D-024 and evidence-backed readiness flags, the accepted W0 HEAD
+was re-run through all prior gates:
+
+- S11 W0 engine qualification `37534876853` — SUCCESS;
+- S10 real-media E2E `37534876885` — SUCCESS;
+- S09 Windows UI shell `37534877053` — SUCCESS;
+- S08 Windows foundation `37534876828` — SUCCESS.
+
+This is the final green baseline that W1 must preserve.
