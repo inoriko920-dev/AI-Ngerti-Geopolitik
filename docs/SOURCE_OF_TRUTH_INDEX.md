@@ -19,6 +19,10 @@ Dokumen ini membantu AI/sesi baru menemukan sumber kebenaran proyek tanpa mengan
    - mirror machine-readable: `03_STEP_02_EXISTING_SOLUTION_GITHUB_DISCOVERY_AI_NGERTI_GEOPOLITIK.txt`
    - `04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.docx`
    - mirror machine-readable: `04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.txt`
+   - `05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.docx`
+   - mirror machine-readable: `05_STEP_04_UI_DESIGN_REFERENCE_ADOPTION_AI_NGERTI_GEOPOLITIK.txt`
+   - `/docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
+   - `/docs/ui_reference/UI_REFERENCE_MANIFEST.md`
 5. `/HANDOFF.md`
 6. `/docs/PROJECT_STATUS.md`
 7. `/docs/DECISIONS_LOCKED.md`
@@ -39,7 +43,9 @@ Jika runtime dapat membaca DOCX, baca DOCX. Jika runtime tidak dapat membaca DOC
 - SF-STEP 01: PASS WITH PROVISIONAL / Product Definition v1.0 BASELINE_CONFIRMED untuk WHAT;
 - SF-STEP 02: PASS WITH PROVISIONAL / BUILD_FROM_SCRATCH_WITH_COMPONENTS;
 - SF-STEP 03: PASS WITH PROVISIONAL / AAVC UI 1:1 inventory complete;
+- SF-STEP 04: PASS WITH PROVISIONAL / UIB-ANG-v1.0 / 42/42 APPROVED_FOR_FREEZE;
 - UI AAVC: VISUAL_CONTRACT 1:1;
 - code aplikasi: belum ada;
-- next exact action: SF-STEP 04 UI Design System & All UI Prompts;
+- HARD STOP: SF-STEP 04 complete;
+- next exact action after a NEW explicit owner continuation: SF-STEP 05 UI Freeze & Product Blueprint;
 - repo lama AI-Automatic-Video-Composer: read-only reference.
