@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION — SF-STEP 03 PASS WITH PROVISIONAL, NEXT SF-STEP 04 — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION / UI HARD STOP — SF-STEP 04 PASS WITH PROVISIONAL — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -50,3 +50,8 @@ UI/UX inventory selesai. AAVC tetap **VISUAL_CONTRACT 1:1**, dengan coverage `UI
 ## UI inventory baseline
 
 SF-STEP 03 registers 17 major surfaces, 15 states, 16 core flows, and **42/42 AAVC canonical UI references**. The 42 existing AAVC references are reused 1:1; no new baseline visual design is requested.
+
+
+## SF-STEP 04 UI reference adoption
+
+UIB-ANG-v1.0 selesai. Semua 42 AAVC frozen references diadopsi 1:1 dan berstatus APPROVED_FOR_FREEZE. Full visual reference DOCX telah lulus render QA 43 halaman. Repo menyimpan connector-safe reference index + SHA manifest. Exact full-resolution visual binary/raw pack tetap merupakan mandatory pre-coding gate.
