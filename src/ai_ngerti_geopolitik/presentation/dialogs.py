@@ -41,7 +41,8 @@ def create_export_dialog(
     layout.addWidget(_section_title("Ekspor Video"))
     layout.addWidget(
         muted_label(
-            "Atur kualitas final. Preview boleh lebih ringan; render final menggunakan kualitas penuh."
+            "Atur kualitas final. Preview boleh lebih ringan; render final "
+            "menggunakan kualitas penuh."
         )
     )
 
