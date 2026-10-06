@@ -42,7 +42,7 @@ def run(argv: Sequence[str] | None = None) -> int:
         return 0
 
     try:
-        from PySide6.QtCore import QTimer
+        from PySide6.QtCore import Qt, QTimer
         from PySide6.QtGui import QFont
         from PySide6.QtWidgets import QApplication
 
@@ -77,11 +77,19 @@ def run(argv: Sequence[str] | None = None) -> int:
 
         def capture() -> None:
             pixmap = window.grab()
+            native_size = (pixmap.width(), pixmap.height())
+            if native_size != (1920, 1080):
+                pixmap = pixmap.scaled(
+                    1920,
+                    1080,
+                    Qt.AspectRatioMode.IgnoreAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
             if not pixmap.save(str(target), "PNG"):
                 print(f"Gagal menyimpan screenshot: {target}", file=sys.stderr)
                 app.exit(3)
                 return
-            print(target)
+            print(f"{target} | native={native_size[0]}x{native_size[1]} | evidence=1920x1080")
             app.quit()
 
         QTimer.singleShot(900, capture)
