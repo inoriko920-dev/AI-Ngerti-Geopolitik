@@ -79,7 +79,32 @@ def main() -> int:
         negative_lines.append(f"missing-media: PASS: {exc}")
     assert session.state.semantic_hash() == initial_hash
 
-    router(UiIntent(UiIntentType.IMPORT_MEDIA, (("path", str(fixture)),)))
+    from PySide6.QtGui import QAction
+    from PySide6.QtWidgets import QApplication
+
+    from ai_ngerti_geopolitik.presentation.main_window import create_main_window
+
+    app = QApplication.instance() or QApplication(["ANG STEP10 E2E"])
+    queued_intents: list[UiIntent] = []
+    window = create_main_window(
+        "UI-010",
+        fixture_mode=True,
+        intent_sink=queued_intents.append,
+        media_path_provider=lambda: str(fixture),
+    )
+    import_action = window.window.findChild(QAction, "action_import_media")
+    if import_action is None:
+        raise AssertionError("real Qt Import Media action not found")
+    import_action.trigger()
+    app.processEvents()
+    if len(queued_intents) != 1:
+        raise AssertionError(f"expected one UI intent, got {queued_intents!r}")
+    ui_intent = queued_intents.pop()
+    if ui_intent.kind is not UiIntentType.IMPORT_MEDIA:
+        raise AssertionError(f"unexpected UI intent: {ui_intent.kind}")
+    router(ui_intent)
+    window.close()
+
     asset_id = router.last_result
     assert asset_id == "A001"
     clip_id = session.add_to_timeline(asset_id)
@@ -219,6 +244,7 @@ def main() -> int:
         "export_sha256": sha256(output),
         "duration_frames": result.duration_frames,
         "negative_paths": len(negative_lines),
+        "ui_entry": "real QAction action_import_media -> semantic UiIntent -> application router",
     }
     write_json(evidence / "13_test_report.json", report)
     print(json.dumps(report, indent=2))

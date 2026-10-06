@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from ai_ngerti_geopolitik.application.ui_intents import (
@@ -21,6 +22,7 @@ class MainWindow:
         *,
         fixture_mode: bool = False,
         intent_sink: UiIntentSink | None = None,
+        media_path_provider: Callable[[], str | None] | None = None,
     ) -> None:
         from PySide6.QtGui import QAction
         from PySide6.QtWidgets import QMainWindow, QStackedWidget, QToolBar
@@ -28,6 +30,7 @@ class MainWindow:
         self.fixture_mode = fixture_mode
         self.intent_recorder = RecordingIntentSink()
         self.intent_sink = intent_sink or self.intent_recorder
+        self.media_path_provider = media_path_provider
         self.window = QMainWindow()
         self.window.setObjectName("ANGMainWindow")
         self.window.setWindowTitle("AI Ngerti Geopolitik")
@@ -119,6 +122,8 @@ class MainWindow:
             action.setObjectName(f"action_{kind.value}")
             if kind is UiIntentType.NEW_PROJECT:
                 action.triggered.connect(lambda: self.show_route(UiRoute.NEW_PROJECT_DOCX))
+            elif kind is UiIntentType.IMPORT_MEDIA:
+                action.triggered.connect(self._request_import_media)
             else:
                 action.triggered.connect(lambda _checked=False, value=kind: self._emit(value))
             toolbar.addAction(action)
@@ -152,6 +157,21 @@ class MainWindow:
         toolbar.addWidget(export)
         self.window.addToolBar(toolbar)
         self._toolbar = toolbar
+
+    def _request_import_media(self) -> None:
+        from PySide6.QtWidgets import QFileDialog
+
+        if self.media_path_provider is not None:
+            path = self.media_path_provider()
+        else:
+            path, _ = QFileDialog.getOpenFileName(
+                self.window,
+                "Impor Media",
+                "",
+                "Video (*.mp4 *.mov *.mkv *.avi *.webm);;Semua File (*.*)",
+            )
+        if path:
+            self._emit(UiIntentType.IMPORT_MEDIA, path=path)
 
     def _build_pages(self) -> None:
         from ai_ngerti_geopolitik.presentation.editor_shell import create_editor_shell
@@ -301,5 +321,11 @@ def create_main_window(
     *,
     fixture_mode: bool = False,
     intent_sink: UiIntentSink | None = None,
+    media_path_provider: Callable[[], str | None] | None = None,
 ) -> MainWindow:
-    return MainWindow(initial_state, fixture_mode=fixture_mode, intent_sink=intent_sink)
+    return MainWindow(
+        initial_state,
+        fixture_mode=fixture_mode,
+        intent_sink=intent_sink,
+        media_path_provider=media_path_provider,
+    )

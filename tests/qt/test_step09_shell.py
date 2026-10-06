@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QDialog, QPushButton, QWidget
 
 from ai_ngerti_geopolitik.application.ui_intents import RecordingIntentSink, UiIntentType
@@ -70,4 +71,24 @@ def test_full_size_evidence_render_is_1920x1080(qtbot) -> None:
     pixmap = window.render_evidence(1920, 1080)
     assert pixmap.width() == 1920
     assert pixmap.height() == 1080
+    window.close()
+
+
+def test_import_toolbar_emits_selected_media_path(qtbot) -> None:
+    sink = RecordingIntentSink()
+    selected = "C:/fixtures/owned-step10.mp4"
+    window = create_main_window(
+        "UI-010",
+        fixture_mode=True,
+        intent_sink=sink,
+        media_path_provider=lambda: selected,
+    )
+    qtbot.addWidget(window.window)
+    window.show()
+
+    action = window.window.findChild(QAction, "action_import_media")
+    assert action is not None
+    action.trigger()
+    assert sink.intents[-1].kind is UiIntentType.IMPORT_MEDIA
+    assert dict(sink.intents[-1].payload)["path"] == selected
     window.close()
