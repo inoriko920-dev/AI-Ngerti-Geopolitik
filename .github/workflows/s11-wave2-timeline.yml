@@ -1,0 +1,126 @@
+name: S11 W2 Timeline Playback Core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/run_step11_w2.py"
+      - "scripts/verify/verify_step11_w2_evidence.py"
+      - "scripts/qualification/s11_w2_mlt_runtime.py"
+      - "scripts/generate_step10_fixture.py"
+      - ".github/workflows/s11-wave2-timeline.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w2-core:
+    name: W2 timeline playback core
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install FFmpeg qualification toolchain
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run pytest -q
+      - name: Generate owned W2 fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w2/input-video.mp4
+      - name: Run W2 canonical timeline evidence
+        run: >
+          uv run python scripts/run_step11_w2.py
+          --video artifacts/step11/w2/input-video.mp4
+          --evidence artifacts/step11/w2/evidence
+      - name: Verify W2 evidence
+        run: >
+          uv run python scripts/verify/verify_step11_w2_evidence.py
+          --evidence artifacts/step11/w2/evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W2-Timeline-Playback-Core
+          path: artifacts/step11/w2/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
+  w2-mlt-runtime:
+    name: W2 MLT canonical playback projection
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup MSYS2 MINGW64 + MLT
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-mlt
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-python
+            coreutils
+      - name: Generate owned playback fixture
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/step11/w2/mlt
+          ffmpeg -hide_banner -loglevel error -y             -f lavfi -i "testsrc2=size=640x360:rate=30:duration=4"             -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=4"             -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest             artifacts/step11/w2/mlt/input.mp4
+      - name: Run canonical ProjectState to MLT transport and render
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/src"
+          python scripts/qualification/s11_w2_mlt_runtime.py             --input artifacts/step11/w2/mlt/input.mp4             --evidence artifacts/step11/w2/mlt/evidence
+      - name: Probe MLT edited output
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          ffprobe -v error -show_streams -show_format -of json             artifacts/step11/w2/mlt/evidence/w2-mlt-edited.mp4             > artifacts/step11/w2/mlt/evidence/w2-mlt-edited-ffprobe.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/step11/w2/mlt/evidence")
+          report = json.loads((root / "w2-mlt-runtime.json").read_text())
+          probe = json.loads((root / "w2-mlt-edited-ffprobe.json").read_text())
+          assert report["status"] == "PASS"
+          assert report["clip_ids"] == ["C001", "C002"]
+          assert report["sdl2_returncode"] == 0
+          streams = probe["streams"]
+          assert any(stream.get("codec_type") == "video" for stream in streams)
+          assert any(stream.get("codec_type") == "audio" for stream in streams)
+          print("PASS W2 canonical MLT playback/render projection")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W2-MLT-Canonical-Projection
+          path: artifacts/step11/w2/mlt/evidence/**
+          if-no-files-found: error
+          retention-days: 14
