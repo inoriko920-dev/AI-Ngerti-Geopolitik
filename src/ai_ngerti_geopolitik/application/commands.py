@@ -8,11 +8,13 @@ from typing import Protocol
 from ai_ngerti_geopolitik.domain import (
     Asset,
     Clip,
+    ClipProperties,
     DomainValidationError,
     FrameTime,
     Marker,
     ProjectSettings,
     ProjectState,
+    SpeedProperties,
     Track,
 )
 
@@ -353,14 +355,19 @@ class SetClipDurationCommand:
                     continue
                 _require_track_editable(track)
                 asset = state.asset(clip.asset_id)
-                new_source_out = clip.source_in.frames + self.duration_frames
+                source_duration = clip.timeline_frames_to_source_frames(self.duration_frames)
+                new_source_out = clip.source_in.frames + source_duration
                 if new_source_out > asset.duration.frames:
                     raise CommandError("clip duration exceeds source media")
-                delta = self.duration_frames - clip.duration_frames
                 updated = replace(
                     clip,
                     source_out=FrameTime(new_source_out, state.fps),
                 )
+                if updated.duration_frames != self.duration_frames:
+                    raise CommandError(
+                        "requested duration is not exactly representable at current speed"
+                    )
+                delta = updated.duration_frames - clip.duration_frames
                 ordered[index] = updated
                 if self.ripple and delta:
                     for later_index in range(index + 1, len(ordered)):
@@ -438,11 +445,18 @@ class SplitClipCommand:
                 if not start < self.split_timeline_frame < end:
                     raise CommandError("split point must be inside clip")
                 offset = self.split_timeline_frame - start
-                split_source_frame = clip.source_in.frames + offset
+                source_offset = clip.timeline_frames_to_source_frames(offset)
+                split_source_frame = clip.source_in.frames + source_offset
+                if split_source_frame >= clip.source_out.frames:
+                    raise CommandError("split point exceeds source media at current speed")
                 left = replace(
                     clip,
                     source_out=FrameTime(split_source_frame, state.fps),
                 )
+                if left.duration_frames != offset:
+                    raise CommandError(
+                        "split point is not exactly representable at current speed"
+                    )
                 right = Clip(
                     clip_id=self.right_clip_id,
                     asset_id=clip.asset_id,
@@ -450,6 +464,7 @@ class SplitClipCommand:
                     source_in=FrameTime(split_source_frame, state.fps),
                     source_out=clip.source_out,
                     enabled=clip.enabled,
+                    properties=clip.properties,
                 )
                 clips = (*track.clips[:index], left, right, *track.clips[index + 1 :])
                 return _replace_track(state, replace(track, clips=clips))
@@ -476,15 +491,22 @@ class TrimClipCommand:
                 _require_track_editable(track)
                 if self.trim_frames >= clip.duration_frames:
                     raise CommandError("trim would remove entire clip")
+                source_trim = clip.timeline_frames_to_source_frames(self.trim_frames)
+                if source_trim >= clip.source_duration_frames:
+                    raise CommandError("trim would remove entire source clip")
                 if self.edge == "left":
-                    trimmed = replace(
+                    trimmed_source = replace(
                         clip,
-                        timeline_start=FrameTime(
-                            clip.timeline_start.frames + self.trim_frames,
+                        source_in=FrameTime(
+                            clip.source_in.frames + source_trim,
                             state.fps,
                         ),
-                        source_in=FrameTime(
-                            clip.source_in.frames + self.trim_frames,
+                    )
+                    actual_trim = clip.duration_frames - trimmed_source.duration_frames
+                    trimmed = replace(
+                        trimmed_source,
+                        timeline_start=FrameTime(
+                            clip.timeline_start.frames + actual_trim,
                             state.fps,
                         ),
                     )
@@ -492,10 +514,13 @@ class TrimClipCommand:
                     trimmed = replace(
                         clip,
                         source_out=FrameTime(
-                            clip.source_out.frames - self.trim_frames,
+                            clip.source_out.frames - source_trim,
                             state.fps,
                         ),
                     )
+                    actual_trim = clip.duration_frames - trimmed.duration_frames
+                if actual_trim <= 0:
+                    raise CommandError("trim is below the current speed frame granularity")
                 ordered[index] = trimmed
                 if self.ripple and self.edge == "right":
                     for later_index in range(index + 1, len(ordered)):
@@ -503,12 +528,68 @@ class TrimClipCommand:
                         ordered[later_index] = replace(
                             later,
                             timeline_start=FrameTime(
-                                later.timeline_start.frames - self.trim_frames,
+                                later.timeline_start.frames - actual_trim,
                                 state.fps,
                             ),
                         )
                 return _replace_track(state, replace(track, clips=tuple(ordered)))
         raise CommandError(f"unknown clip: {self.clip_id}")
+
+
+@dataclass(frozen=True, slots=True)
+class SetClipPropertiesCommand:
+    clip_id: str
+    properties: ClipProperties
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track, clip = _find_clip_location(state, self.clip_id)
+        _require_track_editable(track)
+        if self.properties.speed != clip.properties.speed:
+            raise CommandError("speed changes must use SetClipSpeedCommand")
+        updated = replace(clip, properties=self.properties)
+        return _replace_track(
+            state,
+            replace(
+                track,
+                clips=tuple(
+                    updated if item.clip_id == self.clip_id else item for item in track.clips
+                ),
+            ),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SetClipSpeedCommand:
+    clip_id: str
+    rate_percent: int
+    ripple: bool = True
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track, clip = _find_clip_location(state, self.clip_id)
+        _require_track_editable(track)
+        speed = SpeedProperties(self.rate_percent)
+        properties = replace(clip.properties, speed=speed)
+        updated = replace(clip, properties=properties)
+        delta = updated.duration_frames - clip.duration_frames
+        ordered = _sorted_clips(track)
+        index = next(
+            position for position, item in enumerate(ordered) if item.clip_id == self.clip_id
+        )
+        ordered[index] = updated
+        if self.ripple and delta:
+            for later_index in range(index + 1, len(ordered)):
+                later = ordered[later_index]
+                ordered[later_index] = replace(
+                    later,
+                    timeline_start=FrameTime(
+                        later.timeline_start.frames + delta,
+                        state.fps,
+                    ),
+                )
+        try:
+            return _replace_track(state, replace(track, clips=tuple(ordered)))
+        except DomainValidationError as exc:
+            raise CommandError("speed change would create an invalid timeline") from exc
 
 
 @dataclass(frozen=True, slots=True)

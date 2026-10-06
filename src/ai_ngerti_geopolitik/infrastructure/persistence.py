@@ -11,12 +11,17 @@ from typing import Any
 
 from ai_ngerti_geopolitik.domain import (
     Asset,
+    AudioProperties,
     Clip,
+    ClipProperties,
+    ColorProperties,
     FrameTime,
     Marker,
     ProjectSettings,
     ProjectState,
+    SpeedProperties,
     Track,
+    VideoProperties,
 )
 
 
@@ -118,6 +123,7 @@ class JsonProjectRepository:
                         int(clip["source_out"]["fps"]),
                     ),
                     enabled=bool(clip.get("enabled", True)),
+                    properties=self._decode_clip_properties(clip.get("properties")),
                 )
                 for clip in item.get("clips", [])
             )
@@ -158,6 +164,53 @@ class JsonProjectRepository:
         )
         state.validate()
         return state
+
+    @staticmethod
+    def _decode_clip_properties(raw: object) -> ClipProperties:
+        if raw is None:
+            return ClipProperties()
+        if not isinstance(raw, dict):
+            raise TypeError("clip properties must be an object")
+        video_raw = raw.get("video", {})
+        audio_raw = raw.get("audio", {})
+        color_raw = raw.get("color", {})
+        speed_raw = raw.get("speed", {})
+        if not all(
+            isinstance(item, dict)
+            for item in (video_raw, audio_raw, color_raw, speed_raw)
+        ):
+            raise TypeError("clip property groups must be objects")
+        return ClipProperties(
+            video=VideoProperties(
+                position_x=int(video_raw.get("position_x", 0)),
+                position_y=int(video_raw.get("position_y", 0)),
+                scale_x_percent=int(video_raw.get("scale_x_percent", 100)),
+                scale_y_percent=int(video_raw.get("scale_y_percent", 100)),
+                rotation_tenths=int(video_raw.get("rotation_tenths", 0)),
+                opacity_percent=int(video_raw.get("opacity_percent", 100)),
+                crop_left_percent=int(video_raw.get("crop_left_percent", 0)),
+                crop_top_percent=int(video_raw.get("crop_top_percent", 0)),
+                crop_right_percent=int(video_raw.get("crop_right_percent", 0)),
+                crop_bottom_percent=int(video_raw.get("crop_bottom_percent", 0)),
+            ),
+            audio=AudioProperties(
+                volume_percent=int(audio_raw.get("volume_percent", 100)),
+                pan_percent=int(audio_raw.get("pan_percent", 0)),
+                fade_in_frames=int(audio_raw.get("fade_in_frames", 0)),
+                fade_out_frames=int(audio_raw.get("fade_out_frames", 0)),
+            ),
+            color=ColorProperties(
+                brightness_percent=int(color_raw.get("brightness_percent", 0)),
+                exposure_tenths_ev=int(color_raw.get("exposure_tenths_ev", 0)),
+                contrast_percent=int(color_raw.get("contrast_percent", 0)),
+                saturation_percent=int(color_raw.get("saturation_percent", 0)),
+                temperature_percent=int(color_raw.get("temperature_percent", 0)),
+                tint_percent=int(color_raw.get("tint_percent", 0)),
+            ),
+            speed=SpeedProperties(
+                rate_percent=int(speed_raw.get("rate_percent", 100)),
+            ),
+        )
 
     @staticmethod
     def _decode_asset(item: dict[str, Any]) -> Asset:

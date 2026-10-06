@@ -12,6 +12,8 @@ import json
 from dataclasses import asdict, dataclass, replace
 from fractions import Fraction
 
+from ai_ngerti_geopolitik.domain.properties import ClipProperties
+
 
 class DomainValidationError(ValueError):
     pass
@@ -94,6 +96,7 @@ class Clip:
     source_in: FrameTime
     source_out: FrameTime
     enabled: bool = True
+    properties: ClipProperties = ClipProperties()
 
     def __post_init__(self) -> None:
         if not self.clip_id:
@@ -107,8 +110,25 @@ class Clip:
             raise DomainValidationError("clip source_out must be after source_in")
 
     @property
-    def duration_frames(self) -> int:
+    def source_duration_frames(self) -> int:
         return self.source_out.frames - self.source_in.frames
+
+    @property
+    def duration_frames(self) -> int:
+        rate = self.properties.speed.rate_percent
+        return max(1, (self.source_duration_frames * 100 + rate - 1) // rate)
+
+    def timeline_frames_to_source_frames(self, timeline_frames: int) -> int:
+        if timeline_frames <= 0:
+            raise DomainValidationError("timeline frame duration must be positive")
+        rate = self.properties.speed.rate_percent
+        return max(1, (timeline_frames * rate + 50) // 100)
+
+    def source_frame_at_timeline_offset(self, timeline_offset: int) -> int:
+        if timeline_offset < 0 or timeline_offset >= self.duration_frames:
+            raise DomainValidationError("timeline offset outside clip")
+        source_offset = (timeline_offset * self.properties.speed.rate_percent) // 100
+        return min(self.source_out.frames - 1, self.source_in.frames + source_offset)
 
     @property
     def timeline_end_frame(self) -> int:
