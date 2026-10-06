@@ -109,7 +109,7 @@ def build_w3_filter_plan(clip: Clip, fps: int) -> W3FilterPlan:
     pan = audio.pan_percent
     left = 1.0 if pan <= 0 else 1.0 - pan / 100.0
     right = 1.0 if pan >= 0 else 1.0 + pan / 100.0
-    audio_filters.append(f"pan=stereo|c0=c0*{_number(left)}|c1=c1*{_number(right)}")
+    audio_filters.append(f"pan=stereo|c0={_number(left)}*c0|c1={_number(right)}*c1")
 
     duration_seconds = clip.duration_frames / fps
     fade_in = min(audio.fade_in_frames, clip.duration_frames)
