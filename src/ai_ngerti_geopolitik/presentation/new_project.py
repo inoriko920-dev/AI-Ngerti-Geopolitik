@@ -96,7 +96,9 @@ def create_new_project_screen(
             )
         )
         step_text_widget: Any = QLabel(step_name)
-        step_text_widget.setStyleSheet("font-weight:650; color:#1D4ED8;" if active else "color:#64748B;")
+        step_text_widget.setStyleSheet(
+            "font-weight:650; color:#1D4ED8;" if active else "color:#64748B;"
+        )
         stepper.addWidget(circle)
         stepper.addWidget(step_text_widget)
         if index < len(steps) - 1:
