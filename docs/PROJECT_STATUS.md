@@ -40,7 +40,8 @@
 | Problem definition | MATANG SEBAGAI EVIDENCE | Akan divalidasi formal pada SF-STEP 01 |
 | Mature foundation research | PRIOR EVIDENCE | Audit formal SF-STEP 02 belum dilakukan |
 | License decision | OPEN | SF-STEP 02/06 |
-| UI inventory | BELUM | SF-STEP 03 |
+| UI reference role | LOCKED | AAVC UI = VISUAL_CONTRACT 1:1; no redesign |
+| UI inventory | BELUM | SF-STEP 03 akan memetakan AAVC UI-001–042 |
 | UI image generation/freeze | BELUM | SF-STEP 04–05 |
 | Architecture formal | BELUM FINAL | SF-STEP 06 |
 | Repository architecture | BELUM | SF-STEP 07 |
