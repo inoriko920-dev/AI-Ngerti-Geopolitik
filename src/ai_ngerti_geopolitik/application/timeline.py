@@ -7,14 +7,22 @@ from enum import StrEnum
 
 from ai_ngerti_geopolitik.application.commands import (
     AddMarkerCommand,
+    AddTrackCommand,
     Command,
     CommandBatch,
     CommandBus,
     DeleteMarkerCommand,
+    DeleteTrackCommand,
+    DuplicateClipCommand,
+    MoveClipCommand,
     RemoveClipCommand,
+    RenameTrackCommand,
     ReorderClipCommand,
+    ReorderTrackCommand,
     SetClipDurationCommand,
+    SetTrackStateCommand,
     SplitClipCommand,
+    TrimClipCommand,
     UpdateMarkerCommand,
 )
 from ai_ngerti_geopolitik.application.playback import PlaybackController, PlaybackSnapshot
@@ -196,6 +204,87 @@ class TimelineController:
         self.selected_clip_id = None
         return state
 
+    def duplicate_selected(
+        self,
+        new_clip_id: str | None = None,
+        *,
+        target_track_id: str | None = None,
+        target_frame: int | None = None,
+    ) -> ProjectState:
+        if self.selected_clip_id is None:
+            raise TimelineError("no clip selected")
+        source_track = next(
+            track
+            for track in self.state.tracks
+            if any(clip.clip_id == self.selected_clip_id for clip in track.clips)
+        )
+        target_id = target_track_id or source_track.track_id
+        target_track = self.state.track(target_id)
+        resolved_frame = (
+            max((clip.timeline_end_frame for clip in target_track.clips), default=0)
+            if target_frame is None
+            else target_frame
+        )
+        resolved_id = new_clip_id or self._next_clip_id()
+        state = self._execute(
+            "Duplicate clip",
+            DuplicateClipCommand(
+                self.selected_clip_id,
+                resolved_id,
+                target_id,
+                resolved_frame,
+            ),
+        )
+        self.selected_clip_id = resolved_id
+        return state
+
+    def move_selected(self, target_track_id: str, target_frame: int) -> ProjectState:
+        if self.selected_clip_id is None:
+            raise TimelineError("no clip selected")
+        return self._execute(
+            "Move clip",
+            MoveClipCommand(self.selected_clip_id, target_track_id, target_frame),
+        )
+
+    def trim_selected(
+        self,
+        trim_frames: int,
+        *,
+        edge: str = "right",
+        ripple: bool = False,
+    ) -> ProjectState:
+        if self.selected_clip_id is None:
+            raise TimelineError("no clip selected")
+        return self._execute(
+            "Trim clip",
+            TrimClipCommand(self.selected_clip_id, trim_frames, edge, ripple),
+        )
+
+    def add_track(self, track_id: str, name: str = "", order: int | None = None) -> ProjectState:
+        return self._execute("Add track", AddTrackCommand(track_id, name, order))
+
+    def delete_track(self, track_id: str) -> ProjectState:
+        return self._execute("Delete track", DeleteTrackCommand(track_id))
+
+    def rename_track(self, track_id: str, name: str) -> ProjectState:
+        return self._execute("Rename track", RenameTrackCommand(track_id, name))
+
+    def reorder_track(self, track_id: str, target_index: int) -> ProjectState:
+        return self._execute("Reorder track", ReorderTrackCommand(track_id, target_index))
+
+    def set_track_state(
+        self,
+        track_id: str,
+        *,
+        locked: bool | None = None,
+        muted: bool | None = None,
+        visible: bool | None = None,
+    ) -> ProjectState:
+        return self._execute(
+            "Set track state",
+            SetTrackStateCommand(track_id, locked, muted, visible),
+        )
+
     def set_in(self, frame: int | None = None) -> TimelineRange | None:
         end = self.state.timeline_end_frame
         if end <= 1:
@@ -366,6 +455,60 @@ class TimelineIntentRouter:
             self.last_result = self.controller.split_selected(data.get("right_clip_id"))
         elif intent.kind is UiIntentType.TIMELINE_DELETE:
             self.last_result = self.controller.remove_selected()
+        elif intent.kind is UiIntentType.TIMELINE_DUPLICATE:
+            self.last_result = self.controller.duplicate_selected(
+                data.get("new_clip_id"),
+                target_track_id=data.get("target_track_id"),
+                target_frame=int(data["target_frame"]) if "target_frame" in data else None,
+            )
+        elif intent.kind is UiIntentType.TIMELINE_MOVE:
+            self.last_result = self.controller.move_selected(
+                self._required(data, "target_track_id"),
+                int(self._required(data, "target_frame")),
+            )
+        elif intent.kind is UiIntentType.TIMELINE_TRIM:
+            self.last_result = self.controller.trim_selected(
+                int(self._required(data, "trim_frames")),
+                edge=data.get("edge", "right"),
+                ripple=data.get("ripple", "false").lower() == "true",
+            )
+        elif intent.kind is UiIntentType.TIMELINE_ADD_TRACK:
+            self.last_result = self.controller.add_track(
+                self._required(data, "track_id"),
+                data.get("name", ""),
+                int(data["order"]) if "order" in data else None,
+            )
+        elif intent.kind is UiIntentType.TIMELINE_DELETE_TRACK:
+            self.last_result = self.controller.delete_track(self._required(data, "track_id"))
+        elif intent.kind is UiIntentType.TIMELINE_RENAME_TRACK:
+            self.last_result = self.controller.rename_track(
+                self._required(data, "track_id"),
+                self._required(data, "name"),
+            )
+        elif intent.kind is UiIntentType.TIMELINE_REORDER_TRACK:
+            self.last_result = self.controller.reorder_track(
+                self._required(data, "track_id"),
+                int(self._required(data, "target_index")),
+            )
+        elif intent.kind is UiIntentType.TIMELINE_SET_TRACK_STATE:
+            self.last_result = self.controller.set_track_state(
+                self._required(data, "track_id"),
+                locked=(
+                    data["locked"].lower() == "true"
+                    if "locked" in data
+                    else None
+                ),
+                muted=(
+                    data["muted"].lower() == "true"
+                    if "muted" in data
+                    else None
+                ),
+                visible=(
+                    data["visible"].lower() == "true"
+                    if "visible" in data
+                    else None
+                ),
+            )
         elif intent.kind is UiIntentType.TIMELINE_SET_IN:
             self.last_result = self.controller.set_in(
                 int(data["frame"]) if "frame" in data else None
