@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 08 / S08-T01 BLOCKED — EXACT UI BINARY BELUM MASUK GITHUB — PRODUCT CODING DILARANG**
+> **STATUS: SF-STEP 08 — S08-T01 PASS — NEXT S08-T02 — PRODUCT FEATURES BELUM DIMULAI**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -10,13 +10,20 @@ Baca `AGENTS.md`, lalu ikuti `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## Current gate
 
-Planning STEP 00–07 sudah ada di repo. Exact AAVC UI-001..UI-042 sudah direcover dan diverifikasi lokal **42/42 SHA PASS**, tetapi binary raw pack belum berhasil ditulis ke GitHub melalui connector yang tersedia.
+Planning STEP 00–07 sudah ada di repo dan exact AAVC `UI-001..UI-042` sekarang sudah committed di:
+`docs/ui_reference/raw/`.
+
+S08-T01 verification:
+- raw files present: **42/42**;
+- canonical local SHA-256 vs manifest: **42/42 PASS**;
+- remote byte-size parity: **42/42 PASS**;
+- remote Git-object identity parity: **42/42 PASS**.
 
 Evidence:
 - `docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
 - `docs/ui_reference/UI_REFERENCE_MANIFEST.md`
 
-S08-T01 tetap **BLOCKED**. Jangan mulai S08-T02 atau coding product sampai exact raw UI pack benar-benar committed dan remote hash verification PASS.
+**Next exact task: S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness.**
 
 ## Core frozen decisions
 

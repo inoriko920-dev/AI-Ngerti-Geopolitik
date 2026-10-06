@@ -21,8 +21,8 @@ Dokumen ini membantu AI/sesi baru menemukan sumber kebenaran proyek tanpa mengan
 5. UI reference:
    - `/docs/ui_reference/UI_REFERENCE_MANIFEST.md`
    - `/docs/ui_reference/05_UI_REFERENCE_FINAL_AI_NGERTI_GEOPOLITIK_REPO_INDEX.docx`
-   - exact raw pack: **REQUIRED BUT NOT YET REMOTE-COMMITTED**
-6. Active STEP 08 evidence:
+   - exact raw references: `/docs/ui_reference/raw/UI-001.png..UI-042.png`
+6. STEP 08 evidence:
    - `/docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
 7. `/HANDOFF.md`
 8. `/docs/PROJECT_STATUS.md`
@@ -39,10 +39,9 @@ Jika runtime dapat membaca DOCX, baca DOCX. Jika binary DOCX tidak dapat dibaca,
 ## Status sekarang
 
 - SF-STEP 00–07 planning: present in repo.
-- SF-STEP 08 active task: S08-T01.
-- exact UI raw local verification: 42/42 PASS.
-- exact UI raw GitHub commit: **BLOCKED / NOT PRESENT**.
-- application code: NONE.
-- S08-T02: NOT ALLOWED.
+- SF-STEP 08 / S08-T01: **PASS**.
+- exact UI raw GitHub references: **42/42 PRESENT + REMOTE IDENTITY VERIFIED**.
+- application feature code: NONE.
+- next exact task: **S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness**.
 - UI baseline prompt regeneration: VOID / DO NOT USE.
 - old AAVC repo: read-only.

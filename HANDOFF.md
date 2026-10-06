@@ -1,10 +1,10 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Fase:** SF-STEP 08 / S08-T01 BLOCKED  
-**Active task:** S08-T01 — Source-of-Truth & Exact UI Reference Gate  
-**Task status:** BLOCKED ON REMOTE BINARY UPLOAD  
-**Application source:** NONE  
-**Production coding:** FORBIDDEN
+**Fase:** SF-STEP 08  
+**Completed task:** S08-T01 — Source-of-Truth & Exact UI Reference Gate  
+**Task result:** **PASS**  
+**Next exact task:** S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness  
+**Application source:** NONE at S08-T01 close
 
 ## Read first
 
@@ -12,57 +12,45 @@
 2. Software Factory master + guide
 3. `docs/planning/00..08` in order
 4. `docs/ui_reference/UI_REFERENCE_MANIFEST.md`
-5. `docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
-6. `docs/DECISIONS_LOCKED.md`
-7. `docs/PROJECT_STATUS.md`
-8. `docs/REPOSITORY_RULES.md`
-9. this `HANDOFF.md`
+5. `docs/ui_reference/raw/UI-001.png..UI-042.png`
+6. `docs/evidence/ui/S08_T01_UI_REFERENCE_GATE.md`
+7. `docs/DECISIONS_LOCKED.md`
+8. `docs/PROJECT_STATUS.md`
+9. `docs/REPOSITORY_RULES.md`
+10. this `HANDOFF.md`
 
-## S08-T01 work completed
+## S08-T01 final evidence
 
-Verified repo baseline:
-- repo: `inoriko920-dev/AI-Ngerti-Geopolitik`
-- branch: `main`
-- starting HEAD: `47942565c6b34f5d5d70dc4eed8f732f6f5c5643`
+Source-of-truth:
+- Master Blueprint + STEP 00–07 DOCX/TXT are present.
+- exact frozen UI references are present in GitHub.
 
-Source-of-truth verification:
-- Master Blueprint DOCX+TXT present.
-- STEP 00–07 DOCX+TXT present.
-- STEP 04/05 UI manifest/index present.
-- no product source code exists.
+Remote raw UI:
+- path: `docs/ui_reference/raw/`;
+- count: **42/42**;
+- complete payload commit: `06ac2cb5899dd8c55e96f3e97b5bf171ae9388f8`;
+- remote byte-size parity with canonical local PNG: **42/42 PASS**;
+- remote Git blob SHA-1 parity with exact local PNG Git object identity: **42/42 PASS**;
+- local SHA-256 against authoritative manifest: **42/42 PASS**.
 
-Exact visual verification:
-- recovered exact original `UI-001.png..UI-042.png`;
-- local SHA-256/size verification against authoritative manifest: **42/42 PASS**;
-- local exact pack: `ANG_UI_REFERENCE_RAW_42_EXACT.zip`;
-- pack SHA-256: `2fc3e43b5625b0ec709095b53549c6c098f0dbd9c32a0789eb6e2683e59feef2`;
-- pack size: `65,497,507 bytes`.
-
-## Blocker
-
-The available GitHub connector cannot ingest the exact local binary files/pack from the model working container. It can write UTF-8 files and Git blobs from supplied text/base64, but there is no connector file-reference/binary upload bridge exposed for these 65 MB of already-verified PNG bytes.
-
-This is a **tooling transport blocker**, not a missing-design blocker.
-
-Do not weaken the gate by treating the existing hash manifest, compressed preview JPGs, reconstructed DOCX, or VOID prompt batch as the raw UI pack.
+The previous connector binary-upload blocker is **RESOLVED**. The workaround was lossless Base64 transport into Git blobs, not image conversion.
 
 ## Exact next action
 
-Continue **S08-T01 only** when an exact binary upload path is available.
+If owner says **"lanjutkan"**, execute **S08-T02 only**.
 
-Required completion:
-1. commit exact raw UI reference payload to GitHub;
-2. verify remote-extracted `UI-001..UI-042` SHA-256 = existing manifest, 42/42;
-3. update status/handoff to S08-T01 PASS;
-4. only then activate S08-T02.
+S08-T02 goal:
+- materialize minimal Python `src/` layout;
+- create only foundation packages needed by the architecture;
+- establish `pyproject.toml`, .gitignore/.editorconfig and foundation test/tool configs;
+- add architecture/import/source-of-truth/secret checks;
+- prove package import + cheap gates;
+- create concise operational docs from STEP 06/07 only as needed.
 
-## Still forbidden
-
-- no product source code;
-- no UI implementation;
-- no libopenshot/MLT feature implementation;
-- no Gemini implementation;
-- no render feature;
-- no STEP 09;
-- no UI regeneration;
-- no use of the VOID 42-prompt ZIP.
+Do NOT in S08-T02:
+- implement the 42-screen product UI;
+- implement libopenshot/MLT feature stack;
+- implement Gemini editing;
+- implement render/export product features;
+- claim portable release;
+- start S08-T03 automatically.

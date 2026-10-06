@@ -5,7 +5,7 @@
 **Task:** S08-T01  
 **Role:** SOL  
 **Starting baseline:** `main @ 47942565c6b34f5d5d70dc4eed8f732f6f5c5643`  
-**Result:** **BLOCKED — REMOTE BINARY UPLOAD NOT AVAILABLE**
+**Result:** **PASS**
 
 ## 1. Repository/source-of-truth verification
 
@@ -19,68 +19,80 @@ Verified in GitHub:
 - STEP 05 DOCX + TXT;
 - STEP 06 DOCX + TXT;
 - STEP 07 DOCX + TXT;
-- UI reference index;
-- UI SHA manifest;
+- UI reference index + SHA manifest;
 - Software Factory guide/master;
 - status, decisions, rules, handoff.
 
-No application source tree exists yet. This is correct for S08-T01.
+No application source was created during S08-T01.
 
 ## 2. Exact UI raw recovery
 
-Recovered exactly 42 original AAVC reference PNG files and normalized only their filenames to:
+Recovered exactly 42 original AAVC reference PNG files and normalized only filenames to:
 `UI-001.png` through `UI-042.png`.
 
-No image pixels were regenerated, resized, recompressed, or edited.
+No pixels were regenerated, resized, recompressed, or edited.
 
-## 3. Integrity verification
+## 3. Local integrity verification
 
-Each recovered PNG was checked against the authoritative STEP 04/05 manifest using:
+Every recovered PNG was checked against the authoritative STEP 04/05 manifest using:
 - byte count;
 - SHA-256.
 
-Result: **42 / 42 PASS**.
+Result: **42/42 PASS**.
 
 Examples:
 - UI-001: 839156 bytes — `de8ea60f323f0c7cd3a0fc0a626e431b194b6142fcc4e14236aa6e9f9c6af4af`
 - UI-042: 1477719 bytes — `e0f57b1f37ed47bf1109207023e1dae1fa9f88fd5c633657b3c8060efe95b0e8`
 
-Full per-file expected hashes remain in `docs/ui_reference/UI_REFERENCE_MANIFEST.md`.
+Full SHA-256 authority remains `docs/ui_reference/UI_REFERENCE_MANIFEST.md`.
 
-## 4. Exact transport artifact
+## 4. GitHub binary transport
 
-A deterministic archive containing the 42 exact PNG bytes + verification/source manifest was created locally:
+The initial direct-file connector path did not expose a binary upload handoff. The blocker was resolved without modifying images:
 
-- filename: `ANG_UI_REFERENCE_RAW_42_EXACT.zip`
-- size: **65,497,507 bytes**
-- SHA-256: `2fc3e43b5625b0ec709095b53549c6c098f0dbd9c32a0789eb6e2683e59feef2`
+1. exact PNG bytes were Base64-encoded losslessly;
+2. encoded text was staged through the file bridge;
+3. GitHub Git blobs were created using `encoding=base64`;
+4. tree entries were committed under `docs/ui_reference/raw/UI-xxx.png`.
 
-Extracted PNG bytes are the authority; archive hash identifies this exact transfer artifact.
+Commits:
+- UI-001..010: `d2f78561dd85cf16c6b82922615ae07249cd97cf`
+- UI-011..020: `67461abdf853bc1757b581727c7b2ebbe24aec67`
+- UI-021..030: `fe049f4dd27d23b11d5e75a6ac6904f33bbb19ce`
+- UI-031..040: `deaad99a9cc931397466501b4e82ecb2c8a93b01`
+- UI-041..042 / first complete 42-image tree: `06ac2cb5899dd8c55e96f3e97b5bf171ae9388f8`
 
-## 5. Remote write attempt / blocker
+## 5. Remote integrity verification
 
-The GitHub connector available in this session supports repository text writes / Git blobs from supplied content, but it does not expose a direct binary file-reference upload from the model working container or conversation file store.
+Remote Git tree:
+- expected files: 42;
+- found: **42**;
+- paths: `docs/ui_reference/raw/UI-001.png..UI-042.png`.
 
-The exact payload is ~65 MB and cannot be truthfully reconstructed in-repo through the connector-safe text path without changing/omitting the binary source.
+For every file, two remote properties were compared to the exact local canonical bytes:
+- remote blob size == local byte size;
+- remote Git blob SHA-1 == locally computed Git object SHA-1 of `blob <size>\0<exact bytes>`.
 
-Therefore the task is **not** marked PASS.
+Result:
+- remote file presence: **42/42 PASS**;
+- byte size parity: **42/42 PASS**;
+- Git object identity parity: **42/42 PASS**;
+- therefore the committed PNG payload is byte-identical to the verified local canonical set.
+
+This remote identity verification is in addition to the canonical local SHA-256 manifest verification.
 
 ## 6. Gate decision
 
 Planning/source-of-truth presence: **PASS**  
 Local exact UI recovery: **PASS**  
-Local SHA verification: **PASS 42/42**  
-Exact UI binary committed to GitHub: **FAIL / BLOCKED**  
-Remote hash verification: **NOT TESTED**  
-S08-T01 final: **BLOCKED**
+Local SHA-256 verification: **PASS 42/42**  
+Exact UI binary committed to GitHub: **PASS 42/42**  
+Remote byte/Git-object verification: **PASS 42/42**  
+S08-T01 final: **PASS**
 
-## 7. Required next action
+## 7. Next action
 
-When an exact binary upload path is available:
-1. commit the exact UI raw pack to the repo;
-2. verify the 42 extracted PNG hashes from the remote commit;
-3. record the commit SHA;
-4. mark S08-T01 PASS;
-5. activate S08-T02.
+S08-T02 is now unblocked.
 
-No product source coding is authorized before that.
+Do not treat this as permission to jump to product features. The next exact task remains:
+**S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness** only.
