@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 from ai_ngerti_geopolitik.infrastructure import persistence
 
 
@@ -22,5 +20,8 @@ def test_future_schema_is_rejected(tmp_path: Path) -> None:
     )
     path = tmp_path / "future.angproj"
     path.write_text(payload, encoding="utf-8")
-    with pytest.raises(persistence.ProjectFormatError):
+    try:
         persistence.JsonProjectRepository().load(path)
+    except persistence.ProjectFormatError:
+        return
+    raise AssertionError("future project schema must be rejected")
