@@ -53,6 +53,33 @@ def _repack_contiguous(clips: list[Clip], fps: int) -> tuple[Clip, ...]:
     return tuple(packed)
 
 
+def _sorted_tracks(state: ProjectState) -> list[Track]:
+    return sorted(state.tracks, key=lambda item: item.order)
+
+
+def _normalize_track_orders(tracks: list[Track]) -> tuple[Track, ...]:
+    return tuple(replace(track, order=index) for index, track in enumerate(tracks))
+
+
+def _replace_tracks(state: ProjectState, tracks: tuple[Track, ...]) -> ProjectState:
+    candidate = replace(state, tracks=tracks)
+    candidate.validate()
+    return candidate
+
+
+def _require_track_editable(track: Track) -> None:
+    if track.locked:
+        raise CommandError(f"track is locked: {track.track_id}")
+
+
+def _find_clip_location(state: ProjectState, clip_id: str) -> tuple[Track, Clip]:
+    for track in state.tracks:
+        for clip in track.clips:
+            if clip.clip_id == clip_id:
+                return track, clip
+    raise CommandError(f"unknown clip: {clip_id}")
+
+
 @dataclass(frozen=True, slots=True)
 class ImportAssetCommand:
     asset: Asset
@@ -103,6 +130,98 @@ class UpdateProjectSettingsCommand:
 
 
 @dataclass(frozen=True, slots=True)
+class AddTrackCommand:
+    track_id: str
+    name: str = ""
+    order: int | None = None
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if any(track.track_id == self.track_id for track in state.tracks):
+            raise CommandError(f"duplicate track id: {self.track_id}")
+        tracks = _sorted_tracks(state)
+        target = len(tracks) if self.order is None else self.order
+        if target < 0 or target > len(tracks):
+            raise CommandError(f"track order outside range: {target}")
+        tracks.insert(
+            target,
+            Track(
+                track_id=self.track_id,
+                kind="video",
+                order=target,
+                name=self.name.strip(),
+            ),
+        )
+        return _replace_tracks(state, _normalize_track_orders(tracks))
+
+
+@dataclass(frozen=True, slots=True)
+class DeleteTrackCommand:
+    track_id: str
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track = state.track(self.track_id)
+        _require_track_editable(track)
+        if track.clips:
+            raise CommandError("delete track requires an empty track")
+        tracks = [item for item in _sorted_tracks(state) if item.track_id != self.track_id]
+        return _replace_tracks(state, _normalize_track_orders(tracks))
+
+
+@dataclass(frozen=True, slots=True)
+class RenameTrackCommand:
+    track_id: str
+    name: str
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track = state.track(self.track_id)
+        _require_track_editable(track)
+        name = self.name.strip()
+        if not name:
+            raise CommandError("track name is required")
+        return _replace_track(state, replace(track, name=name))
+
+
+@dataclass(frozen=True, slots=True)
+class ReorderTrackCommand:
+    track_id: str
+    target_index: int
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        tracks = _sorted_tracks(state)
+        if self.target_index < 0 or self.target_index >= len(tracks):
+            raise CommandError(f"target track index outside range: {self.target_index}")
+        source_index = next(
+            (index for index, track in enumerate(tracks) if track.track_id == self.track_id),
+            None,
+        )
+        if source_index is None:
+            raise CommandError(f"unknown track: {self.track_id}")
+        track = tracks[source_index]
+        _require_track_editable(track)
+        tracks.pop(source_index)
+        tracks.insert(self.target_index, track)
+        return _replace_tracks(state, _normalize_track_orders(tracks))
+
+
+@dataclass(frozen=True, slots=True)
+class SetTrackStateCommand:
+    track_id: str
+    locked: bool | None = None
+    muted: bool | None = None
+    visible: bool | None = None
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        track = state.track(self.track_id)
+        updated = replace(
+            track,
+            locked=track.locked if self.locked is None else self.locked,
+            muted=track.muted if self.muted is None else self.muted,
+            visible=track.visible if self.visible is None else self.visible,
+        )
+        return _replace_track(state, updated)
+
+
+@dataclass(frozen=True, slots=True)
 class AddClipCommand:
     clip: Clip
     track_id: str = "V1"
@@ -118,9 +237,80 @@ class AddClipCommand:
         try:
             track = state.track(self.track_id)
         except DomainValidationError:
-            track = Track(track_id=self.track_id, kind="video", order=0)
+            order = max((item.order for item in state.tracks), default=-1) + 1
+            track = Track(track_id=self.track_id, kind="video", order=order)
+        _require_track_editable(track)
         track = replace(track, clips=(*track.clips, self.clip))
         return _replace_track(state, track)
+
+
+@dataclass(frozen=True, slots=True)
+class MoveClipCommand:
+    clip_id: str
+    target_track_id: str
+    target_frame: int
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if self.target_frame < 0:
+            raise CommandError("target frame must be non-negative")
+        source_track, clip = _find_clip_location(state, self.clip_id)
+        target_track = state.track(self.target_track_id)
+        _require_track_editable(source_track)
+        _require_track_editable(target_track)
+        moved = replace(clip, timeline_start=FrameTime(self.target_frame, state.fps))
+        tracks: list[Track] = []
+        for track in state.tracks:
+            if source_track.track_id == target_track.track_id == track.track_id:
+                clips = tuple(item for item in track.clips if item.clip_id != self.clip_id)
+                tracks.append(replace(track, clips=(*clips, moved)))
+            elif track.track_id == source_track.track_id:
+                tracks.append(
+                    replace(
+                        track,
+                        clips=tuple(item for item in track.clips if item.clip_id != self.clip_id),
+                    )
+                )
+            elif track.track_id == target_track.track_id:
+                tracks.append(replace(track, clips=(*track.clips, moved)))
+            else:
+                tracks.append(track)
+        try:
+            return _replace_tracks(state, tuple(tracks))
+        except DomainValidationError as exc:
+            raise CommandError("clip move would create an invalid overlap") from exc
+
+
+@dataclass(frozen=True, slots=True)
+class DuplicateClipCommand:
+    clip_id: str
+    new_clip_id: str
+    target_track_id: str
+    target_frame: int
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if self.target_frame < 0:
+            raise CommandError("target frame must be non-negative")
+        if any(
+            existing.clip_id == self.new_clip_id
+            for track in state.tracks
+            for existing in track.clips
+        ):
+            raise CommandError(f"duplicate clip id: {self.new_clip_id}")
+        _source_track, clip = _find_clip_location(state, self.clip_id)
+        target_track = state.track(self.target_track_id)
+        _require_track_editable(target_track)
+        duplicate = replace(
+            clip,
+            clip_id=self.new_clip_id,
+            timeline_start=FrameTime(self.target_frame, state.fps),
+        )
+        try:
+            return _replace_track(
+                state,
+                replace(target_track, clips=(*target_track.clips, duplicate)),
+            )
+        except DomainValidationError as exc:
+            raise CommandError("clip duplicate would create an invalid overlap") from exc
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,6 +321,7 @@ class ReorderClipCommand:
 
     def apply(self, state: ProjectState) -> ProjectState:
         track = state.track(self.track_id)
+        _require_track_editable(track)
         clips = _sorted_clips(track)
         if self.target_index < 0 or self.target_index >= len(clips):
             raise CommandError(f"target index outside track: {self.target_index}")
@@ -160,6 +351,7 @@ class SetClipDurationCommand:
             for index, clip in enumerate(ordered):
                 if clip.clip_id != self.clip_id:
                     continue
+                _require_track_editable(track)
                 asset = state.asset(clip.asset_id)
                 new_source_out = clip.source_in.frames + self.duration_frames
                 if new_source_out > asset.duration.frames:
@@ -267,27 +459,53 @@ class TrimClipCommand:
     clip_id: str
     trim_frames: int
     edge: str = "right"
+    ripple: bool = False
 
     def apply(self, state: ProjectState) -> ProjectState:
-        if self.edge != "right":
-            raise CommandError("canonical trim currently supports right edge only")
+        if self.edge not in {"left", "right"}:
+            raise CommandError("trim edge must be left or right")
         if self.trim_frames <= 0:
             raise CommandError("trim_frames must be positive")
         for track in state.tracks:
-            for index, clip in enumerate(track.clips):
+            ordered = _sorted_clips(track)
+            for index, clip in enumerate(ordered):
                 if clip.clip_id != self.clip_id:
                     continue
+                _require_track_editable(track)
                 if self.trim_frames >= clip.duration_frames:
                     raise CommandError("trim would remove entire clip")
-                trimmed = replace(
-                    clip,
-                    source_out=FrameTime(
-                        clip.source_out.frames - self.trim_frames,
-                        state.fps,
-                    ),
-                )
-                clips = (*track.clips[:index], trimmed, *track.clips[index + 1 :])
-                return _replace_track(state, replace(track, clips=clips))
+                if self.edge == "left":
+                    trimmed = replace(
+                        clip,
+                        timeline_start=FrameTime(
+                            clip.timeline_start.frames + self.trim_frames,
+                            state.fps,
+                        ),
+                        source_in=FrameTime(
+                            clip.source_in.frames + self.trim_frames,
+                            state.fps,
+                        ),
+                    )
+                else:
+                    trimmed = replace(
+                        clip,
+                        source_out=FrameTime(
+                            clip.source_out.frames - self.trim_frames,
+                            state.fps,
+                        ),
+                    )
+                ordered[index] = trimmed
+                if self.ripple and self.edge == "right":
+                    for later_index in range(index + 1, len(ordered)):
+                        later = ordered[later_index]
+                        ordered[later_index] = replace(
+                            later,
+                            timeline_start=FrameTime(
+                                later.timeline_start.frames - self.trim_frames,
+                                state.fps,
+                            ),
+                        )
+                return _replace_track(state, replace(track, clips=tuple(ordered)))
         raise CommandError(f"unknown clip: {self.clip_id}")
 
 
