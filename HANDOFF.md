@@ -1,63 +1,63 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Last completed:** SF-STEP 09 — PASS  
-**Accepted implementation commit:** `61225eca38115a636e062d3e795f7884049d19d4`  
-**Passing S09 Windows run:** `37520166438`  
-**Passing S08 regression run:** `37520166400`  
-**Next exact STEP:** SF-STEP 10 — Minimum End-to-End Vertical Slice
+**Last completed:** SF-STEP 10 — PASS_WITH_PROVISIONAL  
+**Accepted commit:** `852610f55a6e99dc98234114c3cf099ed85dfd42`  
+**Passing S10 run:** `37527851180`  
+**Passing S09 regression:** `37527851222`  
+**Passing S08 regression:** `37527851230`  
+**Next exact STEP:** SF-STEP 11 — Feature Implementation Waves
 
-## What STEP 09 delivered
+## Read first
 
-ANG now has a real PySide6 shell matching the AAVC runtime structure as closely as practical without redesign:
-- Project Hub / Home;
-- Scene DOCX wizard;
-- editor shell;
-- SINGLE / DOUBLE scene states;
-- subtitle state;
-- export settings;
-- validation center;
-- menus/toolbars/timeline/preview/right workspace shell;
-- semantic presentation intents;
-- deterministic screenshot capture;
-- Windows portable onedir packaging.
+Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`. Read all STEP 00–07 planning, STEP 08–10 evidence, current decisions, tasks and source before modifying code.
 
-Representative capture set: UI-002, UI-003, UI-010, UI-013, UI-014, UI-027, UI-035, UI-041.
+## Proven backbone
 
-## Evidence
+The following path is VERIFIED on Windows:
+- real Qt Import Media action;
+- semantic UiIntent;
+- application router/use-case;
+- CommandBus / immutable ProjectState;
+- real ffprobe media probe;
+- stable A001/C001/C002 identities;
+- frame-based split + trim;
+- exact Undo/Redo;
+- current ProjectState projected into real Qt timeline widgets;
+- engine-derived preview projected into real Qt preview;
+- atomic `.angproj` save/load;
+- H.264/AAC export;
+- cancel/cleanup;
+- packaged onedir media qualification smoke.
 
-`docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`
+Final semantic hash:
+`59f2d632f402b3dd1b08e66cb1f5c3e7cf8146d46c4efdd86372a13bccb30457`.
 
-Key PASS facts:
-- pytest 17 PASS;
-- mypy 19 source files / 0 issues;
-- Import Linter 4 kept / 0 broken;
-- architecture PASS;
-- source-of-truth 70/70;
-- frozen UI SHA 42/42;
-- 8/8 representative screenshots;
-- portable UI shell smoke PASS.
+Export SHA-256:
+`2157671678c630b3fcebd5268a011ac454a14a83cf8d8a08d83746c8fa34634e`.
 
-Direct runtime comparison used read-only AAVC CI run `37498549910` at commit `7d77fc9f724d359c7da6c4796dffce5104740952`. This supplements, not replaces, the frozen 42-reference contract.
+Evidence:
+`docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`.
 
-Portable inner ZIP SHA-256:
-`47fe8296d1eaa7dbf0b859b2e65335c25b51183d19b7f4eed596a64c2ea162c0`.
+## STEP 10 limits that must remain explicit
 
-## Known scope gaps by design
+Not yet proven:
+- continuous production playback/transport;
+- final libopenshot production qualification;
+- MLT fallback decision;
+- final bundled native media-engine dependency/license chain;
+- broad feature parity;
+- real Gemini/service integration.
 
-Not yet real:
-- media-engine editing/playback integration;
-- .angproj save/reopen;
-- split/trim domain mutations;
-- production Undo/Redo;
-- real export;
-- Gemini execution.
+The real STEP 10 FFmpeg adapter is a qualification adapter only. Do not silently promote it to the final engine.
 
-Do not label STEP 09 fixture UI as functional media behavior.
+## STEP 11 first priority
 
-## STEP 10 exact purpose
+Enter STEP 11 in bounded waves. Wave 0 must:
+1. lock the S08/S09/S10 green baseline;
+2. qualify the production MediaEnginePort on Windows;
+3. prove continuous playback/seek/edit coherence on the same ProjectState;
+4. resolve libopenshot primary vs MLT fallback with evidence before broad media feature expansion.
 
-Prove **one minimum real editing flow end-to-end**, not all features.
+Keep UI AAVC 1:1, CommandBus mutation rules, and evidence gates unchanged.
 
-Read the exact STEP 10 Software Factory prompt before implementation. The slice should remain narrow and should validate the architecture through a real ProjectState/command/media path, including relevant persistence, undo/redo, negative path and output evidence.
-
-Do not start STEP 11 feature waves before STEP 10 gate PASS.
+Do not start STEP 12 integrations until STEP 11 gate is satisfied.

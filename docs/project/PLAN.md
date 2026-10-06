@@ -1,21 +1,32 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 09 = PASS.**
+**SF-STEP 10 = PASS_WITH_PROVISIONAL.**
 
-The app now has a real PySide6 AAVC-style shell and Windows packaging evidence. The UI milestone is complete enough to validate the architecture with a real vertical slice; it is not a claim that the video editor feature stack is complete.
+The project has crossed the key architecture threshold: one real editing path now runs from an actual Qt control through semantic application/domain state to real media preview/export, persistence, Undo/Redo and packaged Windows qualification evidence.
+
+Evidence:
+`docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`.
 
 ## Next phase
 
-**SF-STEP 10 — Minimum End-to-End Vertical Slice**
+**SF-STEP 11 — Feature Implementation Waves**
 
-Purpose:
-- stop being only a UI shell;
-- choose one small representative workflow;
-- route it through the real application/domain boundaries;
-- exercise the selected media adapter/output path;
-- prove state change, error handling, persistence/undo/cancel as required;
-- generate evidence before expanding to STEP 11.
+Execution principles:
+- preserve the S08/S09/S10 green baseline at every wave;
+- keep ProjectState canonical;
+- keep all user-visible mutations behind CommandBus/use-cases;
+- do not call concrete FFmpeg/libopenshot/MLT/Gemini directly from presentation;
+- no UI redesign;
+- every wave requires evidence before the next wave.
 
-Do not implement all features at once. Do not introduce Gemini merely to make the slice look more complete unless required by the STEP 10 prompt.
+## Wave 0 priority
 
-Before execution, read the exact STEP 10 Software Factory prompt and current STEP 09 evidence/handoff.
+Resolve the bounded STEP 10 provisional:
+1. production MediaEnginePort qualification on Windows;
+2. continuous playback/seek/edit coherence;
+3. evidence-based libopenshot primary vs MLT fallback decision;
+4. native dependency/license/package impact recorded.
+
+Then expand core editing capabilities in bounded feature waves.
+
+Do not begin SF-STEP 12 integrations during STEP 11.

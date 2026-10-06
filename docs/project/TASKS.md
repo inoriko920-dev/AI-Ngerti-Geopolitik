@@ -4,36 +4,48 @@
 Repository foundation, exact UI references, Windows CI and portable foundation verified.
 
 ## SF-STEP 09 — DONE / PASS
+Real AAVC-derived PySide6 app shell, screenshot evidence and portable UI shell verified.
 
-Accepted commit: `61225eca38115a636e062d3e795f7884049d19d4`  
-Windows run: `37520166438` — SUCCESS
+## SF-STEP 10 — DONE / PASS_WITH_PROVISIONAL
+
+Accepted commit: `852610f55a6e99dc98234114c3cf099ed85dfd42`  
+Windows run: `37527851180` — SUCCESS
 
 Completed:
-- [x] real PySide6 app shell;
-- [x] AAVC visual hierarchy / white-blue tokens;
-- [x] home + Scene DOCX wizard;
-- [x] editor overview;
-- [x] SINGLE / DOUBLE states;
-- [x] subtitle workspace;
-- [x] export settings aligned to AAVC reference-era runtime;
-- [x] validation center aligned to AAVC;
-- [x] semantic UI intent boundary;
-- [x] Qt/navigation/layout tests;
-- [x] 8 representative 1920×1080 captures;
-- [x] direct AAVC-runtime parity review;
-- [x] 17 tests PASS;
-- [x] Windows portable UI shell build + smoke;
-- [x] S08 regression run remains green.
+- [x] real UI import action -> semantic UiIntent;
+- [x] real ffprobe import/probe;
+- [x] ProjectState + CommandBus canonical edit path;
+- [x] add/split/trim with stable IDs;
+- [x] invalid edit atomicity;
+- [x] exact Undo/Redo semantic hashes;
+- [x] real ProjectState -> Qt timeline projection;
+- [x] engine preview frames 149/151 -> Qt preview canvas;
+- [x] atomic `.angproj` save/load roundtrip;
+- [x] corrupt/wrong-extension negative paths;
+- [x] H.264/AAC 1920×1080 30 fps export;
+- [x] cancellation + no false/partial output;
+- [x] generated/owned fixture provenance;
+- [x] evidence verifier 22/22;
+- [x] pytest 26 PASS;
+- [x] packaged onedir real-media qualification smoke;
+- [x] S08 + S09 regressions green.
 
 Evidence:
-`docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`.
+`docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`.
 
-## NEXT — SF-STEP 10
+Provisional:
+- [ ] continuous interactive production playback;
+- [ ] final libopenshot-vs-MLT qualification;
+- [ ] final native media-engine package/license chain.
 
-**Minimum End-to-End Vertical Slice**
+## NEXT — SF-STEP 11
 
-Do one narrow real flow only. Do not begin broad feature waves.
+**Feature Implementation Waves**
 
-Target proof must connect real UI intent to application/domain command/state and a real verifiable media/output path, with the STEP 10 required negative-path, persistence/cancel/undo evidence as applicable.
+First wave:
+- freeze current green regression baseline;
+- production MediaEnginePort qualification;
+- continuous playback/seek/edit coherence;
+- evidence-based libopenshot primary vs MLT fallback decision.
 
-AI/Gemini does not need to be in the first vertical slice unless the exact STEP 10 prompt requires it.
+Only after that expand media/editor features in small regression-safe waves. External-service/Gemini production wiring belongs to STEP 12 unless the authoritative STEP 11 prompt says otherwise.

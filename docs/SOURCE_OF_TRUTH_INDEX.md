@@ -17,6 +17,7 @@
     - `docs/evidence/tests/S08_T02_FOUNDATION.md`
     - `docs/evidence/packaging/S08_T03_WINDOWS_CI.md`
     - `docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`
+    - `docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`
 12. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
 13. actual source/tests/config/workflows/evidence.
 
@@ -26,13 +27,14 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 
 - SF-STEP 00–07 planning: present.
 - SF-STEP 08: PASS.
-- SF-STEP 09: **PASS**.
+- SF-STEP 09: PASS.
+- SF-STEP 10: **PASS_WITH_PROVISIONAL**.
+- real Qt -> application -> CommandBus -> ProjectState -> persistence/media/output vertical slice: VERIFIED.
+- live ProjectState -> timeline UI + backend preview -> preview UI: VERIFIED.
+- real H.264/AAC export + cancellation + packaged real-media smoke: VERIFIED.
 - UI raw references: 42/42 exact + verified.
-- real PySide6 app shell: implemented and Windows-tested.
-- representative actual screenshots: 8/8 verified.
-- direct actual-runtime AAVC parity review: completed.
-- Windows portable UI shell: build + smoke PASS.
-- media-engine feature stack / real render / Gemini execution: NOT YET COMPLETE.
-- next exact STEP: **SF-STEP 10 — Minimum End-to-End Vertical Slice**.
+- continuous production playback: PROVISIONAL / STEP 11 priority.
+- final libopenshot-vs-MLT production qualification: PROVISIONAL / STEP 11 priority.
+- next exact STEP: **SF-STEP 11 — Feature Implementation Waves**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

@@ -237,3 +237,23 @@ Aturan acceptance:
 - AAVC tetap read-only.
 
 Keputusan ini hanya menetapkan interpretasi acceptance STEP 09. Ia tidak mengizinkan perubahan UI diam-diam pada STEP berikutnya.
+
+
+## D-023 — STEP 10 media qualification boundary
+SF-STEP 10 membuktikan canonical editing backbone memakai **real system FFmpeg/ffprobe qualification adapter** di belakang `MediaEnginePort`.
+
+Keputusan yang dikunci:
+- adapter STEP 10 adalah real backend untuk qualification/evidence, bukan fake;
+- adapter ini **tidak mengganti D-020** dan tidak otomatis menjadi production media engine ANG;
+- libopenshot tetap primary production qualification candidate dan MLT tetap fallback sampai STEP 11 menghasilkan evidence Windows yang cukup;
+- presentation tidak boleh memanggil FFmpeg/libopenshot/MLT langsung;
+- ProjectState + CommandBus tetap source-of-truth dan engine-agnostic;
+- STEP 10 boleh ditutup PASS_WITH_PROVISIONAL karena UI→state→persistence→preview/export→packaged smoke sudah real dan verified;
+- provisional yang wajib diprioritaskan pada STEP 11 adalah continuous production playback serta final engine/native dependency/license qualification;
+- packaged STEP 10 media-smoke executable adalah qualification artifact, bukan final user-facing distribution.
+
+Accepted STEP 10 baseline:
+- commit `852610f55a6e99dc98234114c3cf099ed85dfd42`;
+- S10 run `37527851180` SUCCESS;
+- S09 regression `37527851222` SUCCESS;
+- S08 regression `37527851230` SUCCESS.
