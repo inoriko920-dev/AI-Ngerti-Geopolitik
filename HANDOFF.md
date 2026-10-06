@@ -1,10 +1,10 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11  
-**Last completed wave:** W1 — PASS  
-**Accepted W1 HEAD:** `1f354cddc68eb9f129ba22d0410480964c6b1b85`  
-**Accepted W1 run:** `37536861625` — SUCCESS  
-**Next exact wave:** W2 — Timeline, Playback & Core Editing
+**Last completed wave:** W2 — PASS  
+**Accepted W2 implementation HEAD:** `4486da29883bc42e9cd12d5d13a7784f347dc2d3`  
+**Accepted W2 run:** `37542485728` — SUCCESS  
+**Next exact wave:** W3 — Properties: Video, Audio, Color & Speed
 
 ## Read first
 
@@ -13,33 +13,42 @@ Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 Read:
 - STEP 08–10 evidence;
 - `docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`;
-- `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`.
+- `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`;
+- `docs/evidence/features/S11_W2_TIMELINE_PLAYBACK_CORE.md`.
 
-## W1 outcome
+## W2 outcome
 
 Verified:
-- project new/open/close + dirty guard;
-- atomic Save/Save As + .bak previous-save policy;
-- video/audio/image real probe/import;
-- stable Axxx media identity;
-- persisted project resolution/FPS/aspect;
-- media-bin query/filter/sort/selection;
-- separate autosave snapshots;
-- online/offline/missing state;
-- missing media never silently deletes clips.
+- video-track CRUD/order/lock/mute/visibility;
+- clip move/duplicate/delete/selection with stable IDs;
+- ripple/collision policy;
+- split and left/right trim;
+- Undo/Redo through CommandBus;
+- playback play/pause/seek/scrub;
+- marker, IN/OUT, snap, zoom, follow;
+- Qt keyboard/context actions routed semantically;
+- save/reopen of W2 state;
+- real MLT Windows playback/render projection;
+- 1000-clip deterministic stress fixture.
 
-W1 artifact:
-- ID `11446054538`;
+W2 core artifact:
+- ID `11449376822`;
 - digest
-  `sha256:24fb98071bd1a1ee86cc1e4e2552fa2eb424cf4200a02fe3700b01241dc3e6b9`.
+  `sha256:1c7a5812b7d249caf51af294f14ce734cc3e58bc314cdf76b5a45ab543641e83`.
 
-## Regression IDs on W1 HEAD
+MLT artifact:
+- ID `11448897281`;
+- digest
+  `sha256:c27584b57760121eff068040345aedf95ebd6bfe36a49af691030cfe9b8a3846`.
 
-- W1: `37536861625`;
-- W0: `37536861597`;
-- S10: `37536861677`;
-- S09: `37536861608`;
-- S08: `37536861662`.
+## Regression IDs on accepted W2 implementation HEAD
+
+- W2: `37542485728`;
+- W1: `37542485911`;
+- W0: `37542485906`;
+- S10: `37542485819`;
+- S09: `37542485810`;
+- S08: `37542485951`.
 
 All are SUCCESS.
 
@@ -49,14 +58,26 @@ All are SUCCESS.
 - All canonical mutation remains CommandBus/CommandBatch.
 - MLT remains the primary production-engine implementation candidate.
 - MediaEnginePort stays the boundary.
-- Missing/offline assets retain identity and clip references.
-- Autosave is never a silent overwrite of the canonical project.
+- Presentation does not mutate engine/project objects directly.
 - AAVC UI-001..UI-042 remains frozen 1:1.
+- W2 canonical tracks are video-track semantics; richer audio/property behavior
+  is not falsely backfilled into W2.
+- MLT W2 evidence is a real canonical V1 projection, not final arbitrary
+  multitrack production support.
 
 ## Next exact action
 
-Execute **W2 only — Timeline, Playback & Core Editing** after owner says
+Execute **W3 only — Properties: Video, Audio, Color & Speed** after owner says
 `lanjutkan`.
 
-W2 must build on W1 persistence/media identity rather than creating a second
-project/media model. Do not start W3 or STEP 12.
+W3 should cover serially:
+1. inspector binding by selected object type;
+2. video position/scale/rotation/opacity;
+3. crop/basic composition;
+4. audio volume/pan/fade in/out;
+5. brightness/exposure/contrast/saturation/WB/tint policy;
+6. uniform speed + duration recompute;
+7. reverse only if engine qualification is safe, otherwise explicitly disabled;
+8. cross-property Undo/Redo + project reload + preview/output evidence.
+
+Do not start W4 or STEP 12.

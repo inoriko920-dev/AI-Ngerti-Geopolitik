@@ -20,6 +20,7 @@
     - `docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`
     - `docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`
     - `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`
+    - `docs/evidence/features/S11_W2_TIMELINE_PLAYBACK_CORE.md`
 12. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
 13. actual source/tests/config/workflows/evidence.
 
@@ -32,11 +33,11 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - SF-STEP 09: PASS.
 - SF-STEP 10: PASS_WITH_PROVISIONAL.
 - SF-STEP 11 W0: PASS.
-- SF-STEP 11 W1: **PASS**.
-- project/media/persistence foundation: VERIFIED.
-- video/audio/image import + explicit availability: VERIFIED.
-- Save/Save As/backup/autosave: VERIFIED.
-- missing media preserving clip identity: VERIFIED.
-- next exact work: **SF-STEP 11 W2 — Timeline, Playback & Core Editing**.
+- SF-STEP 11 W1: PASS.
+- SF-STEP 11 W2: **PASS**.
+- canonical timeline/core editing: VERIFIED.
+- real MLT Windows canonical playback/render projection: VERIFIED.
+- W2 1000-clip semantic stress fixture: VERIFIED.
+- next exact work: **SF-STEP 11 W3 — Properties: Video, Audio, Color & Speed**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
