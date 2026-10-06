@@ -55,7 +55,8 @@ class MediaBinController:
     def clear_selection(self) -> None:
         self._selection = ()
 
-    def query(self, query: MediaBinQuery = MediaBinQuery()) -> tuple[MediaBinItem, ...]:
+    def query(self, query: MediaBinQuery | None = None) -> tuple[MediaBinItem, ...]:
+        query = query or MediaBinQuery()
         if query.sort_by not in {"id", "name", "type", "availability"}:
             raise ValueError(f"unsupported media-bin sort: {query.sort_by}")
         needle = query.text.casefold().strip()
