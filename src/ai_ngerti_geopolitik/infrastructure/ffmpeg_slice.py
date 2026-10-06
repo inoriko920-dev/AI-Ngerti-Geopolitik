@@ -25,6 +25,7 @@ from ai_ngerti_geopolitik.application.ports import (
     ProbeResult,
 )
 from ai_ngerti_geopolitik.domain import Clip, ProjectState
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_properties import build_w3_filter_plan
 
 
 class MediaToolError(RuntimeError):
@@ -58,6 +59,10 @@ def _frames_from_seconds(seconds: str, fps: int) -> int:
 
 def _seconds_string(frames: int, fps: int) -> str:
     return f"{frames / fps:.6f}"
+
+
+def _number_seconds(seconds: float) -> str:
+    return f"{seconds:.6f}"
 
 
 def _sha256_file(path: Path) -> str:
@@ -289,10 +294,25 @@ class FfmpegSliceMediaEngine:
                 break
         if selected is None:
             raise MediaToolError(f"timeline frame outside clips: {timeline_frame}")
-        source_frame = selected.source_in.frames + (timeline_frame - selected.timeline_start.frames)
+        timeline_offset = timeline_frame - selected.timeline_start.frames
+        source_frame = selected.source_frame_at_timeline_offset(timeline_offset)
         asset = state.asset(selected.asset_id)
         output_path = output_path.resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        plan = build_w3_filter_plan(selected, state.fps)
+        filter_parts = [
+            f"[0:v]{','.join(plan.video_filters)}[w3src]",
+            (
+                f"color=c=black:s={state.settings.width}x{state.settings.height}:"
+                f"r={state.fps}:d={_seconds_string(1, state.fps)}[w3bg]"
+            ),
+            (
+                "[w3bg][w3src]overlay="
+                f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
+                "format=yuv420p[outv]"
+            ),
+        ]
         command = [
             self.ffmpeg,
             "-hide_banner",
@@ -303,10 +323,12 @@ class FfmpegSliceMediaEngine:
             _seconds_string(source_frame, state.fps),
             "-i",
             asset.path_ref,
+            "-filter_complex",
+            ";".join(filter_parts),
+            "-map",
+            "[outv]",
             "-frames:v",
             "1",
-            "-vf",
-            "scale=960:-2",
             str(output_path),
         ]
         self.runner.run(command)
@@ -342,14 +364,37 @@ class FfmpegSliceMediaEngine:
             command.extend(["-i", asset.path_ref])
             start = _seconds_string(clip.source_in.frames, state.fps)
             end = _seconds_string(clip.source_out.frames, state.fps)
+            rate = clip.properties.speed.rate_percent / 100.0
+            plan = build_w3_filter_plan(clip, state.fps)
             filter_parts.append(
-                f"[{index}:v]trim=start={start}:end={end},setpts=PTS-STARTPTS[v{index}]"
+                f"[{index}:v]trim=start={start}:end={end},"
+                f"setpts=(PTS-STARTPTS)/{rate:.8f},"
+                f"{','.join(plan.video_filters)}[vsrc{index}]"
             )
             filter_parts.append(
-                f"[{index}:a]atrim=start={start}:end={end},asetpts=PTS-STARTPTS[a{index}]"
+                (
+                    f"color=c=black:s={state.settings.width}x{state.settings.height}:"
+                    f"r={state.fps}:d={_number_seconds(plan.duration_seconds)}[bg{index}]"
+                )
             )
+            filter_parts.append(
+                (
+                    f"[bg{index}][vsrc{index}]overlay="
+                    f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
+                    f"format=yuv420p[v{index}]"
+                )
+            )
+            audio_chain = [
+                f"atrim=start={start}:end={end}",
+                "asetpts=PTS-STARTPTS",
+                *plan.audio_filters,
+            ]
+            filter_parts.append(f"[{index}:a]{','.join(audio_chain)}[a{index}]")
             concat_inputs.append(f"[v{index}][a{index}]")
-        filter_parts.append("".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]")
+
+        filter_parts.append(
+            "".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]"
+        )
         command.extend(
             [
                 "-filter_complex",
