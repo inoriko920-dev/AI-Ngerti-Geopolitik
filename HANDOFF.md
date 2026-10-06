@@ -1,91 +1,103 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Fase:** PRE-IMPLEMENTATION  
-**SF-STEP terakhir:** 01 — Product Definition  
-**Gate:** PASS WITH PROVISIONAL  
-**Product Definition:** v1.0 / BASELINE_CONFIRMED untuk WHAT  
-**Coding:** BELUM DIIZINKAN  
-**Repo target:** `inoriko920-dev/AI-Ngerti-Geopolitik`
+**SF-STEP terakhir:** 02 — Existing Solution / GitHub / Upstream Discovery  
+**Gate:** PASS_WITH_PROVISIONAL  
+**Adoption:** BUILD_FROM_SCRATCH_WITH_COMPONENTS  
+**Coding:** BELUM DIIZINKAN
 
-## Baca sebelum melanjutkan
+## Discovery decision
 
-Mulai dari `AGENTS.md` dan `docs/SOURCE_OF_TRUTH_INDEX.md`. Verifikasi HEAD aktual sebelum bekerja.
+Tidak ada EXACT_BASE yang layak dijadikan aplikasi utama tanpa membawa UI/scope/license debt.
 
-## Yang baru selesai
+**Primary engine candidate**
+- OpenShot/libopenshot v1.0.1
+- tag SHA: `1c46200eaedeebce3fbce74b5584dc0c04d70903`
+- role: COMPONENT_SOURCE
+- license screening: LGPL-3.0-or-later
+- alasan: Timeline/Clip/KeyFrame/QtPlayer/FFmpeg/audio + Python binding + UI freedom
 
-SF-STEP 01 telah menyusun Product Definition canonical:
+**Fallback / benchmark**
+- MLT v7.42.0
+- tag SHA: `11e84ecf42e1a7bc885953afa58ba35d228a76ad`
+- role: COMPONENT_SOURCE fallback
+- license screening: LGPL-2.1 framework; modules must be inventoried
 
-- `docs/planning/02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.docx`
-- `docs/planning/02_STEP_01_PRODUCT_DEFINITION_AI_NGERTI_GEOPOLITIK.txt`
+**Reference client**
+- openshot-qt v4.0.1
+- tag SHA: `5b0588ca36beedebe790e9ed4f48d105a1752f18`
+- GPL-3.0-or-later
+- role: REFERENCE_ONLY
+- selective source reuse: HOLD sampai license decision explicit
 
-Core produk dinilai cukup jelas untuk discovery. Tidak ada blocker product-definition.
+**Other references**
+- Shotcut v26.9.27 — GPLv3 / MLT production + Windows ZIP evidence
+- Kdenlive 26.08.1 — GPLv3 / MLT large-editor evidence
+- OpenCut current rewrite — MIT but architecture still being redesigned
 
-## Definisi satu kalimat
+## Critical interpretation
 
-AI Ngerti Geopolitik adalah aplikasi desktop Windows untuk creator/editor video geopolitik/dokumenter yang menyusun draft edit otomatis dari input terstruktur, tetapi tetap menyediakan manual correction dan export stabil, dengan AI yang hanya bekerja melalui command tervalidasi/undoable.
+BUILD_FROM_SCRATCH_WITH_COMPONENTS **bukan** berarti membuat media engine sendiri.
 
-## MUST product decisions
+ANG-owned:
+- AAVC 1:1 UI shell
+- Scene DOCX / Axxx / SINGLE-DOUBLE
+- semantic project model
+- command/history/Undo-Redo
+- AI Edit Plan + validation
+- validation/relink/recovery workflow
+- product-specific subtitle/narration/animation workflow
 
-- Windows 11 x64; portable multi-file ZIP release.
-- Scene DOCX + canonical Axxx asset binding.
-- SINGLE/DOUBLE workflow.
-- Timeline/editor manual yang benar-benar dapat dikoreksi.
-- Undo/Redo untuk perubahan manual/AI.
-- Motion manual + random deterministic + lock.
-- Subtitle SRT workspace + style/animation.
-- Narration import + microphone recording.
-- Validation/relink/recovery.
-- Gemini V1; hingga 100 secure credential slots.
-- AI bounded Edit Plan/command; no arbitrary state mutation.
-- Preview/playback yang dapat dipercaya terhadap export.
-- H.264/H.265 export dan selection render sesuai support yang terbukti.
-- Windows portable clean-machine behavior.
-- Feature parity praktis AAVC untuk capability yang sudah dikunci.
-- **UI AAVC = VISUAL_CONTRACT 1:1 sedekat mungkin; tidak ada redesign kreatif.**
+Engine-owned candidate:
+- timeline/clip/layers
+- keyframes/compositing
+- playback/frame generation
+- audio mixing
+- codec/read/write/render primitives
 
-## UI owner decision terbaru
+## What is NOT proven
 
-AAVC UI sebelumnya sempat diperlakukan sebagai inspiration/reference. Keputusan owner terbaru mengalahkan interpretasi itu:
+Belum ada:
+- ANG + libopenshot Windows build;
+- portable clean-machine run;
+- Python binding load in ANG package;
+- 100–300 scene stress;
+- preview/export golden parity;
+- final 21-effect compatibility mapping.
 
-**Untuk ANG, AAVC UI adalah VISUAL_CONTRACT 1:1.**
+Jangan menyebut engine stabil untuk ANG sampai evidence implementasi nanti lulus.
 
-Yang boleh berubah hanya:
-- branding/nama menjadi AI Ngerti Geopolitik;
-- control/state yang memang wajib berubah karena requirement ANG atau karena control lama tidak valid pada engine baru;
-- perubahan tersebut harus dicatat dan tidak boleh menjadi redesign diam-diam.
+## UI constraint for next STEP
 
-SF-STEP 03–05 tetap dijalankan untuk inventory, coverage, review, dan freeze; bukan untuk menciptakan gaya baru.
+**AAVC UI = VISUAL_CONTRACT 1:1.**
 
-## Provisional/open non-blocking
+SF-STEP 03 bukan tempat desain baru. Gunakan:
+- AAVC `docs/UI_FREEZE.md`;
+- UI-001..UI-042;
+- AAVC current PySide6 screens/widgets/design tokens;
+- existing workflow behavior.
 
-- exact OpenShot/libopenshot reuse strategy;
-- license/source-license/distribution obligations;
-- exact Windows native dependency strategy;
-- exact project schema/file extension;
-- exact mapping 21 legacy effects ke supported engine primitives;
-- exact benchmark numbers untuk 100–300 scene;
-- scope akhir legacy AAVC project importer;
-- exact Gemini model/runtime behavior yang harus diverifikasi saat tahap relevan.
+Setiap perbedaan harus diberi label `DELTA_FROM_AAVC`.
 
 ## Exact next action
 
-Jika owner berkata **"lanjutkan"**, kerjakan **SF-STEP 02 — Existing Solution / GitHub / Upstream Discovery** saja.
+Jika owner berkata **"lanjutkan"**, jalankan **SF-STEP 03 — UI/UX Inventory & User Flow** saja.
 
-Discovery questions:
-1. Apakah OpenShot/openshot-qt masih kandidat editor infrastructure yang paling cocok untuk UI/workflow ANG tanpa memaksa produk menjadi clone OpenShot?
-2. Apakah libopenshot menyediakan primitives timeline/playback/keyframe/audio/render yang cukup matang pada Windows dan Python binding?
-3. Apa license obligations aktual dari openshot-qt, libopenshot, FFmpeg, Qt/PySide dan dependency yang relevan?
-4. Apakah reuse sebaiknya full fork, selective reuse, component-only engine, atau reference-only?
-5. Repo/library alternatif mana yang layak dibandingkan agar keputusan tidak bias?
-6. Bagaimana mempertahankan AAVC UI 1:1 di atas foundation matang?
-7. Bagian feature parity apa yang engine dukung langsung, perlu adapter, atau tetap ANG-specific?
+Output STEP 03:
+- detailed planning DOCX + TXT mirror;
+- screen IDs;
+- state IDs;
+- flow map;
+- interaction inventory;
+- UI reference/image coverage matrix;
+- Product MUST → UI surface mapping;
+- status/handoff update.
 
-Discovery tidak boleh:
-- mengubah nama/tujuan produk;
-- mengubah AAVC UI VISUAL_CONTRACT 1:1;
-- mengubah Gemini-only V1;
-- memperluas produk menjadi general-purpose NLE;
-- coding/fork/copy upstream;
-- menyentuh repo AAVC selain membaca evidence.
+Setelah STEP 03 selesai, **STOP sebelum STEP 04** sampai owner berkata lanjutkan.
 
-Setelah STEP 02 selesai: buat DOCX + TXT, commit, update state/handoff, lalu berhenti sebelum SF-STEP 03.
+Larangan:
+- no coding;
+- no fork/copy upstream;
+- no UI implementation;
+- no redesign AAVC;
+- no SF-STEP 04 dalam sesi yang sama.

@@ -1,0 +1,61 @@
+AI NGERTI GEOPOLITIK — SF-STEP 02 EXISTING SOLUTION / GITHUB / UPSTREAM DISCOVERY
+Document ID: ANG-SF-STEP02-DISCOVERY-v1.0
+Date: 06 Oktober 2026
+Role: ASTRA
+Gate: PASS_WITH_PROVISIONAL
+Primary Decision: BUILD_FROM_SCRATCH_WITH_COMPONENTS
+Preferred engine candidate: libopenshot v1.0.1 @ 1c46200eaedeebce3fbce74b5584dc0c04d70903
+Fallback/benchmark: MLT v7.42.0 @ 11e84ecf42e1a7bc885953afa58ba35d228a76ad
+UI: AAVC VISUAL_CONTRACT 1:1
+Coding/Forking: NO
+Next: SF-STEP 03 after owner says lanjutkan
+
+1. EXECUTIVE DECISION
+No EXACT_BASE satisfies ANG product + AAVC UI 1:1. Build ANG product shell/domain/UI/AI/commands ourselves, but use a mature media engine component. libopenshot is primary candidate. MLT is fallback/benchmark. openshot-qt is reference-only; GPL selective reuse is HOLD until license decision.
+
+2. CANDIDATES
+CAN-000 | AI-Automatic-Video-Composer | REFERENCE_ONLY / VISUAL_CONTRACT | Owned repo; read-only | AAVC feature/UI evidence; not technical base | READ-ONLY
+CAN-001 | OpenShot/libopenshot v1.0.1 | COMPONENT_SOURCE | LGPL-3.0-or-later | Preferred media/timeline/playback/render engine candidate | SHORTLIST / PRIMARY
+CAN-002 | MLT Framework v7.42.0 | COMPONENT_SOURCE | LGPL-2.1 framework; mixed optional modules | Mature fallback/benchmark engine candidate | SHORTLIST / FALLBACK
+CAN-003 | OpenShot/openshot-qt v4.0.1 | REFERENCE_ONLY / CONDITIONAL REUSE HOLD | GPL-3.0-or-later | Mature client patterns; full-app fork conflicts with license optionality/UI 1:1 | REFERENCE / HOLD
+CAN-004 | Shotcut v26.9.27 | REFERENCE_ONLY | GPL-3.0 | Proof of MLT maturity + Windows ZIP packaging; wrong app/UI base | REFERENCE
+CAN-005 | Kdenlive 26.08.1 | REFERENCE_ONLY | GPL-3.0 | Proof of MLT scale/timeline capabilities; very high app complexity | REFERENCE
+CAN-006 | OpenCut current rewrite | REFERENCE_ONLY / HOLD | MIT | Interesting agent/headless/plugin direction; active ground-up rewrite | HOLD / REFERENCE
+
+3. WHY LIBOPENSHOT
+LGPL-3.0 component; Python bindings; Timeline/Clip/KeyFrame/QtPlayer/FFmpegReader/Writer/audio mixing; active v1.0.1 release; Windows build docs; high UI freedom. Main risk: native Windows packaging and long-project runtime are NOT TESTED in ANG.
+
+4. WHY MLT IS FALLBACK
+Very mature multitrack engine, current v7.42.0, Python mlt7 bindings, proven through Shotcut/Kdenlive. More complex plugin/module license and Windows Python packaging surface.
+
+5. WHY FULL EDITOR FORKS ARE NOT BASE
+AAVC UI is locked 1:1. Full OpenShot/Shotcut/Kdenlive forks would import different UI, unrelated features, larger maintenance debt, and GPL app-code obligations. OpenCut is MIT but currently in ground-up rewrite.
+
+6. LICENSE GATE
+libopenshot LGPL-3.0-or-later candidate; openshot-qt GPL-3.0-or-later reference/HOLD; MLT core/framework LGPL-2.1 with module-specific variation; Shotcut/Kdenlive GPLv3; OpenCut MIT. Engineering screening only; final bundled binary/module obligations must be reviewed later.
+
+7. WHAT REMAINS TO PROVE
+Windows portable packaging; Python binding loading; seek/playback stability on 100–300 scenes; preview/export parity; 21 animation mapping; FFmpeg/Qt DLL notices; possible MLT comparative spike.
+
+8. IMPACT ON STEP 03
+Inventory AAVC UI-001..042 and current PySide6 screens/states. Do not redesign. Any necessary difference must be marked DELTA_FROM_AAVC.
+
+9. GATE
+PASS_WITH_PROVISIONAL. Discovery decision is sufficient for UI planning, but no ANG engine runtime/build has been tested.
+
+10. HANDOFF
+Next exact action after owner says lanjutkan: SF-STEP 03 — UI/UX Inventory & User Flow only. No coding, no fork/copy, no STEP 04.
+
+SOURCE REGISTER
+SRC-001 | OpenShot openshot-qt releases | https://github.com/OpenShot/openshot-qt/releases | v4.0.1 released 2026-09-27; tag SHA 5b0588ca36beedebe790e9ed4f48d105a1752f18; Windows x86/x86_64 EXE assets.
+SRC-002 | OpenShot openshot-qt README/info | https://github.com/OpenShot/openshot-qt | PyQt6/PySide6/PyQt5 selection; OpenShot client is GPLv3+; requires libopenshot 1.0.1.
+SRC-003 | libopenshot releases | https://github.com/OpenShot/libopenshot/releases | v1.0.1 released 2026-09-27; tag SHA 1c46200eaedeebce3fbce74b5584dc0c04d70903.
+SRC-004 | libopenshot README / bindings / Timeline | https://github.com/OpenShot/libopenshot | LGPL-3.0; C++ library; Python bindings; Timeline, Clip, KeyFrame, QtPlayer, FFmpeg reader/writer, audio mixing.
+SRC-005 | libopenshot Windows build doc | https://github.com/OpenShot/libopenshot/blob/develop/doc/INSTALL-WINDOWS.md | Windows build instructions and Python import verification exist; standalone ANG packaging still NOT TESTED.
+SRC-006 | MLT homepage/release | https://www.mltframework.org/ | v7.42.0 released 2026-10-03; multitrack multimedia framework; tag SHA 11e84ecf42e1a7bc885953afa58ba35d228a76ad.
+SRC-007 | MLT Python bindings | https://www.mltframework.org/doxygen/group__python__bindings.html | SWIG Python bindings expose Producer, Playlist, Multitrack/Tractor, Transition, Consumer.
+SRC-008 | MLT license policy | https://www.mltframework.org/docs/copyrightpolicy/ | Framework/mlt++/libmvcp under LGPLv2.1; tools/modules can differ, therefore module-level license inventory is required.
+SRC-009 | Shotcut repository/releases | https://github.com/mltframework/shotcut | GPLv3; latest v26.9.27; Windows x64 EXE and ZIP assets; production proof for MLT stack.
+SRC-010 | Kdenlive official/repository | https://kdenlive.org/ ; https://github.com/KDE/kdenlive | GPLv3; 26.08.1 released 2026-09-10; mature MLT-based editor; primary development on KDE Invent.
+SRC-011 | OpenCut repository | https://github.com/OpenCut-app/OpenCut | MIT; README explicitly says rewrite from ground up and several planned APIs/headless/MCP features are future work.
+SRC-012 | AAVC UI freeze/source | https://github.com/inoriko920-dev/AI-Automatic-Video-Composer | UI-001..042, 1920x1080, Indonesian, white/blue, PySide6 implementation; read-only VISUAL_CONTRACT 1:1.

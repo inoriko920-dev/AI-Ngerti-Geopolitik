@@ -98,3 +98,18 @@ Aturan:
 - perubahan UI hanya boleh terjadi bila requirement ANG benar-benar berbeda atau reuse engine matang membuat kontrol lama tidak valid, dan perubahan itu harus dicatat;
 - PNG referensi tidak boleh dijadikan static runtime screen; UI tetap harus berupa widget nyata;
 - detail inventory/review/freeze formal tetap dijalankan pada SF-STEP 03–05 menggunakan AAVC sebagai VISUAL_CONTRACT, bukan membuat konsep baru.
+
+
+## D-016 — STEP 02 adoption baseline
+SF-STEP 02 menetapkan strategi **BUILD_FROM_SCRATCH_WITH_COMPONENTS**.
+
+Makna keputusan:
+- ANG membangun sendiri product shell, domain/project model, command/history, AI orchestration, validation workflow, dan UI sesuai AAVC 1:1;
+- ANG **tidak** membangun media/timeline/playback/render engine umum dari nol;
+- kandidat engine utama untuk spike berikutnya adalah **OpenShot/libopenshot v1.0.1** pada tag SHA `1c46200eaedeebce3fbce74b5584dc0c04d70903`;
+- **MLT v7.42.0** pada tag SHA `11e84ecf42e1a7bc885953afa58ba35d228a76ad` adalah fallback/benchmark, bukan primary tanpa evidence baru;
+- `openshot-qt v4.0.1` pada SHA `5b0588ca36beedebe790e9ed4f48d105a1752f18` adalah REFERENCE_ONLY; selective GPL source reuse berstatus HOLD sampai source-license strategy ANG disetujui eksplisit;
+- full Shotcut/Kdenlive bukan basis aplikasi;
+- OpenCut tidak dipilih sebagai basis karena current rewrite masih dalam perubahan arsitektur besar.
+
+D-016 adalah **discovery baseline**, bukan final architecture. SF-STEP 06 tetap harus memutuskan stack/integration detail dan dapat mengganti primary engine hanya jika evidence/spike menunjukkan blocker atau pilihan yang lebih kuat.

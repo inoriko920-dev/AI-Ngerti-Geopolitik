@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: PRE-IMPLEMENTATION — SF-STEP 01 PASS WITH PROVISIONAL, NEXT SF-STEP 02 — BELUM BOLEH CODING**
+> **STATUS: PRE-IMPLEMENTATION — SF-STEP 02 PASS WITH PROVISIONAL, NEXT SF-STEP 03 — BELUM BOLEH CODING**
 
 Repository resmi untuk aplikasi **AI Ngerti Geopolitik**.
 
@@ -35,3 +35,8 @@ Lihat `HANDOFF.md` dan `docs/PROJECT_STATUS.md` untuk posisi terakhir.
 ## UI contract
 
 UI target untuk AI Ngerti Geopolitik adalah UI AI-Automatic-Video-Composer sebagai **VISUAL_CONTRACT 1:1**. SF-STEP 03–05 akan memetakan dan membekukannya secara formal; tidak ada redesign kreatif.
+
+
+## Discovery baseline
+
+SF-STEP 02 selesai dengan `BUILD_FROM_SCRATCH_WITH_COMPONENTS`: libopenshot v1.0.1 menjadi primary engine candidate, MLT v7.42.0 fallback/benchmark, dan full editor upstream hanya reference kecuali keputusan lisensi baru.
