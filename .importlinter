@@ -1,0 +1,42 @@
+[importlinter]
+root_package = ai_ngerti_geopolitik
+include_external_packages = True
+
+[importlinter:contract:domain_independent]
+name = Domain is independent
+type = forbidden
+source_modules =
+    ai_ngerti_geopolitik.domain
+forbidden_modules =
+    ai_ngerti_geopolitik.application
+    ai_ngerti_geopolitik.presentation
+    ai_ngerti_geopolitik.infrastructure
+    ai_ngerti_geopolitik.bootstrap
+
+[importlinter:contract:application_no_concrete]
+name = Application does not depend on presentation or concrete infrastructure
+type = forbidden
+source_modules =
+    ai_ngerti_geopolitik.application
+forbidden_modules =
+    ai_ngerti_geopolitik.presentation
+    ai_ngerti_geopolitik.infrastructure
+    ai_ngerti_geopolitik.bootstrap
+
+[importlinter:contract:presentation_no_infrastructure]
+name = Presentation does not import infrastructure
+type = forbidden
+source_modules =
+    ai_ngerti_geopolitik.presentation
+forbidden_modules =
+    ai_ngerti_geopolitik.infrastructure
+    ai_ngerti_geopolitik.bootstrap
+
+[importlinter:contract:infrastructure_no_presentation]
+name = Infrastructure does not import presentation
+type = forbidden
+source_modules =
+    ai_ngerti_geopolitik.infrastructure
+forbidden_modules =
+    ai_ngerti_geopolitik.presentation
+    ai_ngerti_geopolitik.bootstrap

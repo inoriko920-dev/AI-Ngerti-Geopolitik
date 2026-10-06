@@ -2,18 +2,18 @@
 
 ## Current state
 
-Repository remains **docs-first / pre-implementation**. SF-STEP 07 defines the future source structure, but it is not implemented until STEP 08 evidence exists.
+SF-STEP 08 foundation is materialized. S08-T01 is PASS. S08-T02 is PASS_WITH_PROVISIONAL. Product feature implementation has not started.
 
-## Canonical future source package
+## Canonical source package
 
 `src/ai_ngerti_geopolitik/`
 
-Main boundaries:
-- `domain/` — pure product state/rules;
-- `application/` — commands, queries, ports, use cases, jobs;
-- `presentation/` — PySide6 UI, AAVC frozen shell/screens/components;
-- `infrastructure/` — engine/provider/persistence/credentials/config/process/platform adapters;
-- `bootstrap/` — composition root only.
+Boundaries:
+- domain — pure product state/rules;
+- application — future commands/queries/ports/use-cases/jobs;
+- presentation — PySide6 UI boundary; actual product shell later;
+- infrastructure — concrete adapters;
+- bootstrap — construction/startup only.
 
 ## Dependency direction
 
@@ -24,77 +24,46 @@ Main boundaries:
 `bootstrap -> all` for construction only.
 
 Forbidden:
-- domain importing Qt, libopenshot/MLT, FFmpeg, Gemini, keyring, subprocess or filesystem implementation;
-- presentation importing concrete infrastructure adapters;
-- business logic in MainWindow/widgets;
-- direct ProjectState mutation outside semantic CommandBus;
-- hidden mutable global project state.
+- domain importing Qt/libopenshot/MLT/FFmpeg/Gemini/keyring/subprocess implementation;
+- application importing concrete infrastructure/presentation;
+- presentation importing concrete infrastructure;
+- business logic in widgets;
+- direct ProjectState mutation outside future semantic CommandBus;
+- mutable global product state.
+
+Checker: `scripts/verify/verify_architecture.py`. Import-Linter config is also committed for target-toolchain verification.
 
 ## Search -> Understand -> Modify
 
-Before adding a new file/class/service/helper:
-1. search the concept and synonyms;
-2. locate canonical owner;
-3. read contracts/ports/schema;
-4. search call sites/registration/config;
-5. read relevant tests;
-6. explain why existing owner is insufficient;
-7. modify canonical owner first;
-8. re-search for duplicate responsibility.
+Search concept, locate owner, read contract, search call sites/config, read tests, explain gap, modify owner first, re-search duplicate responsibility.
 
-## Planned repository tree
+## Ownership
 
-Top-level intended ownership:
-- `src/ai_ngerti_geopolitik/` — product source;
-- `tests/` — automated evidence;
-- `docs/` — source-of-truth/evidence;
-- `resources/` — read-only shipped QSS/icons/defaults;
-- `scripts/` — repeatable dev/build/verify/package entrypoints, no business logic;
-- `.github/workflows/` — Windows CI;
-- `vendor/` — intentionally audited third-party payload only;
-- `build/`, `dist/` — generated/ignored.
+- `src/ai_ngerti_geopolitik/` product source
+- `tests/` automated evidence
+- `docs/` source-of-truth/evidence
+- `resources/` future read-only shipped assets
+- `scripts/` repeatable tooling, no product business logic
+- `.github/workflows/` S08-T03 Windows CI
+- `vendor/` audited payload only
+- `build/`, `dist/` generated/ignored
 
-Do not create every empty folder simply to imitate the diagram. Materialize only what the current READY task requires.
+Do not create architecture-theater empty folders.
 
-## Planning/reference naming
+## Frozen UI
 
-- Planning STEP: stable numeric prefix and STEP number.
-- Status/handoff: one canonical file, updated in place.
-- UI reference: stable `UI-xxx`.
-- Visible ANG-only UI delta: `UI-ANG-Dxx`.
-- Do not rename source-of-truth without updating index/read order.
+`docs/ui_reference/raw/UI-001.png..UI-042.png` must keep matching `UI_REFERENCE_MANIFEST.md`.
 
 ## Change rules
 
-- One logical task per change.
-- No mixed redesign + broad refactor + dependency upgrade + bug fix without justification.
-- One concern has one canonical owner.
-- No generic god manager/service/helper.
-- No secret/token/API key/cookie/private user data in Git.
-- No hardcoded developer Windows path.
-- No generated cache/build/log/recovery/user settings as manual source.
-- Architecture exception requires ADR/Astra review.
+One logical task per change; one concern one owner; no god manager/helper; no secrets/private data; no hardcoded developer paths; no generated build/log/recovery/user settings as source; architecture exception requires ADR/Astra review.
 
-## STEP 08 first task
+## Toolchain reality
 
-**S08-T01 — Source-of-Truth & Exact UI Reference Gate**
+Target Python = CPython 3.12.10 x64. Candidate direct pins are in `pyproject.toml`.
 
-Before production source coding:
-- STEP00–07 DOCX+TXT must be present/readable in repo;
-- exact full-resolution UI-001..UI-042 raw references must be committed;
-- 42/42 SHA-256 must match `docs/ui_reference/UI_REFERENCE_MANIFEST.md`;
-- status must explicitly flip pre-coding docs/UI gate to PASS.
+The current local runner could not install target Python/dependencies or generate a truthful `uv.lock`. Do not fabricate it. S08-T03 must resolve and verify lock/Windows tools.
 
-No product source code is allowed in S08-T01.
+## "lanjutkan"
 
-## State updates
-
-After meaningful work update:
-- `docs/PROJECT_STATUS.md`;
-- `HANDOFF.md`;
-- `docs/DECISIONS_LOCKED.md` if a locked decision changes;
-- task/evidence files for the active STEP.
-
-## Definition of "lanjutkan"
-
-"lanjutkan" means execute the **next exact action** in current handoff only. It is never blanket permission to skip Software Factory gates.
+Execute only the next exact action in HANDOFF.

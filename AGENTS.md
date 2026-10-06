@@ -1,106 +1,58 @@
 # AGENTS.md — WAJIB DIBACA SEBELUM BEKERJA
 
-Dokumen ini adalah **entry gate wajib** untuk AI, agent, model, atau sesi baru yang akan melanjutkan proyek **AI Ngerti Geopolitik**.
+Entry gate wajib untuk AI/agent/sesi yang melanjutkan **AI Ngerti Geopolitik**.
 
-## 1. Jangan langsung coding
+## Read order
 
-Sebelum membuat, mengubah, memindahkan, atau menghapus source code, AI **WAJIB** membaca dan memahami, berurutan:
+1. `AGENTS.md`
+2. Software Factory master + guide
+3. seluruh `docs/planning/`
+4. `docs/project/PRODUCT.md`
+5. `docs/project/UI_SPEC.md`
+6. `docs/project/ARCHITECTURE.md`
+7. `docs/project/CODE_CONSTITUTION.md`
+8. `docs/project/TASKS.md`
+9. `HANDOFF.md`
+10. `docs/PROJECT_STATUS.md`
+11. `docs/DECISIONS_LOCKED.md`
+12. `docs/REPOSITORY_RULES.md`
+13. source/tests/evidence aktual.
 
-1. `AGENTS.md` ini.
-2. `docs/software_factory/00_MASTER_SOFTWARE_FACTORY_PROMPT.txt`.
-3. `docs/software_factory/PANDUAN_PENGGUNAAN_SOFTWARE_FACTORY_ASTRA_SOL.docx`.
-4. Seluruh file di `docs/planning/`.
-5. `HANDOFF.md`.
-6. `docs/PROJECT_STATUS.md`.
-7. `docs/DECISIONS_LOCKED.md`.
-8. `docs/REPOSITORY_RULES.md`.
-9. Struktur repository dan source/test yang sudah ada pada saat itu.
-10. Evidence/gate STEP aktif jika sudah tersedia.
+Jika DOCX tidak dapat dibaca, gunakan TXT mirror di folder yang sama.
 
-Jika ada dokumen baru yang kemudian ditetapkan sebagai planning/reference/source-of-truth, dokumen itu juga wajib dibaca.
+## Implementation rules
 
+- Kerjakan satu task Software Factory aktif pada satu waktu.
+- AAVC repo read-only.
+- UI-001..UI-042 frozen 1:1; no silent redesign.
+- Search -> Understand -> Modify before creating owner/service/helper.
+- One concern = one canonical owner.
+- Dependency: presentation -> application -> domain; infrastructure implements inward ports; bootstrap constructs only.
+- Domain tidak boleh import Qt/media-engine/Gemini/keyring/process implementation.
+- Presentation tidak boleh import concrete infrastructure.
+- Future project mutation wajib melalui semantic CommandBus/CommandBatch.
+- No blocking network/probe/render/native-engine work on UI thread.
+- No plaintext secret, hardcoded developer path, fake feature, fake green, atau static-image runtime UI.
+- Material architecture exception requires ADR/Astra review.
 
-## Machine-readable fallback untuk DOCX
+## Foundation commands verified S08-T02
 
-Semua DOCX source-of-truth harus tetap berada di repo. Karena sebagian GitHub/AI connector tidak dapat mengekstrak binary DOCX, repo juga menyimpan mirror `.txt` di folder yang sama. Jika DOCX dapat dibaca, baca DOCX. Jika binary DOCX tidak dapat dibaca oleh runtime, baca mirror TXT secara penuh sebelum bekerja. Jangan melewati dokumen hanya karena tool tidak dapat membuka binary.
+```text
+PYTHONPATH=src python -m ai_ngerti_geopolitik
+PYTHONPATH=src python -m pytest -q
+python scripts/verify/run_foundation_checks.py --root .
+python scripts/verify/verify_architecture.py --root .
+python scripts/verify/verify_ui_reference_manifest.py --root .
+python scripts/verify/verify_no_secrets.py --root .
+python -m compileall -q src
+```
 
-Lihat juga `docs/SOURCE_OF_TRUTH_INDEX.md`.
+uv/Ruff/mypy/Import Linter/detect-secrets/pip-audit commands become fully authoritative after S08-T03 produces the real lock and Windows CI evidence.
 
-## 2. Source-of-truth precedence
+## Astra review triggers
 
-Jika ada konflik, gunakan urutan berikut:
+Stop for new top-level architecture layer/service, dependency exception, project schema semantic change, breaking MediaEnginePort change or engine switch, new native/license-impacting dependency, frozen UI structural delta, new destructive AI permission family, credential backend change, or packaging-model change.
 
-1. Instruksi eksplisit terbaru dari pemilik proyek.
-2. Aturan platform/safety yang berlaku.
-3. Prompt STEP Software Factory yang sedang aktif.
-4. Master Software Factory.
-5. Master Blueprint AI Ngerti Geopolitik dan dokumen planning/reference terbaru yang masih berlaku.
-6. `DECISIONS_LOCKED.md`.
-7. `PROJECT_STATUS.md` dan `HANDOFF.md`.
-8. Source code/test/evidence aktual.
+## Before ending meaningful work
 
-Jangan memilih diam-diam jika dua source-of-truth proyek bertentangan. Catat konflik dan hentikan perubahan yang berisiko sampai konflik terselesaikan.
-
-## 3. Aturan STEP
-
-- Kerjakan **satu STEP aktif** pada satu waktu.
-- Jangan melompat STEP.
-- Jangan mengulang planning final yang sudah disetujui tanpa alasan/evidence baru.
-- Jangan menjalankan STEP berikutnya hanya karena pekerjaan terasa mudah.
-- Setelah STEP selesai, update status, evidence, gate, handoff, dan next exact action.
-- Planning dipimpin ASTRA; implementasi dipimpin SOL sesuai Software Factory.
-
-## 4. Gate sebelum coding
-
-Coding production **DILARANG** sampai:
-- seluruh DOCX planning/reference yang diwajibkan pada tahap pra-coding sudah berada di repo;
-- UI reference/freeze yang diwajibkan Software Factory sudah lengkap pada STEP-nya;
-- keputusan arsitektur dan repository architecture sudah cukup matang;
-- status STEP secara eksplisit mengizinkan implementasi.
-
-Adanya repository GitHub **bukan** izin untuk coding.
-
-## 5. Repo lama adalah read-only
-
-Repository:
-`inoriko920-dev/AI-Automatic-Video-Composer`
-
-boleh dibaca sebagai referensi fitur/perilaku/evidence, tetapi **DILARANG DIUBAH** oleh pekerjaan proyek ini kecuali pemilik secara eksplisit memerintahkan perubahan pada repo lama dalam tugas terpisah.
-
-Jangan push, commit, edit issue, branch, release, workflow, atau file apa pun ke repo lama.
-
-## 6. Prinsip implementasi
-
-Saat nanti coding sudah diizinkan:
-- jangan membangun ulang timeline/playback/render engine dari nol bila fondasi matang yang sudah dipilih dapat digunakan;
-- perubahan AI harus melalui command/transaction yang dapat divalidasi dan di-Undo;
-- jangan menyimpan secret/API key plaintext;
-- jangan hardcode path lokal;
-- jangan menaruh business logic besar di UI/MainWindow;
-- jangan membuat placeholder/fake feature yang terlihat selesai tetapi tidak bekerja;
-- jangan menyebut fitur selesai tanpa test/evidence yang sesuai;
-- jangan menghapus test gagal hanya untuk membuat CI hijau.
-
-## 7. Sebelum sesi berakhir
-
-AI wajib memperbarui minimal:
-- `docs/PROJECT_STATUS.md`
-- `HANDOFF.md`
-
-bila sesi membuat perubahan bermakna pada status, keputusan, code, test, build, atau blocker.
-
-Handoff harus menyatakan:
-- STEP aktif;
-- baseline/HEAD yang dikerjakan;
-- apa yang sudah selesai;
-- apa yang belum;
-- keputusan baru;
-- test/evidence;
-- blocker/known issue;
-- next exact action.
-
-## 8. Bahasa laporan
-
-Gunakan Bahasa Indonesia sederhana kepada pemilik proyek. Jangan membebani pemilik dengan detail teknis rutin yang dapat dianalisis sendiri oleh AI.
-
-**Jika aturan ini belum dibaca, jangan bekerja.**
+Update `docs/PROJECT_STATUS.md`, `HANDOFF.md`, task/evidence, and decision records if a locked decision changes.
