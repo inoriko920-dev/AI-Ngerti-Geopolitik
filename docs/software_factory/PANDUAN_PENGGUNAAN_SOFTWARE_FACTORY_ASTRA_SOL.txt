@@ -1,0 +1,729 @@
+<PARSED TEXT FOR PAGE: 1 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 1
+PANDUAN PENGGUNAAN
+SOFTWARE FACTORY ASTRA + SOL
+Dari ide desain UI gambar GPT GitHub coding testing release → → → → → →
+Untuk siapa dokumen ini dibuat
+Untuk pemilik produk yang tidak perlu memahami coding. Kamu cukup menentukan apa yang ingin 
+dibuat, memilih/menyetujui UI, memberi akses yang dibutuhkan, dan memutuskan hal produk. ASTRA 
+menangani perencanaan; SOL menangani implementasi, test, build, GitHub, dan rilis.
+Versi panduan: FINAL V2 • 02 Oktober 2026
+<PARSED TEXT FOR PAGE: 2 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 2
+1. BACA INI DULU
+Empat aturan yang membuat seluruh sistem tidak membingungkan.
+ATURAN #1 — DOCX dan TXT berbeda fungsi
+DOCX adalah manual untuk kamu. TXT adalah prompt operasional yang dikirim ke AI. Secara default, 
+jangan kirim DOCX jika TXT tersedia dan isinya memang sama untuk eksekusi.
+ATURAN #2 — HANYA SATU STEP AKTIF
+Jangan mengirim seluruh STEP 00–15 untuk dikerjakan sekaligus. Kirim MASTER TXT + TXT STEP yang 
+sedang aktif + evidence yang memang dibutuhkan. Setelah gate STEP itu selesai, baru pindah ke STEP 
+berikutnya.
+ATURAN #3 — ASTRA MERENCANAKAN, SOL MENGERJAKAN
+STEP 00–07 dipimpin ASTRA. Mulai STEP 08, SOL menjadi pelaksana utama. ASTRA dipanggil kembali 
+hanya saat ada keputusan besar, review UI/arsitektur, atau perubahan yang berdampak luas.
+ATURAN #4 — UI GAMBAR ADA DI STEP 04
+STEP 03 menentukan daftar UI; STEP 04 membuat prompt UI dan GPT benar-benar membuat 
+gambarnya; STEP 05 mengunci gambar final; STEP 08 memasukkan reference pack ke GitHub; STEP 09 
+SOL mengimplementasikan UI nyata dan membandingkan screenshot aktual dengan reference.
+Pola paling sederhana yang perlu kamu ingat:
+MASTER TXT + PROMPT STEP AKTIF + INPUT/EVIDENCE
+ ↓
+ ASTRA atau SOL bekerja
+ ↓
+ Gate + handoff + evidence
+ ↓
+ Lanjut STEP berikutnya
+2. JENIS FILE — MANA YANG DIKIRIM KE AI?
+Jenis file Fungsi Dikirim ke AI?
+*.docx Manual lengkap untuk kamu baca 
+dan arsip. Biasanya TIDAK.
+<PARSED TEXT FOR PAGE: 3 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 3
+Jenis file Fungsi Dikirim ke AI?
+00_MASTER_SOFTWARE_FACTORY_P
+ROMPT.txt Konstitusi umum Software Factory. YA, terutama saat chat baru.
+*_PROMPT.txt pada STEP aktif Instruksi operasional STEP yang 
+sedang dikerjakan. YA.
+Prompt UI per screen/state Prompt yang dihasilkan STEP 04 
+untuk GPT Image.
+YA ke GPT Image / image tool saat 
+generate.
+Gambar UI final Reference visual resmi hasil STEP 04. YA saat review/freeze; lalu masuk 
+GitHub di STEP 08.
+PROJECT_STATE / AGENTS / TASKS / 
+handoff / repo Evidence keadaan proyek. YA bila relevan.
+Source ZIP/repo/log/screenshot Bukti proyek existing/recovery/bug. YA hanya bila STEP membutuhkan.
+Jangan membanjiri konteks AI
+Kalau MASTER dan state sudah tersimpan dan AI dapat membacanya dari repo, jangan kirim ulang 
+seluruh percakapan lama. Gunakan repo + handoff + prompt STEP aktif.
+3. KAPAN PAKAI ASTRA, KAPAN PAKAI SOL?
+Peran Pakai ketika Jangan dipakai untuk
+ASTRA
+Definisi produk, discovery, inventaris
+UI, prompt/gambar UI, UI freeze, 
+arsitektur, aturan codebase, review 
+keputusan besar.
+Compile error kecil, patch rutin, 
+build berulang, implementasi 
+backlog biasa.
+SOL
+Membuat repo, menulis kode, 
+memperbaiki bug, test, CI, build, 
+integrasi, packaging, release, 
+maintenance.
+Mengubah visi produk/UI 
+freeze/arsitektur besar tanpa review.
+KAMU
+Menentukan tujuan aplikasi, fitur 
+wajib, preferensi UX, memilih 
+gambar UI final, biaya/privasi, izin 
+publikasi.
+Menentukan class, framework test, 
+dependency kecil, memperbaiki 
+error coding.
+Rekomendasi setup chat
+ Chat ASTRA: khusus planning, UI, architecture, audit, dan review besar.
+ Chat SOL: khusus implementasi, coding, debugging, test, build, GitHub, release.
+ Jangan biarkan ASTRA dan SOL mengedit area kode yang sama secara paralel tanpa pembagian jelas.
+ Boleh memakai model yang sama; yang penting PERAN AKTIF ditulis jelas di instruksi.
+<PARSED TEXT FOR PAGE: 4 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 4
+Kalimat pembuka yang aman
+PERAN AKTIF: ASTRA.
+Gunakan Software Factory. Baca MASTER dan prompt STEP aktif yang saya kirim.
+Kerjakan hanya STEP aktif. Jangan melompat STEP. Simpan gate, evidence, dan handoff.
+PERAN AKTIF: SOL.
+Gunakan Software Factory. Baca MASTER, prompt STEP aktif, dan handoff terakhir.
+Verifikasi baseline aktual terlebih dahulu, lalu kerjakan STEP aktif sampai gate lengkap.
+4. PAKET YANG DIKIRIM SETIAP MEMULAI STEP
+Untuk proyek baru dan chat baru, gunakan paket minimum berikut:
+1. Kirim 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt.
+2. Kirim *_PROMPT.txt dari STEP yang sedang aktif.
+3. Kirim hasil/handoff/evidence dari STEP sebelumnya yang memang diperlukan.
+4. Tambahkan deskripsi singkat tugas saat ini dan PERAN AKTIF.
+5. Jangan kirim prompt STEP berikutnya sebelum gate STEP aktif selesai.
+Launcher itu opsional
+17_SOFTWARE_FACTORY_LAUNCHER_PROMPT.txt hanya membantu menentukan mode proyek dan 
+STEP aktif. Ia bukan pengganti MASTER dan bukan pengganti prompt STEP aktif.
+Contoh: baru mulai aplikasi baru
+Kirim ke chat ASTRA:
+1. 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt
+2. 01_STEP_00_PROJECT_INTAKE_PROMPT.txt
+3. Deskripsi aplikasi + referensi yang memang ada
+Pesan:
+“PERAN AKTIF: ASTRA. Ikuti MASTER dan kerjakan STEP 00. Jangan melompat STEP.”
+Contoh: STEP 08 sudah waktunya SOL
+Kirim ke chat SOL:
+1. 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt
+2. 09_STEP_08_REPOSITORY_FOUNDATION_UI_REFERENCE_CI_PROMPT.txt
+3. Handoff STEP 07 + UI Reference Pack/frozen evidence
+4. Repo target jika sudah dibuat
+<PARSED TEXT FOR PAGE: 5 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 5
+Pesan:
+“PERAN AKTIF: SOL. Verifikasi baseline, kerjakan STEP 08, commit/push reference pack dan foundation repo, lalu 
+buktikan SHA/CI.”
+5. PETA BESAR STEP 00–15
+Ini adalah urutan normal untuk aplikasi baru. Proyek existing boleh dipetakan ke evidence yang sudah 
+ada.
+STEP Pemimpin Apa yang terjadi
+00 ASTRA Amankan baseline, input, repo, 
+working agreement.
+01 ASTRA Definisikan produk: siapa pengguna, 
+alur, fitur, input/output, done.
+02 ASTRA
+Cari repo/library/app yang 
+sama/mendekati; putuskan reuse atau 
+build from scratch.
+03 ASTRA
+Daftarkan semua 
+screen/panel/dialog/state; buat UI 
+Image Coverage Matrix.
+04 ASTRA + GPT Image
+Buat design system + prompt tiap UI →
+generate gambar review → →
+regenerate pilih final. →
+05 ASTRA + kamu
+Freeze prompt+gambar 
+final+interaction+copy menjadi target 
+implementasi.
+06 ASTRA Pilih stack, arsitektur, module 
+boundary, process, data, error, security.
+07 ASTRA Tetapkan Code Constitution, module 
+ownership, repository architecture.
+08 SOL Buat foundation repo; commit/push UI 
+Reference Pack ke GitHub; setup CI.
+09 SOL + review ASTRA Implementasi UI nyata dari reference 
+pack; screenshot actual vs reference.
+10 SOL Buktikan satu vertical slice nyata dari 
+UI sampai output.
+11 SOL Bangun fitur lengkap dalam wave/task 
+terukur.
+12 SOL + Astra bila besar
+Integrasi 
+AI/API/FFmpeg/database/provider 
+secara terkontrol.
+13 SOL Hardening: error, crash, recovery, 
+concurrency, performance, security.
+<PARSED TEXT FOR PAGE: 6 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 6
+STEP Pemimpin Apa yang terjadi
+14 SOL + review Astra Buat release candidate portable ZIP + 
+checksum + packaged smoke.
+15 SOL + izin kamu Final release, backup, restore/recovery, 
+maintenance, hotfix/versioning.
+<PARSED TEXT FOR PAGE: 7 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 7
+6. CARA MENJALANKAN SETIAP STEP — SATU PER
+SATU
+STEP 00 — Project Intake & Safety Gate
+Pemimpin ASTRA
+Tujuan Mengenali proyek, input, repo, risiko, cara kerja dan 
+sumber kebenaran.
+Yang dikirim ke AI MASTER TXT + 
+01_STEP_00_PROJECT_INTAKE_PROMPT.txt + 
+deskripsi/repo/ZIP/reference yang memang tersedia.
+Tugas kamu Jelaskan aplikasi dengan bahasa sederhana; berikan file 
+yang memang ada.
+Hasil yang harus ada Baseline, PROJECT_IDENTITY, constraint, working 
+agreement, input registry, state awal.
+Boleh lanjut bila Gate STEP 00 menyatakan cukup untuk Product 
+Definition.
+Berikutnya STEP 01.
+STEP 01 — Product Definition
+Pemimpin ASTRA
+Tujuan Mengubah ide menjadi definisi produk yang dapat diuji.
+Yang dikirim ke AI MASTER TXT + 
+02_STEP_01_PRODUCT_DEFINITION_PROMPT.txt + 
+handoff STEP 00.
+Tugas kamu Jawab hanya keputusan produk yang benar-benar 
+menentukan bila ditanya.
+Hasil yang harus ada Problem statement, workflow, fitur wajib/opsional, 
+input/output, non-goal, success criteria, product done.
+Boleh lanjut bila Requirement inti tidak ambigu atau yang belum pasti 
+sudah ditandai PROVISIONAL.
+<PARSED TEXT FOR PAGE: 8 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 8
+Berikutnya STEP 02.
+STEP 02 — Existing Solution / GitHub Discovery
+Pemimpin ASTRA
+Tujuan Menentukan apakah mulai dari nol atau memakai 
+basis/library yang sudah ada.
+Yang dikirim ke AI MASTER TXT + 
+03_STEP_02_EXISTING_SOLUTION_GITHUB_DISCOVERY_
+PROMPT.txt + Product Definition.
+Tugas kamu Tidak perlu membuat repo baru hanya untuk discovery.
+Hasil yang harus ada Candidate matrix: EXACT_BASE / STRONG_BASE / 
+COMPONENT_ONLY / REFERENCE_ONLY / 
+BUILD_FROM_SCRATCH + lisensi/risiko.
+Boleh lanjut bila Strategi build/reuse sudah dipilih dengan bukti.
+Berikutnya STEP 03.
+STEP 03 — UI/UX Inventory & User Flow
+Pemimpin ASTRA
+Tujuan Mendaftar semua halaman, panel, dialog, popup, state 
+dan alur sebelum gambar dibuat.
+Yang dikirim ke AI MASTER TXT + 
+04_STEP_03_UI_UX_INVENTORY_PROMPT.txt + Product 
+Definition + reference UI bila ada.
+Tugas kamu Katakan layar/fitur yang kamu bayangkan; bila punya 
+screenshot, kirim sebagai reference.
+Hasil yang harus ada Screen IDs, state IDs, flow map, interaction inventory, 
+UI_IMAGE_COVERAGE_MATRIX.
+Boleh lanjut bila Semua P0/P1 UI yang perlu gambar sudah terdaftar.
+Berikutnya STEP 04.
+<PARSED TEXT FOR PAGE: 9 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 9
+STEP 04 — UI Design System + All UI Prompts + GPT Image 
+Generation
+Pemimpin ASTRA + GPT Image
+Tujuan Membuat UI Bible, prompt tiap screen/state, lalu benar￾benar menghasilkan gambar UI.
+Yang dikirim ke AI MASTER TXT + 
+05_STEP_04_UI_DESIGN_IMAGE_GENERATION_PROMPT.t
+xt + output STEP 03 + reference visual.
+Tugas kamu Review gambar: pilih yang sesuai; minta revisi jika 
+belum cocok.
+Hasil yang harus ada Prompt final per UI/state, candidate images, final images,
+prompt revision mapping, coverage lengkap P0/P1.
+Boleh lanjut bila Prompt saja TIDAK cukup; final image aktual untuk 
+P0/P1 sudah ada dan disetujui.
+Berikutnya STEP 05.
+Catatan Jika UI banyak, generate per batch (mis. 10 gambar per 
+batch) tetapi jangan menyatakan STEP 04 PASS sebelum 
+coverage selesai.
+STEP 05 — UI Freeze & Product Blueprint
+Pemimpin ASTRA + keputusan kamu
+Tujuan Mengunci gambar UI final dan perilakunya supaya SOL 
+tidak redesign.
+Yang dikirim ke AI MASTER TXT + 
+06_STEP_05_UI_FREEZE_PRODUCT_BLUEPRINT_PROMPT.
+txt + prompt final + gambar final STEP 04.
+Tugas kamu Berikan keputusan APPROVE/REVISE untuk UI penting.
+Hasil yang harus ada UI Freeze manifest, pasangan PROMPT_ID+REV <-> 
+<PARSED TEXT FOR PAGE: 10 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 10
+FINAL_IMAGE_ID, copy/state/interaction/acceptance.
+Boleh lanjut bila Tidak ada P0/P1 frozen yang hanya prompt tanpa 
+gambar final.
+Berikutnya STEP 06.
+STEP 06 — Architecture & Technology Decision
+Pemimpin ASTRA
+Tujuan Memilih stack dan arsitektur yang mendukung produk 
+dan UI frozen.
+Yang dikirim ke AI MASTER TXT + 
+07_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_P
+ROMPT.txt + Product/UI Blueprint + discovery evidence.
+Tugas kamu Putuskan hanya biaya, privasi, platform, atau batas 
+hardware bila diperlukan.
+Hasil yang harus ada Stack utama, module boundaries, state ownership, 
+worker/process, persistence, error/security, testing/build 
+strategy.
+Boleh lanjut bila Keputusan arsitektur utama cukup jelas untuk repository
+architecture.
+Berikutnya STEP 07.
+STEP 07 — Code Constitution & Repository Architecture
+Pemimpin ASTRA
+Tujuan Membuat aturan coding agar AI mudah memodifikasi 
+proyek tanpa membuat kode berantakan.
+Yang dikirim ke AI MASTER TXT + 
+08_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHI
+TECTURE_PROMPT.txt + Architecture.
+Tugas kamu Tidak perlu memilih nama class/file teknis.
+<PARSED TEXT FOR PAGE: 11 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 11
+Hasil yang harus ada SEARCH UNDERSTAND MODIFY, module ownership → →
+map, repo layout, dependency rules, AGENTS/state/task 
+contracts.
+Boleh lanjut bila SOL punya aturan yang cukup untuk membangun 
+foundation tanpa menebak struktur besar.
+Berikutnya STEP 08.
+STEP 08 — Repository Foundation + UI Reference Pack GitHub + →
+CI
+Pemimpin SOL
+Tujuan Titik resmi repo/GitHub: masukkan reference pack UI 
+dan bangun foundation + CI.
+Yang dikirim ke AI MASTER TXT + 
+09_STEP_08_REPOSITORY_FOUNDATION_UI_REFERENCE
+_CI_PROMPT.txt + handoff STEP 07 + UI Freeze + repo 
+target.
+Tugas kamu Sediakan/otorisasi repo jika belum ada. Kamu tidak perlu
+menjalankan tooling lokal.
+Hasil yang harus ada GitHub repo terstruktur, prompt UI final + final images + 
+manifests di repo, commit/SHA, dependencies, 
+lint/test/CI/build baseline.
+Boleh lanjut bila Commit/SHA nyata terverifikasi; CI/foundation evidence 
+ada; reference pack sudah berada di repo sebelum STEP 
+09.
+Berikutnya STEP 09.
+STEP 09 — App Shell / UI Implementation
+Pemimpin SOL; ASTRA review visual bila perlu
+Tujuan Membuat UI aplikasi nyata memakai dummy/fixture 
+data sesuai frozen reference.
+Yang dikirim ke AI MASTER TXT + 
+<PARSED TEXT FOR PAGE: 12 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 12
+10_STEP_09_APP_SHELL_UI_IMPLEMENTATION_PROMP
+T.txt + repo/handoff STEP 08.
+Tugas kamu Nilai screenshot jika ada perbedaan visual besar; tidak 
+perlu menjalankan app lokal.
+Hasil yang harus ada App shell, navigation, shared components, dialogs/states, 
+UI test mode, screenshot actual vs reference, visual 
+evidence.
+Boleh lanjut bila UI tidak redesign diam-diam; screenshot/evidence cukup 
+untuk melanjutkan engine.
+Berikutnya STEP 10.
+STEP 10 — Minimum End-to-End Vertical Slice
+Pemimpin SOL; ASTRA bila arsitektur harus berubah
+Tujuan Membuktikan satu alur kecil tetapi nyata dari UI sampai 
+output.
+Yang dikirim ke AI MASTER TXT + 
+11_STEP_10_MINIMUM_END_TO_END_VERTICAL_SLICE_
+PROMPT.txt + repo/state STEP 09.
+Tugas kamu Pilih/konfirmasi alur paling penting jika belum jelas.
+Hasil yang harus ada Satu flow real end-to-end + negative path + 
+persistence/cancel/evidence.
+Boleh lanjut bila Vertical slice terbukti; arsitektur tidak hanya teoritis.
+Berikutnya STEP 11.
+STEP 11 — Feature Implementation Waves
+Pemimpin SOL
+Tujuan Membangun fitur lengkap bertahap, bukan sekaligus.
+Yang dikirim ke AI MASTER TXT + 
+12_STEP_11_FEATURE_IMPLEMENTATION_WAVES_PRO
+<PARSED TEXT FOR PAGE: 13 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 13
+MPT.txt + TASKS/PROJECT_STATE/repo.
+Tugas kamu Menentukan prioritas produk jika ada pilihan fitur.
+Hasil yang harus ada Wave/task READY, fitur terimplementasi, tests, 
+regression, evidence, updated state.
+Boleh lanjut bila Wave selesai tanpa blocker besar atau blocker tercatat 
+jelas.
+Berikutnya STEP 12 atau wave berikutnya.
+STEP 12 — Integration & External Services
+Pemimpin SOL; ASTRA bila kontrak/biaya/privasi besar
+Tujuan Mengintegrasikan AI/API/FFmpeg/database/provider 
+secara aman.
+Yang dikirim ke AI MASTER TXT + 
+13_STEP_12_INTEGRATION_EXTERNAL_SERVICES_PROM
+PT.txt + repo/state + credential mechanism (bukan secret 
+di chat/source).
+Tugas kamu Pilih provider/biaya/privasi jika perlu; jangan kirim API 
+key sebagai teks sembarangan.
+Hasil yang harus ada Adapters/contracts, timeout/cancel/retry, auth handling, 
+mocks, contract tests, error mapping.
+Boleh lanjut bila Integrasi terbukti dan failure mode tertangani.
+Berikutnya STEP 13.
+STEP 13 — Hardening & Professional QA
+Pemimpin SOL
+Tujuan Menghancurkan asumsi: uji error, crash, corrupt input, 
+network, disk, concurrency, performance.
+Yang dikirim ke AI MASTER TXT + 
+14_STEP_13_HARDENING_PROFESSIONAL_QA_PROMPT.t
+xt + repo/state/evidence.
+<PARSED TEXT FOR PAGE: 14 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 14
+Tugas kamu Tidak perlu jadi tester manual kecuali ada hal yang 
+memang CI tidak bisa buktikan.
+Hasil yang harus ada Risk matrix, regression/chaos tests, bug triage, fix 
+evidence, blocker status.
+Boleh lanjut bila Release blockers selesai/diterima secara eksplisit.
+Berikutnya STEP 14.
+STEP 14 — Release Candidate & Packaging
+Pemimpin SOL; ASTRA review readiness
+Tujuan Membuat kandidat rilis exact dari source/commit 
+tertentu.
+Yang dikirim ke AI MASTER TXT + 
+15_STEP_14_RELEASE_CANDIDATE_PACKAGING_PROMP
+T.txt + repo + QA evidence.
+Tugas kamu Konfirmasi scope release bila perlu.
+Hasil yang harus ada Portable ZIP, version/SHA, checksum, license notices, 
+release notes draft, packaged smoke evidence.
+Boleh lanjut bila RC exact artifact lulus gate dan siap dipromosikan.
+Berikutnya STEP 15.
+STEP 15 — Final Release, Backup, Recovery & Maintenance
+Pemimpin SOL + izin publikasi kamu
+Tujuan Merilis exact RC, membuat backup/recovery dan sistem 
+maintenance.
+Yang dikirim ke AI MASTER TXT + 
+16_STEP_15_FINAL_RELEASE_BACKUP_MAINTENANCE_P
+ROMPT.txt + exact RC evidence.
+Tugas kamu Beri izin jika akan publish/release publik; tentukan 
+policy maintenance bila diperlukan.
+<PARSED TEXT FOR PAGE: 15 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 15
+Hasil yang harus ada Final tag/release, backups, restore plan, versioning, 
+hotfix/update process, final handoff.
+Boleh lanjut bila Release terverifikasi + backup/recovery cukup + state 
+final tersimpan.
+Berikutnya Siklus maintenance / versi berikutnya.
+7. BAGIAN PALING PENTING: KAPAN PROMPT UI 
+DIBUAT, KAPAN GPT MEMBUAT GAMBAR?
+Jawaban singkat
+STEP 03 mendaftar UI. STEP 04 membuat prompt UI DAN GPT benar-benar membuat gambar. STEP 05 
+memilih/mengunci gambar final. STEP 08 memasukkan semuanya ke GitHub. STEP 09 SOL membuat UI 
+aplikasi asli.
+Alur UI yang benar
+STEP 03
+Daftar semua UI + semua state + ID + prioritas
+ ↓
+STEP 04
+Design System Prompt UI per screen/state →
+ ↓
+GPT Image / image tool benar-benar GENERATE gambar
+ ↓
+Review hasil revisi prompt regenerate bila perlu → →
+ ↓
+Pilih FINAL IMAGE
+ ↓
+STEP 05
+Freeze: prompt revision + final image + interaction + copy
+ ↓
+STEP 08
+Commit/push UI Reference Pack ke GitHub
+ ↓
+STEP 09
+SOL implementasi UI production + screenshot ACTUAL vs REFERENCE
+<PARSED TEXT FOR PAGE: 16 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 16
+Apa yang dilakukan di STEP 03?
+ Belum membuat gambar final.
+ ASTRA memberi ID seperti UI-001, UI-002, dst.
+ ASTRA mendaftar state: default, empty, loading, error, success, dialog, menu, settings, first-run, dll.
+ ASTRA membuat UI_IMAGE_COVERAGE_MATRIX: mana yang wajib gambar P0/P1 dan mana yang 
+cukup spec.
+Apa yang dilakukan di STEP 04?
+1. ASTRA membuat UI Bible/design system.
+2. ASTRA membuat prompt gambar khusus setiap screen/state yang membutuhkan visual reference.
+3. Prompt tersebut dijalankan dengan GPT Image/image generation tool.
+4. Gambar candidate dinilai terhadap requirement dan design system.
+5. Jika kurang sesuai, prompt direvisi dan gambar di-generate ulang.
+6. Kamu memilih/menyetujui gambar final untuk UI penting.
+7. Prompt revision dan final image diberi ID sehingga dapat dilacak.
+Jika gambar banyak
+Boleh membuat per batch, misalnya 10 UI per batch. Contoh: Batch 1 UI-001–UI-010, Batch 2 UI-011–
+UI-020. Namun STEP 04 belum selesai sebelum semua P0/P1 yang diwajibkan coverage matrix memiliki 
+final image.
+Contoh perintah ke ASTRA pada STEP 04
+PERAN AKTIF: ASTRA.
+Kerjakan STEP 04 berdasarkan UI inventory dan reference yang sudah ada.
+Buat design system dan prompt gambar untuk SEMUA UI/state P0/P1.
+Setelah prompt siap, gunakan GPT Image untuk benar-benar membuat gambarnya.
+Jika jumlahnya banyak, pecah per batch 10 gambar.
+Review hasil, revisi prompt dan regenerate bila belum sesuai.
+Jangan menyatakan STEP 04 PASS hanya karena prompt sudah ditulis.
+Jika kamu ingin generate secara manual per batch
+“Baca prompt UI Batch 1. Buatkan 10 gambar dari 10 prompt tersebut.
+Jangan mengubah design system. Setiap gambar harus sesuai UI_ID dan state yang tertulis.”
+Setelah selesai:
+“Review 10 gambar Batch 1 terhadap prompt dan design system.
+Tandai APPROVED atau REVISE. Untuk yang REVISE, perbaiki prompt dahulu sebelum generate ulang.”
+<PARSED TEXT FOR PAGE: 17 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 17
+Kapan kamu boleh berkata UI sudah final?
+ Bukan saat prompt selesai.
+ Bukan saat satu gambar candidate muncul.
+ UI final ketika gambar yang dipilih mempunyai ID, prompt revision yang jelas, state/interaction/copy 
+sudah cocok, lalu dibekukan di STEP 05.
+8. KAPAN GITHUB DIGUNAKAN?
+STEP Hubungan dengan GitHub
+00 Jika repo sudah ada, catat sebagai baseline. Jika belum 
+ada, tidak wajib membuat repo sekarang.
+02 ASTRA mencari repo/library publik sebagai discovery. Ini
+belum berarti target repo proyek harus diisi.
+03–07 Fokus desain/decision. Evidence boleh disimpan, tetapi 
+titik resmi foundation belum STEP 08.
+08
+TITIK RESMI. SOL membuat/merapikan repo, 
+memasukkan UI Reference Pack, commit/push, mencatat 
+SHA, menyiapkan CI.
+09–13 Semua implementasi, test, screenshot evidence, bugfix, 
+integration berjalan melalui repo/GitHub + CI.
+14 GitHub menghasilkan/menyimpan RC artifacts dan 
+evidence sesuai workflow.
+15 GitHub Release/tag final bila diotorisasi; backup terpisah 
+tetap wajib.
+Isi UI Reference Pack yang masuk GitHub pada STEP 08
+docs/ui/prompts/
+ UI-001_HOME_PROMPT.txt
+ UI-002_EDITOR_PROMPT.txt
+ ...
+docs/ui/references/final/
+ UI-001_HOME_FINAL.png
+ UI-002_EDITOR_FINAL.png
+ ...
+docs/ui/manifests/
+ UI_REFERENCE_MANIFEST.*
+ UI_FREEZE_MANIFEST.*
+Kenapa bukan langsung GitHub sejak STEP 00?
+<PARSED TEXT FOR PAGE: 18 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 18
+GitHub tetap boleh ada sejak awal sebagai repo kosong/baseline, tetapi jangan menjadikan GitHub 
+tempat AI menulis file satu per satu sambil masih berpikir. STEP 08 adalah titik ketika keputusan 
+produk, UI, arsitektur, dan repository contract sudah cukup matang untuk foundation resmi.
+Kalau kamu tidak mau mencoba di laptop
+ Gunakan GitHub Actions/CI untuk lint, test, Windows build, screenshot UI, visual comparison, dan 
+portable ZIP sejauh memungkinkan.
+ Kamu cukup melihat screenshot, logs ringkas, artifact, dan status PASS/FAIL.
+ Hal yang CI tidak bisa buktikan harus diberi status NOT_TESTED/BLOCKED, bukan diklaim lulus.
+9. RESEP PENGGUNAAN UNTUK PROYEK BARU — 
+VERSI SUPER SEDERHANA
+Urutan Tempat Yang kamu lakukan
+Hari/Bagian 1 Chat ASTRA
+Kirim MASTER + STEP 00. Ceritakan 
+app yang ingin dibuat. Tunggu 
+baseline/handoff.
+Bagian 2 Chat ASTRA
+Kirim MASTER + STEP 01 + hasil STEP 
+00. Biarkan ASTRA merapikan 
+requirement.
+Bagian 3 Chat ASTRA
+STEP 02: ASTRA cari repo/library 
+serupa dan putuskan reuse vs build 
+from scratch.
+Bagian 4 Chat ASTRA
+STEP 03: daftar semua UI/state. 
+Pastikan tidak ada halaman penting 
+terlupa.
+Bagian 5 Chat ASTRA + GPT Image
+STEP 04: buat prompt seluruh UI, lalu 
+generate gambar per batch sampai 
+final.
+Bagian 6 Chat ASTRA + kamu STEP 05: kamu setujui UI penting; 
+ASTRA freeze reference.
+Bagian 7 Chat ASTRA STEP 06–07: arsitektur + aturan 
+codebase/repo.
+Bagian 8 Pindah ke Chat SOL STEP 08: buat foundation repo, push UI 
+Reference Pack, CI, baseline build.
+Bagian 9 Chat SOL
+STEP 09: UI production berdasarkan 
+reference. Lihat screenshot actual vs 
+reference.
+Bagian 10 Chat SOL STEP 10: satu vertical slice nyata.
+Bagian 11 Chat SOL STEP 11: fitur lengkap bertahap.
+Bagian 12 Chat SOL STEP 12: integrasi AI/API/FFmpeg, dll.
+<PARSED TEXT FOR PAGE: 19 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 19
+Urutan Tempat Yang kamu lakukan
+Bagian 13 Chat SOL STEP 13: hardening dan QA.
+Bagian 14 Chat SOL + ASTRA review bila perlu STEP 14: RC portable ZIP.
+Bagian 15 Chat SOL + izin kamu STEP 15: final release + backup + 
+recovery + maintenance.
+10. KALAU CHAT PUTUS / GANTI AI / LIMIT HABIS
+Jangan mengulang proyek dari awal. Lakukan ini:
+1. Buka repo/source-of-truth terakhir.
+2. Ambil PROJECT_STATE/handoff terakhir, branch/SHA, task aktif, hasil test, blocker, dan next exact 
+action.
+3. Di chat baru, kirim MASTER TXT + prompt STEP aktif + state/handoff/evidence.
+4. Tulis PERAN AKTIF yang sesuai.
+5. Minta AI memverifikasi baseline sebelum melanjutkan.
+Contoh:
+“PERAN AKTIF: SOL. Lanjutkan proyek dari repo dan handoff terbaru.
+Baca MASTER + prompt STEP 11. Verifikasi branch/SHA/status aktual dahulu.
+Jangan ulang dari nol dan jangan menganggap chat lama tersedia.
+Lanjutkan task READY berikutnya dan perbarui evidence + handoff.”
+11. KAPAN HARUS KEMBALI KE STEP 
+SEBELUMNYA?
+Perubahan/masalah Kembali ke
+Tujuan produk berubah besar STEP 01
+Ada repo basis baru yang mengubah strategi STEP 02, lalu mungkin STEP 06
+User mengganti reference UI utama STEP 03 04 05 → →
+Prompt UI ada tetapi gambar final belum dibuat STEP 04
+UI Freeze hanya prompt tanpa final image STEP 04 lalu ulang STEP 05
+Arsitektur/stack tidak cocok STEP 06
+Ownership/repo structure berantakan STEP 07
+UI Reference Pack belum masuk GitHub STEP 08
+Runtime UI drift dari reference STEP 09; jika kontrak berubah, balik STEP 04/05
+Vertical slice menunjukkan arsitektur salah STEP 06/07
+<PARSED TEXT FOR PAGE: 20 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 20
+Perubahan/masalah Kembali ke
+Provider/API berubah STEP 12; jika memengaruhi produk/arsitektur, STEP 
+01/06
+Release blocker ditemukan STEP penyebabnya atau STEP 13; jangan paksa STEP 
+14/15
+12. YANG JANGAN DILAKUKAN
+ Jangan mengirim semua prompt STEP sekaligus dan berkata “kerjakan semuanya”.
+ Jangan menyuruh SOL coding besar sebelum STEP 05–07 cukup matang.
+ Jangan menganggap prompt UI = gambar UI final.
+ Jangan freeze UI tanpa generated final image untuk screen/state P0/P1 yang diwajibkan.
+ Jangan membiarkan SOL redesign UI frozen karena “lebih bagus menurutnya”.
+ Jangan menganggap build hijau = aplikasi sudah benar.
+ Jangan menyimpan API key/token/password di source, prompt, screenshot, artifact, atau repo.
+ Jangan push perubahan setengah matang file demi file hanya karena bisa memakai API GitHub.
+ Jangan membuat helper/service/class baru sebelum SEARCH UNDERSTAND MODIFY. → →
+ Jangan meminta kamu sendiri memasang tooling developer hanya untuk menolong AI jika CI dapat 
+mengerjakannya.
+ Jangan mengulang dari STEP 00 hanya karena chat/model berganti; gunakan baseline dan handoff.
+13. TEMPLATE PERINTAH SIAP PAKAI
+A. Memulai STEP baru dengan ASTRA
+PERAN AKTIF: ASTRA.
+Gunakan Software Factory. Baca MASTER dan prompt STEP [NOMOR] yang saya kirim.
+Gunakan handoff/evidence terakhir sebagai baseline.
+Kerjakan hanya STEP ini sampai gate lengkap. Jangan melompat ke STEP berikutnya.
+Jika ada keputusan produk yang benar-benar perlu saya pilih, jelaskan dengan bahasa sederhana.
+B. Memulai STEP baru dengan SOL
+PERAN AKTIF: SOL.
+Baca MASTER, prompt STEP [NOMOR], repo, dan handoff terbaru.
+Verifikasi branch/SHA/status aktual dahulu.
+Kerjakan task STEP aktif secara serial, jalankan test/CI yang relevan, simpan evidence, lalu perbarui state dan 
+handoff.
+Jangan redesign keputusan yang sudah freeze.
+<PARSED TEXT FOR PAGE: 21 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 21
+C. Meminta ASTRA review hasil SOL
+PERAN AKTIF: ASTRA.
+Review hasil SOL untuk [STEP/TASK] pada [branch/SHA].
+Periksa evidence, risiko, UI/arsitektur/acceptance criteria yang relevan.
+Berikan keputusan: APPROVED FOR SCOPE / CHANGES REQUIRED / INSUFFICIENT EVIDENCE.
+Jika ada perbaikan, tulis instruksi yang bisa langsung dijalankan SOL.
+D. Meminta generate UI per batch
+PERAN AKTIF: ASTRA.
+Kita berada di STEP 04. Gunakan design system dan UI coverage matrix yang sudah disepakati.
+Siapkan Batch [X] berisi maksimal 10 UI/state berikut: [ID].
+Untuk setiap ID, finalkan prompt gambar lalu gunakan GPT Image untuk menghasilkan gambarnya.
+Jangan campur state/ID. Setelah generate, review setiap gambar dan tandai APPROVED/REVISE.
+E. Memulai STEP 08 / memasukkan ke GitHub
+PERAN AKTIF: SOL.
+Kerjakan STEP 08. Verifikasi UI Freeze terlebih dahulu.
+Masukkan prompt final, generated final UI images, UI_REFERENCE_MANIFEST, dan UI_FREEZE_MANIFEST ke repo 
+target.
+Commit/push sebagai satu checkpoint konsisten, catat SHA nyata, lalu siapkan repository foundation dan CI.
+Jangan mulai STEP 09 sebelum reference pack di GitHub dapat ditelusuri ke SHA.
+14. CHECKLIST SEBELUM PINDAH DARI ASTRA KE
+SOL
+Area Harus sudah ada
+Produk STEP 01 sudah mendefinisikan workflow, fitur, 
+input/output, non-goal, done.
+Discovery STEP 02 sudah memutuskan reuse/build-from-scratch 
+dengan audit lisensi/risiko.
+UI Inventory STEP 03 punya semua screen/state material + coverage 
+matrix.
+UI Images STEP 04 punya prompt final dan generated final image 
+untuk P0/P1.
+UI Freeze STEP 05 punya mapping prompt revision <-> final image 
+<-> interaction/copy.
+Architecture STEP 06 memilih stack dan boundaries.
+<PARSED TEXT FOR PAGE: 22 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 22
+Area Harus sudah ada
+Code Constitution STEP 07 menetapkan module ownership, repo shape, 
+aturan AI.
+Kalau semua ini sudah ada
+Baru pindah ke SOL untuk STEP 08. Di titik ini SOL tidak lagi “menebak produk”, tetapi membangun 
+berdasarkan blueprint yang sudah cukup matang.
+15. RINGKASAN 1 HALAMAN — KALAU KAMU 
+LUPA SEMUANYA
+PROYEK BARU
+↓
+ASTRA: STEP 00 01 02 03 → → →
+↓
+ASTRA + GPT IMAGE: STEP 04 (prompt + GENERATE gambar UI)
+↓
+ASTRA + KAMU: STEP 05 (pilih/freeze gambar final)
+↓
+ASTRA: STEP 06 07 →
+↓
+SOL: STEP 08 (GitHub + UI Reference Pack + CI)
+↓
+SOL: STEP 09 (UI nyata + screenshot comparison)
+↓
+SOL: STEP 10 11 12 13 → → →
+↓
+SOL + review ASTRA: STEP 14
+↓
+SOL + IZIN KAMU: STEP 15 (release + backup + maintenance)
+File yang selalu kamu ingat
+ 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt = aturan utama.
+ *_PROMPT.txt dari STEP aktif = pekerjaan saat ini.
+ DOCX = manual kamu, bukan file utama untuk eksekusi AI.
+ UI prompt per screen/state = dibuat di STEP 04 dan dipakai untuk GPT Image.
+ Gambar UI final = dipilih STEP 04, dibekukan STEP 05, masuk GitHub STEP 08, ditiru SOL STEP 09.
+<PARSED TEXT FOR PAGE: 23 / 23>
+SOFTWARE FACTORY ASTRA + SOL • Panduan Penggunaan
+Panduan operasional untuk pemilik produk non-programmer Halaman 23
+Satu kalimat yang paling aman saat bingung
+PERINTAH UNIVERSAL
+“Gunakan Software Factory. Baca MASTER + prompt STEP aktif + handoff terbaru. Verifikasi baseline, 
+kerjakan hanya STEP aktif, jangan melompat, jangan redesign keputusan frozen, dan tinggalkan 
+gate/evidence/handoff yang jelas.”
