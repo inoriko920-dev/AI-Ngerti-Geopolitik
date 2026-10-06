@@ -190,12 +190,10 @@ def main() -> int:
         "selection_valid": selection.in_frame < selection.out_frame,
         "snap_pass": snap.snapped,
         "edit_auto_paused": True,
-        "save_reopen_hash_match": reopened.state.semantic_hash()
-        == session.state.semantic_hash(),
+        "save_reopen_hash_match": reopened.state.semantic_hash() == session.state.semantic_hash(),
         "preview_files_valid": preview_left.output_path.is_file()
         and preview_right.output_path.is_file(),
-        "export_valid": export.output_path.is_file()
-        and export.output_path.stat().st_size > 0,
+        "export_valid": export.output_path.is_file() and export.output_path.stat().st_size > 0,
     }
     write_json(evidence / "00_w2_report.json", report)
     print(json.dumps(report, indent=2, sort_keys=True))

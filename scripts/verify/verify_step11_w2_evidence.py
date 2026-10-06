@@ -84,11 +84,7 @@ def main() -> int:
             errors.append("W2 follow suspension behavior not proven")
         in_frame = interaction.get("selection_in")
         out_frame = interaction.get("selection_out")
-        if (
-            not isinstance(in_frame, int)
-            or not isinstance(out_frame, int)
-            or in_frame >= out_frame
-        ):
+        if not isinstance(in_frame, int) or not isinstance(out_frame, int) or in_frame >= out_frame:
             errors.append("W2 IN/OUT evidence invalid")
 
     if errors:

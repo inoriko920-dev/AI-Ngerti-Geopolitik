@@ -214,6 +214,7 @@ def _preview_widget(
     layout.addLayout(transport)
     return outer, frame, canvas
 
+
 def _overview_inspector() -> Any:
     from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
@@ -513,6 +514,7 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
             grid.addWidget(label, row_index, column_index)
     layout.addLayout(grid, 1)
     return outer
+
 
 def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) -> EditorShellParts:
     from PySide6.QtCore import Qt
