@@ -1,0 +1,154 @@
+"""STEP 11 W1 project lifecycle, dirty-state and autosave owner."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+
+from ai_ngerti_geopolitik.application.commands import CommandBatch, CommandBus
+from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
+from ai_ngerti_geopolitik.domain import ProjectState
+
+
+class ProjectSessionError(RuntimeError):
+    pass
+
+
+class UnsavedChangesError(ProjectSessionError):
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class ProjectLifecycleSnapshot:
+    is_open: bool
+    dirty: bool
+    current_path: Path | None
+    project_id: str | None
+    revision: int | None
+
+
+class ProjectSession:
+    def __init__(self, repository: ProjectRepositoryPort) -> None:
+        self.repository = repository
+        self._bus: CommandBus | None = None
+        self._current_path: Path | None = None
+        self._saved_hash: str | None = None
+
+    @property
+    def is_open(self) -> bool:
+        return self._bus is not None
+
+    @property
+    def bus(self) -> CommandBus:
+        if self._bus is None:
+            raise ProjectSessionError("no project is open")
+        return self._bus
+
+    @property
+    def state(self) -> ProjectState:
+        return self.bus.state
+
+    @property
+    def current_path(self) -> Path | None:
+        return self._current_path
+
+    @property
+    def dirty(self) -> bool:
+        if self._bus is None:
+            return False
+        if self._saved_hash is None:
+            return True
+        return self.state.semantic_hash() != self._saved_hash
+
+    @property
+    def snapshot(self) -> ProjectLifecycleSnapshot:
+        if self._bus is None:
+            return ProjectLifecycleSnapshot(False, False, None, None, None)
+        return ProjectLifecycleSnapshot(
+            True,
+            self.dirty,
+            self._current_path,
+            self.state.project_id,
+            self.state.revision,
+        )
+
+    def _guard_replacement(self, discard_unsaved: bool) -> None:
+        if self.dirty and not discard_unsaved:
+            raise UnsavedChangesError("project has unsaved changes")
+
+    def new_project(
+        self,
+        project_id: str,
+        name: str,
+        fps: int = 30,
+        *,
+        width: int = 1920,
+        height: int = 1080,
+        aspect_ratio: str = "16:9",
+        discard_unsaved: bool = False,
+    ) -> ProjectState:
+        self._guard_replacement(discard_unsaved)
+        state = ProjectState.create(
+            project_id,
+            name,
+            fps,
+            width=width,
+            height=height,
+            aspect_ratio=aspect_ratio,
+        )
+        self._bus = CommandBus(state)
+        self._current_path = None
+        self._saved_hash = None
+        return state
+
+    def open_project(self, path: Path, *, discard_unsaved: bool = False) -> ProjectState:
+        self._guard_replacement(discard_unsaved)
+        resolved = path.resolve()
+        state = self.repository.load(resolved)
+        self._bus = CommandBus(state)
+        self._current_path = resolved
+        self._saved_hash = state.semantic_hash()
+        return state
+
+    def close(self, *, discard_unsaved: bool = False) -> None:
+        self._guard_replacement(discard_unsaved)
+        self._bus = None
+        self._current_path = None
+        self._saved_hash = None
+
+    def execute(self, batch: CommandBatch) -> ProjectState:
+        return self.bus.execute(batch)
+
+    def undo(self) -> ProjectState:
+        return self.bus.undo()
+
+    def redo(self) -> ProjectState:
+        return self.bus.redo()
+
+    def save(self, path: Path | None = None) -> Path:
+        target = path.resolve() if path is not None else self._current_path
+        if target is None:
+            raise ProjectSessionError("Save requires a path for an unsaved project")
+        self.repository.save(self.state, target)
+        self._current_path = target
+        self._saved_hash = self.state.semantic_hash()
+        return target
+
+    def save_as(self, path: Path) -> Path:
+        return self.save(path)
+
+    def autosave(self, snapshot_dir: Path | None = None) -> Path:
+        state = self.state
+        if snapshot_dir is None:
+            if self._current_path is None:
+                raise ProjectSessionError("unsaved project autosave requires snapshot_dir")
+            snapshot_dir = self._current_path.parent / ".ang-autosave"
+        snapshot_dir = snapshot_dir.resolve()
+        snapshot_dir.mkdir(parents=True, exist_ok=True)
+        filename = (
+            f"{state.project_id}.r{state.revision:06d}."
+            f"{state.semantic_hash()[:12]}.autosave.angproj"
+        )
+        target = snapshot_dir / filename
+        self.repository.save_snapshot(state, target)
+        return target

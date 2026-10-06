@@ -10,6 +10,7 @@ from ai_ngerti_geopolitik.domain import (
     Clip,
     DomainValidationError,
     FrameTime,
+    ProjectSettings,
     ProjectState,
     Track,
 )
@@ -48,6 +49,41 @@ class ImportAssetCommand:
         if any(item.path_ref == self.asset.path_ref for item in state.assets):
             raise CommandError("duplicate media path in STEP 10 slice")
         candidate = replace(state, assets=(*state.assets, self.asset))
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class SetAssetAvailabilityCommand:
+    asset_id: str
+    availability: str
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        asset = state.asset(self.asset_id)
+        updated = replace(asset, availability=self.availability)
+        assets = tuple(updated if item.asset_id == self.asset_id else item for item in state.assets)
+        candidate = replace(state, assets=assets)
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class UpdateProjectSettingsCommand:
+    width: int
+    height: int
+    fps: int
+    aspect_ratio: str
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if self.fps <= 0:
+            raise CommandError("project FPS must be positive")
+        if self.fps != state.fps and (state.assets or any(track.clips for track in state.tracks)):
+            raise CommandError("cannot change FPS after media or timeline content exists")
+        candidate = replace(
+            state,
+            fps=self.fps,
+            settings=ProjectSettings(self.width, self.height, self.aspect_ratio),
+        )
         candidate.validate()
         return candidate
 

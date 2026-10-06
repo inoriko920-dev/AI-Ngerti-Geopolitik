@@ -5,6 +5,7 @@ from ai_ngerti_geopolitik.domain.project import (
     Clip,
     DomainValidationError,
     FrameTime,
+    ProjectSettings,
     ProjectState,
     Track,
 )
@@ -14,6 +15,7 @@ __all__ = [
     "Clip",
     "DomainValidationError",
     "FrameTime",
+    "ProjectSettings",
     "ProjectState",
     "Track",
 ]

@@ -1,6 +1,8 @@
-"""Pure STEP 10 project/timeline model.
+"""Pure canonical project/timeline model.
 
-All canonical edit time is stored as integer frames tied to an explicit FPS.
+All canonical edit time is stored as integer frames tied to an explicit project FPS.
+STEP 11 W1 extends the STEP 10 schema compatibly with project settings and explicit
+media availability while preserving stable asset/clip identifiers.
 """
 
 from __future__ import annotations
@@ -32,6 +34,19 @@ class FrameTime:
 
 
 @dataclass(frozen=True, slots=True)
+class ProjectSettings:
+    width: int = 1920
+    height: int = 1080
+    aspect_ratio: str = "16:9"
+
+    def __post_init__(self) -> None:
+        if self.width <= 0 or self.height <= 0:
+            raise DomainValidationError("project resolution must be positive")
+        if not self.aspect_ratio.strip():
+            raise DomainValidationError("project aspect_ratio is required")
+
+
+@dataclass(frozen=True, slots=True)
 class Asset:
     asset_id: str
     path_ref: str
@@ -41,16 +56,34 @@ class Asset:
     height: int
     has_audio: bool
     fingerprint_sha256: str
+    source_name: str = ""
+    file_size: int = 0
+    sample_rate: int = 0
+    availability: str = "online"
 
     def __post_init__(self) -> None:
         if not self.asset_id:
             raise DomainValidationError("asset_id is required")
-        if self.media_type != "video":
-            raise DomainValidationError("STEP 10 slice accepts video assets only")
-        if self.width <= 0 or self.height <= 0:
-            raise DomainValidationError("video dimensions must be positive")
+        if not self.path_ref:
+            raise DomainValidationError("asset path_ref is required")
+        if self.media_type not in {"video", "audio", "image"}:
+            raise DomainValidationError(f"unsupported media_type: {self.media_type}")
+        if self.duration.frames <= 0:
+            raise DomainValidationError("asset duration must be positive")
+        if self.media_type in {"video", "image"} and (self.width <= 0 or self.height <= 0):
+            raise DomainValidationError("visual media dimensions must be positive")
+        if self.media_type == "audio" and (self.width != 0 or self.height != 0):
+            raise DomainValidationError("audio dimensions must be zero")
+        if self.media_type == "audio" and not self.has_audio:
+            raise DomainValidationError("audio asset must report has_audio")
         if len(self.fingerprint_sha256) != 64:
             raise DomainValidationError("asset fingerprint must be SHA-256")
+        if self.file_size < 0:
+            raise DomainValidationError("asset file_size must be non-negative")
+        if self.sample_rate < 0:
+            raise DomainValidationError("asset sample_rate must be non-negative")
+        if self.availability not in {"online", "offline", "missing"}:
+            raise DomainValidationError(f"invalid media availability: {self.availability}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,7 +120,7 @@ class Track:
 
     def __post_init__(self) -> None:
         if self.kind != "video":
-            raise DomainValidationError("STEP 10 slice uses a video track")
+            raise DomainValidationError("current canonical timeline supports video tracks")
         if self.order < 0:
             raise DomainValidationError("track order must be non-negative")
 
@@ -101,9 +134,19 @@ class ProjectState:
     revision: int
     assets: tuple[Asset, ...] = ()
     tracks: tuple[Track, ...] = ()
+    settings: ProjectSettings = ProjectSettings()
 
     @classmethod
-    def create(cls, project_id: str, name: str, fps: int = 30) -> ProjectState:
+    def create(
+        cls,
+        project_id: str,
+        name: str,
+        fps: int = 30,
+        *,
+        width: int = 1920,
+        height: int = 1080,
+        aspect_ratio: str = "16:9",
+    ) -> ProjectState:
         if not project_id or not name:
             raise DomainValidationError("project identity is required")
         if fps <= 0:
@@ -114,6 +157,7 @@ class ProjectState:
             schema_version=1,
             fps=fps,
             revision=0,
+            settings=ProjectSettings(width, height, aspect_ratio),
         )
 
     def asset(self, asset_id: str) -> Asset:
@@ -138,25 +182,30 @@ class ProjectState:
     def validate(self) -> None:
         if self.schema_version != 1:
             raise DomainValidationError("unsupported schema version")
+        if self.fps <= 0:
+            raise DomainValidationError("project FPS must be positive")
         if self.revision < 0:
             raise DomainValidationError("revision must be non-negative")
+        self.settings.__post_init__()
         asset_ids = [asset.asset_id for asset in self.assets]
         if len(asset_ids) != len(set(asset_ids)):
             raise DomainValidationError("duplicate asset id")
         clip_ids: list[str] = []
         for asset in self.assets:
             if asset.duration.fps != self.fps:
-                raise DomainValidationError("asset FPS must match project FPS in STEP 10")
+                raise DomainValidationError("asset FPS must match project FPS")
         for track in self.tracks:
             last_end = 0
             for clip in sorted(track.clips, key=lambda item: item.timeline_start.frames):
                 if clip.timeline_start.fps != self.fps:
                     raise DomainValidationError("clip FPS must match project FPS")
                 asset = self.asset(clip.asset_id)
+                if asset.media_type != "video":
+                    raise DomainValidationError("video timeline clips must reference video assets")
                 if clip.source_out.frames > asset.duration.frames:
                     raise DomainValidationError("clip exceeds asset duration")
                 if clip.timeline_start.frames < last_end:
-                    raise DomainValidationError("overlapping STEP 10 clips are not supported")
+                    raise DomainValidationError("overlapping canonical clips are not supported")
                 last_end = clip.timeline_end_frame
                 clip_ids.append(clip.clip_id)
         if len(clip_ids) != len(set(clip_ids)):

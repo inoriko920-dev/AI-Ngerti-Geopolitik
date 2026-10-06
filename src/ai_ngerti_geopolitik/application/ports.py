@@ -1,4 +1,4 @@
-"""Ports used by the STEP 10 vertical slice."""
+"""Application ports for persistence, probing, media execution and file availability."""
 
 from __future__ import annotations
 
@@ -18,6 +18,10 @@ class ProbeResult:
     height: int
     has_audio: bool
     fingerprint_sha256: str
+    media_type: str = "video"
+    duration_seconds: float = 0.0
+    file_size: int = 0
+    sample_rate: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,8 +50,14 @@ class MediaProbePort(Protocol):
     def probe(self, path: Path) -> ProbeResult: ...
 
 
+class MediaAvailabilityPort(Protocol):
+    def status(self, path: Path) -> str: ...
+
+
 class ProjectRepositoryPort(Protocol):
     def save(self, state: ProjectState, path: Path) -> None: ...
+
+    def save_snapshot(self, state: ProjectState, path: Path) -> None: ...
 
     def load(self, path: Path) -> ProjectState: ...
 
