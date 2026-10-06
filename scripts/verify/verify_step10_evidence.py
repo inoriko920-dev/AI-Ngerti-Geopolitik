@@ -4,7 +4,6 @@ import argparse
 import json
 from pathlib import Path
 
-
 REQUIRED = (
     "00_environment.json",
     "01_input_media_sha256.txt",
