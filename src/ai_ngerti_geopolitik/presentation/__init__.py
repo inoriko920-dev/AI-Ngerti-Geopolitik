@@ -1,1 +1,1 @@
-"""PySide6 presentation layer implementing the frozen AAVC shell contract in SF-STEP 09."""
+"""PySide6 presentation layer using frozen AAVC reference-era UI sources in SF-STEP 09."""
