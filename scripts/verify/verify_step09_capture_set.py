@@ -49,8 +49,13 @@ def main() -> int:
             errors.append(
                 f"{state} actual dimensions {actual.width()}x{actual.height()} != 1920x1080"
             )
-        if actual_path.stat().st_size < 25_000:
-            errors.append(f"{state} actual screenshot unexpectedly small")
+        sampled_colors = {
+            actual.pixelColor(x, y).rgba()
+            for x in range(0, actual.width(), 160)
+            for y in range(0, actual.height(), 120)
+        }
+        if len(sampled_colors) < 6:
+            errors.append(f"{state} actual screenshot lacks visual diversity")
         actual_hash = hashlib.sha256(actual_path.read_bytes()).hexdigest()
         reference_hash = hashlib.sha256(reference_path.read_bytes()).hexdigest()
         if actual_hash == reference_hash:
