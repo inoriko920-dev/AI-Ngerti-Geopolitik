@@ -396,6 +396,7 @@ def _ai_placeholder() -> Any:
 
 def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     from PySide6.QtCore import Qt
+    from PySide6.QtGui import QAction
     from PySide6.QtWidgets import (
         QCheckBox,
         QComboBox,
@@ -403,6 +404,7 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
         QGridLayout,
         QHBoxLayout,
         QLabel,
+        QMenu,
         QPushButton,
         QVBoxLayout,
     )
@@ -488,6 +490,36 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     )
     controls.addWidget(follow)
     layout.addLayout(controls)
+
+    actions: list[QAction] = []
+    action_specs = [
+        ("action_timeline_split", "Split di Playhead", "S", UiIntentType.TIMELINE_SPLIT),
+        ("action_timeline_duplicate", "Duplikat Clip", "Ctrl+D", UiIntentType.TIMELINE_DUPLICATE),
+        ("action_timeline_delete", "Hapus Clip", "Delete", UiIntentType.TIMELINE_DELETE),
+        ("action_timeline_marker", "Tambah Marker", "M", UiIntentType.TIMELINE_ADD_MARKER),
+        ("action_timeline_in", "Set IN", "I", UiIntentType.TIMELINE_SET_IN),
+        ("action_timeline_out", "Set OUT", "O", UiIntentType.TIMELINE_SET_OUT),
+    ]
+    for object_name, label, shortcut, kind in action_specs:
+        action = QAction(label, outer)
+        action.setObjectName(object_name)
+        action.setShortcut(shortcut)
+        action.setShortcutContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        action.triggered.connect(
+            lambda _checked=False, value=kind: _emit_ui_intent(intent_sink, value)
+        )
+        outer.addAction(action)
+        actions.append(action)
+
+    outer.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+
+    def open_context_menu(position: Any) -> None:
+        menu = QMenu(outer)
+        for action in actions:
+            menu.addAction(action)
+        menu.exec(outer.mapToGlobal(position))
+
+    outer.customContextMenuRequested.connect(open_context_menu)
 
     ruler = QLabel("Timeline     00:00:00     00:00:20     00:00:40     00:01:00     00:01:20")
     ruler.setObjectName("timeline_ruler")
