@@ -109,9 +109,7 @@ class PlaybackController:
         if end <= 0:
             raise PlaybackError("timeline is empty")
         self._preview_dir.mkdir(parents=True, exist_ok=True)
-        output = self._preview_dir / (
-            f"preview-r{state.revision:06d}-f{self._frame:09d}.png"
-        )
+        output = self._preview_dir / (f"preview-r{state.revision:06d}-f{self._frame:09d}.png")
         result = self._media_engine.preview_frame(state, self._frame, output)
         if result.project_revision != state.revision:
             raise PlaybackError("stale preview revision returned by media engine")
