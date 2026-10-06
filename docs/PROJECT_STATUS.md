@@ -1,71 +1,59 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Last known phase:** PRE-IMPLEMENTATION / ARCHITECTURE BASELINE DEFINED  
-**Formal Software Factory completed:** SF-STEP 06 — Architecture & Technology Decision  
+**Last known phase:** PRE-IMPLEMENTATION / CODE CONSTITUTION DEFINED  
+**Formal Software Factory completed:** SF-STEP 07 — Code Constitution & Repository Architecture  
 **Gate:** PASS_WITH_PROVISIONAL  
-**FREEZE-A/B:** ACTIVE / AAVC UI-001..UI-042 42/42  
-**Primary UI stack:** Python 3.12 x64 family + PySide6 / Qt 6 Widgets  
-**Architecture:** modular monolith, presentation -> application -> domain  
-**Project source-of-truth:** ANG ProjectState / versioned JSON .angproj  
-**Media boundary:** MediaEnginePort  
-**Primary engine qualification candidate:** libopenshot v1.0.1  
-**Engine fallback:** MLT 7.42  
-**Formal next STEP:** SF-STEP 07 — Code Constitution & Repository Architecture  
-**Code status:** NONE / FORBIDDEN  
-**Build:** NONE  
-**Release:** NONE
+**Code Constitution:** CC-ANG-v1.0  
+**Repository Map:** REPO-ANG-v1.0  
+**Architecture:** ANG-SF-STEP06-ARCH-TECH-v1.0  
+**UI:** FREEZE-A/B ACTIVE — AAVC UI-001..UI-042 42/42  
+**Application source:** NONE  
+**Build/CI product:** NONE  
+**Formal next STEP:** SF-STEP 08 — Repository Foundation & UI Reference Gate  
+**First STEP 08 task:** S08-T01  
+**Production coding:** BLOCKED until S08-T01 passes
 
-## STEP 06 evidence
+## STEP 07 evidence
 
-Canonical architecture decision:
-- `docs/planning/07_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_AI_NGERTI_GEOPOLITIK.docx`
-- machine-readable mirror: `docs/planning/07_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_AI_NGERTI_GEOPOLITIK.txt`
+Canonical planning:
+- `docs/planning/08_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_AI_NGERTI_GEOPOLITIK.docx`
+- mirror: `docs/planning/08_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_AI_NGERTI_GEOPOLITIK.txt`
 
-## Frozen architecture decisions
+## Frozen repository constitution
 
-- PySide6/Qt Widgets keeps the frozen AAVC UI without web/QML redesign.
-- ANG owns ProjectState, semantic CommandBus/CommandBatch, grouped Undo/Redo and .angproj persistence.
-- Engine graph is derived and rebuildable from ProjectState.
-- Preview must be engine-derived; no second hand-written preview compositor.
-- Render uses immutable project revision snapshot in an isolated child worker.
-- Gemini uses AIProviderPort + structured plan/tool calls and cannot mutate state directly.
-- 1–100 API-key slots use OS credential storage; raw keys are never project/settings/log data.
-- Portable release is a standalone multi-file folder packaged as ZIP.
-- UI-001..UI-042 remain frozen direct AAVC references; the void 42-prompt batch remains DO NOT USE.
+- package: `src/ai_ngerti_geopolitik/`
+- boundaries: domain / application / presentation / infrastructure / bootstrap
+- dependency direction: presentation -> application -> domain
+- infrastructure implements application ports
+- bootstrap wires concrete adapters only
+- one concern = one canonical owner
+- all project mutation = semantic CommandBus / CommandBatch
+- ProjectState = source-of-truth
+- no Qt/provider/engine/filesystem implementation in domain
+- no concrete infrastructure access from presentation
+- no hidden mutable global project state
+- no long job on Qt UI thread
+- no plaintext secrets
+- no silent UI redesign
+- no fake green/capability
 
-## Mandatory qualification before engine-dependent claims
+## STEP 08 READY tasks
 
-The primary libopenshot candidate must pass:
-- clean Windows binding/DLL import;
-- 300-scene seek/play stress;
-- SINGLE/DOUBLE composition golden cases;
-- 21-effect compatibility mapping;
-- narration/audio sync;
-- repeated preview lifecycle stress;
-- reference render verification;
-- safe cancel;
-- clean-machine portable package;
-- exact dependency/license manifest.
+**S08-T01 — Source-of-Truth & Exact UI Reference Gate**  
+Commit/verify STEP00–07 planning DOCX+TXT and exact full-resolution UI-001..UI-042 raw references. 42/42 hashes must match manifest. **No product source code in this task.**
 
-## Material license gate
+**S08-T02 — Repository Skeleton, Toolchain & Architecture Fitness**  
+Only after T01 PASS. Materialize minimal src-layout, Python/tooling, tests and import/secret/source-truth checks. No feature UI/engine/Gemini implementation.
 
-libopenshot is LGPL-3.0-or-later, but libopenshot-audio is GPLv3 upstream. Because ANG needs audio/narration, final project/source license and bundled dependency strategy must be resolved before distributable engine build. MLT remains the defined fallback behind the same MediaEnginePort.
+**S08-T03 — Windows CI & Portable Packaging Scaffold**  
+Only after T02 PASS. Windows CI + minimal portable scaffold/evidence; no final release claim.
 
-## Pre-coding blockers
+## Pre-coding blocker
 
-Production coding remains forbidden until:
-1. SF-STEP 07 is completed;
-2. exact full-resolution UI reference pack is in repo and verified;
-3. repository/source-of-truth pre-coding checks pass.
-
-The engine qualification spike is mandatory before making engine-dependent stability/distribution claims.
+Exact full-resolution UI visual/raw pack is still not fully committed/verified in repo. This is now the explicit first task of STEP 08 and blocks production source coding.
 
 ## Exact next action
 
-After owner says **"lanjutkan"**, execute **SF-STEP 07 — Code Constitution & Repository Architecture only**.
+After owner says **"lanjutkan"**, SOL executes **SF-STEP 08 beginning S08-T01 only**.
 
-Do not:
-- code production app;
-- run SF-STEP 08;
-- copy openshot-qt source;
-- redesign frozen UI.
+Do not jump to UI implementation, media-engine feature implementation, Gemini features, or STEP 09 before the STEP 08 foundation gate is completed.

@@ -1,0 +1,296 @@
+AI NGERTI GEOPOLITIK — SF-STEP 07 CODE CONSTITUTION & REPOSITORY ARCHITECTURE
+Document ID: ANG-SF-STEP07-CODE-CONSTITUTION-REPO-v1.0
+Date: 06 Oktober 2026
+Role: ASTRA
+Repo: inoriko920-dev/AI-Ngerti-Geopolitik
+Baseline: main @ a92745f0251ec09817cf3315659bc61e2960c5ae
+Architecture: ANG-SF-STEP06-ARCH-TECH-v1.0
+UI: UIB-ANG-v1.0 / FREEZE-A SPEC_FROZEN + FREEZE-B RASTER_FROZEN 42/42
+Code Constitution: CC-ANG-v1.0
+Repository Map: REPO-ANG-v1.0
+Gate: PASS_WITH_PROVISIONAL
+Implementation: NOT STARTED
+Next: SF-STEP 08 only, first task S08-T01
+
+EXECUTIVE CONSTITUTION
+Use Python src-layout with boundaries domain, application, presentation, infrastructure, bootstrap. One concern has one canonical owner. All project mutation uses semantic CommandBus. Presentation must not call concrete engine/provider/persistence adapters. Domain must not import Qt/libopenshot/MLT/FFmpeg/Gemini/keyring/filesystem I/O. Bootstrap wires dependencies only.
+
+TRUTH RULE
+STEP 07 defines architecture/governance. It does not claim package imports, tests, CI, engine, Gemini, packaging, or UI runtime already work.
+
+NON-NEGOTIABLE
+CC-001 SEARCH -> UNDERSTAND -> MODIFY before creating owner/service/helper.
+CC-002 One concern = one canonical owner.
+CC-003 Dependency inward: presentation -> application -> domain; infrastructure implements application ports; bootstrap wires concrete adapters.
+CC-004 ProjectState is truth. UI/engine graph/preview cache/AI chat/thumbnails/waveform/validation list are derived/session state.
+CC-005 All project mutation through semantic CommandBus / CommandBatch.
+CC-006 No mutable global project/session state or service-locator singleton.
+CC-007 No business rules in QMainWindow/widgets/dialog handlers.
+CC-008 No provider SDK/engine/subprocess/persistence/keyring call from presentation.
+CC-009 No long network/probe/render/scan/native-engine operation on UI thread.
+CC-010 Secrets never enter project/settings/logs/screenshots/fixtures/repo.
+CC-011 No fake green.
+CC-012 No silent redesign; visible structural delta requires DELTA_FROM_AAVC change record.
+CC-013 No generic utils.py/helpers.py/common.py dumping ground.
+CC-014 No direct subprocess outside ProcessRunner/tool owner.
+CC-015 Gemini/media engine cannot edit ProjectState directly.
+CC-016 Generated/build/cache/user files are not manual source.
+CC-017 Changes are small, cohesive, reviewable and reversible.
+CC-018 Architecture exceptions require ADR/change record.
+
+CANONICAL REPOSITORY MAP
+/
+AGENTS.md
+HANDOFF.md
+README.md
+pyproject.toml
+.editorconfig
+.github/workflows/
+docs/
+  PROJECT_STATUS.md
+  DECISIONS_LOCKED.md
+  SOURCE_OF_TRUTH_INDEX.md
+  REPOSITORY_RULES.md
+  software_factory/
+  planning/
+  ui_reference/
+    UI_REFERENCE_MANIFEST.md
+    raw/              # exact UI-001..UI-042 after S08-T01
+  project/
+    PRODUCT.md
+    UI_SPEC.md
+    ARCHITECTURE.md
+    CODE_CONSTITUTION.md
+    PLAN.md
+    TASKS.md
+  adr/
+  evidence/{tests,ui,engine,packaging}/
+src/ai_ngerti_geopolitik/
+  bootstrap/
+  domain/{shared,project,scene,asset,timeline,composition,animation,subtitles,audio,render}/
+  application/{ports,commands,queries,project,import_workflow,validation,preview,rendering,ai_editing,jobs}/
+  presentation/{shell,screens,components,timeline,preview,dialogs,viewmodels,theme}/
+  infrastructure/
+    media/{libopenshot,mlt,ffmpeg}/
+    ai/gemini/
+    persistence/
+    credentials/
+    config/
+    observability/
+    process/
+    paths/
+    platform/windows/
+resources/{qss,icons,defaults}/
+tests/{unit,contract,integration,ui,visual,e2e,packaging,fixtures}/
+scripts/{dev,verify,build,package}/
+vendor/
+build/  # ignored
+dist/   # ignored
+
+NO ARCHITECTURE THEATER
+Repository map is ownership map, not an instruction to create every empty package. STEP 08 materializes only enforceable foundation needed by READY tasks.
+
+MODULE OWNERSHIP
+bootstrap: startup/composition only.
+domain/shared: IDs, rational time, pure values.
+domain/project: ProjectState + revision.
+domain/scene + asset: stable scene/Axxx semantics.
+domain/timeline + composition: semantic timeline/layout.
+domain/animation: registry/assignments/locks/seed.
+domain/subtitles: cue/style/word timing.
+domain/audio: narration/audio semantics.
+domain/render: render profiles/value model.
+application/ports: external capability abstractions.
+application/commands: mutation gateway.
+application/queries: read-only queries.
+application/import_workflow: DOCX/SRT/media import orchestration.
+application/validation: issues and fix mappings.
+application/preview: preview sync/session use cases.
+application/rendering: RenderJobSpec/use cases.
+application/ai_editing: ContextBuilder/PlanVerifier/RiskPolicy/plan->commands.
+application/jobs: lifecycle/cancel/progress/stale-result.
+presentation: frozen AAVC shell/screens/components/timeline/preview/dialog/viewmodels/theme only.
+infrastructure/media/libopenshot: primary adapter.
+infrastructure/media/mlt: fallback adapter only after ADR activation.
+infrastructure/media/ffmpeg: probe/process helper boundary.
+infrastructure/ai/gemini: google-genai transport/normalization.
+infrastructure/persistence: .angproj JSON/migration/recovery.
+infrastructure/credentials: Windows credential backend.
+infrastructure/config/observability/process/paths/platform: respective infrastructure concern.
+
+DEPENDENCY MATRIX
+Domain -> domain only.
+Application -> domain + application-owned ports; no concrete infrastructure.
+Presentation -> application + read-only domain types + Qt; no concrete infrastructure.
+Infrastructure -> application ports + domain contract types; no presentation.
+Bootstrap -> all for construction only; no business logic.
+Exceptions require ADR.
+
+PYTHON / API RULES
+All importable source under src/ai_ngerti_geopolitik.
+Public domain/application APIs typed.
+Cross-module payload uses named typed DTO/value models.
+Canonical time rational/frame-aware, not float seconds.
+Stable entity IDs, not list indexes/UI row/file names.
+Avoid large re-export chains.
+No mutable globals.
+No orphan TODO/FIXME; reference task/ADR.
+No commented-out implementation as dead-code storage.
+
+NAMING
+package/module/function/variable: snake_case
+class/protocol/error: PascalCase
+constant: UPPER_SNAKE_CASE
+command: VerbTargetCommand
+handler: CommandNameHandler
+port: CapabilityPort
+adapter: TechnologyAdapter
+task: Sxx-Tyy
+UI reference: UI-xxx
+visible UI delta: UI-ANG-Dxx
+Qt objectName: semantic dotted ID
+
+COHESION REVIEW TRIGGERS
+Python file > ~450 logical lines; class > ~280; method > ~70; Qt screen/controller > ~350; >8 constructor deps; repeated branch/format rules in 3+ places. These trigger review, not automatic rejection.
+
+COMMAND / HISTORY
+UI/menu/shortcut/context/AI all dispatch semantic commands.
+Command contains stable IDs, typed payload, actor, command_id, expected_revision.
+Handler validates existence/range/locks/capabilities/revision.
+Command/CommandBatch commits atomically.
+One approved AI request = one grouped HistoryEntry.
+Engine sync happens after domain commit. Engine failure is recoverable and never becomes product truth.
+Retried external completions use task/operation IDs to avoid double apply.
+
+PRESENTATION
+AAVC 42/42 frozen references are visual/interaction target.
+QMainWindow owns layout orchestration only.
+Centralized design tokens/QSS.
+Important controls use stable objectName.
+Widgets emit intent; viewmodels/application execute use cases.
+Long work never blocks GUI thread.
+No static PNG runtime UI.
+
+MEDIA / PROCESS
+Only infrastructure/media adapter imports libopenshot or MLT.
+Vendor types never leak to application/presentation.
+Both real adapters must satisfy same MediaEnginePort contract tests.
+Do not maintain two parallel production engines.
+FFmpeg/ffprobe execution only via dedicated boundary/ProcessRunner; shell=False; validated argument arrays.
+Native/plugin/codec capability exposed through CapabilityRegistry.
+Bundled native payload requires provenance/license/checksum manifest.
+
+AI / GEMINI
+google-genai import only inside infrastructure/ai/gemini.
+AIProviderPort returns ANG-owned types.
+Minimum context; no raw secret in prompt.
+Tool registry exposes semantic edit operations, not arbitrary shell/filesystem.
+PlanVerifier checks schema/IDs/revision/locks/range/capability.
+Approved plan -> CommandBatch -> same CommandBus.
+Credential rotation follows provider policy and must not be designed/documented as quota circumvention.
+
+JOBS / CONCURRENCY
+UI thread is presentation only.
+JobManager owns job lifecycle/cancel/progress/stale.
+Workers never mutate QWidget/ProjectState directly.
+Result applies only after session/project revision/task ID validation.
+Render child process by default.
+Preview uses serialized EngineSession; process isolation remains qualification-driven.
+Concurrency bounded.
+
+PERSISTENCE / PATH / SECRET
+Native .angproj versioned JSON.
+Atomic save: validate -> temp -> flush/close -> replace.
+Autosave/recovery separate; migration versioned/tested/backup-aware.
+Relink changes path/reference, never Axxx identity.
+PathService resolves app/resources/user/cache/log/recovery; no developer C:/D:.
+Resources read-only at runtime.
+Raw API key only CredentialPort; never project/settings/log/tests/screenshots.
+Structured redacted logging and typed error taxonomy.
+
+DEPENDENCY POLICY
+Before new dependency: prove need; search existing owner; review license/transitive/native obligations, maintenance, security, size/runtime, pin strategy, owner boundary, tests, removal path.
+No competing dependency for same job "just in case".
+
+TEST GATE ORDER
+G0 format/lint/import-boundary/secret scan.
+G1 domain/application unit.
+G2 contract.
+G3 persistence/parser integration.
+G4 Qt UI state.
+G5 native integration.
+G6 visual regression.
+G7 stress 100/300 scenes.
+G8 clean-Windows portable package smoke.
+
+PLANNED DEV COMMANDS — NOT AUTHORITATIVE UNTIL STEP08 PROVES
+python -m pytest
+python -m ruff check .
+python -m ruff format --check .
+python -m mypy src
+lint-imports
+python scripts/verify/verify_source_of_truth.py
+python scripts/verify/verify_ui_reference_manifest.py
+python scripts/verify/verify_no_secrets.py
+python scripts/verify/verify_dependency_manifest.py
+
+DOCUMENTATION CONTRACT
+AGENTS.md = concise AI entry gate/read order/module map/commands/forbidden/review triggers.
+docs/PROJECT_STATUS.md = canonical current project state; fulfills PROJECT_STATE function, do not add duplicate PROJECT_STATE.md.
+HANDOFF.md = exact current continuation.
+docs/project/PRODUCT.md = current operational product summary.
+docs/project/UI_SPEC.md = current frozen UI summary/reference map.
+docs/project/ARCHITECTURE.md = current accepted architecture.
+docs/project/CODE_CONSTITUTION.md = concise operational CC-ANG rules.
+docs/project/PLAN.md = implementation phase/wave plan, not evidence.
+docs/project/TASKS.md = READY/ACTIVE/BLOCKED/DONE queue.
+docs/DECISIONS_LOCKED.md = owner-locked decisions.
+docs/adr/ = material architecture decisions.
+docs/evidence/ = evidence pointers/artifacts.
+docs/planning/ = planning history.
+README.md = human navigation + verified capabilities only.
+
+AI SEARCH -> UNDERSTAND -> MODIFY
+1 search concept/synonyms
+2 locate canonical owner
+3 read contract
+4 search call sites/registration/config
+5 read tests
+6 explain why existing owner insufficient
+7 modify canonical owner first
+8 re-search for duplication
+9 run task gates
+10 update truth docs if material
+
+ASTRA REVIEW TRIGGERS
+new top-level layer/service; dependency exception; project schema semantic/breaking change; breaking MediaEnginePort; engine switch; new native/runtime dependency; frozen UI structural change; new AI permission/destructive family; secret backend change; packaging model change; removing validation/recovery/history behavior.
+
+FORBIDDEN
+God MainWindow/AppService/ProjectManager; duplicate service; direct Qt item as truth; engine graph as truth; Gemini writing JSON/widgets/engine; raw vendor DTO across layers; scattered subprocess; hardcoded developer paths; plaintext key; blocking Qt slot; swallowed errors; weakened tests; static PNG runtime UI; full OpenShot/Shotcut UI fork; full libopenshot+MLT parallel stack; fake buttons.
+
+STEP08 READY TASKS
+S08-T01 Source-of-Truth & Exact UI Reference Gate — P0/HIGH — READY.
+Goal: before source skeleton, commit/verify STEP00–07 planning DOCX+TXT and exact full-resolution UI-001..UI-042 raw/reference pack.
+Scope: docs/planning + docs/ui_reference only, no product source code.
+Acceptance: 42/42 exact refs hash-match manifest; STEP00–07 DOCX+TXT present/readable; pre-coding docs/UI gate PASS.
+Evidence: commit SHA + verifier output + 42/42 count.
+FIRST TASK.
+
+S08-T02 Repository Skeleton, Toolchain & Architecture Fitness — P0/MEDIUM — READY AFTER T01.
+Goal: minimal src-layout/package/tests/docs/resources/scripts + reproducible Python dev env + architecture checks.
+No 42-screen UI, no engine feature, no Gemini feature.
+Acceptance: package import + cheap gates + import rule + no generated artifacts.
+
+S08-T03 Windows CI & Portable Packaging Scaffold — P1/HIGH — READY AFTER T02.
+Goal: Windows CI quality/test + minimal portable packaging scaffold/evidence.
+No final release claim.
+Acceptance: Windows CI green and explicit package-scaffold smoke/evidence.
+
+STEP07 GATE
+PASS_WITH_PROVISIONAL.
+Repository architecture and code constitution are sufficient for STEP08.
+Hard operational pre-coding blocker: exact full-resolution 42 UI raw pack must be committed/verified first via S08-T01.
+Exact dependency pins, CI, packager evidence and native engine qualification remain NOT TESTED.
+
+NEXT EXACT ACTION
+SOL executes SF-STEP 08 beginning S08-T01 only. Do not jump directly to UI/engine features.

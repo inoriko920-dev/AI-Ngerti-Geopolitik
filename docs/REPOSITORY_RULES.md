@@ -1,54 +1,100 @@
 # REPOSITORY RULES & STRUCTURE
 
-## Tujuan struktur
+## Current state
 
-Repository harus mudah dilanjutkan AI lain tanpa membaca histori chat lengkap.
+Repository remains **docs-first / pre-implementation**. SF-STEP 07 defines the future source structure, but it is not implemented until STEP 08 evidence exists.
 
-## Struktur pra-coding
+## Canonical future source package
 
-```text
-/
-├─ AGENTS.md                         # pintu masuk wajib AI
-├─ HANDOFF.md                        # posisi terakhir + next exact action
-├─ README.md
-└─ docs/
-   ├─ PROJECT_STATUS.md
-   ├─ DECISIONS_LOCKED.md
-   ├─ REPOSITORY_RULES.md
-   ├─ software_factory/
-   │  ├─ 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt
-   │  └─ PANDUAN_PENGGUNAAN_SOFTWARE_FACTORY_ASTRA_SOL.docx
-   └─ planning/
-      └─ 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx
-```
+`src/ai_ngerti_geopolitik/`
 
-Planning/reference berikutnya harus ditempatkan secara konsisten, bukan tersebar acak di root.
+Main boundaries:
+- `domain/` — pure product state/rules;
+- `application/` — commands, queries, ports, use cases, jobs;
+- `presentation/` — PySide6 UI, AAVC frozen shell/screens/components;
+- `infrastructure/` — engine/provider/persistence/credentials/config/process/platform adapters;
+- `bootstrap/` — composition root only.
 
-## Aturan nama
+## Dependency direction
 
-- Planning STEP: prefix numerik/STEP yang jelas.
-- Status/handoff: satu file canonical, diperbarui; jangan membuat puluhan salinan “final_final”.
-- Evidence besar: tempatkan dalam folder evidence per STEP ketika mulai diperlukan.
-- UI reference: gunakan ID stabil UI-xxx sesuai Software Factory.
-- Jangan rename file source-of-truth tanpa memperbarui seluruh referensi.
+`presentation -> application -> domain`
 
-## Aturan perubahan
+`infrastructure -> application ports + domain contract types`
 
-- Satu perubahan harus memiliki tujuan jelas.
-- Jangan mencampur redesign, refactor besar, dan fitur baru dalam perubahan yang sama tanpa alasan.
-- Cari modul/helper yang sudah ada sebelum membuat duplikat.
-- Jaga module ownership dan dependency direction setelah STEP 07 menetapkannya.
-- Jangan commit secret, token, API key, credential, file user private, atau output media besar yang tidak perlu.
-- Jangan hardcode path Windows milik satu komputer.
+`bootstrap -> all` for construction only.
 
-## State proyek
+Forbidden:
+- domain importing Qt, libopenshot/MLT, FFmpeg, Gemini, keyring, subprocess or filesystem implementation;
+- presentation importing concrete infrastructure adapters;
+- business logic in MainWindow/widgets;
+- direct ProjectState mutation outside semantic CommandBus;
+- hidden mutable global project state.
 
-Setelah pekerjaan bermakna, update:
-- PROJECT_STATUS;
-- HANDOFF;
-- DECISIONS_LOCKED bila keputusan berubah;
-- evidence/gate STEP yang sesuai.
+## Search -> Understand -> Modify
 
-## Definition of “lanjutkan”
+Before adding a new file/class/service/helper:
+1. search the concept and synonyms;
+2. locate canonical owner;
+3. read contracts/ports/schema;
+4. search call sites/registration/config;
+5. read relevant tests;
+6. explain why existing owner is insufficient;
+7. modify canonical owner first;
+8. re-search for duplicate responsibility.
 
-Perintah “lanjutkan” berarti lanjut dari **next exact action** yang tercatat dan hanya STEP yang diizinkan. Itu bukan izin untuk melewati seluruh roadmap.
+## Planned repository tree
+
+Top-level intended ownership:
+- `src/ai_ngerti_geopolitik/` — product source;
+- `tests/` — automated evidence;
+- `docs/` — source-of-truth/evidence;
+- `resources/` — read-only shipped QSS/icons/defaults;
+- `scripts/` — repeatable dev/build/verify/package entrypoints, no business logic;
+- `.github/workflows/` — Windows CI;
+- `vendor/` — intentionally audited third-party payload only;
+- `build/`, `dist/` — generated/ignored.
+
+Do not create every empty folder simply to imitate the diagram. Materialize only what the current READY task requires.
+
+## Planning/reference naming
+
+- Planning STEP: stable numeric prefix and STEP number.
+- Status/handoff: one canonical file, updated in place.
+- UI reference: stable `UI-xxx`.
+- Visible ANG-only UI delta: `UI-ANG-Dxx`.
+- Do not rename source-of-truth without updating index/read order.
+
+## Change rules
+
+- One logical task per change.
+- No mixed redesign + broad refactor + dependency upgrade + bug fix without justification.
+- One concern has one canonical owner.
+- No generic god manager/service/helper.
+- No secret/token/API key/cookie/private user data in Git.
+- No hardcoded developer Windows path.
+- No generated cache/build/log/recovery/user settings as manual source.
+- Architecture exception requires ADR/Astra review.
+
+## STEP 08 first task
+
+**S08-T01 — Source-of-Truth & Exact UI Reference Gate**
+
+Before production source coding:
+- STEP00–07 DOCX+TXT must be present/readable in repo;
+- exact full-resolution UI-001..UI-042 raw references must be committed;
+- 42/42 SHA-256 must match `docs/ui_reference/UI_REFERENCE_MANIFEST.md`;
+- status must explicitly flip pre-coding docs/UI gate to PASS.
+
+No product source code is allowed in S08-T01.
+
+## State updates
+
+After meaningful work update:
+- `docs/PROJECT_STATUS.md`;
+- `HANDOFF.md`;
+- `docs/DECISIONS_LOCKED.md` if a locked decision changes;
+- task/evidence files for the active STEP.
+
+## Definition of "lanjutkan"
+
+"lanjutkan" means execute the **next exact action** in current handoff only. It is never blanket permission to skip Software Factory gates.

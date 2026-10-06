@@ -1,80 +1,95 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Fase:** PRE-IMPLEMENTATION / ARCHITECTURE DEFINED  
-**SF-STEP terakhir:** 06 — Architecture & Technology Decision  
+**Fase:** PRE-IMPLEMENTATION / STEP 07 COMPLETE  
+**SF-STEP terakhir:** 07 — Code Constitution & Repository Architecture  
 **Gate:** PASS_WITH_PROVISIONAL  
-**Coding:** FORBIDDEN
+**Code Constitution:** CC-ANG-v1.0  
+**Repository Map:** REPO-ANG-v1.0  
+**Application source:** NONE  
+**Next role:** SOL  
+**Next STEP:** SF-STEP 08  
+**First task:** S08-T01
 
 ## Read first
 
 1. AGENTS.md
 2. Software Factory master + guide
-3. docs/planning/00..07 in order
+3. docs/planning/00..08 in order
 4. docs/ui_reference/UI_REFERENCE_MANIFEST.md
-5. DECISIONS_LOCKED.md
-6. PROJECT_STATUS.md
-7. this HANDOFF.md
+5. docs/DECISIONS_LOCKED.md
+6. docs/PROJECT_STATUS.md
+7. docs/REPOSITORY_RULES.md
+8. this HANDOFF.md
 
-## Architecture baseline
+## Core constitution
 
-- UI: Python 3.12 x64 family + PySide6 / Qt 6 Widgets.
-- UI freeze: AAVC 42/42 direct reuse; no redesign; 42-prompt ANG ZIP remains VOID.
-- Dependency direction: presentation -> application -> domain; adapters implement inward ports.
-- Product source-of-truth: ANG-owned ProjectState.
-- Project format: versioned UTF-8 JSON `.angproj`.
-- Time: rational/frame-aware.
-- Mutation: semantic CommandBus / CommandBatch + grouped Undo/Redo.
-- Media: frozen `MediaEnginePort`; libopenshot v1.0.1 primary qualification candidate; MLT 7.42 fallback.
-- Preview: engine-derived, serialized EngineSession; no second manual compositor.
-- Render: committed state snapshot -> isolated child worker -> temp -> verify -> atomic final.
-- AI: AIProviderPort + official google-genai family + strict structured EditPlan/tool calls.
-- Credentials: CredentialPort + Windows generic credential storage/keyring; 1–100 logical slots; no plaintext fallback.
-- Jobs: long work off UI thread; stale revision/results rejected.
-- Packaging: standalone folder -> ZIP; pyside6-deploy/Nuitka preferred, PyInstaller onedir fallback.
+Canonical package: `src/ai_ngerti_geopolitik/`.
 
-## Material open item
+Dependency:
+- presentation -> application -> domain
+- infrastructure -> application ports + domain contract types
+- bootstrap -> all for construction only
 
-libopenshot-audio is GPLv3 upstream while ANG needs narration/audio. Actual Windows dependency tree + source/distribution license strategy must be qualified before a distributable engine build. openshot-qt remains REFERENCE_ONLY.
+Rules:
+- ProjectState is truth.
+- All manual/AI mutations through semantic CommandBus.
+- No generic god service/manager.
+- Presentation cannot directly call engine/provider/persistence/credential adapters.
+- Domain cannot import Qt/libopenshot/MLT/FFmpeg/Gemini/keyring/subprocess/filesystem I/O.
+- Long work stays off UI thread.
+- Worker results are revision/task validated.
+- Secrets never enter project/settings/log/repo.
+- UI remains AAVC 1:1 and real widgets.
+- Search -> Understand -> Modify before create.
 
-## Engine qualification contract
+## STEP 08 exact order
 
-STEP 07 repository architecture must preserve an isolated qualification path for:
-ENG-Q1 clean import/native DLL,
-ENG-Q2 300-scene seek/play,
-ENG-Q3 composition golden cases,
-ENG-Q4 21 effects mapping,
-ENG-Q5 audio,
-ENG-Q6 preview lifecycle,
-ENG-Q7 render,
-ENG-Q8 cancel,
-ENG-Q9 portable clean machine,
-ENG-Q10 license manifest.
+### S08-T01 — FIRST / P0
+Source-of-Truth & Exact UI Reference Gate.
 
-Do not execute production engine work in STEP 07.
+Goal:
+- ensure STEP00–07 planning DOCX+TXT are in repo;
+- commit exact full-resolution UI-001..UI-042 raw/reference files;
+- verify 42/42 SHA-256 against manifest;
+- update source-of-truth index/status/handoff;
+- **do not create product source code yet**.
 
-## Pre-coding gate
+PASS evidence:
+- 42/42 hash verification;
+- planning 00–07 present/readable;
+- commit SHA;
+- pre-coding docs/UI gate explicitly PASS.
 
-Before production code:
-- STEP 07 must pass;
-- all required planning/reference DOCX must remain in repo;
-- exact full-resolution UI reference/raw pack must be committed and verified;
-- status must explicitly authorize implementation.
+### S08-T02
+After T01 PASS only: minimal src-layout + Python/toolchain + architecture fitness checks.
 
-## Exact next action
+### S08-T03
+After T02 PASS only: Windows CI + portable packaging scaffold.
 
-On a NEW owner **"lanjutkan"**, execute **SF-STEP 07 — Code Constitution & Repository Architecture only**.
+## Important architecture
 
-STEP 07 should define:
-- final repository tree;
-- module/package ownership;
-- public ports/contracts;
-- dependency rules/enforcement;
-- naming and file responsibility rules;
-- config/path/log/error conventions;
-- tests/fixtures/golden/evidence layout;
-- build/package/third-party manifest layout;
-- docs/ADR/task/state structure;
-- explicit no-duplicate-service / no-god-file / search-before-create rules;
-- AI/SOL handoff rules.
+- UI: PySide6/Qt Widgets.
+- Project: versioned .angproj JSON.
+- Media: MediaEnginePort; libopenshot v1.0.1 qualification candidate; MLT fallback.
+- AI: AIProviderPort + Gemini structured plans -> PlanVerifier -> CommandBatch.
+- Credentials: Windows credential adapter, 1–100 logical slots.
+- Render: snapshot -> isolated child worker.
+- Portable: standalone multi-file folder -> ZIP.
 
-STOP before SF-STEP 08. No production code or engine spike in STEP 07.
+## Do not do in first STEP 08 task
+
+- no UI coding;
+- no engine feature;
+- no Gemini feature;
+- no rendering feature;
+- no upstream source copy;
+- no new design;
+- no use of the VOID 42 ANG prompt ZIP.
+
+## Astra review triggers
+
+Stop/review on: new top-level layer/service, dependency exception, breaking schema/port, engine switch, new native dependency, frozen UI structural delta, new AI destructive permission family, secret backend change, packaging-model change.
+
+## Next exact action
+
+On owner **"lanjutkan"**, execute **S08-T01 only** and report its PASS/FAIL evidence before proceeding to T02.

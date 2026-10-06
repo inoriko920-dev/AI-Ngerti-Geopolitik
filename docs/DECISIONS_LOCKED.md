@@ -181,3 +181,27 @@ SF-STEP 06 menetapkan baseline arsitektur ANG berikut.
 `libopenshot` sendiri LGPL-3.0-or-later, tetapi audio dependency `libopenshot-audio` adalah GPLv3 dan upstream juga menyebut opsi commercial license. Karena ANG membutuhkan narration/audio, actual Windows dependency tree dan source/distribution license strategy **wajib** diselesaikan sebelum engine-dependent distribution. `openshot-qt` tetap REFERENCE_ONLY dan tidak boleh dicopy sebagai shortcut.
 
 D-020 adalah architecture baseline. Exact dependency versions, final packager, exact preview isolation mechanics, dan final libopenshot-vs-MLT production adoption ditetapkan berdasarkan qualification evidence tanpa mengubah ProductState/port/UI freeze contracts.
+
+
+## D-021 — SF-STEP 07 Code Constitution & Repository Architecture
+SF-STEP 07 menetapkan **CC-ANG-v1.0** dan **REPO-ANG-v1.0**.
+
+Locked constitution:
+- canonical Python package: `src/ai_ngerti_geopolitik/`;
+- main boundaries: `domain`, `application`, `presentation`, `infrastructure`, `bootstrap`;
+- dependency direction: presentation -> application -> domain; infrastructure implements application ports; bootstrap construction only;
+- one concern has one canonical owner; generic god managers/services are forbidden;
+- all ProjectState mutation goes through semantic CommandBus/CommandBatch;
+- presentation may not call concrete media/provider/persistence/credential adapters;
+- domain may not depend on Qt, libopenshot/MLT, FFmpeg, Gemini SDK, keyring, subprocess, or filesystem I/O;
+- worker results must revalidate session/project revision before apply;
+- generated/build/cache/user data is not manual source;
+- docs/PROJECT_STATUS.md remains canonical live project-state document; do not create a competing PROJECT_STATE.md;
+- architecture changes, engine switch, breaking ports/schema, frozen UI deltas, secret backend changes, new native dependencies, and packaging-model changes require ASTRA/ADR review.
+
+STEP 08 task order is locked:
+1. `S08-T01` Source-of-Truth & Exact UI Reference Gate;
+2. `S08-T02` Repository Skeleton, Toolchain & Architecture Fitness;
+3. `S08-T03` Windows CI & Portable Packaging Scaffold.
+
+The exact full-resolution UI-001..UI-042 raw/reference set must be committed and hash-verified in S08-T01 **before production source coding**. STEP 07 does not claim source/test/CI/build implementation.
