@@ -1,4 +1,5 @@
 """Semantic CommandBus and reversible STEP 10 edit commands."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
@@ -28,8 +29,7 @@ class Command(Protocol):
 
 def _replace_track(state: ProjectState, new_track: Track) -> ProjectState:
     tracks = tuple(
-        new_track if track.track_id == new_track.track_id else track
-        for track in state.tracks
+        new_track if track.track_id == new_track.track_id else track for track in state.tracks
     )
     if all(track.track_id != new_track.track_id for track in state.tracks):
         tracks = (*state.tracks, new_track)

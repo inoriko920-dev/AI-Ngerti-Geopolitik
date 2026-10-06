@@ -4,6 +4,7 @@ This validates the frozen MediaEnginePort and end-to-end architecture. It is not
 a replacement decision for D-020's libopenshot primary production candidate.
 No FFmpeg binary is bundled by STEP 10.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -93,9 +94,7 @@ class FfmpegProcessRunner:
             time.sleep(0.02)
         stdout, stderr = process.communicate()
         if process.returncode != 0:
-            raise MediaToolError(
-                f"media process failed ({process.returncode}): {stderr[-2000:]}"
-            )
+            raise MediaToolError(f"media process failed ({process.returncode}): {stderr[-2000:]}")
         return ProcessResult(stdout=stdout, stderr=stderr)
 
 
@@ -233,9 +232,7 @@ class FfmpegSliceMediaEngine:
                 break
         if selected is None:
             raise MediaToolError(f"timeline frame outside clips: {timeline_frame}")
-        source_frame = selected.source_in.frames + (
-            timeline_frame - selected.timeline_start.frames
-        )
+        source_frame = selected.source_in.frames + (timeline_frame - selected.timeline_start.frames)
         asset = state.asset(selected.asset_id)
         output_path = output_path.resolve()
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -295,10 +292,7 @@ class FfmpegSliceMediaEngine:
                 f"[{index}:a]atrim=start={start}:end={end},asetpts=PTS-STARTPTS[a{index}]"
             )
             concat_inputs.append(f"[v{index}][a{index}]")
-        filter_parts.append(
-            "".join(concat_inputs)
-            + f"concat=n={len(clips)}:v=1:a=1[outv][outa]"
-        )
+        filter_parts.append("".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]")
         command.extend(
             [
                 "-filter_complex",

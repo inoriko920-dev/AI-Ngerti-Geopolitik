@@ -2,6 +2,7 @@
 
 All canonical edit time is stored as integer frames tied to an explicit FPS.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -102,7 +103,7 @@ class ProjectState:
     tracks: tuple[Track, ...] = ()
 
     @classmethod
-    def create(cls, project_id: str, name: str, fps: int = 30) -> "ProjectState":
+    def create(cls, project_id: str, name: str, fps: int = 30) -> ProjectState:
         if not project_id or not name:
             raise DomainValidationError("project identity is required")
         if fps <= 0:
@@ -178,5 +179,5 @@ class ProjectState:
     def semantic_hash(self) -> str:
         return hashlib.sha256(self.semantic_json().encode("utf-8")).hexdigest()
 
-    def with_revision(self, revision: int) -> "ProjectState":
+    def with_revision(self, revision: int) -> ProjectState:
         return replace(self, revision=revision)

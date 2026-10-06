@@ -1,4 +1,5 @@
 """Ports used by the STEP 10 vertical slice."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

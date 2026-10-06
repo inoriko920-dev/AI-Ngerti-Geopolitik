@@ -1,4 +1,5 @@
 """STEP 10 application use-cases and UI-intent routing."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -49,7 +50,7 @@ class VerticalSliceSession:
         project_id: str = "ANG-E2E-001",
         name: str = "ANG STEP10 E2E",
         fps: int = 30,
-    ) -> "VerticalSliceSession":
+    ) -> VerticalSliceSession:
         return cls(
             probe=probe,
             repository=repository,
