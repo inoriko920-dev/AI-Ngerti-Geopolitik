@@ -121,6 +121,10 @@ class Track:
     kind: str
     order: int
     clips: tuple[Clip, ...] = ()
+    name: str = ""
+    locked: bool = False
+    muted: bool = False
+    visible: bool = True
 
     def __post_init__(self) -> None:
         if not self.track_id:
@@ -129,6 +133,8 @@ class Track:
             raise DomainValidationError("current canonical timeline supports video tracks")
         if self.order < 0:
             raise DomainValidationError("track order must be non-negative")
+        if self.name and not self.name.strip():
+            raise DomainValidationError("track name cannot be whitespace")
 
 
 @dataclass(frozen=True, slots=True)
@@ -231,6 +237,12 @@ class ProjectState:
         asset_ids = [asset.asset_id for asset in self.assets]
         if len(asset_ids) != len(set(asset_ids)):
             raise DomainValidationError("duplicate asset id")
+        track_ids = [track.track_id for track in self.tracks]
+        if len(track_ids) != len(set(track_ids)):
+            raise DomainValidationError("duplicate track id")
+        track_orders = [track.order for track in self.tracks]
+        if len(track_orders) != len(set(track_orders)):
+            raise DomainValidationError("duplicate track order")
         clip_ids: list[str] = []
         for asset in self.assets:
             if asset.duration.fps != self.fps:

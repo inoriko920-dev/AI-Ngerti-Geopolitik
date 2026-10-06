@@ -127,6 +127,10 @@ class JsonProjectRepository:
                     kind=str(item["kind"]),
                     order=int(item["order"]),
                     clips=clips,
+                    name=str(item.get("name", "")),
+                    locked=bool(item.get("locked", False)),
+                    muted=bool(item.get("muted", False)),
+                    visible=bool(item.get("visible", True)),
                 )
             )
         markers = tuple(
