@@ -45,3 +45,8 @@ SF-STEP 02 selesai dengan `BUILD_FROM_SCRATCH_WITH_COMPONENTS`: libopenshot v1.0
 ## SF-STEP 03 UI inventory
 
 UI/UX inventory selesai. AAVC tetap **VISUAL_CONTRACT 1:1**, dengan coverage `UI-001..UI-042`. Exact legacy mapping UI-038..042 masih provisional/recovery target; missing reference tidak boleh menjadi alasan redesign.
+
+
+## UI inventory baseline
+
+SF-STEP 03 registers 17 major surfaces, 15 states, 16 core flows, and **42/42 AAVC canonical UI references**. The 42 existing AAVC references are reused 1:1; no new baseline visual design is requested.

@@ -3,102 +3,48 @@
 **Fase:** PRE-IMPLEMENTATION  
 **SF-STEP terakhir:** 03 — UI/UX Inventory & User Flow  
 **Gate:** PASS_WITH_PROVISIONAL  
-**Coding:** BELUM DIIZINKAN  
-**Next exact action:** SF-STEP 04 — UI Design System & All UI Prompts
+**Coding:** BELUM DIIZINKAN
 
-## STEP 03 selesai
+## UI contract
 
-Canonical outputs:
-- `docs/planning/04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.docx`
-- `docs/planning/04_STEP_03_UI_UX_INVENTORY_AI_NGERTI_GEOPOLITIK.txt`
-
-Inventory mencakup:
-- SCR-001 Home
-- SCR-002 New Project Wizard
-- SCR-003 Main Editor / Overview
-- SCR-004 Subtitle Workspace
-- SCR-005 Animation Workspace / Inspector
-- SCR-006 Narration / Audio Workspace
-- SCR-007 Preview Focus / Playback
-- SCR-008 Legacy Compatibility Report (SHOULD / provisional)
-
-Global surfaces mencakup Scene/Aset/Inspector/Preview/Timeline/Layout/Animation/AI Agent/Subtitle/History/Audio/Background, Validation Center, Export, render jobs, recovery, relink, credential manager, narration recording, unsaved guard, and help.
-
-## UI authority
-
-**AAVC UI = VISUAL_CONTRACT 1:1. No redesign.**
-
-Authority order untuk STEP 04:
-1. owner decision terbaru / D-015;
-2. AAVC `docs/UI_FREEZE.md`;
-3. exact frozen image/prompt asset jika berhasil direcover;
-4. current AAVC PySide6 presentation source + USER_GUIDE;
-5. STEP 03 registry/coverage;
-6. generated collage lama hanya secondary evidence dan tidak boleh mengalahkan frozen/source contract.
-
-Known frozen contract:
-- 42 IDs UI-001..UI-042;
+AAVC UI is the authoritative **VISUAL_CONTRACT 1:1**:
+- UIF-AAVC-v1.0;
+- UI-001..UI-042;
 - reference viewport 1920x1080;
-- Indonesian;
-- light professional editor;
-- white surfaces + restrained blue;
-- existing AAVC design tokens preserved.
+- Bahasa Indonesia;
+- professional light editor / white + restrained blue;
+- real interactive widgets required.
 
-## Reference gap
+## STEP 03 inventory
 
-Exact old frozen mapping/assets UI-038..UI-042 belum sepenuhnya berhasil direcover.
+- SCR-001..017: 17 major screens/surfaces.
+- ST-001..015: 15 global states.
+- FLOW-001..016: 16 core user flows.
+- Timeline interaction contract includes select, move/reorder, trim/resize, split, In/Out, marker, magnetic snap, zoom, follow, navigator, context menu, play-selection, Undo/Redo, lock.
+- AI UX contract includes visible scope, plan validation, transaction/Undo, provider-state distinction, credential redaction, manual fallback.
+- Validation/recovery/file UX has explicit blocker/relink/recovery/no-silent-overwrite rules.
 
-Ini **tidak memberi izin untuk berkreasi**.
-STEP 04 harus:
-- search/recover exact prompt/reference first;
-- bila masih unavailable, derive only from current AAVC source/product flow;
-- label substitute `PROVISIONAL_REFERENCE`;
-- owner review required before it can be final UI reference.
+## Image/reference coverage
 
-## Flows yang wajib tercakup
+42/42 AAVC canonical UI IDs are registered.
 
-- FLOW-001 create project
-- FLOW-002 open existing project
-- FLOW-003 manual edit/timeline
-- FLOW-004 random animation
-- FLOW-005 AI edit/plan/apply/undo
-- FLOW-006 subtitle edit
-- FLOW-007 narration
-- FLOW-008 validation/relink
-- FLOW-009 export
-- FLOW-010 recovery
+For baseline UI-001..UI-042:
+- AUTHORITY = EXISTING_CANONICAL
+- STEP_04_ACTION = REUSE_1_TO_1
+- NEW_PROMPT = NO
+- IMAGE_GENERATION = NO
+- DELTA_FROM_AAVC = NONE
 
-## Do not invent
-
-- No new visual style.
-- No OpenShot/Shotcut/Kdenlive UI.
-- No new product scope.
-- No fake/unsupported controls.
-- No coding.
-- No source copy/fork.
+If a true visible ANG-specific difference is unavoidable, it must receive stable `UI-ANG-Dxx`, prompt, owner review, and a change record. Do not change unrelated AAVC composition.
 
 ## Exact next action
 
-Jika owner berkata **"lanjutkan"**, jalankan **SF-STEP 04 — UI Design System & All UI Prompts**.
+When owner says **"lanjutkan"**, run **SF-STEP 04 — UI Design System & All UI Prompts / Reference Adoption** only.
 
-STEP 04 output must include:
-- AAVC-preserved design system;
-- exact per-ID reference recovery register;
-- stable image/prompt list;
-- prompt batches;
-- prompt text for every image that actually requires generation/reconstruction;
-- review criteria.
-
-## NON-NEGOTIABLE HARD STOP
-
-Setelah **semua prompt gambar UI selesai dibuat**, STOP.
-
-Jangan menjalankan SF-STEP 05 hanya karena owner berkata “lanjutkan”.
-
-Proses baru boleh diteruskan setelah:
-1. semua gambar yang dibutuhkan sudah dibuat/recovered;
-2. semuanya diperiksa;
-3. yang salah direvisi/regenerate;
-4. seluruh gambar final dimasukkan ke satu **DOCX UI Reference final**.
-
-Sampai empat kondisi itu selesai, state proyek tetap berada pada SF-STEP 04 / UI IMAGE REVIEW.
+Important:
+- Do not invent a new style.
+- Do not regenerate AAVC merely for aesthetics.
+- Read actual AAVC references/source first.
+- If STEP 04 creates any UI prompt or determines any image/reference is still required, enforce the owner's hard stop: do not continue until all required UI images are finished, inspected/revised, and consolidated into one final UI Reference DOCX.
+- No coding.
+- Do not enter SF-STEP 05 automatically.
