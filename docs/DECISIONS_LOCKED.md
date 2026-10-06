@@ -127,3 +127,17 @@ Keputusan:
 - Generated collage lama yang bertentangan dengan `UI_FREEZE.md` atau current AAVC source adalah secondary evidence, bukan authority.
 - Requirement “1:1” tidak mengizinkan fake capability: kontrol yang benar-benar tidak supported harus dihilangkan/disabled secara transparan dan dicatat sebagai `DELTA_FROM_AAVC`, bukan dibuat seolah berfungsi.
 - SF-STEP 04 adalah titik prompt/image work; setelah seluruh prompt dibuat berlaku hard stop owner sampai image review + final UI Reference DOCX selesai.
+
+
+## D-018 — STEP 04 UI Bible dan reference adoption
+SF-STEP 04 menetapkan **UIB-ANG-v1.0** dan mengadopsi seluruh AAVC frozen visual set `UI-001..UI-042` sebagai target ANG.
+
+Keputusan:
+- 42/42 reference AAVC berhasil direcover dan direview;
+- seluruh baseline reference berstatus `REUSE_1_TO_1` dan `APPROVED_FOR_FREEZE`;
+- tidak ada campaign generate ulang untuk baseline karena owner meminta UI AAVC sama persis sedekat mungkin;
+- visible ANG-only delta wajib memiliki `UI-ANG-Dxx`, prompt/revision, review, dan change record;
+- D-017 open item recovery UI-038..UI-042 dinyatakan RESOLVED;
+- full-resolution Final UI Reference DOCX telah dibuat dan QA 43 halaman;
+- repository menyimpan connector-safe reference index + SHA manifest;
+- **exact full-resolution visual binary/raw pack tetap mandatory pre-coding gate** sampai benar-benar berada di repo dan diverifikasi.
