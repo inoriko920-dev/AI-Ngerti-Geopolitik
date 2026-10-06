@@ -1,0 +1,43 @@
+AI NGERTI GEOPOLITIK — SF-STEP 04 UI DESIGN SYSTEM & REFERENCE ADOPTION
+Document ID: ANG-SF-STEP04-UI-DESIGN-REFERENCE-v1.0
+Date: 06 Oktober 2026
+Role: ASTRA
+UI Bible: UIB-ANG-v1.0
+Baseline: main @ 6f9c1070220c88d95306826e298c55c28cd4bb00
+Gate: PASS_WITH_PROVISIONAL
+Hard stop: ACTIVE — STOP after STEP 04. Do not enter STEP 05 in this turn.
+
+EXECUTIVE DECISION
+Owner requires ANG UI to copy AAVC visually/workflow 1:1. Therefore STEP 04 does not run a new creative image-generation campaign. The already-generated and frozen AAVC canonical reference pack UI-001..UI-042 is adopted as the generated final reference set. The source package is PROMPT_GAMBAR_UI_STEP_04_PER_10.zip with five batches: UI-001–010, UI-011–020, UI-021–030, UI-031–040, UI-041–042. A stale prior UI-001..047 count is rejected by AAVC UI_FREEZE.md.
+
+REFERENCE AUTHORITY
+REF-UI-001 owner decision — AUTHORITATIVE product intent, HARD MATCH 1:1.
+REF-UI-002 AAVC docs/UI_FREEZE.md UIF-AAVC-v1.0 — AUTHORITATIVE freeze index.
+REF-UI-003 AAVC canonical UI-001..UI-042 PNG pack — TARGET/AUTHORITATIVE visual evidence.
+REF-UI-004 AAVC src/aavc/presentation/design_tokens.py — AUTHORITATIVE token/geometry resolver.
+REF-UI-005 AAVC current presentation source + user guide — VERIFIED_EXISTING_BEHAVIOR.
+REF-UI-006 generated one-off text/icon/sample content — FLEXIBLE.
+
+VISUAL DIRECTION
+Professional desktop editing tool; high information density with stable hierarchy; white/light surfaces; restrained blue action/selection; direct manipulation; visible state/recovery; manual workflow remains usable without Gemini; no redesign; engine internals must not alter hierarchy; no color-only status; real controls only.
+
+TOKENS
+CLR-APP-BG #F4F7FB; CLR-SURFACE #FFFFFF; CLR-PANEL #F8FAFD; CLR-BORDER #D8E2EE; CLR-PRIMARY #2563EB; CLR-PRIMARY-HOVER #1D4ED8; CLR-SELECTION #DBEAFE; CLR-TEXT #172033; CLR-MUTED #64748B; CLR-SUCCESS #16A34A; CLR-WARNING #F59E0B; CLR-ERROR #DC2626; CLR-MONITOR #171C24.
+TYPE-BASE Segoe UI 12px.
+LAY-TITLE 32; LAY-MENU 34; LAY-TOOLBAR 48; LAY-LEFT 300 ref / 240 min; LAY-RIGHT 360 ref / 480 max; LAY-TIMELINE 300 ref / 180 min; LAY-STATUS 26; RAD-BASE 8; BRD-BASE 1; SP-BASE 8.
+
+SHARED COMPONENTS
+CMP-001 main window shell; CMP-002 menu/toolbar; CMP-003 buttons; CMP-004 tabs/segmented controls; CMP-005 fields; CMP-006 media/asset card; CMP-007 scene/list/table row; CMP-008 preview/transport; CMP-009 inspector; CMP-010 timeline; CMP-011 status; CMP-012 validation banner; CMP-013 dialog; CMP-014 progress/job; CMP-015 AI Agent; CMP-016 subtitle; CMP-017 key manager; CMP-018 render result.
+
+PROMPT CONTRACT
+PROMPT-UI-MASTER is a parity/no-redesign contract. UI-001..UI-042 = SPEC_ONLY_REFERENCE / NOT_NEEDED_REUSE_EXISTING / EXISTING_GENERATED_FINAL / APPROVED_FOR_FREEZE. Future visible ANG-only delta requires UI-ANG-Dxx + prompt/revision/review.
+
+IMAGE REVIEW RESULT
+42/42 canonical generated AAVC images recovered, hashed, reviewed batch-by-batch and APPROVED_FOR_FREEZE. No new ANG baseline image was generated because this would violate the owner’s 1:1 reuse instruction.
+
+GATE
+Reference authority PASS; UI Bible/tokens/components/shell/state/copy PASS; P0/P1 coverage PASS; prompt master PASS; generated final images PASS 42/42; candidate review PASS; final UI Reference DOCX created and render-QA passed 43 pages; production UI coding NOT DONE/FORBIDDEN.
+FINAL SF-STEP 04 GATE: PASS_WITH_PROVISIONAL.
+
+HARD STOP
+SF-STEP 04 ends here. Do not start SF-STEP 05 in this turn.
