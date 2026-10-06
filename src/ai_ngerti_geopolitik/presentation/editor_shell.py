@@ -6,8 +6,8 @@ from typing import Any
 
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentSink, UiIntentType
 from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label, section_title
-from ai_ngerti_geopolitik.presentation.property_inspector import create_property_inspector
 from ai_ngerti_geopolitik.presentation.design_tokens import COLORS, METRICS
+from ai_ngerti_geopolitik.presentation.property_inspector import create_property_inspector
 from ai_ngerti_geopolitik.presentation.visual_mock import asset_pixmap, scene_pixmap
 
 

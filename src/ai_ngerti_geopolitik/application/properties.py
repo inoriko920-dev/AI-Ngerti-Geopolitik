@@ -184,7 +184,6 @@ class PropertyIntentRouter:
         data = self._payload(intent)
         if intent.kind is UiIntentType.INSPECTOR_BIND:
             target_type = InspectorTargetType(self._required(data, "target_type"))
-            target_id = data.get("target_id")
             if target_type is InspectorTargetType.CLIP:
                 self.last_result = self.controller.bind_clip(self._required(data, "target_id"))
             elif target_type is InspectorTargetType.TRACK:

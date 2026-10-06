@@ -372,17 +372,13 @@ class FfmpegSliceMediaEngine:
                 f"{','.join(plan.video_filters)}[vsrc{index}]"
             )
             filter_parts.append(
-                (
-                    f"color=c=black:s={state.settings.width}x{state.settings.height}:"
-                    f"r={state.fps}:d={_number_seconds(plan.duration_seconds)}[bg{index}]"
-                )
+                f"color=c=black:s={state.settings.width}x{state.settings.height}:"
+                f"r={state.fps}:d={_number_seconds(plan.duration_seconds)}[bg{index}]"
             )
             filter_parts.append(
-                (
-                    f"[bg{index}][vsrc{index}]overlay="
-                    f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
-                    f"format=yuv420p[v{index}]"
-                )
+                f"[bg{index}][vsrc{index}]overlay="
+                f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
+                f"format=yuv420p[v{index}]"
             )
             audio_chain = [
                 f"atrim=start={start}:end={end}",
