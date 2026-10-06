@@ -52,6 +52,12 @@ class UiIntentType(StrEnum):
     TIMELINE_SET_SNAP = "timeline_set_snap"
     TIMELINE_SET_ZOOM = "timeline_set_zoom"
     TIMELINE_SET_FOLLOW = "timeline_set_follow"
+    INSPECTOR_BIND = "inspector_bind"
+    PROPERTY_SET_VIDEO = "property_set_video"
+    PROPERTY_SET_AUDIO = "property_set_audio"
+    PROPERTY_SET_COLOR = "property_set_color"
+    PROPERTY_SET_SPEED = "property_set_speed"
+    PROPERTY_SET_REVERSE = "property_set_reverse"
 
 
 @dataclass(frozen=True, slots=True)
