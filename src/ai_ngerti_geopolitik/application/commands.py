@@ -454,9 +454,7 @@ class SplitClipCommand:
                     source_out=FrameTime(split_source_frame, state.fps),
                 )
                 if left.duration_frames != offset:
-                    raise CommandError(
-                        "split point is not exactly representable at current speed"
-                    )
+                    raise CommandError("split point is not exactly representable at current speed")
                 right = Clip(
                     clip_id=self.right_clip_id,
                     asset_id=clip.asset_id,

@@ -202,9 +202,7 @@ def create_property_inspector(
     reverse = QCheckBox("Reverse")
     reverse.setObjectName("check_reverse_disabled")
     reverse.setEnabled(False)
-    reverse.setToolTip(
-        "Belum didukung: Reverse menunggu qualification backend W3 yang aman."
-    )
+    reverse.setToolTip("Belum didukung: Reverse menunggu qualification backend W3 yang aman.")
     speed_layout.addWidget(reverse)
     warning = QLabel("Reverse: dinonaktifkan sampai backend lolos qualification.")
     warning.setWordWrap(True)

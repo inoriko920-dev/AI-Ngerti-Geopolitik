@@ -392,9 +392,7 @@ class FfmpegSliceMediaEngine:
             filter_parts.append(f"[{index}:a]{','.join(audio_chain)}[a{index}]")
             concat_inputs.append(f"[v{index}][a{index}]")
 
-        filter_parts.append(
-            "".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]"
-        )
+        filter_parts.append("".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]")
         command.extend(
             [
                 "-filter_complex",

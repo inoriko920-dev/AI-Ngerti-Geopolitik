@@ -75,19 +75,11 @@ def build_w3_filter_plan(clip: Clip, fps: int) -> W3FilterPlan:
             f"trunc(ih*{_number(crop_height)}/2)*2:"
             f"iw*{_number(crop_x)}:ih*{_number(crop_y)}"
         ),
-        (
-            "scale="
-            f"max(2,trunc(iw*{_number(scale_x)}/2)*2):"
-            f"max(2,trunc(ih*{_number(scale_y)}/2)*2)"
-        ),
+        (f"scale=max(2,trunc(iw*{_number(scale_x)}/2)*2):max(2,trunc(ih*{_number(scale_y)}/2)*2)"),
     ]
     if abs(rotation) > 1e-9:
         radians = rotation * 3.141592653589793 / 180.0
-        video_filters.append(
-            "rotate="
-            f"{_number(radians)}:"
-            "ow=rotw(iw):oh=roth(ih):c=black@0"
-        )
+        video_filters.append(f"rotate={_number(radians)}:ow=rotw(iw):oh=roth(ih):c=black@0")
         video_filters.append("scale=trunc(iw/2)*2:trunc(ih/2)*2")
     video_filters.extend(
         [
@@ -117,9 +109,7 @@ def build_w3_filter_plan(clip: Clip, fps: int) -> W3FilterPlan:
     pan = audio.pan_percent
     left = 1.0 if pan <= 0 else 1.0 - pan / 100.0
     right = 1.0 if pan >= 0 else 1.0 + pan / 100.0
-    audio_filters.append(
-        f"pan=stereo|c0=c0*{_number(left)}|c1=c1*{_number(right)}"
-    )
+    audio_filters.append(f"pan=stereo|c0=c0*{_number(left)}|c1=c1*{_number(right)}")
 
     duration_seconds = clip.duration_frames / fps
     fade_in = min(audio.fade_in_frames, clip.duration_frames)
@@ -128,9 +118,7 @@ def build_w3_filter_plan(clip: Clip, fps: int) -> W3FilterPlan:
         audio_filters.append(f"afade=t=in:st=0:d={_number(fade_in / fps)}")
     if fade_out:
         start = max(0.0, (clip.duration_frames - fade_out) / fps)
-        audio_filters.append(
-            f"afade=t=out:st={_number(start)}:d={_number(fade_out / fps)}"
-        )
+        audio_filters.append(f"afade=t=out:st={_number(start)}:d={_number(fade_out / fps)}")
 
     return W3FilterPlan(
         video_filters=tuple(video_filters),

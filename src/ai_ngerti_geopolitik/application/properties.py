@@ -48,9 +48,7 @@ class InspectorBinding:
 @dataclass(frozen=True, slots=True)
 class PropertyCapabilities:
     reverse_supported: bool = False
-    reverse_reason: str = (
-        "Reverse belum lolos qualification backend W3 dan sengaja dinonaktifkan."
-    )
+    reverse_reason: str = "Reverse belum lolos qualification backend W3 dan sengaja dinonaktifkan."
 
 
 class PropertyController:

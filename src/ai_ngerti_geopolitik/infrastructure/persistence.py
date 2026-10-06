@@ -175,10 +175,7 @@ class JsonProjectRepository:
         audio_raw = raw.get("audio", {})
         color_raw = raw.get("color", {})
         speed_raw = raw.get("speed", {})
-        if not all(
-            isinstance(item, dict)
-            for item in (video_raw, audio_raw, color_raw, speed_raw)
-        ):
+        if not all(isinstance(item, dict) for item in (video_raw, audio_raw, color_raw, speed_raw)):
             raise TypeError("clip property groups must be objects")
         return ClipProperties(
             video=VideoProperties(
