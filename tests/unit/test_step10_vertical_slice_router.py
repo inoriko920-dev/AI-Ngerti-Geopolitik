@@ -45,3 +45,21 @@ def test_import_ui_intent_crosses_application_command_boundary(tmp_path: Path) -
     assert router.last_result == "A001"
     assert session.state.revision == 1
     assert session.state.asset("A001").width == 1920
+
+
+def test_timeline_projection_uses_stable_ids_and_current_revision(tmp_path: Path) -> None:
+    session = VerticalSliceSession.create(Probe(), JsonProjectRepository(), Engine())
+    asset_id = session.import_media(tmp_path / "fixture.mp4")
+    clip_id = session.add_to_timeline(asset_id)
+    right_id = session.split_clip(clip_id, 150)
+    session.trim_right(right_id, 30)
+
+    projection = session.timeline_projection()
+
+    assert projection.project_revision == 4
+    assert projection.track_id == "V1"
+    assert [clip.clip_id for clip in projection.clips] == ["C001", "C002"]
+    assert [
+        (clip.timeline_start_frame, clip.timeline_end_frame)
+        for clip in projection.clips
+    ] == [(0, 150), (150, 210)]

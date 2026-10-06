@@ -143,7 +143,6 @@ def main() -> int:
     start = time.perf_counter()
     router(ui_intent)
     timings["import_probe_seconds"] = time.perf_counter() - start
-    window.close()
 
     asset_id = router.last_result
     assert asset_id == "A001"
@@ -212,6 +211,40 @@ def main() -> int:
         "STEP 10 proves engine-derived seek/output against the edited revision.\n",
         encoding="utf-8",
     )
+
+    projection = session.timeline_projection()
+    window.apply_step10_timeline_projection(projection)
+    window.apply_step10_preview(preview_after)
+    app.processEvents()
+
+    from PySide6.QtWidgets import QLabel
+
+    current = window.stack.currentWidget()
+    block_1 = current.findChild(QLabel, "timeline_video_block_1")
+    block_2 = current.findChild(QLabel, "timeline_video_block_2")
+    preview_canvas = current.findChild(QLabel, "preview_canvas")
+    if block_1 is None or block_2 is None or preview_canvas is None:
+        raise AssertionError("STEP 10 live UI projection widgets not found")
+    assert block_1.text() == "C001  0-150f"
+    assert block_2.text() == "C002  150-210f"
+    assert window.window.property("step10_project_revision") == projection.project_revision
+    assert preview_canvas.property("step10_project_revision") == session.state.revision
+    assert preview_canvas.property("step10_timeline_frame") == 151
+
+    live_ui_path = screenshots / "live_ui_projectstate_preview_151.png"
+    live_ui = window.render_evidence(1920, 1080)
+    if not live_ui.save(str(live_ui_path), "PNG"):
+        raise AssertionError(f"failed to save live UI evidence: {live_ui_path}")
+    (evidence / "07_live_ui_projection.txt").write_text(
+        "PASS ProjectState -> TimelineProjection -> real Qt timeline widgets\n"
+        "PASS real backend PreviewResult -> real Qt preview canvas\n"
+        f"project_revision={projection.project_revision}\n"
+        f"timeline_block_1={block_1.text()}\n"
+        f"timeline_block_2={block_2.text()}\n"
+        "preview_frame=151\n",
+        encoding="utf-8",
+    )
+    window.close()
 
     project_path = evidence / "08_saved_project.angproj"
     start = time.perf_counter()
@@ -311,6 +344,8 @@ def main() -> int:
         "asset_id": asset_id,
         "clips": ["C001", "C002"],
         "preview_boundary_frames": [149, 151],
+        "live_ui_projection": True,
+        "timeline_projection_revision": projection.project_revision,
         "project_file": str(project_path),
         "export_file": str(output),
         "export_sha256": export_hash,

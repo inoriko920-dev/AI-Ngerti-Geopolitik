@@ -30,6 +30,22 @@ class VerticalSliceError(RuntimeError):
     pass
 
 
+@dataclass(frozen=True, slots=True)
+class TimelineClipView:
+    clip_id: str
+    asset_id: str
+    timeline_start_frame: int
+    timeline_end_frame: int
+    duration_frames: int
+
+
+@dataclass(frozen=True, slots=True)
+class TimelineProjection:
+    project_revision: int
+    track_id: str
+    clips: tuple[TimelineClipView, ...]
+
+
 def _payload(intent: UiIntent) -> dict[str, str]:
     return dict(intent.payload)
 
@@ -143,6 +159,24 @@ class VerticalSliceSession:
 
     def preview_frame(self, timeline_frame: int, output_path: Path) -> PreviewResult:
         return self.media_engine.preview_frame(self.state, timeline_frame, output_path)
+
+    def timeline_projection(self) -> TimelineProjection:
+        track = self.state.track("V1")
+        clips = tuple(
+            TimelineClipView(
+                clip_id=clip.clip_id,
+                asset_id=clip.asset_id,
+                timeline_start_frame=clip.timeline_start.frames,
+                timeline_end_frame=clip.timeline_end_frame,
+                duration_frames=clip.duration_frames,
+            )
+            for clip in sorted(track.clips, key=lambda item: item.timeline_start.frames)
+        )
+        return TimelineProjection(
+            project_revision=self.state.revision,
+            track_id=track.track_id,
+            clips=clips,
+        )
 
     def export(
         self,

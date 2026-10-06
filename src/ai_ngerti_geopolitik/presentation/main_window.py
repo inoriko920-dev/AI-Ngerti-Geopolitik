@@ -250,6 +250,43 @@ class MainWindow:
             dialog.show()
             self._active_dialog = dialog
 
+    def apply_step10_timeline_projection(self, projection: Any) -> None:
+        from PySide6.QtWidgets import QLabel
+
+        current = self.stack.currentWidget()
+        blocks = [
+            current.findChild(QLabel, f"timeline_video_block_{index}")
+            for index in range(1, 5)
+        ]
+        for block in blocks:
+            if block is not None:
+                block.setVisible(False)
+        for index, clip in enumerate(projection.clips[:4]):
+            block = blocks[index]
+            if block is None:
+                raise RuntimeError(f"STEP 10 timeline block {index + 1} not found")
+            block.setText(
+                f"{clip.clip_id}  {clip.timeline_start_frame}-{clip.timeline_end_frame}f"
+            )
+            block.setMinimumWidth(max(90, clip.duration_frames * 2))
+            block.setVisible(True)
+        self.window.setProperty("step10_project_revision", projection.project_revision)
+
+    def apply_step10_preview(self, result: Any) -> None:
+        from PySide6.QtGui import QPixmap
+        from PySide6.QtWidgets import QLabel
+
+        current = self.stack.currentWidget()
+        canvas = current.findChild(QLabel, "preview_canvas")
+        if canvas is None:
+            raise RuntimeError("STEP 10 preview canvas not found")
+        pixmap = QPixmap(str(result.output_path))
+        if pixmap.isNull():
+            raise RuntimeError(f"STEP 10 preview image invalid: {result.output_path}")
+        canvas.setPixmap(pixmap)
+        canvas.setProperty("step10_project_revision", result.project_revision)
+        canvas.setProperty("step10_timeline_frame", result.timeline_frame)
+
     def show(self) -> None:
         self.window.show()
 

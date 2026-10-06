@@ -14,6 +14,7 @@ REQUIRED = (
     "05_post_trim_snapshot.json",
     "06_undo_redo_hashes.txt",
     "07_preview_boundary.txt",
+    "07_live_ui_projection.txt",
     "08_saved_project.angproj",
     "09_roundtrip_diff.txt",
     "10_export_settings.json",
@@ -25,6 +26,7 @@ REQUIRED = (
     "15_test_report.json",
     "screenshots/preview_frame_149.png",
     "screenshots/preview_frame_151.png",
+    "screenshots/live_ui_projectstate_preview_151.png",
 )
 
 
@@ -67,6 +69,10 @@ def main() -> int:
         errors.append("export duration frame count is not canonical 210")
     if int(report.get("negative_paths", 0)) < 5:
         errors.append("negative path coverage is incomplete")
+    if report.get("live_ui_projection") is not True:
+        errors.append("live UI projection proof is missing")
+    if int(report.get("timeline_projection_revision", -1)) != 8:
+        errors.append("live UI projection revision is not canonical revision 8")
 
     streams = output_probe.get("streams")
     if not isinstance(streams, list):
@@ -119,6 +125,28 @@ def main() -> int:
         errors.append("cancelled export left a false final artifact")
     if (root / "cancelled_output.partial.mp4").exists():
         errors.append("cancelled export left a partial artifact")
+
+    live_ui = (root / "07_live_ui_projection.txt").read_text(encoding="utf-8")
+    for marker in (
+        "PASS ProjectState -> TimelineProjection -> real Qt timeline widgets",
+        "PASS real backend PreviewResult -> real Qt preview canvas",
+        "project_revision=8",
+        "timeline_block_1=C001  0-150f",
+        "timeline_block_2=C002  150-210f",
+        "preview_frame=151",
+    ):
+        if marker not in live_ui:
+            errors.append(f"live UI marker missing: {marker}")
+
+    from PySide6.QtGui import QImage
+
+    screenshot = QImage(str(root / "screenshots/live_ui_projectstate_preview_151.png"))
+    if screenshot.isNull():
+        errors.append("live UI screenshot is invalid")
+    elif (screenshot.width(), screenshot.height()) != (1920, 1080):
+        errors.append(
+            f"live UI screenshot is {screenshot.width()}x{screenshot.height()}, expected 1920x1080"
+        )
 
     if errors:
         for error in errors:

@@ -136,6 +136,7 @@ def _preview_widget(mode: str) -> tuple[Any, Any, Any]:
     frame_layout = QVBoxLayout(frame)
     frame_layout.setContentsMargins(42, 24, 42, 24)
     canvas = QLabel()
+    canvas.setObjectName("preview_canvas")
     canvas.setAlignment(Qt.AlignmentFlag.AlignCenter)
     canvas.setMinimumSize(640, 360)
     canvas.setPixmap(scene_pixmap(mode, 1280, 720))
@@ -366,6 +367,8 @@ def _timeline_widget() -> Any:
         grid.addWidget(name_label, row_index, 0)
         for column_index, block in enumerate(blocks, start=1):
             label = QLabel(block)
+            if row_index == 1:
+                label.setObjectName(f"timeline_video_block_{column_index}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             if row_index in {0, 1, 4}:
                 color = "#DBEAFE"
