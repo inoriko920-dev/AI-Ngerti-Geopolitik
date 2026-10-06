@@ -37,7 +37,6 @@ def main() -> int:
         frames.append(
             {
                 "requested_position": position,
-                "producer_position": int(producer.get_position()),
                 "frame_position": int(frame.get_position()),
             }
         )
