@@ -1,0 +1,153 @@
+name: S11 Wave0 Engine Qualification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/qualification/**"
+      - "scripts/generate_step10_fixture.py"
+      - "scripts/run_step10_e2e.py"
+      - "scripts/verify/verify_step10_evidence.py"
+      - ".github/workflows/s11-wave0-engine.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  regression-lock:
+    name: W0 regression lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install STEP 10 FFmpeg qualification toolchain
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run pytest -q
+      - name: Generate canonical regression fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w0/input_fixture.mp4
+      - name: Re-run canonical vertical slice
+        run: >
+          uv run python scripts/run_step10_e2e.py
+          --fixture artifacts/step11/w0/input_fixture.mp4
+          --evidence artifacts/step11/w0/e2e
+      - name: Verify vertical-slice evidence
+        run: >
+          uv run python scripts/verify/verify_step10_evidence.py
+          --evidence artifacts/step11/w0/e2e
+          --expected-sha ${{ github.sha }}
+      - name: Record baseline identity
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/step11/w0 | Out-Null
+          @{
+            head_sha = "${{ github.sha }}"
+            branch = "${{ github.ref_name }}"
+            python = (python --version | Out-String).Trim()
+            uv = (uv --version | Out-String).Trim()
+          } | ConvertTo-Json | Set-Content artifacts/step11/w0/baseline.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W0-Regression
+          path: artifacts/step11/w0/**
+          if-no-files-found: error
+          retention-days: 14
+
+  mlt-windows-qualification:
+    name: MLT 7.42 Windows playback qualification
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup MSYS2 MINGW64 + MLT
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-mlt
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-python
+            coreutils
+      - name: Record MLT runtime and package metadata
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/step11/w0/mlt
+          melt -version | tee artifacts/step11/w0/mlt/melt-version.txt
+          pacman -Q mingw-w64-x86_64-mlt | tee artifacts/step11/w0/mlt/package-version.txt
+          melt -query consumers > artifacts/step11/w0/mlt/consumers.txt
+          grep -E "sdl2|avformat|null" artifacts/step11/w0/mlt/consumers.txt
+          pacman -Ql mingw-w64-x86_64-mlt > artifacts/step11/w0/mlt/package-files.txt
+      - name: Generate owned 30-fps fixture
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel error -y             -f lavfi -i "testsrc2=size=640x360:rate=30:duration=4"             -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=4"             -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest             artifacts/step11/w0/mlt/input.mp4
+          ffprobe -v error -show_streams -show_format -of json             artifacts/step11/w0/mlt/input.mp4             > artifacts/step11/w0/mlt/input-ffprobe.json
+      - name: Continuous SDL2 playback smoke
+        shell: msys2 {0}
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          set -euo pipefail
+          timeout 30s melt artifacts/step11/w0/mlt/input.mp4             in=0 out=89 -consumer sdl2 terminate_on_pause=1 real_time=-1             2>&1 | tee artifacts/step11/w0/mlt/continuous-sdl2.log
+      - name: Seek and edited-playlist playback smoke
+        shell: msys2 {0}
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          set -euo pipefail
+          timeout 30s melt artifacts/step11/w0/mlt/input.mp4             in=45 out=74 -consumer sdl2 terminate_on_pause=1 real_time=-1             2>&1 | tee artifacts/step11/w0/mlt/seek-sdl2.log
+          timeout 30s melt             artifacts/step11/w0/mlt/input.mp4 in=0 out=44             artifacts/step11/w0/mlt/input.mp4 in=60 out=89             -consumer sdl2 terminate_on_pause=1 real_time=-1             2>&1 | tee artifacts/step11/w0/mlt/edited-playlist-sdl2.log
+      - name: Force decode/render through MLT avformat
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          melt             artifacts/step11/w0/mlt/input.mp4 in=0 out=44             artifacts/step11/w0/mlt/input.mp4 in=60 out=89             -consumer avformat:artifacts/step11/w0/mlt/edited-output.mp4             vcodec=libx264 acodec=aac real_time=-1
+          ffprobe -v error -show_streams -show_format -of json             artifacts/step11/w0/mlt/edited-output.mp4             > artifacts/step11/w0/mlt/edited-output-ffprobe.json
+      - name: Probe optional Python binding availability
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          if python -c "import mlt7; print('mlt7 import OK')"             > artifacts/step11/w0/mlt/python-binding.txt 2>&1; then
+            cat artifacts/step11/w0/mlt/python-binding.txt
+          else
+            echo "mlt7 binding absent from distro package; process-worker path remains valid."               | tee artifacts/step11/w0/mlt/python-binding.txt
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W0-MLT-Windows-Qualification
+          path: artifacts/step11/w0/mlt/**
+          if-no-files-found: error
+          retention-days: 14
