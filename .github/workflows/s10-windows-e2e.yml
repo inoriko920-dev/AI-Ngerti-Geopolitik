@@ -8,6 +8,10 @@ on:
       - "tests/**"
       - "scripts/generate_step10_fixture.py"
       - "scripts/run_step10_e2e.py"
+      - "scripts/verify/verify_step10_evidence.py"
+      - "scripts/package/step10_media_smoke_entry.py"
+      - "scripts/package/build_step10_media_smoke.ps1"
+      - "scripts/package/smoke_step10_media.ps1"
       - ".github/workflows/s10-windows-e2e.yml"
       - "pyproject.toml"
       - "uv.lock"
@@ -53,16 +57,21 @@ jobs:
       - run: uv run mypy
       - run: uv run lint-imports
       - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
       - run: uv run pytest -q
       - name: Generate owned deterministic media fixture
         run: uv run python scripts/generate_step10_fixture.py --output artifacts/step10/input_fixture.mp4
-      - name: Run canonical 12-stage STEP 10 path
+      - name: Run canonical STEP 10 path
         run: uv run python scripts/run_step10_e2e.py --fixture artifacts/step10/input_fixture.mp4 --evidence artifacts/step10/evidence
+      - name: Verify complete STEP 10 evidence
+        run: uv run python scripts/verify/verify_step10_evidence.py --evidence artifacts/step10/evidence --expected-sha ${{ github.sha }}
       - name: Verify exported output independently
         shell: pwsh
         run: |
-          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate -show_entries format=duration -of json artifacts/step10/evidence/10_exported_output.mp4
-          Get-FileHash artifacts/step10/evidence/10_exported_output.mp4 -Algorithm SHA256
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate -show_entries format=duration -of json artifacts/step10/evidence/11_exported_output.mp4
+          Get-FileHash artifacts/step10/evidence/11_exported_output.mp4 -Algorithm SHA256
       - uses: actions/upload-artifact@v4
         with:
           name: ANG-S10-E2E-Evidence
@@ -71,7 +80,49 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  packaged-regression:
+  packaged-media-smoke:
+    name: Packaged real-media smoke
+    needs: vertical-slice
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Install external FFmpeg qualification toolchain
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - run: uv lock --check
+      - run: uv sync --frozen --group package
+      - name: Generate deterministic packaged-smoke fixture
+        run: uv run python scripts/generate_step10_fixture.py --output artifacts/step10-packaged/input_fixture.mp4
+      - name: Build packaged media smoke
+        shell: pwsh
+        run: ./scripts/package/build_step10_media_smoke.ps1
+      - name: Run packaged media smoke
+        shell: pwsh
+        run: ./scripts/package/smoke_step10_media.ps1 -Fixture artifacts/step10-packaged/input_fixture.mp4 -EvidenceDir artifacts/step10-packaged/evidence
+      - name: Independently probe packaged export
+        shell: pwsh
+        run: |
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate -show_entries format=duration -of json artifacts/step10-packaged/evidence/packaged_media_smoke/packaged_smoke.mp4
+          Get-FileHash artifacts/step10-packaged/evidence/packaged_media_smoke/packaged_smoke.mp4 -Algorithm SHA256
+          Get-FileHash dist-s10/AI-Ngerti-Geopolitik-S10-Media-Smoke-Windows-x64.zip -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S10-Packaged-Media-Smoke-Windows-x64
+          path: |
+            dist-s10/AI-Ngerti-Geopolitik-S10-Media-Smoke-Windows-x64.zip
+            artifacts/step10-packaged/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
+  packaged-ui-regression:
     name: Portable UI regression
     needs: vertical-slice
     runs-on: windows-latest

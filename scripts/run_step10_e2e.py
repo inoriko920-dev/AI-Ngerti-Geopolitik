@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import shutil
 import threading
@@ -36,6 +37,22 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def tool_version(name: str) -> str:
+    tool = shutil.which(name)
+    if tool is None:
+        return "NOT_FOUND"
+    import subprocess
+
+    result = subprocess.run(
+        [tool, "-version"],
+        check=False,
+        capture_output=True,
+        text=True,
+        shell=False,
+    )
+    return (result.stdout or result.stderr).splitlines()[0].strip()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture", type=Path, required=True)
@@ -44,7 +61,8 @@ def main() -> int:
 
     fixture = args.fixture.resolve()
     evidence = args.evidence.resolve()
-    evidence.mkdir(parents=True, exist_ok=True)
+    screenshots = evidence / "screenshots"
+    screenshots.mkdir(parents=True, exist_ok=True)
 
     probe = FfprobeMediaProbe()
     repository = JsonProjectRepository()
@@ -53,20 +71,39 @@ def main() -> int:
     router = VerticalSliceIntentRouter(session)
 
     environment = {
+        "repo": "inoriko920-dev/AI-Ngerti-Geopolitik",
+        "branch": os.environ.get("GITHUB_REF_NAME", "unknown"),
+        "git_sha": os.environ.get("GITHUB_SHA", "unknown"),
         "platform": platform.platform(),
         "python": platform.python_version(),
-        "ffmpeg": shutil.which("ffmpeg"),
-        "ffprobe": shutil.which("ffprobe"),
+        "ffmpeg_path": shutil.which("ffmpeg"),
+        "ffprobe_path": shutil.which("ffprobe"),
+        "ffmpeg_version": tool_version("ffmpeg"),
+        "ffprobe_version": tool_version("ffprobe"),
+        "media_backend_scope": (
+            "system FFmpeg qualification adapter; not bundled and not a replacement "
+            "decision for D-020 production engine qualification"
+        ),
     }
     write_json(evidence / "00_environment.json", environment)
+
+    fixture_hash = sha256(fixture)
     (evidence / "01_input_media_sha256.txt").write_text(
-        f"{sha256(fixture)}  {fixture.name}\n",
+        f"{fixture_hash}  {fixture.name}\n",
+        encoding="utf-8",
+    )
+    (evidence / "01_fixture_provenance.txt").write_text(
+        "GENERATED_TEST_FIXTURE\n"
+        "Generator: scripts/generate_step10_fixture.py\n"
+        "Source: FFmpeg lavfi testsrc2 + sine; no downloaded copyrighted media.\n"
+        "Video: 1920x1080 30 fps H.264; Audio: AAC; duration: 8 seconds.\n",
         encoding="utf-8",
     )
     write_json(evidence / "02_ffprobe_input.json", probe.raw_probe(fixture))
 
-    initial_hash = session.state.semantic_hash()
+    timings: dict[str, float] = {}
     negative_lines: list[str] = []
+    initial_hash = session.state.semantic_hash()
     try:
         router(
             UiIntent(
@@ -102,7 +139,10 @@ def main() -> int:
     ui_intent = queued_intents.pop()
     if ui_intent.kind is not UiIntentType.IMPORT_MEDIA:
         raise AssertionError(f"unexpected UI intent: {ui_intent.kind}")
+
+    start = time.perf_counter()
     router(ui_intent)
+    timings["import_probe_seconds"] = time.perf_counter() - start
     window.close()
 
     asset_id = router.last_result
@@ -154,18 +194,36 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    preview = session.preview_frame(
-        151,
-        evidence / "screenshots" / "preview_frame_151.png",
+    preview_before = session.preview_frame(149, screenshots / "preview_frame_149.png")
+    preview_after = session.preview_frame(151, screenshots / "preview_frame_151.png")
+    assert preview_before.project_revision == session.state.revision
+    assert preview_after.project_revision == session.state.revision
+    assert preview_before.output_path.is_file()
+    assert preview_after.output_path.is_file()
+    before_hash = sha256(preview_before.output_path)
+    after_hash = sha256(preview_after.output_path)
+    assert before_hash != after_hash
+    (evidence / "07_preview_boundary.txt").write_text(
+        "PASS real backend seek on both sides of split boundary\n"
+        f"project_revision={session.state.revision}\n"
+        f"before_frame=149 sha256={before_hash}\n"
+        f"after_frame=151 sha256={after_hash}\n"
+        "NOTE continuous interactive playback remains a later production-engine feature; "
+        "STEP 10 proves engine-derived seek/output against the edited revision.\n",
+        encoding="utf-8",
     )
-    assert preview.project_revision == session.state.revision
-    assert preview.output_path.is_file()
 
-    project_path = evidence / "07_saved_project.angproj"
+    project_path = evidence / "08_saved_project.angproj"
+    start = time.perf_counter()
     session.save(project_path)
-    loaded_hash = repository.load(project_path).semantic_hash()
+    timings["save_seconds"] = time.perf_counter() - start
+    start = time.perf_counter()
+    loaded_state = repository.load(project_path)
+    timings["load_seconds"] = time.perf_counter() - start
+    loaded_hash = loaded_state.semantic_hash()
     assert loaded_hash == post_trim_hash
-    (evidence / "08_roundtrip_diff.txt").write_text(
+    assert loaded_state.schema_version == 1
+    (evidence / "09_roundtrip_diff.txt").write_text(
         "PASS semantic snapshot identical after .angproj save/load\n"
         f"saved_hash={post_trim_hash}\n"
         f"loaded_hash={loaded_hash}\n",
@@ -190,18 +248,21 @@ def main() -> int:
         "expected_duration_frames": 210,
         "backend": "system FFmpeg STEP10 qualification adapter; not bundled",
     }
-    write_json(evidence / "09_export_settings.json", export_settings)
+    write_json(evidence / "10_export_settings.json", export_settings)
 
-    output = evidence / "10_exported_output.mp4"
+    output = evidence / "11_exported_output.mp4"
+    start = time.perf_counter()
     result = session.export(output)
+    timings["export_seconds"] = time.perf_counter() - start
     assert result.project_revision == session.state.revision
     assert result.width == 1920
     assert result.height == 1080
     assert result.fps == 30
     assert abs(result.duration_frames - 210) <= 1
-    write_json(evidence / "11_ffprobe_output.json", probe.raw_probe(output))
-    (evidence / "11_export_sha256.txt").write_text(
-        f"{sha256(output)}  {output.name}\n",
+    write_json(evidence / "12_ffprobe_output.json", probe.raw_probe(output))
+    export_hash = sha256(output)
+    (evidence / "12_export_sha256.txt").write_text(
+        f"{export_hash}  {output.name}\n",
         encoding="utf-8",
     )
 
@@ -228,25 +289,36 @@ def main() -> int:
     assert not cancel_output.with_name("cancelled_output.partial.mp4").exists()
     negative_lines.append("cancel-export-cleanup: PASS: no final/partial artifact")
 
-    (evidence / "12_negative_paths.txt").write_text(
+    bad_save = evidence / "wrong-extension.json"
+    try:
+        repository.save(session.state, bad_save)
+        raise AssertionError("wrong extension unexpectedly accepted")
+    except ProjectFormatError as exc:
+        negative_lines.append(f"invalid-project-extension: PASS: {exc}")
+    assert not bad_save.exists()
+
+    (evidence / "13_negative_paths.txt").write_text(
         "\n".join(negative_lines) + "\n",
         encoding="utf-8",
     )
+    write_json(evidence / "14_timings.json", timings)
+
     report = {
         "status": "PASS",
+        "git_sha": environment["git_sha"],
         "project_revision": session.state.revision,
         "semantic_hash": session.state.semantic_hash(),
         "asset_id": asset_id,
         "clips": ["C001", "C002"],
-        "preview_frame": str(preview.output_path),
+        "preview_boundary_frames": [149, 151],
         "project_file": str(project_path),
         "export_file": str(output),
-        "export_sha256": sha256(output),
+        "export_sha256": export_hash,
         "duration_frames": result.duration_frames,
         "negative_paths": len(negative_lines),
         "ui_entry": "real QAction action_import_media -> semantic UiIntent -> application router",
     }
-    write_json(evidence / "13_test_report.json", report)
+    write_json(evidence / "15_test_report.json", report)
     print(json.dumps(report, indent=2))
     return 0
 
