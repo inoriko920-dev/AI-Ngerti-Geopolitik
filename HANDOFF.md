@@ -1,63 +1,55 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Last completed:** SF-STEP 10 — PASS_WITH_PROVISIONAL  
-**Accepted commit:** `852610f55a6e99dc98234114c3cf099ed85dfd42`  
-**Passing S10 run:** `37527851180`  
-**Passing S09 regression:** `37527851222`  
-**Passing S08 regression:** `37527851230`  
-**Next exact STEP:** SF-STEP 11 — Feature Implementation Waves
+**Current phase:** SF-STEP 11  
+**Last completed wave:** W0 — PASS  
+**Accepted W0 HEAD:** `f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`  
+**Accepted W0 run:** `37533447729` — SUCCESS  
+**Next exact wave:** W1 — Project, Media & Persistence Foundation
 
 ## Read first
 
-Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`. Read all STEP 00–07 planning, STEP 08–10 evidence, current decisions, tasks and source before modifying code.
+Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`. Read STEP 08–10
+evidence plus
+`docs/evidence/features/S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`.
 
-## Proven backbone
+## W0 outcome
 
-The following path is VERIFIED on Windows:
-- real Qt Import Media action;
-- semantic UiIntent;
-- application router/use-case;
-- CommandBus / immutable ProjectState;
-- real ffprobe media probe;
-- stable A001/C001/C002 identities;
-- frame-based split + trim;
-- exact Undo/Redo;
-- current ProjectState projected into real Qt timeline widgets;
-- engine-derived preview projected into real Qt preview;
-- atomic `.angproj` save/load;
-- H.264/AAC export;
-- cancel/cleanup;
-- packaged onedir media qualification smoke.
+The green baseline remains intact and MLT Windows qualification is real.
 
-Final semantic hash:
-`59f2d632f402b3dd1b08e66cb1f5c3e7cf8146d46c4efdd86372a13bccb30457`.
+Proven:
+- 31 tests;
+- STEP 10 E2E evidence 22/22;
+- frozen UI 42/42;
+- MLT 7.40.0-2 / melt 7.40.0;
+- Python `mlt7` binding;
+- exact seek samples;
+- SDL2 transport smoke;
+- avformat H.264/AAC render.
 
-Export SHA-256:
-`2157671678c630b3fcebd5268a011ac454a14a83cf8d8a08d83746c8fa34634e`.
+Artifacts:
+- regression `11444509597`;
+- MLT `11444689616`.
 
-Evidence:
-`docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`.
+## Locked engine interpretation
 
-## STEP 10 limits that must remain explicit
+For STEP 11 implementation priority:
+- MLT = primary production-engine candidate;
+- libopenshot direct binding = BLOCKED pending stronger Windows/package/license evidence;
+- FFmpeg STEP 10 adapter = qualification/reference adapter;
+- ProjectState + CommandBus + MediaEnginePort stay canonical.
 
-Not yet proven:
-- continuous production playback/transport;
-- final libopenshot production qualification;
-- MLT fallback decision;
-- final bundled native media-engine dependency/license chain;
-- broad feature parity;
-- real Gemini/service integration.
+Real Qt continuous playback integration is still W2 work. Final native DLL
+closure/license packaging is a later release gate.
 
-The real STEP 10 FFmpeg adapter is a qualification adapter only. Do not silently promote it to the final engine.
+## Next exact action
 
-## STEP 11 first priority
+Execute W1 serially:
+1. project new/open/close + dirty state;
+2. Save/Save As backup policy;
+3. video/audio/image media import + offline states;
+4. media-bin query/selection wiring;
+5. project settings persistence;
+6. autosave snapshot foundation;
+7. missing/offline state with no silent clip deletion.
 
-Enter STEP 11 in bounded waves. Wave 0 must:
-1. lock the S08/S09/S10 green baseline;
-2. qualify the production MediaEnginePort on Windows;
-3. prove continuous playback/seek/edit coherence on the same ProjectState;
-4. resolve libopenshot primary vs MLT fallback with evidence before broad media feature expansion.
-
-Keep UI AAVC 1:1, CommandBus mutation rules, and evidence gates unchanged.
-
-Do not start STEP 12 integrations until STEP 11 gate is satisfied.
+Do not start W2 or STEP 12.

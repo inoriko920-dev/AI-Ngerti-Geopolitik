@@ -257,3 +257,42 @@ Accepted STEP 10 baseline:
 - S10 run `37527851180` SUCCESS;
 - S09 regression `37527851222` SUCCESS;
 - S08 regression `37527851230` SUCCESS.
+
+
+## D-024 — STEP 11 W0 engine qualification decision
+SF-STEP 11 Wave 0 replaces the **implementation-priority ordering** in D-020
+with fresh Windows runtime evidence, while preserving all architecture
+boundaries.
+
+Accepted evidence:
+- W0 run `37533447729` on
+  `f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6` — SUCCESS;
+- actual tested MLT package:
+  `mingw-w64-x86_64-mlt 7.40.0-2`;
+- runtime `melt.exe 7.40.0`;
+- Python binding `mlt7`;
+- exact seek samples at 0, 10, 50 and 98 frames;
+- SDL2 continuous/seek/edited-playlist transport smoke;
+- MLT avformat H.264/AAC render;
+- regression artifact `11444509597`;
+- MLT artifact `11444689616`.
+
+Locked interpretation:
+- **MLT is the primary production-engine implementation candidate for STEP 11
+  W1/W2 onward**;
+- direct libopenshot production binding is BLOCKED until Windows build/package
+  and libopenshot-audio licensing evidence becomes materially stronger;
+- STEP 10 FFmpeg remains a qualification/reference adapter and does not become
+  the editor source-of-truth;
+- ANG-owned ProjectState, CommandBus/CommandBatch, MediaEnginePort, Qt UI freeze
+  and semantic edit architecture remain unchanged.
+
+Important version truth:
+D-016/D-020 research tracked MLT 7.42.0, but the actual MSYS2 Windows package
+available and verified in W0 was **7.40.0-2**. Do not claim 7.42.0 was runtime
+tested unless a later qualification proves it.
+
+Remaining release gate:
+W0 does not approve a final distributable MLT DLL bundle. The exact native DLL
+closure, required plugin subset, codec/license obligations, notices/source
+obligations and clean-machine package smoke remain mandatory before release.

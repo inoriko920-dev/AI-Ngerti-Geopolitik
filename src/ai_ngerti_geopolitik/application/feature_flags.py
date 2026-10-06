@@ -1,8 +1,7 @@
 """STEP 11 feature/readiness registry.
 
-This registry is intentionally provider/engine agnostic. A flag describes
-whether a surface may be exposed as production-ready; it is not a shortcut
-around acceptance evidence.
+This registry describes evidence-backed readiness. A VERIFIED engine/runtime flag
+does not imply every user-facing feature using that engine is already complete.
 """
 
 from __future__ import annotations
@@ -32,19 +31,24 @@ _FLAGS = (
         "STEP 10 Windows E2E proved import/edit/save/preview/export.",
     ),
     FeatureFlag(
+        "mlt_windows_runtime",
+        FeatureState.VERIFIED,
+        "W0 run 37533447729 proved MLT 7.40.0-2 playback, seek, Python binding and avformat render on Windows.",
+    ),
+    FeatureFlag(
         "production_media_engine",
         FeatureState.QUALIFYING,
-        "STEP 11 Wave 0 must qualify the Windows production engine.",
+        "MLT is the accepted primary implementation candidate; final bundled native package/license chain remains a later release gate.",
     ),
     FeatureFlag(
         "continuous_playback",
         FeatureState.QUALIFYING,
-        "Transport semantics exist; native continuous playback needs Wave 0 evidence.",
+        "Native MLT playback/seek is qualified; real Qt transport integration is scheduled for W2.",
     ),
     FeatureFlag(
         "libopenshot_direct_binding",
         FeatureState.BLOCKED,
-        "Windows build/package/license evidence is not sufficient for production adoption.",
+        "Windows build/package evidence plus libopenshot-audio licensing remains insufficient for direct production adoption.",
     ),
     FeatureFlag(
         "gemini_service",

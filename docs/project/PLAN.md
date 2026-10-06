@@ -1,32 +1,31 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 10 = PASS_WITH_PROVISIONAL.**
+**SF-STEP 11 is active. W0 = PASS.**
 
-The project has crossed the key architecture threshold: one real editing path now runs from an actual Qt control through semantic application/domain state to real media preview/export, persistence, Undo/Redo and packaged Windows qualification evidence.
+W0 accepted:
+- HEAD `f54993851f85aa5672f0d86dcb7e5ea3a49c7ae6`;
+- run `37533447729`;
+- regression and native-engine qualification green.
 
-Evidence:
-`docs/evidence/e2e/S10_MINIMUM_E2E_VERTICAL_SLICE.md`.
+Engine implementation priority now follows evidence:
+- MLT primary candidate for STEP 11;
+- libopenshot direct binding blocked;
+- architecture boundaries unchanged.
 
-## Next phase
+## Active next wave
 
-**SF-STEP 11 — Feature Implementation Waves**
+**W1 — Project, Media & Persistence Foundation**
 
-Execution principles:
-- preserve the S08/S09/S10 green baseline at every wave;
-- keep ProjectState canonical;
-- keep all user-visible mutations behind CommandBus/use-cases;
-- do not call concrete FFmpeg/libopenshot/MLT/Gemini directly from presentation;
-- no UI redesign;
-- every wave requires evidence before the next wave.
+Implementation remains serial and regression-safe. W1 must harden the project
+lifecycle and media model before W2 expands timeline/playback behavior.
 
-## Wave 0 priority
+Required W1 outcomes:
+- no accidental state loss on project lifecycle;
+- safe atomic save/save-as;
+- stable video/audio/image asset IDs and metadata;
+- explicit offline/missing media state;
+- queryable media-bin model;
+- persisted project settings;
+- autosave snapshots that never overwrite the canonical project silently.
 
-Resolve the bounded STEP 10 provisional:
-1. production MediaEnginePort qualification on Windows;
-2. continuous playback/seek/edit coherence;
-3. evidence-based libopenshot primary vs MLT fallback decision;
-4. native dependency/license/package impact recorded.
-
-Then expand core editing capabilities in bounded feature waves.
-
-Do not begin SF-STEP 12 integrations during STEP 11.
+Do not begin W2 until W1 evidence is green.
