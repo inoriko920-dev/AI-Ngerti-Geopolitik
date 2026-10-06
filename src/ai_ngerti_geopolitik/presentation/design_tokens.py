@@ -57,18 +57,42 @@ def app_stylesheet() -> str:
     QMenuBar {{ background: {c.surface}; border-bottom: 1px solid {c.border}; }}
     QMenuBar::item {{ padding: 7px 10px; background: transparent; }}
     QMenuBar::item:selected {{ background: {c.selection}; color: {c.primary_hover}; }}
-    QToolBar {{ background: {c.surface}; border: none; border-bottom: 1px solid {c.border}; spacing: 6px; padding: 4px 8px; }}
-    QToolButton {{ background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 6px 9px; }}
+    QToolBar {{
+        background: {c.surface}; border: none; border-bottom: 1px solid {c.border};
+        spacing: 6px; padding: 4px 8px;
+    }}
+    QToolButton {{
+        background: transparent; border: 1px solid transparent;
+        border-radius: 6px; padding: 6px 9px;
+    }}
     QToolButton:hover {{ background: {c.selection}; border-color: {c.border}; }}
-    QPushButton {{ background: {c.surface}; border: 1px solid {c.border}; border-radius: 7px; padding: 7px 12px; min-height: 18px; }}
+    QPushButton {{
+        background: {c.surface}; border: 1px solid {c.border}; border-radius: 7px;
+        padding: 7px 12px; min-height: 18px;
+    }}
     QPushButton:hover {{ border-color: {c.primary}; }}
-    QPushButton[primary='true'] {{ background: {c.primary}; color: white; border-color: {c.primary}; font-weight: 600; }}
+    QPushButton[primary='true'] {{
+        background: {c.primary}; color: white; border-color: {c.primary};
+        font-weight: 600;
+    }}
     QPushButton[primary='true']:hover {{ background: {c.primary_hover}; }}
-    QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{ background: {c.surface}; border: 1px solid {c.border}; border-radius: 6px; padding: 6px; }}
+    QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{
+        background: {c.surface}; border: 1px solid {c.border};
+        border-radius: 6px; padding: 6px;
+    }}
     QTabWidget::pane {{ border: 1px solid {c.border}; background: {c.surface}; }}
-    QTabBar::tab {{ padding: 8px 14px; background: {c.panel}; border-bottom: 2px solid transparent; }}
-    QTabBar::tab:selected {{ color: {c.primary}; border-bottom: 2px solid {c.primary}; background: {c.surface}; }}
-    QFrame[panel='true'] {{ background: {c.surface}; border: 1px solid {c.border}; border-radius: 6px; }}
+    QTabBar::tab {{
+        padding: 8px 14px; background: {c.panel};
+        border-bottom: 2px solid transparent;
+    }}
+    QTabBar::tab:selected {{
+        color: {c.primary}; border-bottom: 2px solid {c.primary};
+        background: {c.surface};
+    }}
+    QFrame[panel='true'] {{
+        background: {c.surface}; border: 1px solid {c.border};
+        border-radius: 6px;
+    }}
     QLabel[muted='true'] {{ color: {c.muted}; }}
     QLabel[badge='ready'] {{ color: {c.success}; font-weight: 600; }}
     QLabel[badge='warning'] {{ color: {c.warning}; font-weight: 600; }}
