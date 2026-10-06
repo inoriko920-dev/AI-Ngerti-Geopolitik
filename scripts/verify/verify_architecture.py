@@ -44,7 +44,11 @@ def _absolute_imports(tree: ast.AST, module_parts: tuple[str, ...]) -> list[tupl
             found.extend((node.lineno, alias.name) for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
             if node.level:
-                base = list(module_parts[:-node.level]) if node.level <= len(module_parts) else []
+                base = (
+                    list(module_parts[: -node.level])
+                    if node.level <= len(module_parts)
+                    else []
+                )
                 if node.module:
                     base.extend(node.module.split("."))
                 name = ".".join(base)
@@ -70,12 +74,20 @@ def find_violations(src_root: Path) -> list[Violation]:
                 target = imported.split(".")[1]
                 if target in INTERNAL_FORBIDDEN[layer]:
                     violations.append(
-                        Violation(path, line, f"{layer} must not import internal layer {target}: {imported}")
+                        Violation(
+                            path,
+                            line,
+                            f"{layer} must not import internal layer {target}: {imported}",
+                        )
                     )
             top = imported.split(".")[0]
             if top in EXTERNAL_FORBIDDEN[layer]:
                 violations.append(
-                    Violation(path, line, f"{layer} must not import external package {top}: {imported}")
+                    Violation(
+                        path,
+                        line,
+                        f"{layer} must not import external package {top}: {imported}",
+                    )
                 )
     return violations
 

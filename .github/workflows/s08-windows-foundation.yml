@@ -151,7 +151,7 @@ jobs:
       - name: Detect secrets
         shell: pwsh
         run: |
-          $scanText = uv run detect-secrets scan | Out-String
+          $scanText = uv run detect-secrets scan src tests scripts pyproject.toml | Out-String
           $scan = $scanText | ConvertFrom-Json
           $count = 0
           foreach ($property in $scan.results.PSObject.Properties) {

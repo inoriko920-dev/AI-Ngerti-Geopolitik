@@ -30,8 +30,13 @@ def required_paths() -> list[Path]:
         Path("docs/ui_reference/UI_REFERENCE_MANIFEST.md"),
     ]
     for base in PLANNING_BASES:
-        paths.extend([Path(f"docs/planning/{base}.docx"), Path(f"docs/planning/{base}.txt")])
-    paths.extend(Path(f"docs/ui_reference/raw/UI-{i:03d}.png") for i in range(1, 43))
+        paths.extend(
+            [
+                Path(f"docs/planning/{base}.docx"),
+                Path(f"docs/planning/{base}.txt"),
+            ]
+        )
+    paths.extend(Path(f"docs/ui_reference/raw/UI-{index:03d}.png") for index in range(1, 43))
     return paths
 
 
