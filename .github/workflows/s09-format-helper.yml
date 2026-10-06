@@ -1,0 +1,35 @@
+name: TEMP S09 Format Helper
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/s09-format-helper.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format .
+      - run: uv run ruff check . --fix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s09-formatted-workspace
+          path: |
+            src
+            scripts
+            tests
+            .github/workflows/s09-windows-ui.yml
+          retention-days: 1
