@@ -71,3 +71,10 @@ Perubahan hanya boleh dilakukan jika:
 2. evidence teknis/legal menunjukkan keputusan tidak dapat dipertahankan, lalu AI menjelaskan dampaknya dan mencatat keputusan pengganti.
 
 Setiap perubahan harus memperbarui Master/decision log/status/handoff yang relevan.
+
+
+## D-013 — Namespace STEP
+Software Factory memakai **SF-STEP 00–15**. Roadmap implementasi teknis pada Bab 31 Master Blueprint mulai sekarang disebut **TECH-WAVE 00–16**. AI dilarang menyamakan TECH-WAVE dengan SF-STEP atau memakai TECH-WAVE untuk melompati gate Software Factory.
+
+## D-014 — Repository docs-only sebelum SF-STEP 08
+Repository AI-Ngerti-Geopolitik dibuat lebih awal atas instruksi pemilik sebagai checkpoint dokumentasi/source-of-truth. Keberadaan repository dan commit planning **tidak berarti SF-STEP 08 selesai** dan tidak mengotorisasi coding, CI product, upstream fork/copy, build, atau release.

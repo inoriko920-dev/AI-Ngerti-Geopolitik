@@ -1,0 +1,256 @@
+AI NGERTI GEOPOLITIK - STEP 00 PROJECT INTAKE & SAFETY GATE
+Software Factory ASTRA + SOL - Baseline Pra-Implementasi
+STATUS GATE: PASS WITH RECORDED OPEN ITEMS
+Active Role: ASTRA
+Project Mode: NEW_GREENFIELD + PRE-CREATED DOCS-ONLY REPOSITORY
+Project Stage: PRE-IMPLEMENTATION
+Target Repo: inoriko920-dev/AI-Ngerti-Geopolitik
+Baseline HEAD: 61d80ee468cd01addc2a4f5f27ed568e7b835547
+Source Code: NONE - belum ada kode aplikasi
+Target Platform: Windows 11 x64
+Tanggal: 06 Oktober 2026
+Exact Next Step: SF-STEP 01 - Product Definition, hanya setelah pengguna mengatakan "lanjutkan"
+
+0. KONTROL DOKUMEN
+Document ID: ANG-SF-STEP00-INTAKE-SAFETY-v1.0
+Versi: 1.0
+Pemilik produk: Pengguna / repository owner
+Peran penyusun: ASTRA
+Master aturan: 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt
+Blueprint produk: 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx / mirror TXT
+Repo baseline: main @ 61d80ee468cd01addc2a4f5f27ed568e7b835547
+Gate: PASS WITH RECORDED OPEN ITEMS
+Coding: BELUM DIIZINKAN
+Next formal step: SF-STEP 01 - Product Definition
+Tujuan: mengenali proyek, input, akses, baseline, source of truth, safety boundary, dan state awal. STEP 00 bukan implementasi.
+
+0.1 STATUS TERMINOLOGY
+PASS: Cukup jelas dan terverifikasi untuk scope STEP 00.
+PROVISIONAL: Keputusan sementara/reversible; harus divalidasi pada STEP yang tepat.
+OPEN: Belum diputuskan dan memang menjadi tanggung jawab STEP berikutnya.
+NOT TESTED: Belum ada bukti runtime/build; tidak boleh diklaim sebagai bekerja.
+BLOCKED: Tidak boleh dilanjutkan sampai dependency/gate terpenuhi.
+READ-ONLY: Boleh dibaca sebagai evidence, tidak boleh dimodifikasi.
+
+0.2 NAMESPACE STEP
+LOCKED: SF-STEP = Software Factory governance. TECH-WAVE = Master Blueprint Bab 31 implementation roadmap. Jangan disamakan.
+
+1. RINGKASAN EKSEKUTIF
+AI Ngerti Geopolitik adalah proyek baru untuk membangun editor video desktop Windows yang khusus membantu produksi video geopolitik/dokumenter secara otomatis namun tetap dapat dikoreksi manual.
+Master Blueprint v1.0 telah dibuat sebelum formal Software Factory dijalankan. STEP 00 memetakan evidence yang sudah ada, bukan menulis visi baru dari nol.
+Repository AI-Ngerti-Geopolitik sudah dibuat lebih awal atas instruksi pemilik dan diterima sebagai docs-only checkpoint. Keberadaan repo tidak berarti SF-STEP 08 selesai.
+Repo AI-Automatic-Video-Composer ditetapkan READ-ONLY. Tidak ada perubahan ke repo lama pada STEP ini.
+
+2. PROJECT IDENTITY
+Nama resmi: AI Ngerti Geopolitik
+Mode: NEW_GREENFIELD dengan evidence dari produk lama
+Stage: PRE-IMPLEMENTATION
+Tujuan satu kalimat: Editor desktop Windows khusus video geopolitik/dokumenter yang stabil, automation-first, dapat diedit manual, dan memakai engine editor matang daripada membangun NLE umum dari nol.
+Target pengguna awal: Creator/channel dokumenter, geopolitik, sejarah, explainers, dan workflow narasi + aset visual + subtitle + narration.
+Platform V1: Windows 11 x64
+Distribusi default: Portable folder multi-file dalam satu ZIP; final packaging diverifikasi pada tahap release.
+AI provider V1: Gemini; hingga 100 credential slot dengan secure storage.
+Repo target: inoriko920-dev/AI-Ngerti-Geopolitik
+Repo lama: inoriko920-dev/AI-Automatic-Video-Composer - READ ONLY
+Candidate engine: libopenshot; openshot-qt sebagai referensi/editor infrastructure subject to license gate
+Code baseline: NONE
+
+3. USER INTENT SNAPSHOT
+- Fitur inti repo lama harus tetap tersedia, tetapi aplikasi baru lebih stabil dan tidak bergantung pada timeline/render custom yang rapuh.
+- Editor manual tetap sumber kebenaran; AI memakai command/transaction yang sama dengan aksi manual.
+- Workflow inti mendukung Scene DOCX, canonical asset A001/A002/... dan layout SINGLE/DOUBLE.
+- Perintah AI bahasa manusia harus tervalidasi, deterministic saat dieksekusi, render-backed, dan undoable.
+- Gemini provider V1; maksimal 100 credential, tanpa menyimpan key plaintext di repo/project/log.
+- Preview, timeline, undo/redo, subtitle, narration, animation, validation/relink, recovery, dan export harus stabil sebelum app dianggap matang.
+- Target bukan clone penuh Filmora/Premiere, melainkan specialized documentary/geopolitics editor.
+- Seluruh DOCX planning/reference wajib berada di repo sebelum coding dan AI lain wajib membaca source-of-truth/handoff.
+
+4. INPUT REGISTER & EVIDENCE
+IN-01 | Instruksi pemilik terbaru | AVAILABLE_VERIFIED | YA | Satu STEP per giliran; source-of-truth/handoff wajib; jangan coding sebelum waktunya.
+IN-02 | Repository AI-Ngerti-Geopolitik | AVAILABLE_VERIFIED | YA | Repo publik tersedia; main baseline diverifikasi.
+IN-03 | AGENTS.md | AVAILABLE_VERIFIED | YA | Entry gate wajib AI lain.
+IN-04 | 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt | AVAILABLE_VERIFIED | YA | Konstitusi Software Factory.
+IN-05 | PANDUAN_PENGGUNAAN_SOFTWARE_FACTORY_ASTRA_SOL.docx + TXT | AVAILABLE_VERIFIED | YA | Panduan operasional.
+IN-06 | 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx + TXT | AVAILABLE_VERIFIED | YA | Baseline produk/arsitektur awal; source-of-truth produk pra-formal.
+IN-07 | HANDOFF.md | AVAILABLE_VERIFIED | YA | Exact next action sebelumnya = SF-STEP 00.
+IN-08 | PROJECT_STATUS / DECISIONS_LOCKED / REPOSITORY_RULES | AVAILABLE_VERIFIED | YA | Status, keputusan, aturan kerja.
+IN-09 | Repo AI-Automatic-Video-Composer | REFERENCE_READ_ONLY | TIDAK wajib diubah | Feature baseline/lessons learned. Tidak disentuh.
+IN-10 | Research OpenShot/libopenshot | AVAILABLE_AS_PRIOR_EVIDENCE | TIDAK final | OpenShot v4.0.1 dan libopenshot v1.0.1 telah diidentifikasi; audit formal tetap SF-STEP 02.
+IN-11 | UI final images/reference pack | MISSING_EXPECTED_LATER | TIDAK | Belum waktunya; SF-STEP 03-05.
+IN-12 | Gemini API keys / secrets | NOT_REQUIRED | TIDAK | Jangan meminta/menyimpan secret pada planning.
+IN-13 | Windows runtime/build evidence | NOT_TESTED | TIDAK | Belum ada code; tidak diperlukan STEP 00.
+
+5. BASELINE & SOURCE OF TRUTH
+1. Instruksi eksplisit terbaru pemilik proyek.
+2. Prompt STEP aktif Software Factory.
+3. 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt.
+4. Master Blueprint ANG + planning STEP terbaru.
+5. DECISIONS_LOCKED.md.
+6. PROJECT_STATUS.md + HANDOFF.md.
+7. Source/test/evidence aktual ketika implementasi sudah ada.
+Blueprint architecture = evidence/provisional sampai SF-STEP 02/06 kecuali keputusan owner yang explicit LOCKED.
+
+6. LOCKED DECISIONS SNAPSHOT
+D-001: Nama produk AI Ngerti Geopolitik.
+D-002: Repo target AI-Ngerti-Geopolitik.
+D-003: AI-Automatic-Video-Composer adalah READ-ONLY reference.
+D-004: Masalah utama adalah mempertahankan workflow/fitur sambil mengganti pondasi editor custom dengan foundation matang.
+D-005: Arah candidate OpenShot/libopenshot; cara reuse menunggu license + architecture gate.
+D-006: V1 mengejar feature parity relevan sebelum ekspansi besar.
+D-007: AI hanya melalui Edit Plan/Command tervalidasi dan undoable.
+D-008: Fokus specialized geopolitics/documentary editor, bukan clone NLE umum.
+D-009: Windows 11 x64; portable multi-file ZIP default.
+D-010: Gemini V1; credential tidak plaintext.
+D-011: No fake capability / no unsupported controls.
+D-012: Planning/reference DOCX wajib di repo sebelum coding.
+D-013 - NEW STEP 00: SF-STEP dan TECH-WAVE adalah namespace berbeda; TECH-WAVE Bab 31 tidak boleh dibaca sebagai fase Factory.
+D-014 - NEW STEP 00: Repo dibuat lebih awal sebagai docs-only checkpoint. Ini bukan bukti SF-STEP 08 selesai dan tidak mengotorisasi coding.
+
+7. WORKING AGREEMENT
+- Hanya satu SF-STEP aktif pada satu waktu; perintah "lanjutkan" berarti exact next action, bukan seluruh roadmap.
+- ASTRA memimpin planning; SOL memimpin implementasi setelah fase yang tepat.
+- Setiap STEP planning dibuatkan DOCX detail dan disimpan ke repo bersama mirror machine-readable bila perlu.
+- Tidak ada coding production sebelum planning/reference pra-coding lengkap dan gate mengizinkan.
+- UI tidak boleh diimplementasikan sebelum inventory, prompt/reference, review, dan freeze selesai. Jika owner rule UI meminta berhenti setelah prompt UI, AI wajib berhenti sampai seluruh gambar selesai, diperiksa, direvisi, dan reference DOCX final tersedia.
+- Repo lama tidak disentuh.
+- Jangan copy/fork code OpenShot besar sebelum license strategy jelas.
+- Jangan menyimpan secret di repo, DOCX, log, project file, fixture, atau screenshot.
+- Jangan mengklaim VERIFIED bila hanya PLANNED atau belum diuji.
+- Sebelum sesi berakhir, state/handoff diperbarui bila ada perubahan bermakna.
+- Keputusan teknis lokal berisiko rendah boleh diambil AI; pengguna hanya diminta keputusan produk/biaya/privasi/tampilan/tindakan sulit dibatalkan.
+
+8. ACCESS & CAPABILITY MATRIX
+GitHub read | AVAILABLE | Repo target dan source-of-truth berhasil dibaca.
+GitHub write | AVAILABLE | Dokumentasi/handoff dapat di-commit; STEP 00 tidak mengizinkan source code.
+DOCX create/read | AVAILABLE | Planning DOCX dapat dibuat, dirender, diperiksa, dan disimpan.
+Library/file retrieval | AVAILABLE | Software Factory dan evidence terdahulu dapat ditemukan.
+Web research | AVAILABLE / LIMITED BY STEP | Tidak mengulang discovery formal pada STEP 00.
+Image generation | AVAILABLE LATER | Belum digunakan; UI imagery pada SF-STEP 04.
+Windows native runtime | NOT VERIFIED IN THIS SESSION | Bukan requirement STEP 00.
+Gemini/API credentials | NOT CONFIGURED / NOT REQUIRED | Planning tidak membutuhkan secret.
+CI/build | NOT PRESENT | Belum ada source/CI product.
+Release | NOT APPLICABLE | Tidak ada artifact aplikasi.
+
+9. GIT/GITHUB BASELINE
+Current reviewed HEAD: 61d80ee468cd01addc2a4f5f27ed568e7b835547
+Branch: main
+Source code: Tidak ada
+Allowed writes before SF-STEP 08: Planning/reference, status, handoff, decision logs, evidence.
+Disallowed writes: Source implementation, upstream copy/fork, build workflow yang menyiratkan implementasi dimulai, release artifact.
+Checkpoint policy: Setiap STEP planning selesai di-commit; status/handoff menunjuk exact next action.
+Recovery: Repo + DOCX menjadi redundant record; jangan bergantung pada memory chat saja.
+
+10. CONSTRAINTS / NON-GOALS
+Platform: Windows 11 x64 V1.
+Packaging: Portable multi-file ZIP default; final detail later.
+Domain: Video geopolitik/dokumenter/explainers; bukan NLE general-purpose penuh.
+AI: Gemini V1; command-based; manual editor canonical.
+Credentials: Max 100 slot; secure storage; no plaintext.
+Legacy parity: Feature parity relevan dipertahankan tanpa mewarisi arsitektur custom yang rapuh.
+Engine: Jangan membangun media/timeline engine umum dari nol bila foundation matang tersedia.
+UI: Belum ada final UI; jangan desain/implement di STEP 00.
+Upstream adoption: Belum final; formal audit SF-STEP 02 dan architecture/license SF-STEP 06.
+Coding: Dilarang pada STEP 00.
+
+11. SAFETY BOUNDARIES
+Secrets: Jangan meminta, menyimpan, menyalin, screenshot, atau commit API key pada planning.
+User media: Tidak dibutuhkan pada STEP 00.
+Repo lama: READ-ONLY absolut untuk scope proyek baru.
+Upstream code: Jangan copy substantial openshot-qt/libopenshot code sebelum lisensi dan integration strategy diputuskan.
+Irreversible Git: Tidak ada force push/history rewrite/release/tag pada planning.
+Claims: Gunakan PLANNED/VERIFIED/NOT TESTED; jangan menyebut stabil tanpa E2E/runtime evidence.
+AI autonomy: Tidak membuat keputusan bisnis/legal material diam-diam.
+External API: Tidak melakukan call Gemini saat planning.
+Credential rotation: Tidak merancang pola untuk mengakali quota/rate limit; pool hanya untuk resiliency yang sah/error handling.
+
+12. INITIAL RISK REGISTER
+R-01 | Blueprint dibuat sebelum formal SF-STEP 01/06 sehingga detail arsitektur bisa dianggap final terlalu dini. | HIGH | MEDIUM | MITIGATED | STEP berikutnya memetakan/validasi, bukan menulis ulang.
+R-02 | openshot-qt GPL dan libopenshot LGPL dapat memengaruhi strategi distribusi/copy code. | CRITICAL | MEDIUM | OPEN | Audit formal SF-STEP 02 + license decision SF-STEP 06.
+R-03 | Repo dibuat sebelum SF-STEP 08 dapat membuat AI menganggap coding sudah boleh. | HIGH | HIGH | MITIGATED | Docs-only + AGENTS + D-014.
+R-04 | AI lain dapat menyamakan SF-STEP dengan TECH-WAVE blueprint. | HIGH | HIGH | MITIGATED | D-013.
+R-05 | Native libopenshot/Qt/FFmpeg packaging Windows bisa kompleks. | HIGH | MEDIUM | OPEN | Engine spike/packaging proof nanti.
+R-06 | Feature parity bisa melebar menjadi clone editor umum. | HIGH | MEDIUM | OPEN | Specialized workflow + non-goals + parity matrix.
+R-07 | Preview/export parity drift bila editor shell dan renderer memakai jalur berbeda. | HIGH | MEDIUM | OPEN | Shared canonical projection/engine + golden frame tests.
+R-08 | 100 Gemini credential berisiko secret leakage/logging errors. | CRITICAL | LOW/MEDIUM | OPEN | Secure OS storage, masking, redaction.
+R-09 | AI auto-edit dapat membuat perubahan terlalu luas atau stale. | HIGH | MEDIUM | OPEN | Strict schema, semantic validator, revision, transaction + undo.
+R-10 | Accidental writes ke repo lama. | CRITICAL | LOW | MITIGATED | READ-ONLY di source-of-truth.
+R-11 | Dokumentasi drift lintas sesi. | HIGH | MEDIUM | MITIGATED | Canonical status/handoff + source-of-truth index + per-step DOCX.
+R-12 | UI dibuat terlalu dini sehingga redesign mahal. | HIGH | HIGH | MITIGATED | SF-STEP 03-05 + owner UI stop rule.
+R-13 | Formal discovery mengandalkan riset lama yang bisa berubah. | MEDIUM | MEDIUM | OPEN | Re-verify upstream pada SF-STEP 02.
+R-14 | Stabilitas diklaim hanya dari unit tests/compile. | HIGH | MEDIUM | OPEN | Golden E2E, visual, packaged smoke, direct owner test.
+
+13. OPEN / PROVISIONAL ITEMS
+O-01 | Lisensi source AI Ngerti Geopolitik dan cara reuse OpenShot/libopenshot. | SF-STEP 02/06
+O-02 | Exact strategy full openshot-qt fork, selective reuse, libopenshot adapter, atau hybrid. | SF-STEP 02/06
+O-03 | Final PySide/Qt integration, native dependency bundling, Windows toolchain. | SF-STEP 06
+O-04 | Final UI inventory/screen/state/reference. | SF-STEP 03-05
+O-05 | Project schema/file extension final and migration strategy. | SF-STEP 06/07
+O-06 | Exact Gemini model default/API behavior. | SF-STEP 12/current verification
+O-07 | Performance targets berdasarkan target PC nyata. | SF-STEP 06/10/13
+O-08 | Mapping 21 legacy animation effects ke exact/approx/unsupported engine primitives. | SF-STEP 02/06/11
+O-09 | Full legacy AAVC project importer scope. | Setelah schema baru stabil/later wave
+O-10 | Final release license notices/attribution. | SF-STEP 14/15
+No open item blocks STEP 00.
+
+14. STEP 00 ACCEPTANCE CHECKLIST
+Jenis proyek diklasifikasikan: PASS
+Repo target dan baseline SHA diverifikasi: PASS
+Source code baseline diidentifikasi: PASS - NONE
+Instruksi pengguna terbaru/cadence satu STEP dipahami: PASS
+Software Factory master/guide dibaca: PASS
+Master Blueprint dibaca sebagai evidence: PASS
+Input registry dibuat: PASS
+Source-of-truth precedence ditetapkan: PASS
+Working agreement ditetapkan: PASS
+Protected repo/artifact boundaries ditetapkan: PASS
+Secret/data overwrite risk diperiksa: PASS
+Git/GitHub docs-only exception dicatat: PASS
+SF-STEP vs TECH-WAVE ambiguity diselesaikan: PASS
+Risk register dibuat: PASS
+Open/provisional items dialokasikan ke STEP tepat: PASS
+Tidak ada coding/UI generation/build pada STEP 00: PASS
+Handoff ke STEP 01 siap: PASS
+
+15. HANDOFF SF-STEP 00 -> SF-STEP 01
+Project: AI Ngerti Geopolitik
+SF-STEP 00 status: PASS WITH RECORDED OPEN ITEMS
+Project mode: NEW_GREENFIELD + docs-only target repo
+Baseline reviewed: main @ 61d80ee468cd01addc2a4f5f27ed568e7b835547 sebelum commit output STEP 00
+Source code: NONE
+Primary product source: 00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx/TXT
+Process source: 00_MASTER_SOFTWARE_FACTORY_PROMPT.txt + panduan Software Factory
+Locked safety: Repo AI-Automatic-Video-Composer READ-ONLY; no code before gates; no secrets.
+Important process decision: SF-STEP != TECH-WAVE.
+Product direction: Stable specialized geopolitics/documentary editor; OpenShot/libopenshot candidate; feature parity first; AI command-based.
+Inputs for STEP 01: Master Blueprint + STEP 00 DOCX + locked decisions + status/handoff.
+Do not redo: Jangan menulis product vision dari nol. STEP 01 harus memetakan dan memvalidasi Master Blueprint terhadap Product Definition gate.
+Primary STEP 01 question: Apakah problem statement, target user, primary workflow, mandatory/optional features, input/output, non-goals, success criteria, dan Product Done sudah konsisten dan dapat diuji?
+Exact next action: Setelah pemilik berkata "lanjutkan", kerjakan SF-STEP 01 Product Definition saja; buat DOCX detail, commit, update status/handoff, lalu berhenti.
+
+16. GATE DECISION
+SF-STEP 00 GATE: PASS WITH RECORDED OPEN ITEMS
+PASS hanya mengizinkan STEP 01 setelah perintah pengguna. Tidak mengizinkan coding/UI/fork/build/release.
+BERHENTI DI SINI. SF-STEP 01 BELUM DIKERJAKAN.
+
+APPENDIX A - EVIDENCE SNAPSHOT
+GitHub repo | inoriko920-dev/AI-Ngerti-Geopolitik | VERIFIED
+Branch | main | VERIFIED
+Baseline HEAD | 61d80ee468cd01addc2a4f5f27ed568e7b835547 | VERIFIED
+Root | AGENTS.md, HANDOFF.md, README.md, docs/ | VERIFIED
+Planning blueprint | docs/planning/00_MASTER_BLUEPRINT_AI_NGERTI_GEOPOLITIK.docx + .txt | VERIFIED
+Software Factory | docs/software_factory/00_MASTER_SOFTWARE_FACTORY_PROMPT.txt + panduan DOCX/TXT | VERIFIED
+Current source code | None | VERIFIED ABSENT
+Old repo modification | None performed in STEP 00 | VERIFIED BY SCOPE
+OpenShot research | OpenShot v4.0.1 / libopenshot v1.0.1 prior evidence | PROVISIONAL UNTIL SF-STEP 02
+
+APPENDIX B - AI SESSION STARTUP CHECKLIST
+- Baca AGENTS.md.
+- Baca Master Software Factory dan prompt STEP aktif bila tersedia.
+- Baca seluruh planning/reference yang berlaku, termasuk DOCX atau mirror TXT.
+- Baca HANDOFF, PROJECT_STATUS, DECISIONS_LOCKED, REPOSITORY_RULES.
+- Verifikasi HEAD aktual; jangan mengandalkan SHA lama jika repo berubah.
+- Identifikasi SF-STEP aktif dan jangan tertukar dengan TECH-WAVE.
+- Verifikasi area read-only dan perubahan yang diizinkan.
+- Kerjakan hanya output/gate STEP aktif.
+- Update status + handoff sebelum berhenti.
+- Jangan menyebut selesai bila evidence belum ada.
