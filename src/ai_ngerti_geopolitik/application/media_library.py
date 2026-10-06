@@ -104,5 +104,5 @@ class MediaBinController:
             return False
         if not needle:
             return True
-        haystack = " ".join((asset.asset_id, asset.source_name, asset.path_ref)).casefold()
+        haystack = " ".join((asset.asset_id, asset.source_name, asset.media_type)).casefold()
         return needle in haystack
