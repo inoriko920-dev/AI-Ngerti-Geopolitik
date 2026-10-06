@@ -6,6 +6,7 @@ from typing import Any
 
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentSink, UiIntentType
 from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label, section_title
+from ai_ngerti_geopolitik.presentation.property_inspector import create_property_inspector
 from ai_ngerti_geopolitik.presentation.design_tokens import COLORS, METRICS
 from ai_ngerti_geopolitik.presentation.visual_mock import asset_pixmap, scene_pixmap
 
@@ -607,7 +608,10 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
         right.addTab(QWidget(), "Animasi")
         right.addTab(_ai_placeholder(), "AI Agent")
     else:
-        right.addTab(_layout_inspector(mode), "Layout")
+        right.addTab(
+            create_property_inspector(mode, intent_sink, clip_id="C001"),
+            "Layout",
+        )
         right.addTab(QWidget(), "Animasi")
         right.addTab(_ai_placeholder(), "AI Agent")
 
