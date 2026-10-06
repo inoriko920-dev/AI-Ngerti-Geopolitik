@@ -81,7 +81,7 @@ class MltProcessPlaybackTransport:
             "-consumer",
             self.consumer,
             "terminate_on_pause=1",
-            "real_time=-1",
+            "real_time=1",
         ]
 
     def play(self) -> None:
