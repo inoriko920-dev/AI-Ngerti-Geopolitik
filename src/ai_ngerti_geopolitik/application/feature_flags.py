@@ -33,22 +33,34 @@ _FLAGS = (
     FeatureFlag(
         "mlt_windows_runtime",
         FeatureState.VERIFIED,
-        "W0 run 37533447729 proved MLT 7.40.0-2 playback, seek, Python binding and avformat render on Windows.",
+        (
+            "W0 run 37533447729 proved MLT 7.40.0-2 playback, seek, "
+            "Python binding and avformat render on Windows."
+        ),
     ),
     FeatureFlag(
         "production_media_engine",
         FeatureState.QUALIFYING,
-        "MLT is the accepted primary implementation candidate; final bundled native package/license chain remains a later release gate.",
+        (
+            "MLT is the accepted primary implementation candidate; final bundled "
+            "native package/license chain remains a later release gate."
+        ),
     ),
     FeatureFlag(
         "continuous_playback",
         FeatureState.QUALIFYING,
-        "Native MLT playback/seek is qualified; real Qt transport integration is scheduled for W2.",
+        (
+            "Native MLT playback/seek is qualified; real Qt transport integration "
+            "is scheduled for W2."
+        ),
     ),
     FeatureFlag(
         "libopenshot_direct_binding",
         FeatureState.BLOCKED,
-        "Windows build/package evidence plus libopenshot-audio licensing remains insufficient for direct production adoption.",
+        (
+            "Windows build/package evidence plus libopenshot-audio licensing remains "
+            "insufficient for direct production adoption."
+        ),
     ),
     FeatureFlag(
         "gemini_service",
