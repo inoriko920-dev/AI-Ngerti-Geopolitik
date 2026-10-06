@@ -4,6 +4,7 @@ from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any
 
+from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentSink, UiIntentType
 from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label, section_title
 from ai_ngerti_geopolitik.presentation.design_tokens import COLORS, METRICS
 from ai_ngerti_geopolitik.presentation.visual_mock import asset_pixmap, scene_pixmap
@@ -109,7 +110,20 @@ def _scene_list() -> Any:
     return widget
 
 
-def _preview_widget(mode: str) -> tuple[Any, Any, Any]:
+def _emit_ui_intent(
+    intent_sink: UiIntentSink | None,
+    kind: UiIntentType,
+    **payload: str,
+) -> None:
+    if intent_sink is None:
+        return
+    intent_sink(UiIntent(kind, tuple(sorted(payload.items()))))
+
+
+def _preview_widget(
+    mode: str,
+    intent_sink: UiIntentSink | None,
+) -> tuple[Any, Any, Any]:
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import (
         QFrame,
@@ -146,16 +160,63 @@ def _preview_widget(mode: str) -> tuple[Any, Any, Any]:
     layout.addWidget(frame, 1)
 
     transport = QHBoxLayout()
-    transport.addWidget(QLabel("00:00:12:08  /  00:01:28:00"))
+    timecode = QLabel("00:00:12:08  /  00:01:28:00")
+    timecode.setObjectName("preview_timecode")
+    transport.addWidget(timecode)
     transport.addStretch(1)
-    for label in ["◀", "▶", "▶|", "🔊"]:
-        transport.addWidget(QPushButton(label))
+
+    previous = QPushButton("◀")
+    previous.setObjectName("btn_playback_previous")
+    previous.setAccessibleName("Frame sebelumnya")
+    previous.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_SEEK, delta="-1")
+    )
+    transport.addWidget(previous)
+
+    play = QPushButton("▶")
+    play.setObjectName("btn_playback_play")
+    play.setAccessibleName("Putar")
+    play.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PLAY)
+    )
+    transport.addWidget(play)
+
+    pause = QPushButton("Ⅱ")
+    pause.setObjectName("btn_playback_pause")
+    pause.setAccessibleName("Jeda")
+    pause.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PAUSE)
+    )
+    transport.addWidget(pause)
+
+    next_button = QPushButton("▶|")
+    next_button.setObjectName("btn_playback_next")
+    next_button.setAccessibleName("Frame berikutnya")
+    next_button.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_SEEK, delta="1")
+    )
+    transport.addWidget(next_button)
+
+    volume = QPushButton("🔊")
+    volume.setObjectName("btn_playback_volume")
+    volume.setAccessibleName("Audio preview")
+    transport.addWidget(volume)
+
     slider = QSlider(Qt.Orientation.Horizontal)
+    slider.setObjectName("timeline_scrubber")
+    slider.setRange(0, 100)
     slider.setValue(34)
+    slider.setTracking(False)
+    slider.sliderReleased.connect(
+        lambda: _emit_ui_intent(
+            intent_sink,
+            UiIntentType.PLAYBACK_SEEK,
+            frame=str(slider.value()),
+        )
+    )
     transport.addWidget(slider, 1)
     layout.addLayout(transport)
     return outer, frame, canvas
-
 
 def _overview_inspector() -> Any:
     from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
@@ -336,17 +397,92 @@ def _ai_placeholder() -> Any:
     return widget
 
 
-def _timeline_widget() -> Any:
+def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     from PySide6.QtCore import Qt
-    from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QVBoxLayout
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QFrame,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QVBoxLayout,
+    )
 
     outer = QFrame()
+    outer.setObjectName("timeline_panel")
     outer.setProperty("panel", True)
     layout = QVBoxLayout(outer)
     layout.setContentsMargins(6, 6, 6, 6)
-    layout.addWidget(
-        QLabel("Timeline     00:00:00     00:00:20     00:00:40     00:01:00     00:01:20")
+    layout.setSpacing(5)
+
+    controls = QHBoxLayout()
+    split_button = QPushButton("Split")
+    split_button.setObjectName("btn_timeline_split")
+    split_button.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SPLIT)
     )
+    controls.addWidget(split_button)
+
+    in_button = QPushButton("IN")
+    in_button.setObjectName("btn_timeline_set_in")
+    in_button.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_IN)
+    )
+    controls.addWidget(in_button)
+
+    out_button = QPushButton("OUT")
+    out_button.setObjectName("btn_timeline_set_out")
+    out_button.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_OUT)
+    )
+    controls.addWidget(out_button)
+
+    clear_range = QPushButton("Clear")
+    clear_range.setObjectName("btn_timeline_clear_range")
+    clear_range.clicked.connect(
+        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_CLEAR_RANGE)
+    )
+    controls.addWidget(clear_range)
+
+    marker_button = QPushButton("Marker")
+    marker_button.setObjectName("btn_timeline_add_marker")
+    marker_button.clicked.connect(
+        lambda: _emit_ui_intent(
+            intent_sink,
+            UiIntentType.TIMELINE_ADD_MARKER,
+            label="Marker",
+        )
+    )
+    controls.addWidget(marker_button)
+
+    snap = QCheckBox("Snap")
+    snap.setObjectName("check_timeline_snap")
+    snap.setChecked(True)
+    controls.addWidget(snap)
+
+    controls.addStretch(1)
+    controls.addWidget(QLabel("Zoom"))
+    zoom = QComboBox()
+    zoom.setObjectName("combo_timeline_zoom")
+    zoom.addItems(["25%", "50%", "100%", "200%", "400%"])
+    zoom.setCurrentText("100%")
+    controls.addWidget(zoom)
+
+    controls.addWidget(QLabel("Follow"))
+    follow = QComboBox()
+    follow.setObjectName("combo_timeline_follow")
+    follow.addItems(["On", "Smooth", "Off"])
+    controls.addWidget(follow)
+    layout.addLayout(controls)
+
+    ruler = QLabel(
+        "Timeline     00:00:00     00:00:20     00:00:40     00:01:00     00:01:20"
+    )
+    ruler.setObjectName("timeline_ruler")
+    layout.addWidget(ruler)
+
     grid = QGridLayout()
     grid.setHorizontalSpacing(3)
     grid.setVerticalSpacing(4)
@@ -357,7 +493,12 @@ def _timeline_widget() -> Any:
         ("A2  Narasi", ["narasi-001.mp3", "", "", ""]),
         (
             "S1  Subtitle",
-            ["Pagi yang cerah...", "Seekor kucing...", "Ia melihat bunga...", "Lalu melompat..."],
+            [
+                "Pagi yang cerah...",
+                "Seekor kucing...",
+                "Ia melihat bunga...",
+                "Lalu melompat...",
+            ],
         ),
         ("B1  Background", ["background_white_paper.jpg", "", "", ""]),
     ]
@@ -379,12 +520,12 @@ def _timeline_widget() -> Any:
             else:
                 color = "#F5F1EA"
             label.setStyleSheet(
-                f"background:{color}; border:1px solid #CBD5E1; border-radius:4px; padding:7px;"
+                f"background:{color}; border:1px solid #CBD5E1; "
+                "border-radius:4px; padding:7px;"
             )
             grid.addWidget(label, row_index, column_index)
     layout.addLayout(grid, 1)
     return outer
-
 
 def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) -> EditorShellParts:
     from PySide6.QtCore import Qt
@@ -411,7 +552,7 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
     left.setCurrentIndex(0 if mode == "overview" else 1)
 
     preview_mode = mode if mode in {"single", "double", "subtitle"} else "overview"
-    preview, frame, preview_label = _preview_widget(preview_mode)
+    preview, frame, preview_label = _preview_widget(preview_mode, intent_sink)
 
     right = QTabWidget()
     right.setMinimumWidth(300)
@@ -433,7 +574,7 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
     upper.addWidget(right)
     upper.setSizes([METRICS.left_ref_w, 1260, METRICS.right_ref_w])
 
-    timeline = _timeline_widget()
+    timeline = _timeline_widget(intent_sink)
     timeline.setMinimumHeight(METRICS.timeline_min_h)
     outer = QSplitter(Qt.Orientation.Vertical)
     outer.addWidget(upper)
