@@ -10,6 +10,7 @@ from dataclasses import dataclass, replace
 from enum import StrEnum
 
 from ai_ngerti_geopolitik.application.commands import (
+    Command,
     CommandBatch,
     CommandBus,
     SetClipPropertiesCommand,
@@ -101,7 +102,7 @@ class PropertyController:
         if self.playback is not None:
             self.playback.prepare_edit()
 
-    def _execute(self, label: str, command: object) -> ProjectState:
+    def _execute(self, label: str, command: Command) -> ProjectState:
         self._prepare_edit()
         state = self.bus.execute(
             CommandBatch(
