@@ -37,14 +37,16 @@ class JsonProjectRepository:
         if path.suffix.lower() != ".angproj":
             raise ProjectFormatError("project file must use .angproj")
         data = state.semantic_dict(include_revision=True)
-        payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\\n"\n
+        payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
         temp_path: Path | None = None
         backup_temp: Path | None = None
         try:
             with tempfile.NamedTemporaryFile(
                 "w",
                 encoding="utf-8",
-                newline="\\n",\n                dir=path.parent,
+                newline="\n",
+                dir=path.parent,
                 prefix=f".{path.name}.",
                 suffix=".tmp",
                 delete=False,
@@ -95,7 +97,7 @@ class JsonProjectRepository:
             height=int(settings_raw.get("height", 1080)),
             aspect_ratio=str(settings_raw.get("aspect_ratio", "16:9")),
         )
-        assets = tuple(self._decode_asset(item, fps) for item in raw.get("assets", []))
+        assets = tuple(self._decode_asset(item) for item in raw.get("assets", []))
         tracks: list[Track] = []
         for item in raw.get("tracks", []):
             clips = tuple(
@@ -140,7 +142,7 @@ class JsonProjectRepository:
         return state
 
     @staticmethod
-    def _decode_asset(item: dict[str, Any], _fps: int) -> Asset:
+    def _decode_asset(item: dict[str, Any]) -> Asset:
         path_ref = str(item["path_ref"])
         return Asset(
             asset_id=str(item["asset_id"]),
