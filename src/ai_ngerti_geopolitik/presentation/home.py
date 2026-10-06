@@ -55,8 +55,7 @@ def create_home_screen(
     title.setAlignment(Qt.AlignmentFlag.AlignCenter)
     title.setStyleSheet("font-size:34px; font-weight:750; margin-top:10px;")
     subtitle = muted_label(
-        "Buat proyek baru atau buka proyek yang sudah ada
-untuk mulai mengedit video dengan bantuan AI."
+        "Buat proyek baru atau buka proyek yang sudah ada\nuntuk mulai mengedit video dengan bantuan AI."
     )
     subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
     subtitle.setStyleSheet("font-size:15px; color:#64748B;")
@@ -130,8 +129,7 @@ untuk mulai mengedit video dengan bantuan AI."
     cards.addWidget(
         action_card(
             "Proyek Baru",
-            "Buat proyek video baru
-dengan bantuan AI",
+            "Buat proyek video baru\ndengan bantuan AI",
             "+",
             primary=True,
             callback=open_new,
@@ -141,8 +139,7 @@ dengan bantuan AI",
     cards.addWidget(
         action_card(
             "Buka Proyek",
-            "Buka proyek yang sudah ada
-dari perangkat Anda",
+            "Buka proyek yang sudah ada\ndari perangkat Anda",
             "▱",
             primary=False,
             callback=open_existing,
