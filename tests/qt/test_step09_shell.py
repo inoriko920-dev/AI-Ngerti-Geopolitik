@@ -13,7 +13,7 @@ def test_home_routes_to_new_project_and_emits_intent(qtbot) -> None:
     qtbot.addWidget(window.window)
     window.show()
 
-    button = window.window.findChild(QPushButton, "card_new_project")
+    button = window.window.findChild(QPushButton, "btn_home_new_project")
     assert button is not None
     qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
     assert window.window.property("ui_state") == "UI-003"

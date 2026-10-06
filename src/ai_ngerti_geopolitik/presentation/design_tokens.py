@@ -47,13 +47,13 @@ COLORS = Colors()
 METRICS = Metrics()
 
 
-def app_stylesheet() -> str:
+def app_stylesheet(font_family: str = "Segoe UI") -> str:
     """Return the canonical QSS used by STEP 09 widgets."""
     c = COLORS
     return f"""
     QMainWindow, QWidget {{
         background: {c.app_bg}; color: {c.text};
-        font-family: 'Segoe UI'; font-size: 12px;
+        font-family: '{font_family}'; font-size: 12px;
     }}
     QMenuBar {{ background: {c.surface}; border-bottom: 1px solid {c.border}; }}
     QMenuBar::item {{ padding: 7px 10px; background: transparent; }}

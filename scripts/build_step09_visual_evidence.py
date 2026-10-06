@@ -64,7 +64,7 @@ def main() -> int:
         pair.fill(QColor("#F4F7FB"))
         painter = QPainter(pair)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-        title_font = QFont("Segoe UI", 18)
+        title_font = QFont("Arial", 18)
         title_font.setBold(True)
         painter.setFont(title_font)
         painter.setPen(QColor("#172033"))
@@ -74,7 +74,7 @@ def main() -> int:
             state,
         )
 
-        label_font = QFont("Segoe UI", 11)
+        label_font = QFont("Arial", 11)
         label_font.setBold(True)
         painter.setFont(label_font)
         painter.drawText(

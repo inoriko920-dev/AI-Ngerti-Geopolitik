@@ -33,7 +33,11 @@ class MainWindow:
         self.window.setWindowTitle("AI Ngerti Geopolitik")
         self.window.resize(1600, 900)
         self.window.setMinimumSize(1280, 720)
-        self.window.setStyleSheet(app_stylesheet())
+        from PySide6.QtGui import QFontDatabase
+
+        families = set(QFontDatabase.families())
+        font_family = "Segoe UI" if "Segoe UI" in families else ("Arial" if "Arial" in families else self.window.font().family())
+        self.window.setStyleSheet(app_stylesheet(font_family))
         self.stack = QStackedWidget()
         self.stack.setObjectName("stack_main_routes")
         self.window.setCentralWidget(self.stack)
@@ -150,17 +154,24 @@ class MainWindow:
         from ai_ngerti_geopolitik.presentation.home import create_home_screen
         from ai_ngerti_geopolitik.presentation.new_project import create_new_project_screen
 
+        def open_new_project() -> None:
+            self._emit(UiIntentType.NEW_PROJECT)
+            self.show_route(UiRoute.NEW_PROJECT_DOCX)
+
+        def open_existing_project() -> None:
+            self._emit(UiIntentType.OPEN_PROJECT)
+
         self._route_widgets[UiRoute.HOME] = create_home_screen(
-            lambda: self.show_route(UiRoute.NEW_PROJECT_DOCX),
-            lambda: self._emit(UiIntentType.OPEN_PROJECT),
-            self.intent_sink,
-            fixture_mode=self.fixture_mode,
+            open_new_project,
+            open_existing_project,
         )
+        def continue_new_project() -> None:
+            self._emit(UiIntentType.NEW_PROJECT, action="continue_wizard")
+            self.show_route(UiRoute.EDITOR)
+
         self._route_widgets[UiRoute.NEW_PROJECT_DOCX] = create_new_project_screen(
             lambda: self.show_route(UiRoute.HOME),
-            lambda: self.show_route(UiRoute.EDITOR),
-            self.intent_sink,
-            fixture_mode=self.fixture_mode,
+            continue_new_project,
         )
         self._route_widgets[UiRoute.EDITOR] = create_editor_shell("overview", self.intent_sink).root
         self._route_widgets[UiRoute.SCENE_SINGLE] = create_editor_shell(

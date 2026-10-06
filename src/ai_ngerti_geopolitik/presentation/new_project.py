@@ -3,20 +3,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentSink, UiIntentType
-from ai_ngerti_geopolitik.presentation.common import (
-    horizontal_rule,
-    make_primary_button,
-    muted_label,
-)
+from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label
 
 
 def create_new_project_screen(
     on_back: Callable[[], None],
     on_continue: Callable[[], None],
-    intent_sink: UiIntentSink,
-    *,
-    fixture_mode: bool,
 ) -> Any:
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import (
@@ -37,70 +29,73 @@ def create_new_project_screen(
     page.setSpacing(0)
 
     sidebar = QFrame()
-    sidebar.setObjectName("pane_project_sidebar")
     sidebar.setFixedWidth(260)
     sidebar.setStyleSheet("background:#F7FAFE; border-right:1px solid #D8E2EE;")
     side = QVBoxLayout(sidebar)
-    side.setContentsMargins(18, 18, 18, 20)
-    side.setSpacing(10)
-    brand = QLabel("▣  AI Ngerti Geopolitik")
-    brand.setStyleSheet("font-size:15px; font-weight:700; padding:8px;")
+    side.setContentsMargins(18, 26, 18, 26)
+    side.setSpacing(12)
+    brand = QLabel("▣  AI Ngerti\n    Geopolitik")
+    brand.setStyleSheet("font-size:16px; font-weight:700; padding:8px;")
     side.addWidget(brand)
-    side.addSpacing(10)
-    items = [
-        ("▣", "Proyek Baru", True),
-        ("▱", "Proyek Saya", False),
-        ("⚙", "Pengaturan", False),
-        ("?", "Bantuan", False),
-    ]
-    for icon, item_text, active in items:
-        item = QLabel(f"{icon}   {item_text}")
-        item.setMinimumHeight(44)
-        if active:
-            item.setStyleSheet(
-                "padding:8px 12px; background:#DBEAFE; color:#1D4ED8; "
-                "border-radius:7px; font-weight:650;"
+    side.addSpacing(12)
+    for label, active in [
+        ("＋  Proyek Baru", True),
+        ("▱  Proyek Saya", False),
+        ("⚙  Pengaturan", False),
+        ("?   Bantuan", False),
+    ]:
+        button = QPushButton(label)
+        button.setMinimumHeight(48)
+        button.setStyleSheet(
+            (
+                "text-align:left; padding:10px 14px; background:#DBEAFE; color:#1D4ED8; "
+                "border:1px solid #BFDBFE; border-radius:8px; font-weight:650;"
             )
-        else:
-            item.setStyleSheet("padding:8px 12px; color:#475569;")
-        side.addWidget(item)
+            if active
+            else (
+                "text-align:left; padding:10px 14px; background:transparent; "
+                "border:1px solid transparent; color:#334155;"
+            )
+        )
+        side.addWidget(button)
     side.addStretch(1)
     page.addWidget(sidebar)
 
     content = QWidget()
     outer = QVBoxLayout(content)
-    outer.setContentsMargins(74, 36, 74, 36)
+    outer.setContentsMargins(90, 42, 90, 42)
     outer.setSpacing(0)
 
     card = QFrame()
-    card.setObjectName("panel_new_project_wizard")
     card.setProperty("panel", True)
     card.setMaximumWidth(1240)
     inner = QVBoxLayout(card)
-    inner.setContentsMargins(36, 26, 36, 26)
-    inner.setSpacing(16)
+    inner.setContentsMargins(36, 28, 36, 28)
+    inner.setSpacing(18)
 
     stepper = QHBoxLayout()
-    stepper.setSpacing(10)
+    stepper.setSpacing(12)
     steps = [("1", "Scene DOCX", True), ("2", "Folder Aset", False), ("3", "Media", False)]
-    for index, (number, step_name, active) in enumerate(steps):
+    for index, (number, label, active) in enumerate(steps):
         circle = QLabel(number)
         circle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        circle.setFixedSize(36, 36)
+        circle.setFixedSize(38, 38)
         circle.setStyleSheet(
-            "background:#2563EB; color:white; border-radius:18px; font-weight:700;"
+            (
+                "background:#2563EB; color:white; border-radius:19px; font-weight:700;"
+            )
             if active
             else (
                 "background:#F8FAFC; color:#64748B; border:1px solid #CBD5E1; "
-                "border-radius:18px; font-weight:700;"
+                "border-radius:19px; font-weight:700;"
             )
         )
-        step_text_widget: Any = QLabel(step_name)
-        step_text_widget.setStyleSheet(
+        text = QLabel(label)
+        text.setStyleSheet(
             "font-weight:650; color:#1D4ED8;" if active else "color:#64748B;"
         )
         stepper.addWidget(circle)
-        stepper.addWidget(step_text_widget)
+        stepper.addWidget(text)
         if index < len(steps) - 1:
             line = QFrame()
             line.setFixedHeight(1)
@@ -108,33 +103,36 @@ def create_new_project_screen(
             line.setStyleSheet("background:#CBD5E1;")
             stepper.addWidget(line, 1)
     inner.addLayout(stepper)
-    inner.addWidget(horizontal_rule())
+
+    rule = QFrame()
+    rule.setFixedHeight(1)
+    rule.setStyleSheet("background:#D8E2EE;")
+    inner.addWidget(rule)
 
     title = QLabel("Pilih Scene DOCX")
     title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    title.setStyleSheet("font-size:25px; font-weight:750; margin-top:6px;")
-    desc = muted_label("Unggah file DOCX yang berisi daftar scene beserta mapping aset.")
-    desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    desc.setStyleSheet("font-size:14px; color:#64748B;")
+    title.setStyleSheet("font-size:26px; font-weight:750; margin-top:8px;")
+    description = muted_label("Unggah file DOCX yang berisi daftar scene beserta mapping aset.")
+    description.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    description.setStyleSheet("font-size:14px; color:#64748B;")
     inner.addWidget(title)
-    inner.addWidget(desc)
+    inner.addWidget(description)
 
     dropzone = QFrame()
-    dropzone.setObjectName("drop_scene_docx")
-    dropzone.setMinimumHeight(270)
+    dropzone.setMinimumHeight(285)
     dropzone.setStyleSheet(
         "QFrame {background:#F8FBFF; border:1px dashed #7FB2F4; border-radius:10px;} "
         "QLabel {background:transparent;}"
     )
     drop = QVBoxLayout(dropzone)
-    drop.setContentsMargins(24, 24, 24, 24)
+    drop.setContentsMargins(24, 26, 24, 26)
     drop.setSpacing(10)
     drop.addStretch(1)
     doc_icon = QLabel("DOCX")
     doc_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    doc_icon.setFixedSize(78, 64)
     doc_icon.setStyleSheet(
-        "font-size:16px; font-weight:800; color:white; background:#2563EB; border-radius:8px;"
+        "font-size:20px; font-weight:800; color:white; background:#2563EB; "
+        "border-radius:7px; padding:14px;"
     )
     icon_row = QHBoxLayout()
     icon_row.addStretch(1)
@@ -143,28 +141,29 @@ def create_new_project_screen(
     drop.addLayout(icon_row)
     hint = QLabel("Tarik file DOCX ke sini atau pilih file")
     hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    hint.setStyleSheet("color:#64748B; font-size:14px;")
+    hint.setStyleSheet("color:#64748B; font-size:15px;")
     drop.addWidget(hint)
+
     path = QLineEdit()
     path.setObjectName("field_scene_docx")
-    path.setVisible(fixture_mode)
-    if fixture_mode:
-        path.setText("scene_asset_Sejarah_Arab_Saudi.docx")
-    else:
-        path.setPlaceholderText("scene_asset_[Judul].docx")
+    path.setPlaceholderText("scene_asset_[Judul].docx")
+    path.setVisible(False)
     drop.addWidget(path)
     browse = QPushButton("▱  Pilih DOCX")
     browse.setObjectName("btn_pick_docx")
-    browse.setMinimumWidth(160)
-    browse.setAccessibleName("Pilih Scene DOCX")
+    browse.setMinimumWidth(170)
     browse.setStyleSheet(
         "color:#1D4ED8; border:1px solid #2563EB; border-radius:7px; "
         "padding:9px 18px; font-weight:650; background:white;"
     )
 
     def browse_file() -> None:
-        intent_sink(UiIntent(UiIntentType.NEW_PROJECT, (("action", "pick_docx"),)))
-        chosen, _ = QFileDialog.getOpenFileName(root, "Pilih Scene DOCX", "", "DOCX (*.docx)")
+        chosen, _ = QFileDialog.getOpenFileName(
+            root,
+            "Pilih Scene DOCX",
+            "",
+            "DOCX (*.docx)",
+        )
         if chosen:
             path.setText(chosen)
             path.setVisible(True)
@@ -182,13 +181,9 @@ def create_new_project_screen(
     info = QFrame()
     info.setStyleSheet("background:#F4F8FD; border:1px solid #D8E2EE; border-radius:8px;")
     info_layout = QHBoxLayout(info)
-    info_layout.setContentsMargins(18, 12, 18, 12)
-    info_icon = QLabel("i")
-    info_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    info_icon.setFixedSize(28, 28)
-    info_icon.setStyleSheet(
-        "font-weight:800; color:#2563EB; border:2px solid #2563EB; border-radius:14px;"
-    )
+    info_layout.setContentsMargins(18, 14, 18, 14)
+    info_icon = QLabel("ⓘ")
+    info_icon.setStyleSheet("font-size:22px; color:#2563EB;")
     info_text = QVBoxLayout()
     info_title = QLabel("Persyaratan File DOCX")
     info_title.setStyleSheet("font-weight:700;")
@@ -201,22 +196,23 @@ def create_new_project_screen(
     info_layout.addWidget(info_icon)
     info_layout.addLayout(info_text, 1)
     inner.addWidget(info)
-    inner.addWidget(horizontal_rule())
 
+    footer_rule = QFrame()
+    footer_rule.setFixedHeight(1)
+    footer_rule.setStyleSheet("background:#D8E2EE;")
+    inner.addWidget(footer_rule)
     footer = QHBoxLayout()
-    cancel = QPushButton("Batal")
-    cancel.setObjectName("btn_cancel_new_project")
-    cancel.clicked.connect(on_back)
+    cancel_button = QPushButton("Batal")
+    cancel_button.setObjectName("btn_cancel_new_project")
+    cancel_button.clicked.connect(on_back)
+    back_button = QPushButton("Kembali")
+    back_button.setEnabled(False)
     next_button = make_primary_button("Lanjut", "btn_continue_new_project")
-    next_button.setEnabled(fixture_mode)
-
-    def continue_flow() -> None:
-        intent_sink(UiIntent(UiIntentType.NEW_PROJECT, (("scene_docx", path.text()),)))
-        on_continue()
-
-    next_button.clicked.connect(continue_flow)
-    footer.addWidget(cancel)
+    next_button.setEnabled(False)
+    next_button.clicked.connect(on_continue)
+    footer.addWidget(cancel_button)
     footer.addStretch(1)
+    footer.addWidget(back_button)
     footer.addWidget(next_button)
     inner.addLayout(footer)
 
