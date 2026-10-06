@@ -39,7 +39,10 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
 
     env = os.environ.copy()
-    env.setdefault("QT_QPA_PLATFORM", "offscreen")
+    if sys.platform == "win32":
+        env.pop("QT_QPA_PLATFORM", None)
+    else:
+        env.setdefault("QT_QPA_PLATFORM", "offscreen")
     for state in STATES:
         target = output / f"{state}_ACTUAL.png"
         command = [
