@@ -341,7 +341,17 @@ class TimelineIntentRouter:
         elif intent.kind is UiIntentType.PLAYBACK_PAUSE:
             self.last_result = self.controller.pause()
         elif intent.kind is UiIntentType.PLAYBACK_SEEK:
-            self.last_result = self.controller.scrub(int(self._required(data, "frame")))
+            if "frame" in data:
+                target = int(data["frame"])
+            elif "delta" in data:
+                end = self.controller.state.timeline_end_frame
+                if end <= 0:
+                    raise TimelineError("timeline is empty")
+                current = self.controller.playback.snapshot.frame
+                target = max(0, min(end - 1, current + int(data["delta"])))
+            else:
+                raise TimelineError("frame or delta is required")
+            self.last_result = self.controller.scrub(target)
         elif intent.kind is UiIntentType.SELECT_CLIP:
             self.last_result = self.controller.select_clip(self._required(data, "clip_id"))
         elif intent.kind is UiIntentType.TIMELINE_REORDER:
@@ -373,5 +383,14 @@ class TimelineIntentRouter:
                 data.get("label", "Marker"),
                 frame=int(data["frame"]) if "frame" in data else None,
             )
+        elif intent.kind is UiIntentType.TIMELINE_SET_SNAP:
+            enabled = self._required(data, "enabled").lower() == "true"
+            threshold = int(data["threshold"]) if "threshold" in data else None
+            self.controller.set_snap(enabled, threshold_frames=threshold)
+            self.last_result = self.controller.snapshot
+        elif intent.kind is UiIntentType.TIMELINE_SET_ZOOM:
+            self.last_result = self.controller.set_zoom(float(self._required(data, "zoom")))
+        elif intent.kind is UiIntentType.TIMELINE_SET_FOLLOW:
+            self.last_result = self.controller.set_follow_mode(self._required(data, "mode"))
         else:
             raise TimelineError(f"unsupported W2 timeline intent: {intent.kind}")

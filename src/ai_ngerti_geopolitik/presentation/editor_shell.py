@@ -451,6 +451,13 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     snap = QCheckBox("Snap")
     snap.setObjectName("check_timeline_snap")
     snap.setChecked(True)
+    snap.toggled.connect(
+        lambda checked: _emit_ui_intent(
+            intent_sink,
+            UiIntentType.TIMELINE_SET_SNAP,
+            enabled=str(checked).lower(),
+        )
+    )
     controls.addWidget(snap)
 
     controls.addStretch(1)
@@ -459,12 +466,26 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     zoom.setObjectName("combo_timeline_zoom")
     zoom.addItems(["25%", "50%", "100%", "200%", "400%"])
     zoom.setCurrentText("100%")
+    zoom.currentTextChanged.connect(
+        lambda value: _emit_ui_intent(
+            intent_sink,
+            UiIntentType.TIMELINE_SET_ZOOM,
+            zoom=str(float(value.rstrip("%")) / 100.0),
+        )
+    )
     controls.addWidget(zoom)
 
     controls.addWidget(QLabel("Follow"))
     follow = QComboBox()
     follow.setObjectName("combo_timeline_follow")
     follow.addItems(["On", "Smooth", "Off"])
+    follow.currentTextChanged.connect(
+        lambda value: _emit_ui_intent(
+            intent_sink,
+            UiIntentType.TIMELINE_SET_FOLLOW,
+            mode=value.lower(),
+        )
+    )
     controls.addWidget(follow)
     layout.addLayout(controls)
 

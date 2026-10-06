@@ -41,6 +41,9 @@ class UiIntentType(StrEnum):
     TIMELINE_SET_OUT = "timeline_set_out"
     TIMELINE_CLEAR_RANGE = "timeline_clear_range"
     TIMELINE_ADD_MARKER = "timeline_add_marker"
+    TIMELINE_SET_SNAP = "timeline_set_snap"
+    TIMELINE_SET_ZOOM = "timeline_set_zoom"
+    TIMELINE_SET_FOLLOW = "timeline_set_follow"
 
 
 @dataclass(frozen=True, slots=True)
