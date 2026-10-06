@@ -4,7 +4,10 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-FOUNDATION_MESSAGE = "AI Ngerti Geopolitik foundation ready; product UI shell is available in SF-STEP 09."
+FOUNDATION_MESSAGE = (
+    "AI Ngerti Geopolitik foundation ready; full product features are not implemented "
+    "in SF-STEP 09."
+)
 FOUNDATION_SMOKE_TOKEN = "ANG_FOUNDATION_SMOKE_OK"
 UI_SMOKE_TOKEN = "ANG_S09_UI_SMOKE_OK"
 
@@ -27,7 +30,11 @@ def _write_marker(path_value: str | None, token: str) -> None:
 
 
 def run(argv: Sequence[str] | None = None) -> int:
-    args = list(sys.argv[1:] if argv is None else argv)
+    if argv is None:
+        print(FOUNDATION_MESSAGE)
+        return 0
+
+    args = list(argv)
     if "--foundation-smoke" in args:
         _write_marker(_arg_value(args, "--foundation-smoke-file"), FOUNDATION_SMOKE_TOKEN)
         print(FOUNDATION_SMOKE_TOKEN)

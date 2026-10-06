@@ -43,10 +43,10 @@ def test_editor_shell_exposes_real_left_preview_right_timeline_panes(qtbot) -> N
     shell.root.show()
     qtbot.wait(50)
 
-    assert shell.left.width() > 150
+    assert shell.left_tabs.width() > 150
     assert shell.preview_frame.width() > 400
     assert shell.preview_frame.height() > 180
-    assert shell.right.width() > 200
+    assert shell.right_tabs.width() > 200
     assert shell.timeline.height() >= 180
     assert shell.status_label.text()
     shell.root.close()

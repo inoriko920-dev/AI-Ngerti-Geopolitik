@@ -55,7 +55,7 @@ def create_home_screen(
     title.setAlignment(Qt.AlignmentFlag.AlignCenter)
     title.setStyleSheet("font-size:34px; font-weight:750; margin-top:10px;")
     subtitle = muted_label(
-        "Buat proyek baru atau buka proyek yang sudah ada\\n"\n        "untuk mulai mengedit video dengan bantuan AI."
+        "Buat proyek baru atau buka proyek yang sudah ada\\nuntuk mulai mengedit video dengan bantuan AI."
     )
     subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
     subtitle.setStyleSheet("font-size:15px; color:#64748B;")
@@ -168,10 +168,10 @@ def create_home_screen(
 
     if fixture_mode:
         projects = [
-            ("Liburan ke Bromo", "Dibuka 12 Sep 2024 14:32", r"D:Video ProjectsLiburan ke Bromo", "Selesai", "#16A34A"),
-            ("Konten Promosi Produk", "Dibuka 11 Sep 2024 10:15", r"D:Video ProjectsKonten Promosi Produk", "Dalam Proses", "#0284C7"),
-            ("Highlight Acara Seminar", "Dibuka 9 Sep 2024 16:20", r"D:Video ProjectsHighlight Acara Seminar", "Jeda", "#D97706"),
-            ("Travel Vlog Bali", "Dibuka 7 Sep 2024 09:48", r"D:Video ProjectsTravel Vlog Bali", "Perlu Diperbaiki", "#DC2626"),
+            ("Liburan ke Bromo", "Dibuka 12 Sep 2024 14:32", "D:/Video Projects/Liburan ke Bromo", "Selesai", "#16A34A"),
+            ("Konten Promosi Produk", "Dibuka 11 Sep 2024 10:15", "D:/Video Projects/Konten Promosi Produk", "Dalam Proses", "#0284C7"),
+            ("Highlight Acara Seminar", "Dibuka 9 Sep 2024 16:20", "D:/Video Projects/Highlight Acara Seminar", "Jeda", "#D97706"),
+            ("Travel Vlog Bali", "Dibuka 7 Sep 2024 09:48", "D:/Video Projects/Travel Vlog Bali", "Perlu Diperbaiki", "#DC2626"),
         ]
         for index, (name, date, path, status, color) in enumerate(projects):
             if index:

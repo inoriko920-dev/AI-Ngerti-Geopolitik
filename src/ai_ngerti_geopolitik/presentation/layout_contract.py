@@ -43,7 +43,7 @@ class ShellGeometry:
         )
         upper_h = content_h - timeline_h
         left_w = METRICS.left_ref_w if width >= 1600 else METRICS.left_min_w
-        right_w = METRICS.right_ref_w if width >= 1600 else METRICS.right_min_w
+        right_w = METRICS.right_ref_w if width >= 1600 else 300
         center_w = width - left_w - right_w
         if center_w < 640:
             right_w = max(260, width - left_w - 640)
