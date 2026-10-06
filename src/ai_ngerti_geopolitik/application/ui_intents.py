@@ -3,6 +3,7 @@
 STEP 09 only routes presentation intent. It deliberately does not perform project
 mutation, media work, persistence, Gemini calls, or rendering.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

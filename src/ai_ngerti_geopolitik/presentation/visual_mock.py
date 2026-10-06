@@ -42,7 +42,9 @@ def asset_pixmap(subject: str, width: int = 150, height: int = 86) -> Any:
     }
     painter.setPen(QPen(QColor("#29445E"), 2))
     painter.setBrush(QColor(palette.get(subject.lower(), "#64748B")))
-    painter.drawRoundedRect(QRectF(width * 0.27, height * 0.18, width * 0.46, height * 0.48), 12, 12)
+    painter.drawRoundedRect(
+        QRectF(width * 0.27, height * 0.18, width * 0.46, height * 0.48), 12, 12
+    )
     painter.setPen(QColor("#172033"))
     font = QFont("Segoe UI", max(8, int(height * 0.12)))
     font.setBold(True)

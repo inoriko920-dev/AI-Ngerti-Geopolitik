@@ -4,9 +4,9 @@ from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any
 
+from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label, section_title
 from ai_ngerti_geopolitik.presentation.design_tokens import COLORS, METRICS
 from ai_ngerti_geopolitik.presentation.visual_mock import asset_pixmap, scene_pixmap
-from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label, section_title
 
 
 @dataclass(slots=True)
@@ -102,9 +102,7 @@ def _scene_list() -> Any:
         (5, "Penutup", "Bersama Membangun Indonesia", "00:44 – 01:00", "SINGLE"),
     ]
     for number, title, detail, timing, mode in samples:
-        item = QListWidgetItem(
-            f"{number:02d}.  {title}     {mode}\n{detail}\n{timing}"
-        )
+        item = QListWidgetItem(f"{number:02d}.  {title}     {mode}\n{detail}\n{timing}")
         item.setSizeHint(item.sizeHint().expandedTo(item.sizeHint()))
         widget.addItem(item)
     widget.setCurrentRow(0)
@@ -134,9 +132,7 @@ def _preview_widget(mode: str) -> tuple[Any, Any, Any]:
     layout.addLayout(header)
 
     frame = QFrame()
-    frame.setStyleSheet(
-        f"background:{COLORS.monitor_matte}; border:1px solid #111827;"
-    )
+    frame.setStyleSheet(f"background:{COLORS.monitor_matte}; border:1px solid #111827;")
     frame_layout = QVBoxLayout(frame)
     frame_layout.setContentsMargins(42, 24, 42, 24)
     canvas = QLabel()
@@ -380,8 +376,7 @@ def _timeline_widget() -> Any:
             else:
                 color = "#F5F1EA"
             label.setStyleSheet(
-                f"background:{color}; border:1px solid #CBD5E1; "
-                "border-radius:4px; padding:7px;"
+                f"background:{color}; border:1px solid #CBD5E1; border-radius:4px; padding:7px;"
             )
             grid.addWidget(label, row_index, column_index)
     layout.addLayout(grid, 1)

@@ -45,7 +45,9 @@ def create_export_dialog(parent: Any, intent_sink: UiIntentSink) -> Any:
     header.addWidget(close)
     layout.addLayout(header)
     layout.addWidget(
-        muted_label("Atur kualitas final. Preview boleh lebih ringan; render final memakai kualitas penuh.")
+        muted_label(
+            "Atur kualitas final. Preview boleh lebih ringan; render final memakai kualitas penuh."
+        )
     )
 
     body = QHBoxLayout()
@@ -149,7 +151,9 @@ def create_export_dialog(parent: Any, intent_sink: UiIntentSink) -> Any:
                 (("action", "render_requested"), ("format", format_box.currentText())),
             )
         )
-        shell_note.setText("Permintaan render dicatat sebagai intent. Engine belum diaktifkan di STEP 09.")
+        shell_note.setText(
+            "Permintaan render dicatat sebagai intent. Engine belum diaktifkan di STEP 09."
+        )
 
     render.clicked.connect(request_render)
     footer.addWidget(cancel)
@@ -226,9 +230,19 @@ def create_validation_dialog(parent: Any, intent_sink: UiIntentSink) -> Any:
     names = ["Semua (5)", "Project (1)", "Media (1)", "Scene (1)", "AI (1)", "Render (1)"]
     issues = [
         ("ERROR", "A037 MISSING — Scene 12, 13", "File media tidak ditemukan.", "Relink"),
-        ("ERROR", "Subtitle cue tumpang tindih", "3 subtitle saling tumpang tindih.", "Buka Subtitle"),
+        (
+            "ERROR",
+            "Subtitle cue tumpang tindih",
+            "3 subtitle saling tumpang tindih.",
+            "Buka Subtitle",
+        ),
         ("WARN", "Durasi scene terlalu pendek", "Scene 04 hanya 0,8 detik.", "Buka Scene"),
-        ("WARN", "Audio tidak normalisasi", "Audio track A1 belum dinormalisasi.", "Perbaiki Audio"),
+        (
+            "WARN",
+            "Audio tidak normalisasi",
+            "Audio track A1 belum dinormalisasi.",
+            "Perbaiki Audio",
+        ),
         ("WARN", "Provider Gemini quota", "Sisa quota hanya 12%.", "Buka Provider"),
     ]
     for tab_name in names:

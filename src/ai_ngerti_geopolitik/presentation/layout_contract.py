@@ -1,4 +1,5 @@
 """Pure shell geometry contract; no Qt import."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,7 +14,7 @@ class Rect:
     w: int
     h: int
 
-    def intersects(self, other: "Rect") -> bool:
+    def intersects(self, other: Rect) -> bool:
         return not (
             self.x + self.w <= other.x
             or other.x + other.w <= self.x
@@ -31,7 +32,7 @@ class ShellGeometry:
     timeline: Rect
 
     @classmethod
-    def calculate(cls, width: int, height: int) -> "ShellGeometry":
+    def calculate(cls, width: int, height: int) -> ShellGeometry:
         if width < 1280 or height < 720:
             raise ValueError("SF-STEP 09 minimum supported viewport is 1280x720")
         top = METRICS.menu_h + METRICS.toolbar_h

@@ -1,4 +1,5 @@
 """Representative SF-STEP 09 route catalog mapped to frozen AAVC UI IDs."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

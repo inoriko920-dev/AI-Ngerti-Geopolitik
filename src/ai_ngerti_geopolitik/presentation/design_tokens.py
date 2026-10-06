@@ -3,6 +3,7 @@
 This module deliberately contains no Qt import so geometry/color contracts can be
 validated without a GUI runtime.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

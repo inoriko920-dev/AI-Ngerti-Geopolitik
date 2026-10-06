@@ -112,9 +112,7 @@ class MainWindow:
             if kind is UiIntentType.NEW_PROJECT:
                 action.triggered.connect(lambda: self.show_route(UiRoute.NEW_PROJECT_DOCX))
             else:
-                action.triggered.connect(
-                    lambda _checked=False, value=kind: self._emit(value)
-                )
+                action.triggered.connect(lambda _checked=False, value=kind: self._emit(value))
             toolbar.addAction(action)
 
         toolbar.addSeparator()
@@ -164,9 +162,7 @@ class MainWindow:
             self.intent_sink,
             fixture_mode=self.fixture_mode,
         )
-        self._route_widgets[UiRoute.EDITOR] = create_editor_shell(
-            "overview", self.intent_sink
-        ).root
+        self._route_widgets[UiRoute.EDITOR] = create_editor_shell("overview", self.intent_sink).root
         self._route_widgets[UiRoute.SCENE_SINGLE] = create_editor_shell(
             "single", self.intent_sink
         ).root
