@@ -1,0 +1,203 @@
+name: S08 Windows Foundation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  lock:
+    name: Resolve lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - name: Resolve or verify uv.lock
+        shell: pwsh
+        run: |
+          if (Test-Path uv.lock) {
+            uv lock --check
+          } else {
+            uv lock
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s08-uv-lock
+          path: uv.lock
+          if-no-files-found: error
+          retention-days: 7
+
+  quality:
+    name: Quality and architecture
+    needs: lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+
+  tests:
+    name: Tests
+    needs: lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run pytest -q
+
+  qt-smoke:
+    name: Qt smoke
+    needs: lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv sync --frozen --group test
+      - run: uv run pytest tests/qt -q
+
+  ui-reference-integrity:
+    name: UI reference integrity
+    needs: lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+
+  security:
+    name: Security and dependency audit
+    needs: lock
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv sync --frozen --group quality
+      - name: Detect secrets
+        shell: pwsh
+        run: |
+          $scanText = uv run detect-secrets scan | Out-String
+          $scan = $scanText | ConvertFrom-Json
+          $count = 0
+          foreach ($property in $scan.results.PSObject.Properties) {
+            $count += $property.Value.Count
+          }
+          if ($count -ne 0) {
+            Write-Host $scanText
+            throw "detect-secrets found $count potential secret(s)"
+          }
+          Write-Host "PASS detect-secrets: 0 findings"
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - name: Export frozen dependency set
+        run: uv export --frozen --all-groups --no-hashes --no-emit-project --output-file requirements-audit.txt
+      - run: uv run pip-audit -r requirements-audit.txt
+
+  package-foundation:
+    name: Portable foundation
+    needs: [quality, tests, qt-smoke, ui-reference-integrity, security]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - uses: actions/download-artifact@v5
+        with:
+          name: s08-uv-lock
+          path: .
+      - run: uv sync --frozen --group package
+      - name: Build portable foundation
+        shell: pwsh
+        run: ./scripts/package/build_foundation.ps1
+      - name: Smoke portable foundation
+        shell: pwsh
+        run: ./scripts/package/smoke_foundation.ps1
+      - name: SHA-256
+        shell: pwsh
+        run: Get-FileHash ./dist/AI-Ngerti-Geopolitik-Foundation-Windows-x64.zip -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AI-Ngerti-Geopolitik-S08-Foundation-Windows-x64
+          path: dist/AI-Ngerti-Geopolitik-Foundation-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 7

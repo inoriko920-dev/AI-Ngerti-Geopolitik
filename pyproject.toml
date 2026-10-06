@@ -25,6 +25,9 @@ test = [
   "pytest-qt==4.5.0",
   "pytest-cov==7.1.0",
 ]
+package = [
+  "pyinstaller==6.22.3",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ai_ngerti_geopolitik"]
@@ -47,3 +50,4 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+qt_api = "pyside6"
