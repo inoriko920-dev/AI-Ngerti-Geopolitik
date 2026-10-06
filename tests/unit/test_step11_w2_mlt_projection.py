@@ -1,4 +1,5 @@
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
@@ -13,7 +14,7 @@ from ai_ngerti_geopolitik.infrastructure.mlt_projection import (
 def _state() -> ProjectState:
     asset = Asset(
         "A001",
-        "D:/media/input.mp4",
+        str(Path("D:/media/input.mp4")),
         "video",
         FrameTime(240, 30),
         1280,
@@ -45,15 +46,15 @@ def test_mlt_projection_preserves_order_and_source_ranges() -> None:
     assert plan.timeline_end_frame == 120
     assert [segment.clip_id for segment in plan.segments] == ["C001", "C002"]
     assert plan.melt_source_arguments(0) == [
-        "D:/media/input.mp4",
+        str(Path("D:/media/input.mp4")),
         "in=0",
         "out=59",
-        "D:/media/input.mp4",
+        str(Path("D:/media/input.mp4")),
         "in=120",
         "out=179",
     ]
     assert plan.melt_source_arguments(75) == [
-        "D:/media/input.mp4",
+        str(Path("D:/media/input.mp4")),
         "in=135",
         "out=179",
     ]

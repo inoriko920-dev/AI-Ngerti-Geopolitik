@@ -176,17 +176,13 @@ def _preview_widget(
     play = QPushButton("▶")
     play.setObjectName("btn_playback_play")
     play.setAccessibleName("Putar")
-    play.clicked.connect(
-        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PLAY)
-    )
+    play.clicked.connect(lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PLAY))
     transport.addWidget(play)
 
     pause = QPushButton("Ⅱ")
     pause.setObjectName("btn_playback_pause")
     pause.setAccessibleName("Jeda")
-    pause.clicked.connect(
-        lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PAUSE)
-    )
+    pause.clicked.connect(lambda: _emit_ui_intent(intent_sink, UiIntentType.PLAYBACK_PAUSE))
     transport.addWidget(pause)
 
     next_button = QPushButton("▶|")
@@ -420,23 +416,17 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     controls = QHBoxLayout()
     split_button = QPushButton("Split")
     split_button.setObjectName("btn_timeline_split")
-    split_button.clicked.connect(
-        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SPLIT)
-    )
+    split_button.clicked.connect(lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SPLIT))
     controls.addWidget(split_button)
 
     in_button = QPushButton("IN")
     in_button.setObjectName("btn_timeline_set_in")
-    in_button.clicked.connect(
-        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_IN)
-    )
+    in_button.clicked.connect(lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_IN))
     controls.addWidget(in_button)
 
     out_button = QPushButton("OUT")
     out_button.setObjectName("btn_timeline_set_out")
-    out_button.clicked.connect(
-        lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_OUT)
-    )
+    out_button.clicked.connect(lambda: _emit_ui_intent(intent_sink, UiIntentType.TIMELINE_SET_OUT))
     controls.addWidget(out_button)
 
     clear_range = QPushButton("Clear")
@@ -477,9 +467,7 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     controls.addWidget(follow)
     layout.addLayout(controls)
 
-    ruler = QLabel(
-        "Timeline     00:00:00     00:00:20     00:00:40     00:01:00     00:01:20"
-    )
+    ruler = QLabel("Timeline     00:00:00     00:00:20     00:00:40     00:01:00     00:01:20")
     ruler.setObjectName("timeline_ruler")
     layout.addWidget(ruler)
 
@@ -520,8 +508,7 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
             else:
                 color = "#F5F1EA"
             label.setStyleSheet(
-                f"background:{color}; border:1px solid #CBD5E1; "
-                "border-radius:4px; padding:7px;"
+                f"background:{color}; border:1px solid #CBD5E1; border-radius:4px; padding:7px;"
             )
             grid.addWidget(label, row_index, column_index)
     layout.addLayout(grid, 1)
