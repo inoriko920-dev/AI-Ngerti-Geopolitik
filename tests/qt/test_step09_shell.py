@@ -62,3 +62,12 @@ def test_toolbar_critical_icon_actions_have_accessible_names(qtbot) -> None:
     assert export is not None and export.accessibleName() == "Ekspor Video"
     assert validation is not None and validation.accessibleName() == "Buka Pusat Validasi"
     window.close()
+
+
+def test_full_size_evidence_render_is_1920x1080(qtbot) -> None:
+    window = create_main_window("UI-010", fixture_mode=True)
+    qtbot.addWidget(window.window)
+    pixmap = window.render_evidence(1920, 1080)
+    assert pixmap.width() == 1920
+    assert pixmap.height() == 1080
+    window.close()

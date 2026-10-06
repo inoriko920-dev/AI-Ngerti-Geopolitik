@@ -237,34 +237,54 @@ class MainWindow:
         self.window.resize(width, height)
 
     def grab(self) -> Any:
-        from PySide6.QtCore import QPoint, QRect
-        from PySide6.QtGui import QColor, QPainter, QPixmap
+        """Grab the currently displayed native window."""
+        return self.window.grab()
 
-        base = self.window.grab()
+    def render_evidence(self, width: int = 1920, height: int = 1080) -> Any:
+        """Render deterministic full-size UI evidence without desktop-size clipping."""
+        from PySide6.QtCore import QRect, Qt
+        from PySide6.QtGui import QColor, QPainter, QPixmap
+        from PySide6.QtWidgets import QApplication
+
+        self.window.hide()
+        self.window.setAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen, True)
+        self.window.resize(width, height)
+        self.window.ensurePolished()
+        self.window.show()
+        QApplication.processEvents()
+
+        base = QPixmap(width, height)
+        base.fill(QColor("#F4F7FB"))
+        self.window.render(base)
+
         dialog = self._active_dialog
-        if dialog is None or not dialog.isVisible():
+        if dialog is None:
             return base
 
-        dialog_grab = dialog.grab()
+        dialog.hide()
+        dialog.setAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen, True)
+        dialog.ensurePolished()
+        dialog.show()
+        QApplication.processEvents()
+
+        dialog_pixmap = QPixmap(dialog.size())
+        dialog_pixmap.fill(Qt.GlobalColor.transparent)
+        dialog.render(dialog_pixmap)
+
         result = QPixmap(base)
         painter = QPainter(result)
         route = str(self.window.property("ui_state") or "")
         if route == UiRoute.EXPORT_SETTINGS.value:
-            painter.fillRect(
-                QRect(0, 0, result.width(), result.height()),
-                QColor(23, 32, 51, 80),
-            )
-            x = max(0, (result.width() - dialog_grab.width()) // 2)
-            y = max(0, (result.height() - dialog_grab.height()) // 2)
+            painter.fillRect(QRect(0, 0, width, height), QColor(23, 32, 51, 80))
+            x = max(0, (width - dialog_pixmap.width()) // 2)
+            y = max(0, (height - dialog_pixmap.height()) // 2)
         elif route == UiRoute.VALIDATION_CENTER.value:
-            x = max(0, result.width() - dialog_grab.width())
+            x = max(0, width - dialog_pixmap.width())
             y = max(0, METRICS.menu_h + METRICS.toolbar_h)
         else:
-            global_pos = dialog.mapToGlobal(QPoint(0, 0))
-            window_global = self.window.mapToGlobal(QPoint(0, 0))
-            x = global_pos.x() - window_global.x()
-            y = global_pos.y() - window_global.y()
-        painter.drawPixmap(x, y, dialog_grab)
+            x = max(0, (width - dialog_pixmap.width()) // 2)
+            y = max(0, (height - dialog_pixmap.height()) // 2)
+        painter.drawPixmap(x, y, dialog_pixmap)
         painter.end()
         return result
 
