@@ -78,3 +78,23 @@ Software Factory memakai **SF-STEP 00–15**. Roadmap implementasi teknis pada B
 
 ## D-014 — Repository docs-only sebelum SF-STEP 08
 Repository AI-Ngerti-Geopolitik dibuat lebih awal atas instruksi pemilik sebagai checkpoint dokumentasi/source-of-truth. Keberadaan repository dan commit planning **tidak berarti SF-STEP 08 selesai** dan tidak mengotorisasi coding, CI product, upstream fork/copy, build, atau release.
+
+
+## D-015 — UI AAVC adalah VISUAL_CONTRACT 1:1
+UI `AI Ngerti Geopolitik` harus mengikuti UI repository `AI-Automatic-Video-Composer` **sama persis sedekat mungkin** sebagai target visual dan alur.
+
+Source visual contract:
+- `AI-Automatic-Video-Composer/docs/UI_FREEZE.md`
+- canonical set `UI-001` sampai `UI-042`
+- reference viewport 1920×1080
+- Bahasa Indonesia
+- light professional editor, white surfaces + restrained blue accents
+- implementation screen/layout/design tokens di `src/aavc/presentation/`
+
+Aturan:
+- jangan membuat desain UI alternatif;
+- jangan mengubah hierarchy/layout/panel/style/spacing/warna/flow tanpa alasan produk yang eksplisit;
+- nama produk boleh diganti menjadi AI Ngerti Geopolitik;
+- perubahan UI hanya boleh terjadi bila requirement ANG benar-benar berbeda atau reuse engine matang membuat kontrol lama tidak valid, dan perubahan itu harus dicatat;
+- PNG referensi tidak boleh dijadikan static runtime screen; UI tetap harus berupa widget nyata;
+- detail inventory/review/freeze formal tetap dijalankan pada SF-STEP 03–05 menggunakan AAVC sebagai VISUAL_CONTRACT, bukan membuat konsep baru.
