@@ -1,1 +1,1 @@
-"""PySide6 presentation layer for AI Ngerti Geopolitik."""
+"""PySide6 presentation layer implementing the frozen AAVC shell contract in SF-STEP 09."""
