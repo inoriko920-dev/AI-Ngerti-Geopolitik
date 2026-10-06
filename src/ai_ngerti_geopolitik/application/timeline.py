@@ -168,15 +168,24 @@ class TimelineController:
             SetClipDurationCommand(self.selected_clip_id, duration_frames, ripple=True),
         )
 
-    def split_selected(self, right_clip_id: str) -> ProjectState:
+    def _next_clip_id(self) -> str:
+        numbers: list[int] = []
+        for track in self.state.tracks:
+            for clip in track.clips:
+                if clip.clip_id.startswith("C") and clip.clip_id[1:].isdigit():
+                    numbers.append(int(clip.clip_id[1:]))
+        return f"C{max(numbers, default=0) + 1:03d}"
+
+    def split_selected(self, right_clip_id: str | None = None) -> ProjectState:
         if self.selected_clip_id is None:
             raise TimelineError("no clip selected")
         frame = self.playback.snapshot.frame
+        new_clip_id = right_clip_id or self._next_clip_id()
         state = self._execute(
             "Split clip",
-            SplitClipCommand(self.selected_clip_id, frame, right_clip_id),
+            SplitClipCommand(self.selected_clip_id, frame, new_clip_id),
         )
-        self.selected_clip_id = right_clip_id
+        self.selected_clip_id = new_clip_id
         return state
 
     def remove_selected(self) -> ProjectState:
@@ -214,16 +223,25 @@ class TimelineController:
     def clear_range(self) -> None:
         self.selection = None
 
+    def _next_marker_id(self) -> str:
+        numbers = [
+            int(marker.marker_id[1:])
+            for marker in self.state.markers
+            if marker.marker_id.startswith("M") and marker.marker_id[1:].isdigit()
+        ]
+        return f"M{max(numbers, default=0) + 1:03d}"
+
     def add_marker(
         self,
-        marker_id: str,
+        marker_id: str | None,
         label: str,
         *,
         frame: int | None = None,
         marker_type: str = "marker",
     ) -> ProjectState:
         value = self.playback.snapshot.frame if frame is None else frame
-        marker = Marker(marker_id, FrameTime(value, self.state.fps), label, marker_type)
+        resolved_id = marker_id or self._next_marker_id()
+        marker = Marker(resolved_id, FrameTime(value, self.state.fps), label, marker_type)
         return self._execute("Add marker", AddMarkerCommand(marker))
 
     def update_marker(
@@ -335,9 +353,7 @@ class TimelineIntentRouter:
                 int(self._required(data, "duration_frames"))
             )
         elif intent.kind is UiIntentType.TIMELINE_SPLIT:
-            self.last_result = self.controller.split_selected(
-                self._required(data, "right_clip_id")
-            )
+            self.last_result = self.controller.split_selected(data.get("right_clip_id"))
         elif intent.kind is UiIntentType.TIMELINE_DELETE:
             self.last_result = self.controller.remove_selected()
         elif intent.kind is UiIntentType.TIMELINE_SET_IN:
@@ -353,8 +369,8 @@ class TimelineIntentRouter:
             self.last_result = None
         elif intent.kind is UiIntentType.TIMELINE_ADD_MARKER:
             self.last_result = self.controller.add_marker(
-                self._required(data, "marker_id"),
-                self._required(data, "label"),
+                data.get("marker_id"),
+                data.get("label", "Marker"),
                 frame=int(data["frame"]) if "frame" in data else None,
             )
         else:
