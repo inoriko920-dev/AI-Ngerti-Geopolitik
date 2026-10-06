@@ -493,21 +493,9 @@ class TimelineIntentRouter:
         elif intent.kind is UiIntentType.TIMELINE_SET_TRACK_STATE:
             self.last_result = self.controller.set_track_state(
                 self._required(data, "track_id"),
-                locked=(
-                    data["locked"].lower() == "true"
-                    if "locked" in data
-                    else None
-                ),
-                muted=(
-                    data["muted"].lower() == "true"
-                    if "muted" in data
-                    else None
-                ),
-                visible=(
-                    data["visible"].lower() == "true"
-                    if "visible" in data
-                    else None
-                ),
+                locked=(data["locked"].lower() == "true" if "locked" in data else None),
+                muted=(data["muted"].lower() == "true" if "muted" in data else None),
+                visible=(data["visible"].lower() == "true" if "visible" in data else None),
             )
         elif intent.kind is UiIntentType.TIMELINE_SET_IN:
             self.last_result = self.controller.set_in(

@@ -76,7 +76,6 @@ def main() -> int:
         if not isinstance(marker, dict) or marker.get("id") != "M001":
             errors.append("W2 persisted marker evidence missing")
 
-
     semantics = load_json(root / "04_semantics.json")
     if not isinstance(semantics, dict) or semantics.get("status") != "PASS":
         errors.append("W2 complete semantics report is not PASS")

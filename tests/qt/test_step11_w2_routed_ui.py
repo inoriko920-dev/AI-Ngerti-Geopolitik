@@ -141,7 +141,9 @@ def test_real_qt_controls_route_into_canonical_w2_controller(qtbot, tmp_path: Pa
     window.close()
 
 
-def test_timeline_shortcut_and_context_actions_route_through_command_bus(qtbot, tmp_path: Path) -> None:
+def test_timeline_shortcut_and_context_actions_route_through_command_bus(
+    qtbot, tmp_path: Path
+) -> None:
     controller, _transport = _controller(tmp_path)
     router = TimelineIntentRouter(controller)
     window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
@@ -166,9 +168,5 @@ def test_timeline_shortcut_and_context_actions_route_through_command_bus(qtbot, 
 
     delete.trigger()
     assert controller.selected_clip_id is None
-    assert all(
-        clip.clip_id != "C003"
-        for track in controller.state.tracks
-        for clip in track.clips
-    )
+    assert all(clip.clip_id != "C003" for track in controller.state.tracks for clip in track.clips)
     window.close()
