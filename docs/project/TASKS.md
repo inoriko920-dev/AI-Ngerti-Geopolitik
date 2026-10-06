@@ -1,31 +1,39 @@
 # TASKS
 
-## S08-T01 — DONE / PASS
-Source-of-truth + exact UI reference gate.
+## SF-STEP 08 — DONE / PASS
+Repository foundation, exact UI references, Windows CI and portable foundation verified.
 
-## S08-T02 — DONE
-Repository skeleton, toolchain contracts, architecture fitness and foundation tests.
+## SF-STEP 09 — DONE / PASS
 
-## S08-T03 — DONE / PASS
-Final Windows run `37500196775` is fully green on verified commit `dcb1326ac2fececdf229190b4d62a5c35cbf33fc`.
+Accepted commit: `61225eca38115a636e062d3e795f7884049d19d4`  
+Windows run: `37520166438` — SUCCESS
 
-Evidence includes:
-- real lock;
-- quality/type/import architecture;
-- tests + Qt;
-- UI 42/42;
-- security/audit;
-- portable foundation build and EXE smoke.
+Completed:
+- [x] real PySide6 app shell;
+- [x] AAVC visual hierarchy / white-blue tokens;
+- [x] home + Scene DOCX wizard;
+- [x] editor overview;
+- [x] SINGLE / DOUBLE states;
+- [x] subtitle workspace;
+- [x] export settings aligned to AAVC reference-era runtime;
+- [x] validation center aligned to AAVC;
+- [x] semantic UI intent boundary;
+- [x] Qt/navigation/layout tests;
+- [x] 8 representative 1920×1080 captures;
+- [x] direct AAVC-runtime parity review;
+- [x] 17 tests PASS;
+- [x] Windows portable UI shell build + smoke;
+- [x] S08 regression run remains green.
 
-## SF-STEP 08 — PASS
+Evidence:
+`docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`.
 
-## NEXT — SF-STEP 09
-App Shell / UI Implementation.
+## NEXT — SF-STEP 10
 
-First wave:
-- implement actual PySide6 shell against frozen AAVC UI contract;
-- use fixture/dummy project data only where product behavior is not scheduled;
-- implement real widgets/layout/states, not PNG runtime UI;
-- capture actual 1920×1080 screenshots;
-- compare representative frozen states before expanding coverage;
-- do not implement full engine/Gemini/render stack in the shell wave.
+**Minimum End-to-End Vertical Slice**
+
+Do one narrow real flow only. Do not begin broad feature waves.
+
+Target proof must connect real UI intent to application/domain command/state and a real verifiable media/output path, with the STEP 10 required negative-path, persistence/cancel/undo evidence as applicable.
+
+AI/Gemini does not need to be in the first vertical slice unless the exact STEP 10 prompt requires it.

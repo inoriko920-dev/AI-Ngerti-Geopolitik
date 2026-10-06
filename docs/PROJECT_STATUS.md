@@ -1,50 +1,41 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
-**Phase completed:** SF-STEP 08 — Repository Foundation + UI Reference + CI  
-**SF-STEP 08 gate:** **PASS**  
-**S08-T01:** PASS  
-**S08-T02:** foundation complete  
-**S08-T03:** PASS  
-**Next exact STEP:** SF-STEP 09 — App Shell / UI Implementation  
-**Product UI/features:** NOT YET IMPLEMENTED
+**Last completed:** SF-STEP 09 — App Shell / UI Implementation  
+**SF-STEP 09 gate:** **PASS**  
+**Accepted commit:** `61225eca38115a636e062d3e795f7884049d19d4`  
+**Windows UI run:** `37520166438` — SUCCESS  
+**S08 regression run:** `37520166400` — SUCCESS  
+**Next exact STEP:** SF-STEP 10 — Minimum End-to-End Vertical Slice
 
-## Final Windows evidence
+## STEP 09 proven
 
-Final checkpoint:
-- run ID: `37500196775`;
-- verified commit: `dcb1326ac2fececdf229190b4d62a5c35cbf33fc`;
-- conclusion: **SUCCESS**.
-
-PASS:
-- CPython 3.12.10 + uv 0.12.21;
-- real committed `uv.lock`;
-- Ruff format/lint;
-- mypy;
-- Import Linter 4/4;
-- architecture verifier;
-- source-of-truth 70/70;
-- pytest 7;
-- PySide6 Qt smoke;
-- UI reference SHA 42/42;
-- secret scans;
-- pip-audit: no known vulnerabilities;
-- PyInstaller onedir foundation build;
-- Windows executable smoke;
-- portable artifact upload.
-
-Final portable foundation inner ZIP:
-- size: 8,449,161 bytes;
-- SHA-256: `d981fcdec0dd66193d3e1827ea02e6ddf3e5c1a803b1651f0dd8a79a7626cdb8`.
+- real PySide6 app shell;
+- AAVC white/blue visual hierarchy retained, no redesign;
+- real Qt surfaces for representative anchors UI-002, UI-003, UI-010, UI-013, UI-014, UI-027, UI-035 and UI-041;
+- frozen reference manifest still verifies 42/42;
+- 8/8 deterministic 1920×1080 representative captures;
+- direct comparison against actual AAVC runtime evidence;
+- 17 tests PASS;
+- Ruff/mypy/Import Linter/architecture gates PASS;
+- portable Windows UI shell build + executable smoke PASS.
 
 Evidence:
-`docs/evidence/packaging/S08_T03_WINDOWS_CI.md`.
+`docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`.
 
-## Scope truth
+## Portable UI shell
 
-The Windows artifact is a **foundation smoke**, not the product editor. No real ANG app shell/screens, media engine, Gemini edit workflow, or video render/export is claimed complete.
+Inner ZIP SHA-256:
+`47fe8296d1eaa7dbf0b859b2e65335c25b51183d19b7f4eed596a64c2ea162c0`.
+
+GitHub artifact ID:
+`11440840340`.
+
+## Important scope truth
+
+STEP 09 is a UI-shell milestone. Real media-engine operations, project persistence, real timeline edit mutations, real render/export, and Gemini execution are **not** claimed complete.
 
 ## Exact next action
 
-When owner says **"lanjutkan"**, execute **SF-STEP 09 only — App Shell / UI Implementation**.
+On owner **"lanjutkan"**, execute **SF-STEP 10 only — Minimum End-to-End Vertical Slice**.
 
-First STEP 09 wave must implement the actual PySide6 shell from the frozen AAVC references using fixture/dummy state and produce actual-vs-reference screenshot evidence. Do not jump to full media-engine/Gemini/render features.
+The first vertical slice should prove one small real workflow from UI through application/domain state and media adapter to a verifiable output, including negative path and persistence/undo evidence required by STEP 10. Do not jump to broad feature implementation.

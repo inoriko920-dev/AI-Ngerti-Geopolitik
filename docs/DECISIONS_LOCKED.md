@@ -220,3 +220,20 @@ S08-T03 Windows CI verifies the foundation toolchain baseline:
 - PyInstaller 6.22.3 onedir for the **foundation packaging scaffold**.
 
 This locks the STEP 08 foundation toolchain, not the final media-engine/native dependency set. A material toolchain switch requires evidence and review.
+
+
+## D-022 — STEP 09 AAVC runtime parity baseline
+SF-STEP 09 menerima implementasi UI ANG berdasarkan instruksi eksplisit owner bahwa UI harus mengikuti AAVC sedekat mungkin / 1:1 tanpa redesign.
+
+Aturan acceptance:
+- frozen `UI-001..UI-042` tetap visual/design authority dan tidak boleh diganti;
+- actual runtime screenshot AAVC dari repo read-only dipakai sebagai **implementation-parity supplement**, karena tujuan owner adalah menyalin UI aplikasi AAVC yang nyata, bukan menciptakan desain baru;
+- baseline runtime AAVC yang dipakai: CI run `37498549910`, commit `7d77fc9f724d359c7da6c4796dffce5104740952`, artifact `step09-ui-actual` ID `11429380147`;
+- baseline ANG STEP 09 yang diterima: Windows CI run `37520166438`, commit `61225eca38115a636e062d3e795f7884049d19d4`;
+- representative anchor states yang diuji: UI-002, UI-003, UI-010, UI-013, UI-014, UI-027, UI-035, UI-041;
+- runtime ANG harus memakai widget Qt nyata; frozen PNG tidak boleh dipasang sebagai static runtime screen;
+- perbedaan branding, rasterization/font antialiasing, capture environment, dan minor fixture dapat diterima bila hierarchy/flow AAVC dipertahankan dan tidak ada redesign;
+- acceptance **tidak berarti pixel-identical** terhadap seluruh 42 raster;
+- AAVC tetap read-only.
+
+Keputusan ini hanya menetapkan interpretasi acceptance STEP 09. Ia tidak mengizinkan perubahan UI diam-diam pada STEP berikutnya.

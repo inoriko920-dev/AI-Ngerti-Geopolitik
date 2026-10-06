@@ -1,50 +1,63 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Last completed:** SF-STEP 08 — PASS  
-**Final verified run:** `37500196775`  
-**Verified commit:** `dcb1326ac2fececdf229190b4d62a5c35cbf33fc`  
-**Next exact STEP:** SF-STEP 09 — App Shell / UI Implementation
+**Last completed:** SF-STEP 09 — PASS  
+**Accepted implementation commit:** `61225eca38115a636e062d3e795f7884049d19d4`  
+**Passing S09 Windows run:** `37520166438`  
+**Passing S08 regression run:** `37520166400`  
+**Next exact STEP:** SF-STEP 10 — Minimum End-to-End Vertical Slice
 
-## STEP 08 final proof
+## What STEP 09 delivered
 
-All Windows jobs PASS:
-- Resolve lock
-- Quality and architecture
-- Tests
-- Qt smoke
-- UI reference integrity
-- Security and dependency audit
-- Portable foundation
+ANG now has a real PySide6 shell matching the AAVC runtime structure as closely as practical without redesign:
+- Project Hub / Home;
+- Scene DOCX wizard;
+- editor shell;
+- SINGLE / DOUBLE scene states;
+- subtitle state;
+- export settings;
+- validation center;
+- menus/toolbars/timeline/preview/right workspace shell;
+- semantic presentation intents;
+- deterministic screenshot capture;
+- Windows portable onedir packaging.
 
-Key evidence:
-- Python 3.12.10;
-- uv 0.12.21;
-- PySide6 6.11.1;
-- PyInstaller 6.22.3;
-- real committed uv.lock;
-- pytest 7 PASS;
+Representative capture set: UI-002, UI-003, UI-010, UI-013, UI-014, UI-027, UI-035, UI-041.
+
+## Evidence
+
+`docs/evidence/ui/S09_APP_SHELL_UI_IMPLEMENTATION.md`
+
+Key PASS facts:
+- pytest 17 PASS;
+- mypy 19 source files / 0 issues;
 - Import Linter 4 kept / 0 broken;
-- UI 42/42 PASS;
-- pip-audit no known vulnerabilities;
-- portable EXE smoke PASS.
+- architecture PASS;
+- source-of-truth 70/70;
+- frozen UI SHA 42/42;
+- 8/8 representative screenshots;
+- portable UI shell smoke PASS.
 
-Final portable inner ZIP SHA-256:
-`d981fcdec0dd66193d3e1827ea02e6ddf3e5c1a803b1651f0dd8a79a7626cdb8`.
+Direct runtime comparison used read-only AAVC CI run `37498549910` at commit `7d77fc9f724d359c7da6c4796dffce5104740952`. This supplements, not replaces, the frozen 42-reference contract.
 
-Evidence:
-`docs/evidence/packaging/S08_T03_WINDOWS_CI.md`.
+Portable inner ZIP SHA-256:
+`47fe8296d1eaa7dbf0b859b2e65335c25b51183d19b7f4eed596a64c2ea162c0`.
 
-## What is still NOT implemented
+## Known scope gaps by design
 
-- production ANG UI shell/screens;
-- timeline/media engine behavior;
-- libopenshot/MLT adapter;
-- Gemini editing;
-- video render/export;
-- final release.
+Not yet real:
+- media-engine editing/playback integration;
+- .angproj save/reopen;
+- split/trim domain mutations;
+- production Undo/Redo;
+- real export;
+- Gemini execution.
 
-## Exact next action
+Do not label STEP 09 fixture UI as functional media behavior.
 
-On owner **"lanjutkan"**, enter **SF-STEP 09 only**.
+## STEP 10 exact purpose
 
-Start with the real AAVC-frozen PySide6 app shell and representative core states using fixture data. Consume exact `UI-001..UI-042`; no redesign. Capture actual screenshots and compare against frozen references. Do not start engine/Gemini/render feature work merely because the shell exists.
+Prove **one minimum real editing flow end-to-end**, not all features.
+
+Read the exact STEP 10 Software Factory prompt before implementation. The slice should remain narrow and should validate the architecture through a real ProjectState/command/media path, including relevant persistence, undo/redo, negative path and output evidence.
+
+Do not start STEP 11 feature waves before STEP 10 gate PASS.
