@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ai_ngerti_geopolitik.presentation.visual_mock import project_thumb_pixmap
 from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label
+from ai_ngerti_geopolitik.presentation.visual_mock import project_thumb_pixmap
 
 
 def create_home_screen(

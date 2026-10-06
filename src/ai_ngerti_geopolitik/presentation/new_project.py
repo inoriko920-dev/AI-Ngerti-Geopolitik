@@ -81,9 +81,7 @@ def create_new_project_screen(
         circle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         circle.setFixedSize(38, 38)
         circle.setStyleSheet(
-            (
-                "background:#2563EB; color:white; border-radius:19px; font-weight:700;"
-            )
+            ("background:#2563EB; color:white; border-radius:19px; font-weight:700;")
             if active
             else (
                 "background:#F8FAFC; color:#64748B; border:1px solid #CBD5E1; "
@@ -91,9 +89,7 @@ def create_new_project_screen(
             )
         )
         text = QLabel(label)
-        text.setStyleSheet(
-            "font-weight:650; color:#1D4ED8;" if active else "color:#64748B;"
-        )
+        text.setStyleSheet("font-weight:650; color:#1D4ED8;" if active else "color:#64748B;")
         stepper.addWidget(circle)
         stepper.addWidget(text)
         if index < len(steps) - 1:

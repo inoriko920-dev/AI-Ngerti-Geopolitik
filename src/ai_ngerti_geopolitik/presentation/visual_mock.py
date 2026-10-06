@@ -38,9 +38,7 @@ def asset_pixmap(subject: str, width: int = 150, height: int = 86) -> Any:
         painter.drawRoundedRect(QRectF(cx - 38, cy - 15, 76, 42), 4, 4)
         painter.setBrush(QColor("#D95C4F"))
         painter.drawPolygon(
-            QPolygonF(
-                [QPointF(cx - 45, cy - 15), QPointF(cx, cy - 44), QPointF(cx + 45, cy - 15)]
-            )
+            QPolygonF([QPointF(cx - 45, cy - 15), QPointF(cx, cy - 44), QPointF(cx + 45, cy - 15)])
         )
         painter.fillRect(QRectF(cx - 7, cy + 3, 14, 24), QColor("#704A34"))
         painter.fillRect(QRectF(cx - 28, cy - 4, 16, 13), QColor("#9DD6F5"))
@@ -83,15 +81,21 @@ def asset_pixmap(subject: str, width: int = 150, height: int = 86) -> Any:
     elif key == "gunung":
         painter.setBrush(QColor("#587C9E"))
         painter.drawPolygon(
-            QPolygonF([QPointF(cx - 58, cy + 28), QPointF(cx - 10, cy - 38), QPointF(cx + 28, cy + 28)])
+            QPolygonF(
+                [QPointF(cx - 58, cy + 28), QPointF(cx - 10, cy - 38), QPointF(cx + 28, cy + 28)]
+            )
         )
         painter.setBrush(QColor("#7599B6"))
         painter.drawPolygon(
-            QPolygonF([QPointF(cx - 14, cy + 28), QPointF(cx + 27, cy - 28), QPointF(cx + 61, cy + 28)])
+            QPolygonF(
+                [QPointF(cx - 14, cy + 28), QPointF(cx + 27, cy - 28), QPointF(cx + 61, cy + 28)]
+            )
         )
         painter.setBrush(QColor("#F7FAFC"))
         painter.drawPolygon(
-            QPolygonF([QPointF(cx - 23, cy - 20), QPointF(cx - 10, cy - 38), QPointF(cx + 3, cy - 20)])
+            QPolygonF(
+                [QPointF(cx - 23, cy - 20), QPointF(cx - 10, cy - 38), QPointF(cx + 3, cy - 20)]
+            )
         )
     elif key == "papan":
         painter.fillRect(QRectF(cx - 5, cy - 2, 10, 34), QColor("#8B5E3C"))
@@ -142,15 +146,33 @@ def _draw_village(painter: Any, width: int, height: int) -> None:
     painter.setPen(QPen(QColor("#7697AC"), 2))
     painter.setBrush(QColor("#6E91AA"))
     painter.drawPolygon(
-        QPolygonF([QPointF(0, height * 0.55), QPointF(width * 0.22, height * 0.20), QPointF(width * 0.39, height * 0.55)])
+        QPolygonF(
+            [
+                QPointF(0, height * 0.55),
+                QPointF(width * 0.22, height * 0.20),
+                QPointF(width * 0.39, height * 0.55),
+            ]
+        )
     )
     painter.setBrush(QColor("#87A9BE"))
     painter.drawPolygon(
-        QPolygonF([QPointF(width * 0.25, height * 0.55), QPointF(width * 0.48, height * 0.27), QPointF(width * 0.68, height * 0.55)])
+        QPolygonF(
+            [
+                QPointF(width * 0.25, height * 0.55),
+                QPointF(width * 0.48, height * 0.27),
+                QPointF(width * 0.68, height * 0.55),
+            ]
+        )
     )
     painter.setBrush(QColor("#F7FAFC"))
     painter.drawPolygon(
-        QPolygonF([QPointF(width * 0.18, height * 0.27), QPointF(width * 0.22, height * 0.20), QPointF(width * 0.26, height * 0.28)])
+        QPolygonF(
+            [
+                QPointF(width * 0.18, height * 0.27),
+                QPointF(width * 0.22, height * 0.20),
+                QPointF(width * 0.26, height * 0.28),
+            ]
+        )
     )
 
     painter.setPen(QPen(QColor("#4F6F43"), 2))
@@ -158,15 +180,27 @@ def _draw_village(painter: Any, width: int, height: int) -> None:
     painter.drawRect(QRectF(width * 0.08, height * 0.48, width * 0.22, height * 0.22))
     painter.setBrush(QColor("#C65D49"))
     painter.drawPolygon(
-        QPolygonF([QPointF(width * 0.05, height * 0.48), QPointF(width * 0.19, height * 0.37), QPointF(width * 0.33, height * 0.48)])
+        QPolygonF(
+            [
+                QPointF(width * 0.05, height * 0.48),
+                QPointF(width * 0.19, height * 0.37),
+                QPointF(width * 0.33, height * 0.48),
+            ]
+        )
     )
-    painter.fillRect(QRectF(width * 0.13, height * 0.57, width * 0.04, height * 0.13), QColor("#8A5B43"))
-    painter.fillRect(QRectF(width * 0.21, height * 0.55, width * 0.05, height * 0.06), QColor("#9ED4F2"))
+    painter.fillRect(
+        QRectF(width * 0.13, height * 0.57, width * 0.04, height * 0.13), QColor("#8A5B43")
+    )
+    painter.fillRect(
+        QRectF(width * 0.21, height * 0.55, width * 0.05, height * 0.06), QColor("#9ED4F2")
+    )
 
     painter.setBrush(QColor("#5A9C55"))
     for x, y, r in [(0.67, 0.47, 0.09), (0.76, 0.42, 0.10), (0.85, 0.50, 0.08)]:
         painter.drawEllipse(QPointF(width * x, height * y), width * r, height * r * 0.7)
-    painter.fillRect(QRectF(width * 0.755, height * 0.48, width * 0.025, height * 0.30), QColor("#7A543B"))
+    painter.fillRect(
+        QRectF(width * 0.755, height * 0.48, width * 0.025, height * 0.30), QColor("#7A543B")
+    )
 
     painter.setPen(QPen(QColor("#B88B5A"), 5))
     fence_y = height * 0.72
@@ -180,7 +214,13 @@ def _draw_village(painter: Any, width: int, height: int) -> None:
     painter.drawRect(QRectF(0, height * 0.78, width, height * 0.22))
     painter.setBrush(QColor("#DBCDB5"))
     painter.drawPolygon(
-        QPolygonF([QPointF(width * 0.42, height), QPointF(width * 0.51, height * 0.72), QPointF(width * 0.60, height)])
+        QPolygonF(
+            [
+                QPointF(width * 0.42, height),
+                QPointF(width * 0.51, height * 0.72),
+                QPointF(width * 0.60, height),
+            ]
+        )
     )
 
 
@@ -330,14 +370,22 @@ def scene_pixmap(mode: str, width: int = 1280, height: int = 720) -> Any:
         for index in range(4):
             y = height * (0.32 + index * 0.04)
             painter.drawLine(QPointF(width * 0.88, y), QPointF(width * (0.93 - index * 0.01), y))
-        painter.drawLine(QPointF(width * 0.905, height * 0.30), QPointF(width * 0.905, height * 0.50))
+        painter.drawLine(
+            QPointF(width * 0.905, height * 0.30), QPointF(width * 0.905, height * 0.50)
+        )
     else:
         _draw_village(painter, width, height)
         if mode == "single":
-            _draw_animal(painter, width * 0.56, height * 0.62, 1.65, "cat", selected=True, label="A014")
+            _draw_animal(
+                painter, width * 0.56, height * 0.62, 1.65, "cat", selected=True, label="A014"
+            )
         elif mode == "double":
-            _draw_animal(painter, width * 0.46, height * 0.63, 1.38, "cat", selected=True, label="A032")
-            _draw_animal(painter, width * 0.65, height * 0.63, 1.38, "dog", selected=True, label="A033")
+            _draw_animal(
+                painter, width * 0.46, height * 0.63, 1.38, "cat", selected=True, label="A032"
+            )
+            _draw_animal(
+                painter, width * 0.65, height * 0.63, 1.38, "dog", selected=True, label="A033"
+            )
         elif mode == "subtitle":
             _draw_animal(painter, width * 0.56, height * 0.62, 1.35, "cat")
             painter.fillRect(

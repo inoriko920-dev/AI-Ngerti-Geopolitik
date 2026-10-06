@@ -36,7 +36,11 @@ class MainWindow:
         from PySide6.QtGui import QFontDatabase
 
         families = set(QFontDatabase.families())
-        font_family = "Segoe UI" if "Segoe UI" in families else ("Arial" if "Arial" in families else self.window.font().family())
+        font_family = (
+            "Segoe UI"
+            if "Segoe UI" in families
+            else ("Arial" if "Arial" in families else self.window.font().family())
+        )
         self.window.setStyleSheet(app_stylesheet(font_family))
         self.stack = QStackedWidget()
         self.stack.setObjectName("stack_main_routes")
@@ -165,6 +169,7 @@ class MainWindow:
             open_new_project,
             open_existing_project,
         )
+
         def continue_new_project() -> None:
             self._emit(UiIntentType.NEW_PROJECT, action="continue_wizard")
             self.show_route(UiRoute.EDITOR)
