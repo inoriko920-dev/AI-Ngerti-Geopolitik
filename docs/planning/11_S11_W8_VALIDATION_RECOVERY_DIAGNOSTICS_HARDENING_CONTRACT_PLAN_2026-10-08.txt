@@ -1,0 +1,428 @@
+ASTRA PLANNING — S11 W8 VALIDATION / RECOVERY / DIAGNOSTICS HARDENING
+AI Ngerti Geopolitik • Master Blueprint TECH-WAVE STEP 11 • Contract Plan v1.0
+Planning date: 2026-10-08
+
+1. STATUS DAN TUJUAN
+====================
+Dokumen ini adalah planning ASTRA resmi setelah W7 AI Auto Edit L2 ditutup.
+Baseline source-of-truth repo: a39c6c6d5941f69a2b5b662f26df94d82b7f94ac.
+Accepted W7 implementation/regression HEAD: ca6dd582a4916caa4b0ac4affe4c3119e9ad2049.
+
+Wave baru: W8 — Validation / Recovery / Diagnostics Hardening.
+Master Blueprint mapping: TECH-WAVE STEP 11.
+W8 bukan wave editing baru. W8 mengeraskan failure paths, relink, stale background result,
+crash recovery, atomic persistence failure handling, dan diagnostics agar project nyata tetap aman.
+
+Planning ini mengunci canonical owner, serial task, failure matrix, UI reuse, security boundary,
+evidence strategy, dan Definition of Ready. SOL dilarang memulai implementasi W8 sebelum
+planning TXT/DOCX + contract MD menjadi source-of-truth repo.
+
+2. SUMBER OTORITATIF
+====================
+- Master Blueprint §17 Validation, Relink, dan Recovery.
+- Master Blueprint §21 Background Jobs dan stale-result contract.
+- Master Blueprint §29 Observability dan Diagnostics.
+- Master Blueprint Appendix Feature Acceptance Matrix.
+- Frozen UI Blueprint: UI-039 Pemulihan Project, UI-040 Asset Scan, UI-041 Validation Center.
+- Architecture: presentation -> application -> domain; infrastructure di belakang ports.
+- ProjectState adalah canonical project truth.
+- CommandBus/CommandBatch adalah satu-satunya committed mutation/history owner.
+- W1: atomic save, .bak, autosave snapshot, explicit online/offline/missing.
+- W6/W7: project/session/revision stale-token pattern sudah terbukti.
+
+3. AUDIT KONDISI REPO
+=====================
+Pondasi yang sudah ada dan harus dipertahankan:
+- ProjectSession mengelola lifecycle, dirty state, save, open, autosave.
+- JsonProjectRepository memakai temp write + flush/fsync + os.replace dan backup .bak.
+- MediaStatusService mempertahankan identity asset/clip saat file missing.
+- Asset mempunyai stable asset_id, path_ref, fingerprint, metadata dan availability.
+- CommandBus memberi transaction + Undo/Redo.
+- AIPlanJobService sudah mempunyai project/session/revision token dan stale gate.
+- Validation Center UI sudah tersedia tetapi data issue masih fixture statis.
+
+Gap W8:
+- Belum ada ValidationIssue/ValidationService terpadu.
+- Belum ada semantic RelinkAssetCommand yang menjaga Axxx identity.
+- Belum ada batch relink directory scan + deterministic candidate ranking.
+- Autosave belum punya catalog/retention/startup crash decision.
+- Belum ada crash marker / recovery decision flow.
+- Belum ada fault-injection proof untuk atomic save failure.
+- Belum ada structured diagnostics + redacted diagnostic bundle.
+- Frozen UI-039/UI-040/UI-041 belum terhubung ke real W8 projections.
+
+ASTRA decision: BUILD ON EXISTING FOUNDATION. Tidak perlu mencari/mengadopsi repo eksternal
+karena kebutuhan W8 adalah orchestration product-specific di atas owner yang sudah qualified.
+
+4. LOCKED PRODUCT CONTRACT
+==========================
+- Validation deterministic, rerunnable, non-destructive dan bound ke satu ProjectState revision.
+- BLOCKER memblok operasi yang memerlukan project/media valid.
+- ERROR memblok action terkait.
+- WARNING dan INFO tidak memblok serta tidak boleh diam-diam memutasi project.
+- Missing referenced asset harus menyebut exact Asset ID + scope yang terdampak + remediation.
+- Relink harus mempertahankan canonical Asset ID dan clip references.
+- Relink hanya commit lewat semantic CommandBatch dan harus undoable sampai save.
+- Ambiguous/name-only candidate tidak boleh auto-apply.
+- Recovery tidak boleh overwrite satu-satunya source project yang masih baik tanpa explicit Save.
+- Corrupt recovery snapshot tidak boleh menghapus source, .bak, atau snapshot valid lain.
+- Directory scan/hash/compression berat tidak boleh memblok Qt GUI thread.
+- Background result membawa project/session/revision identity; stale result tidak boleh commit.
+- Diagnostics harus redact credential/path sensitif dan membatasi log/content.
+- W8 tidak mengimplementasikan STEP 12 export matrix, legacy importer, stress wave, atau redesign UI.
+
+5. LOCKED CANONICAL OWNERS
+==========================
+ProjectState
+- Canonical project truth.
+- Validation result adalah transient projection, bukan field canonical kedua.
+
+CommandBus / CommandBatch
+- Satu-satunya mutation/history owner.
+
+ValidationService (planned, application)
+- Pure/non-mutating aggregation typed ValidationIssue.
+- Tidak menyimpan state project sendiri.
+
+RelinkAssetCommand (planned)
+- Canonical mutation untuk mengganti binding media dengan stable asset_id.
+- Menggunakan verified probe result.
+- Mempertahankan references ke Axxx.
+
+RelinkService (planned, application)
+- Validasi candidate dan bangun command/batch.
+- Tidak mengubah filesystem atau UI secara langsung.
+
+RelinkScanJobService (planned, application)
+- Background directory scan/hash/probe.
+- Wajib token project_id/session_id/base_revision.
+
+RecoveryCatalogService / RecoveryManager (planned, application)
+- Discover/validate/rank/prune managed snapshots.
+- Source .angproj dan .bak tidak pernah menjadi prune target.
+
+JsonProjectRepository
+- Tetap atomic serializer/persistence owner.
+- Dilarang membuat serializer kedua.
+
+DiagnosticBundleService (planned, application)
+- Orchestrates safe diagnostic manifest/bundle.
+- Platform/log/version adapters berada di infrastructure.
+
+Presentation
+- Hanya projection + UiIntent.
+- Tidak scan filesystem/hash/persistence/CommandBus langsung.
+
+6. VALIDATION MODEL
+===================
+ValidationIssue adalah immutable application DTO dengan minimum:
+- issue_code
+- severity: BLOCKER | ERROR | WARNING | INFO
+- scope: PROJECT | MEDIA | TIMELINE_SCENE | SUBTITLE | NARRATION | AI | RENDER | RUNTIME
+- safe_title
+- safe_message
+- target_ids
+- remediation_action
+- project_revision
+
+Aturan:
+- Message selalu menjawab what happened + where + next action.
+- Severity tidak boleh color-only.
+- Result bound ke revision tertentu.
+- Setelah revision berubah, result lama = STALE sampai revalidate.
+- Asset.availability tetap canonical online/offline/missing.
+- CORRUPT/DUPLICATE adalah derived validation/media-health projection pada W8, bukan availability truth baru.
+
+7. RELINK MATCHING CONTRACT
+===========================
+Ranking candidate deterministic:
+1. exact canonical Axxx basename + probe-compatible;
+2. exact original source_name basename + compatible media family/metadata;
+3. exact SHA-256 fingerprint;
+4. compatible metadata candidate -> manual choice only.
+
+Safety:
+- Similar filename saja tidak pernah cukup untuk auto relink.
+- High-confidence candidate boleh preselected, tetapi commit tetap memerlukan explicit confirmation.
+- Wrong media type / incompatible probe = hard reject.
+- Single confirmed relink = one CommandBatch.
+- Multi confirmed relink = one intentional batch transaction.
+- Relink preserves asset_id dan clip references.
+- path_ref/source_name/fingerprint/file_size/probe metadata/availability diperbarui dari verified probe.
+
+8. RECOVERY CONTRACT
+====================
+- Autosave tetap terpisah dari canonical source.
+- New snapshot identity: project_id + revision + timestamp; semantic hash metadata tetap dipakai.
+- Existing revision/hash snapshot naming tetap discoverable untuk backward compatibility.
+- Default retention: max 20 validated managed snapshots per project.
+- Prune hanya managed autosave project terkait; source .angproj/.bak tidak disentuh.
+- Crash/unclean marker + valid newer candidate -> recovery decision.
+- Tidak ada valid candidate -> jangan tampilkan fake recovery.
+- Recovery UI menampilkan source, timestamp/age, revision, validation status.
+- Explicit actions: Open Source / Recover Snapshot / Ignore.
+- Recover Snapshot membuka working state; source tidak ditimpa sampai user Save.
+- Corrupt candidate di-skip/report; tidak menghapus source atau candidate lain.
+
+9. DIAGNOSTICS CONTRACT
+=======================
+Structured event minimum:
+- timestamp
+- severity
+- subsystem
+- action
+- job_id jika relevan
+- project_id + revision jika relevan
+- safe_error_code
+
+Diagnostic bundle boleh memuat:
+- app version / commit / engine versions
+- sanitized OS/CPU/GPU summary
+- bounded recent redacted logs
+- project schema summary
+- validation summary
+- deterministic manifest
+
+Dilarang default:
+- raw API key / credential value
+- full prompt
+- full subtitle/narration content
+- media bytes
+- unnecessary user identifiers
+- raw absolute path jika dapat direduksi/redact
+
+Bundle generation yang non-trivial harus background-safe.
+
+10. SERIAL IMPLEMENTATION CONTRACT
+==================================
+
+10.1 W8-001 — Canonical Validation Contracts + Baseline Rules
+--------------------------------------------------------------
+Goal: bentuk typed issue/severity/scope/result contract dan ValidationService skeleton tanpa UI wiring.
+- Non-mutating validation result bound ke revision.
+- Baseline rules: schema/project validity, missing media, basic timeline references, subtitle/narration health hooks.
+- No project mutation.
+Gate:
+- targeted unit tests
+- full pytest
+- Ruff/mypy/import/architecture/no-secret/UI manifest
+- source-of-truth update
+- stop; W8-002 tidak dikerjakan di turn yang sama.
+
+10.2 W8-002 — Real Media Integrity + Validation Center Projection
+------------------------------------------------------------------
+Goal: real media status/probe checks menghasilkan actionable issues.
+- Missing referenced media => BLOCKER.
+- unreadable/zero-byte/probe failure => typed media issue.
+- duplicate-candidate health remains derived projection.
+- Presentation projection for existing Validation Center; geometry unchanged.
+Gate:
+- real-media evidence
+- revision-stale projection proof
+- UI-041 parity tests
+- regression prior waves.
+
+10.3 W8-003 — Single Asset Relink Command + Exact Identity Preservation
+------------------------------------------------------------------------
+Goal: safe single relink preserving Axxx identity.
+- Add semantic RelinkAssetCommand only if no current command can own semantics.
+- Verify candidate before commit.
+- Update binding/metadata/availability atomically.
+- Preserve clip references.
+- One Undo restores original binding; one Redo restores relink.
+Gate:
+- real file relocation integration
+- wrong-type/hash/metadata failure zero mutation
+- save/reopen exact.
+
+10.4 W8-004 — Batch Directory Relink Scan + Candidate Ranking
+--------------------------------------------------------------
+Goal: bounded asynchronous directory scan + deterministic proposals.
+- no GUI-thread recursive scan/hash.
+- token project/session/revision.
+- deterministic ranking contract.
+- ambiguity requires manual choice.
+- multiple confirmed changes one batch.
+- UI-040 progress/candidate/cancel projection.
+Gate:
+- real directory evidence
+- cancellation safe
+- stale result cannot commit
+- ambiguous name-only no auto-apply.
+
+10.5 W8-005 — Autosave Catalog + Retention Hardening
+-----------------------------------------------------
+Goal: promote existing snapshots into managed recovery catalog.
+- project_id/revision/timestamp/hash safe metadata.
+- backward-read current naming.
+- validate before listing recoverable.
+- max 20 validated managed snapshots/project.
+- source/.bak never prune target.
+Gate:
+- ordering/retention/corrupt isolation unit tests
+- fault injection
+- canonical project bytes unchanged.
+
+10.6 W8-006 — Crash Marker + Startup Recovery Decision
+-------------------------------------------------------
+Goal: explicit crash recovery using UI-039.
+- clean/unclean session marker.
+- valid newer candidates only.
+- Open Source / Recover Snapshot / Ignore.
+- recovered snapshot = working state; source untouched until explicit save.
+Gate:
+- crash simulation
+- corrupt newest fallback
+- UI-039 state/action parity.
+
+10.7 W8-007 — Atomic Persistence Failure Injection + Remediation
+-----------------------------------------------------------------
+Goal: prove existing atomic persistence behavior under failure.
+- inject failure around temp/write/replace.
+- prior source bytes must remain exact.
+- safe temp/backup cleanup.
+- typed actionable PersistenceError projection.
+- do not rewrite JsonProjectRepository unless evidence shows defect.
+Gate:
+- source hash before/after failure exact
+- retry saves intended state
+- no fake success.
+
+10.8 W8-008 — Stale Result Hardening for W8 Background Jobs
+------------------------------------------------------------
+Goal: apply proven stale-token pattern to validation/relink/recovery jobs.
+- project_id/session_id/base_revision token.
+- result for old project/revision = STALE/discarded.
+- cancellation safe.
+- no second session/project truth.
+Gate:
+- concurrent manual edit during scan
+- close/open different project
+- cancellation zero mutation.
+
+10.9 W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle
+------------------------------------------------------------------
+Goal: reproducible support evidence without leaking private data.
+- structured events
+- on-demand ZIP bundle
+- redacted paths/logs
+- deterministic manifest
+- no secrets/full content/media bytes by default
+Gate:
+- bundle secret/content scan
+- typed failures
+- background-safe generation.
+
+10.10 W8-010 — Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock
+---------------------------------------------------------------------
+Goal: close W8 through frozen UI-039/UI-040/UI-041 and real failure/recovery E2E.
+- Validation Center real projection.
+- Asset Scan real progress/candidates/cancel.
+- Recovery explicit source-vs-snapshot.
+- GOLDEN-03 equivalent: missing -> blocker -> relink -> validation clear -> save/reopen.
+- crash snapshot -> recover without source corruption.
+- diagnostic bundle evidence.
+- final regression same accepted HEAD includes S08/S09/S10/W0-W7 and all W8 families.
+- exact workflow count recorded at closure, not hard-coded in planning.
+
+11. FROZEN UI REUSE
+===================
+No new image-generation step is required.
+- UI-039 — Pemulihan Project — Final Parity Variant / SCR-014.
+- UI-040 — Asset Scan — Final Parity Variant / SCR-004.
+- UI-041 — Validation Center — Final Parity Variant / SCR-012.
+- Existing validation dialog must evolve from static fixture to real projection without redesign.
+- Structural UI delta requires DELTA_FROM_AAVC change control; W8 does not authorize one.
+
+12. FAILURE INJECTION MATRIX
+============================
+- Referenced asset deleted after open -> BLOCKER, no crash, no clip deletion.
+- Two plausible same-name relink candidates -> no auto apply.
+- Wrong media type candidate -> reject zero mutation.
+- Project changes while relink scan runs -> STALE cannot commit.
+- Corrupt autosave -> skip/report; source/.bak untouched.
+- Unclean marker + valid newer snapshot -> recovery choice.
+- Unclean marker + no valid snapshot -> normal source, no fake recovery.
+- Failure after temp write before replace -> prior source bytes exact.
+- Diagnostic bundle unreadable temp/log -> safe typed failure, project unaffected.
+- Diagnostic bundle secret scan -> no raw credential/key.
+- Validation projection after revision change -> STALE until revalidate.
+
+13. TEST / EVIDENCE STRATEGY
+============================
+Unit:
+- validation rules
+- relink command/ranking
+- recovery catalog/retention
+- stale token
+- diagnostics redaction
+
+Integration:
+- real probe missing/corrupt/relocated media
+- batch relink
+- persistence fault injection
+- save/reopen
+
+Qt:
+- UI-039/UI-040/UI-041 projection/action gating/progress/cancel
+- severity text/icon, not color-only
+
+E2E:
+- GOLDEN-03 equivalent on Windows
+
+Security:
+- existing no-secret verifier
+- bundle-specific secret/content scan
+
+Regression:
+- final accepted W8 HEAD must pass all prior implementation families + all W8 families.
+- S08 portable and S10 packaged real-media smoke remain mandatory final gates.
+
+14. PLANNED MODULE OWNERSHIP
+============================
+Non-binding path, binding ownership:
+- application/validation.py
+- application/relink.py
+- application/recovery.py
+- application/diagnostics.py
+- application/commands.py only for RelinkAssetCommand
+- infrastructure/relink_scan.py
+- infrastructure/recovery_store.py if repository port is insufficient
+- infrastructure/diagnostics.py
+- presentation projections for frozen validation/recovery/asset-scan surfaces
+- tests/scripts/evidence/workflows per serial task.
+
+15. FORBIDDEN SHORTCUTS
+=======================
+- Do not implement STEP 12 export matrix in W8.
+- Do not implement legacy AAVC importer/stress wave.
+- Do not store validation issues in ProjectState.
+- Do not change Asset ID during relink.
+- Do not auto-relink from similar filename alone.
+- Do not overwrite source project during recovery without explicit Save.
+- Do not create second JSON serializer/project repository.
+- Do not log raw credential/full prompt/full subtitle/narration/media.
+- Do not run large scan/hash/compression on GUI thread.
+- Do not redesign/regenerate UI-039/UI-040/UI-041 or 42 UI references.
+
+16. DEFINITION OF READY FOR SOL W8-001
+======================================
+- Planning TXT committed in docs/planning.
+- Planning DOCX committed in docs/planning.
+- W8 contract MD committed in docs/project.
+- TASKS/PLAN/PROJECT_STATUS/HANDOFF/README/INDEX agree:
+  W8 CONTRACT_LOCKED, implementation NOT_STARTED, W8-001 only READY.
+- W7 remains CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI.
+- No source/runtime code change in planning.
+- A new owner instruction “lanjutkan” is required before SOL W8-001.
+
+17. FINAL ASTRA DECISION
+========================
+ASTRA approves build-on-existing-foundation. No mature external repository is needed.
+The existing canonical project/history/persistence/media/AI-stale/frozen-UI owners are the mature
+foundation; replacing them would increase risk.
+
+W8 serial contract is LOCKED as W8-001..W8-010.
+This planning turn ends after planning DOCX/TXT/contract/source-of-truth are committed.
+Exact next implementation action after a new “lanjutkan”:
+SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules.

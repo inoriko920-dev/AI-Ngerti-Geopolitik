@@ -807,3 +807,39 @@ W7-010 proof:
 **Next:** ASTRA planning only for the next wave mapped to Master Blueprint
 TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening. Detailed planning
 DOCX is required before SOL implementation; next wave has not started.
+
+
+### W8 — Validation / Recovery / Diagnostics Hardening — CONTRACT_LOCKED
+
+Planning:
+- `docs/planning/11_S11_W8_VALIDATION_RECOVERY_DIAGNOSTICS_HARDENING_CONTRACT_PLAN_2026-10-08.docx`
+- `docs/planning/11_S11_W8_VALIDATION_RECOVERY_DIAGNOSTICS_HARDENING_CONTRACT_PLAN_2026-10-08.txt`
+- `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
+
+Master Blueprint mapping: **TECH-WAVE STEP 11**.
+
+Serial contract:
+- [ ] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — READY**
+- [ ] **S11-W8-002 — Real Media Integrity + Validation Center Projection — BLOCKED_BY_W8_001**
+- [ ] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — BLOCKED_BY_W8_002**
+- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003**
+- [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
+- [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005**
+- [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006**
+- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — BLOCKED_BY_W8_007**
+- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
+- [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
+
+Locked boundaries:
+- build on existing ProjectState/CommandBus/ProjectSession/JsonProjectRepository;
+- validation results are transient, not canonical project state;
+- relink preserves Axxx identity and requires verified candidate + explicit confirmation;
+- filename similarity alone never auto-relinks;
+- recovery never silently overwrites source;
+- max 20 managed autosave snapshots/project by default;
+- W8 background jobs use project/session/revision stale safety;
+- diagnostic bundle is redacted/no raw secret/full content/media bytes by default;
+- UI-039/UI-040/UI-041 are reused without redesign;
+- STEP 12 export matrix is outside W8.
+
+**Exact next task:** S11-W8-001 only — Canonical Validation Contracts + Baseline Rules.

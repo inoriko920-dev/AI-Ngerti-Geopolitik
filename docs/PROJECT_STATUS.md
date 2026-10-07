@@ -1,73 +1,38 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Last completed wave:** **W7 — AI Auto Edit L2**  
-**W7 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
-**Accepted final W7 implementation HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`  
-**Accepted W7-010 workflow:** `37675538957` — SUCCESS  
-**Next wave:** **NOT STARTED — ASTRA planning required**  
-**Master Blueprint next mapping:** **TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening**
+**Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
+**W8 planning status:** **CONTRACT_LOCKED**  
+**W8 runtime status:** **IMPLEMENTATION_NOT_STARTED**  
+**W8-001:** **READY**  
+**W8-002..010:** **SERIAL_BLOCKED**  
+**Master Blueprint mapping:** **TECH-WAVE STEP 11**  
+**W8 planning baseline:** `a39c6c6d5941f69a2b5b662f26df94d82b7f94ac`  
+**Accepted W7 implementation/regression HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
 
-## W7 final proof
+## W7
 
-W7-001 through W7-010 are PASS.
+W7 Auto Edit L2 remains **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+Its final 27/27 regression lock remains the accepted product baseline.
 
-The completed Auto Edit L2 path now proves:
-- bounded selected-scope context;
-- strict schema-v2 provider plan parsing;
-- state-aware semantic verification;
-- canonical manual-command translation;
-- real duration/speed pacing;
-- real transform preview/export;
-- real fade_black transition;
-- shared Gemini L1/L2 lifecycle;
-- explicit user review/approval;
-- one atomic AI CommandBatch;
-- bounded before→after UI diff;
-- real mixed L1/L2 export;
-- save/reopen persistence;
-- exact one-transaction Undo/Redo;
-- safe invalid/range/scope/lock/stale/provider failure handling.
+## W8 scope
 
-## W7-010 gates
+W8 owns:
+- Validation Center real contracts/projections;
+- real media integrity issues;
+- single/batch relink with stable Axxx identity;
+- autosave catalog/retention;
+- crash marker/startup recovery decision;
+- atomic persistence fault injection;
+- stale result hardening for W8 background jobs;
+- structured redacted diagnostics;
+- frozen UI-039/UI-040/UI-041 wiring;
+- GOLDEN-03-equivalent final closure/regression.
 
-Workflow `37675538957`:
-- FFmpeg toolchain PASS;
-- Ruff format/check PASS;
-- mypy PASS — 68 source files;
-- import contracts 4/4 PASS;
-- architecture PASS;
-- source-of-truth PASS;
-- no-secret PASS;
-- UI references 42/42 PASS;
-- targeted W7-010 tests **8/8 PASS**;
-- full pytest **386/386 PASS**;
-- integrated real-media closure PASS;
-- evidence verifier **9/9 PASS**;
-- artifact upload PASS.
-
-Artifact:
-- `ANG-S11-W7-010-Closure`;
-- ID `11507307240`;
-- SHA-256 `6d9d2a6507f269f4ed8747f1448f885f88637016d868e36b95441f59ae9079af`.
-
-Regression:
-**27/27 workflow families SUCCESS, all attempt 1.**
-
-S08 portable foundation PASS.  
-S09 UI shell PASS.  
-S10 Windows E2E + packaged smoke PASS.  
-W0 and all earlier implementation waves PASS.
-
-## Provisional live-provider note
-
-No real Gemini credential was supplied to W7-010, so no live network success is
-claimed. The secure provider software path remains inherited from W6 as
-**PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+W8 does not own STEP 12 export matrix, legacy importer, stress wave, or UI redesign.
 
 ## Exact next action
 
-After owner says **lanjutkan**, start **ASTRA planning only** for the next wave:
-Master Blueprint **TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening**.
+After owner says **lanjutkan**, execute **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
 
-Create a detailed planning DOCX and lock the contract before any SOL implementation.
+No W8 runtime code has been implemented by the ASTRA planning turn.

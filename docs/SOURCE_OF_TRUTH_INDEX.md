@@ -54,7 +54,8 @@
     - `docs/evidence/features/S11_W7_009_APPROVAL_APPLY_UI_DIFF.md`
     - `docs/evidence/features/S11_W7_010_REAL_MEDIA_FAILURE_REGRESSION_CLOSURE.md`
 12. current wave contract:
-    - `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
+    - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
+    - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
     - historical closed W6 contract: `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 13. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
@@ -142,6 +143,12 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W7-010 final integrated real-media/persistence/Undo-Redo/failure closure is qualified.
 - final W7 regression lock is **27/27 workflow families SUCCESS, all attempt 1**.
 - W7 final status: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
-- exact next action: **ASTRA planning only for Master Blueprint TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening; detailed planning DOCX required before SOL implementation**.
+- W8 planning TXT/DOCX + contract: **SOURCE OF TRUTH / CONTRACT_LOCKED**.
+- W8 runtime implementation: **NOT STARTED**.
+- W8-001 Canonical Validation Contracts + Baseline Rules: **READY**.
+- W8-002..W8-010: **SERIAL_BLOCKED**.
+- W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
+- W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
+- exact next action: **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

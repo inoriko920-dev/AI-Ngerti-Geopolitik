@@ -326,3 +326,28 @@ Locked interpretation:
 Enabling Reverse, changing property ownership, or replacing MLT as primary
 production candidate requires new evidence and the appropriate architecture
 decision/update.
+
+
+## D-026 — W8 Validation / Recovery / Diagnostics hardening ownership
+
+ASTRA locks SF-STEP 11 W8 to Master Blueprint TECH-WAVE STEP 11.
+
+Baseline:
+- planning/source-of-truth baseline: `a39c6c6d5941f69a2b5b662f26df94d82b7f94ac`;
+- accepted W7 implementation/regression HEAD remains
+  `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`;
+- W7 remains CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI.
+
+Locked ownership:
+- build on existing ProjectState, CommandBus/CommandBatch, ProjectSession and JsonProjectRepository;
+- ValidationIssue/validation results are transient application projections, never a second canonical project state;
+- relink preserves stable Axxx identity and clip references and commits only through canonical history;
+- no filename-similarity-only automatic relink;
+- recovery never silently overwrites source; managed retention defaults to max 20 snapshots/project;
+- W8 heavy background work carries project/session/revision stale safety;
+- diagnostic bundle is redacted and excludes raw credential/full prompt/subtitle/narration/media content by default;
+- UI-039/UI-040/UI-041 are frozen reuse surfaces; no new UI generation or redesign is authorized;
+- Master Blueprint STEP 12 export matrix, legacy importer and later stress work are out of W8 scope.
+
+Serial implementation is W8-001..W8-010. Only W8-001 is READY after planning.
+No W8 source/runtime implementation is part of the ASTRA planning commit.

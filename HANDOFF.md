@@ -1,87 +1,51 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
-**Last completed wave:** W7 — AI Auto Edit L2  
-**W7 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
-**Accepted final W7 HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`  
-**Accepted W7-010 workflow:** `37675538957` — SUCCESS  
-**Next wave:** NOT STARTED  
-**Next role:** ASTRA planning only  
-**Master Blueprint next mapping:** TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening
+**Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
+**Role completed:** ASTRA planning  
+**W8 status:** CONTRACT_LOCKED / IMPLEMENTATION_NOT_STARTED  
+**Only READY task:** S11-W8-001  
+**W7 final status:** CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI  
+**Accepted W7 HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
 
-## Final W7 implementation
+## Read before implementation
 
-W7-001..010 are complete.
+1. `AGENTS.md`
+2. Software Factory source-of-truth
+3. all planning docs in numeric order
+4. W8 planning DOCX/TXT
+5. `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
+6. current PLAN/TASKS/PROJECT_STATUS/DECISIONS
+7. existing W1 persistence/media foundation and W6/W7 stale-job patterns.
 
-Canonical ownership remains:
-- ProjectState = project truth;
-- CommandBus / CommandBatch = committed mutation/history owner;
-- existing manual commands = AI mutation path;
-- GeminiAIProvider = only Gemini adapter;
-- CredentialPoolService = credential/failover owner;
-- AIPlanJobService = background lifecycle owner;
-- AutoEditPlanVerifier = L2 semantic verifier;
-- AIPlanApprovalService = explicit approval owner;
-- W6 AI Agent surface = L1/L2 review surface.
+## ASTRA decisions locked
 
-## W7-010 final closure
+- Build on existing ProjectState/CommandBus/ProjectSession/JsonProjectRepository.
+- ValidationIssue is transient application DTO, not ProjectState.
+- Relink preserves Asset ID and clip references.
+- No filename-similarity-only auto relink.
+- Multi-relink confirmation commits one intentional CommandBatch.
+- Recovery source project remains untouched until explicit Save.
+- Managed recovery retention default max 20 snapshots/project.
+- W8 heavy background results use project/session/revision stale safety.
+- Diagnostic bundle is redacted and contains no raw credentials/full content/media by default.
+- UI-039/UI-040/UI-041 are reused; no new UI generation.
+- STEP 12 export work is outside W8.
 
-Integrated proof:
-- L2ContextBuilder → provider job → AutoEditPlanVerifier → approval → one AI batch;
-- six-command mixed L1/L2 plan;
-- real preview/export;
-- 210-frame final export with audio;
-- save/reopen exact semantic hash;
-- reopened preview exactly matches applied preview;
-- one Undo restores pre-AI hash;
-- one Redo restores applied hash;
-- source media unchanged.
+## Serial W8
 
-Failure proof:
-- invalid schema safe;
-- out-of-range safe;
-- out-of-scope safe;
-- locked target safe;
-- stale result safe;
-- rate-limit/quota safe;
-- invalid-auth exhaustion safe.
+W8-001 validation contracts — READY.  
+W8-002 real media validation — blocked by W8-001.  
+W8-003 single relink — blocked by W8-002.  
+W8-004 batch relink scan — blocked by W8-003.  
+W8-005 recovery catalog/retention — blocked by W8-004.  
+W8-006 crash marker/startup recovery — blocked by W8-005.  
+W8-007 persistence fault injection — blocked by W8-006.  
+W8-008 stale-result hardening — blocked by W8-007.  
+W8-009 diagnostics bundle — blocked by W8-008.  
+W8-010 frozen UI/GOLDEN-03/regression closure — blocked by W8-009.
 
-## Gates
+## Exact next action
 
-Workflow `37675538957` — SUCCESS:
-- targeted 8/8 PASS;
-- full pytest 386/386 PASS;
-- mypy 68 source files PASS;
-- import contracts PASS;
-- architecture PASS;
-- no-secret PASS;
-- UI references 42/42 PASS;
-- evidence 9/9 PASS;
-- artifact upload PASS.
-
-Artifact:
-- `ANG-S11-W7-010-Closure`;
-- ID `11507307240`;
-- size 5,864,179 bytes;
-- SHA-256 `6d9d2a6507f269f4ed8747f1448f885f88637016d868e36b95441f59ae9079af`.
-
-Final regression:
-**27/27 workflow families SUCCESS, all attempt 1**.
-
-S08/S09/S10/W0 and all prior waves remain green.
-
-## Live provider boundary
-
-No real Gemini credential was available for W7-010. Do not claim real live Gemini
-network success. W7 closes as **PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
-
-## Next exact action
-
-On the next owner `lanjutkan`:
-1. switch to ASTRA;
-2. plan the next wave mapped to Master Blueprint TECH-WAVE STEP 11;
-3. create the required detailed planning DOCX;
-4. lock the new contract;
-5. stop before SOL implementation unless the Software Factory gate permits it.
-
-Do not treat W8/next-wave implementation as already started.
+On next owner `lanjutkan`, switch to SOL and execute **S11-W8-001 only**.
+Do not implement W8-002 in the same turn.
