@@ -1,3 +1,4 @@
+# W5-010 final regression lock: tests/** intentionally retriggers prior accepted waves.
 from __future__ import annotations
 
 from pathlib import Path
