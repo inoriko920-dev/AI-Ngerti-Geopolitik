@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3 PASS — NEXT W4**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — NEXT W5**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -8,39 +8,44 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## Current verified baseline
 
-W3 accepted implementation:
-- HEAD `79217e687a9930087260e7dd3203b6ab8492b477`;
-- W3 workflow `37545032247` — SUCCESS;
-- evidence artifact `11449982099`.
+W4 accepted implementation:
+- HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`;
+- W4 workflow `37570612799` — SUCCESS;
+- evidence artifact `11460641864`.
 
-W3 now verifies:
-- inspector binding for project/track/asset/clip;
-- video transform/opacity/crop;
-- audio volume/pan/fade;
-- basic color controls;
-- uniform speed 25%–400% with duration recompute/ripple;
+W4 now verifies:
+- canonical per-clip title overlay;
+- real `fade_black` transition plus `none`;
+- nine render-backed AAVC effects: Fade, Pop, Breathe, Stomp, Tumble,
+  Tectonic, Rise, Pan and Drift;
 - semantic UI intents + canonical CommandBus mutation;
-- cross-property Undo/Redo;
-- project save/reopen;
-- old-schema safe property defaults;
-- real preview property impact;
-- real 1920×1080 / 30 fps / 180-frame export with audio.
+- Undo/Redo;
+- project save/reopen and old-schema safe defaults;
+- real preview impact;
+- real export impact with audio retained;
+- evidence verifier PASS 8/8.
+
+Unsupported legacy effects remain unavailable rather than faked. Dissolve /
+crossfade is also not claimed because W4 canonical timeline semantics do not
+support clip overlap.
 
 Reverse remains **disabled** until real backend qualification says otherwise.
 
-All S08/S09/S10/W0/W1/W2 regression workflows are green on the same accepted
-W3 implementation HEAD.
+All S08/S09/S10/W0/W1/W2/W3 regression workflows are green on the same
+accepted W4 implementation HEAD.
 
 ## Engine direction
 
 MLT remains the primary STEP 11 production-engine implementation candidate.
 ProjectState + CommandBus + MediaEnginePort remain canonical boundaries.
 
-The W3 real FFmpeg property preview/export is qualification evidence behind the
-existing port. It is not a production-engine switch.
+The W4 real FFmpeg creative preview/export is qualification evidence behind
+the existing port. It is not a production-engine switch.
 
 ## Next
 
-**W4 — Titles / Transitions / Effects.**
+**W5.** Its exact task contract must be derived from the frozen
+Product/UI/Architecture source-of-truth before implementation.
 
-Do not jump to W5, Gemini/AI coverage, SF-STEP 12, or final release packaging.
+Do not jump directly to Gemini/AI coverage, SF-STEP 12, or final release
+packaging.

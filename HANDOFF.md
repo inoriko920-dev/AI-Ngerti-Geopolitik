@@ -1,10 +1,10 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11  
-**Last completed wave:** W3 — PASS  
-**Accepted W3 implementation HEAD:** `79217e687a9930087260e7dd3203b6ab8492b477`  
-**Accepted W3 run:** `37545032247` — SUCCESS  
-**Next exact wave:** W4 — Titles / Transitions / Effects
+**Last completed wave:** W4 — PASS  
+**Accepted W4 implementation HEAD:** `3e3cd376189e9f183e70ca537ad25f037e25bcd7`  
+**Accepted W4 run:** `37570612799` — SUCCESS  
+**Next exact wave:** W5 — derive exact scope before coding
 
 ## Read first
 
@@ -14,62 +14,76 @@ Read STEP 08–10 evidence, then:
 - `S11_W0_BASELINE_AND_ENGINE_QUALIFICATION.md`;
 - `S11_W1_PROJECT_MEDIA_PERSISTENCE.md`;
 - `S11_W2_TIMELINE_PLAYBACK_CORE.md`;
-- `S11_W3_PROPERTIES_VIDEO_AUDIO_COLOR_SPEED.md`.
+- `S11_W3_PROPERTIES_VIDEO_AUDIO_COLOR_SPEED.md`;
+- `S11_W4_TITLES_TRANSITIONS_EFFECTS.md`.
 
-## W3 outcome
+## W4 outcome
 
-Verified canonical W3 behavior:
-- inspector binding to project/track/asset/clip;
-- video position/scale/rotation/opacity;
-- crop/basic composition;
-- audio volume/pan/fades;
-- basic color controls;
-- speed 25%–400% with duration recompute/ripple;
-- semantic Qt property intents;
+Verified canonical W4 behavior:
+- per-clip title overlay state;
+- real `fade_black` transition plus `none`;
+- nine render-backed AAVC effects: Fade, Pop, Breathe, Stomp, Tumble,
+  Tectonic, Rise, Pan and Drift;
+- effect enter/exit, bounded intensity and lock;
+- semantic Qt creative intents;
 - CommandBus Undo/Redo;
 - persistence and old-schema default compatibility;
-- preview reflects property change;
-- real export reflects W3 state and retains audio.
+- preview reflects W4 state;
+- real export reflects W4 state and retains audio.
 
-Real evidence export:
-- 1920×1080;
-- 30 fps;
-- 180 canonical frames = 180 probed frames;
-- SHA-256
-  `faf166bb5d78e997d264d104fcc76bb72f4f5415081511b1a4a14376afb3b48b`.
+W4 evidence report:
+- `status = PASS`;
+- title overlay = true;
+- fade_black transition = true;
+- render-backed effects = true;
+- unsupported legacy effects hidden = true;
+- crossfade claimed = false;
+- Undo/Redo = true;
+- save/reopen = true;
+- preview changed = true;
+- export valid = true;
+- export has audio = true;
+- verifier PASS 8/8.
 
-W3 artifact:
-- ID `11449982099`;
+W4 artifact:
+- name `ANG-S11-W4-Creative`;
+- ID `11460641864`;
 - digest
-  `sha256:81077bc180eb29506aca3b4a7d1720675082e09759650de829083bca3ecb8533`.
+  `sha256:06e87e681e0407b6e576b0ab8247eee3c900c50af7bfe2f38f81015bea64630e`.
 
 ## Locked interpretation carried forward
 
 - ProjectState remains canonical truth.
-- Property mutation remains CommandBus/CommandBatch.
+- W4 mutation remains CommandBus/CommandBatch.
 - Presentation may emit intents but not mutate concrete engines.
 - MLT remains the primary production-engine implementation candidate.
 - FFmpeg remains a real qualification adapter behind MediaEnginePort.
 - AAVC UI-001..UI-042 remains frozen 1:1.
-- Reverse is **not supported** in W3 and must remain visibly disabled until a
-  later real backend qualification proves it safe.
-- W3 does not claim that final distributable MLT DLL/property mapping is done.
+- Reverse remains unsupported and visibly disabled.
+- `fade_black` is fade-through-black, not dissolve/crossfade.
+- Do not expose Wipe, Blur, Succession, Baseline, Neon, Scrapbook, Brush, Ink,
+  Digital, Spray Paint, Sketch or Gradient as functional W4 effects.
+- W4 does not claim that final distributable MLT DLL/mapping is done.
 
-## Regression IDs on accepted W3 implementation HEAD
+## Regression IDs on accepted W4 implementation HEAD
 
-- W3: `37545032247`;
-- W2: `37545032183`;
-- W1: `37545031989`;
-- W0: `37545032172`;
-- S10: `37545032214`;
-- S09: `37545032107`;
-- S08: `37545032095`.
+- W4: `37570612799`;
+- W3: `37570612705`;
+- W2: `37570612673`;
+- W1: `37570612719`;
+- W0: `37570612737`;
+- S10: `37570612830`;
+- S09: `37570612683`;
+- S08: `37570612789`.
 
 All are SUCCESS.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **W4 only — Titles / Transitions /
-Effects**.
+After owner says `lanjutkan`, execute **W5 only**.
 
-Do not start W5, AI/Gemini coverage, SF-STEP 12, or final release packaging.
+Before implementing W5, derive and record its exact serial task contract from
+the frozen Product/UI/Architecture source-of-truth. Do not infer a W5 scope
+only from legacy code.
+
+Do not jump to Gemini/AI coverage, SF-STEP 12, or final release packaging.
