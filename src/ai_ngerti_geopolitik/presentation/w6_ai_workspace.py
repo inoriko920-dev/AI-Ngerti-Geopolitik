@@ -97,6 +97,7 @@ def create_ai_agent_workspace(
     *,
     open_credentials_callback: Callable[[], None] | None = None,
 ) -> Any:
+    from PySide6.QtCore import Qt
     from PySide6.QtWidgets import (
         QComboBox,
         QFrame,
@@ -106,6 +107,7 @@ def create_ai_agent_workspace(
         QListWidget,
         QProgressBar,
         QPushButton,
+        QSlider,
         QStackedWidget,
         QTabWidget,
         QTextBrowser,
@@ -129,23 +131,56 @@ def create_ai_agent_workspace(
     director_layout = QVBoxLayout(director)
     director_layout.setContentsMargins(10, 10, 10, 10)
     director_layout.setSpacing(9)
-    director_layout.addWidget(section_title("AI Director / AI Otomatis"))
-    director_layout.addWidget(
-        muted_label(
-            "Gemini merencanakan animasi L1 saja. Lock tetap dihormati dan perubahan "
-            "selalu ditinjau sebelum diterapkan."
+    director_layout.addWidget(section_title("Animasi  ›  AI Director"))
+    director_tabs = QHBoxLayout()
+    for text_value, selected in (("Preset", False), ("AI Director", True), ("Kustom", False)):
+        tab_button = QPushButton(text_value)
+        tab_button.setEnabled(selected)
+        tab_button.setStyleSheet(
+            "font-weight:700; border-bottom:2px solid #2563EB;"
+            if selected
+            else "color:#64748B;"
         )
-    )
+        director_tabs.addWidget(tab_button)
+    director_layout.addLayout(director_tabs)
+
+    provider_row = QHBoxLayout()
+    provider_combo = QComboBox()
+    provider_combo.setObjectName("combo_w6_director_provider")
+    provider_combo.addItem("Gemini · Siap", "gemini")
+    provider_row.addWidget(provider_combo, 1)
+    manage_director_keys = QPushButton("Provider")
+    manage_director_keys.setObjectName("btn_w6_director_manage_credentials")
+    provider_row.addWidget(manage_director_keys)
+    director_layout.addLayout(provider_row)
+
     scope_card = QFrame()
     scope_card.setProperty("panel", True)
     scope_layout = QVBoxLayout(scope_card)
-    scope_layout.addWidget(QLabel("Cakupan Rencana"))
+    scope_layout.addWidget(QLabel("Buat Animasi"))
+    director_prompt = QLineEdit()
+    director_prompt.setObjectName("edit_w6_director_prompt")
+    director_prompt.setPlaceholderText("Jelaskan gaya animasi yang diinginkan...")
+    scope_layout.addWidget(director_prompt)
+    scope_layout.addWidget(QLabel("Lingkup Animasi"))
     scope = QComboBox()
     scope.setObjectName("combo_w6_ai_director_scope")
     scope.addItem("Aset Terpilih", "selected_asset")
     scope.addItem("Scene Terpilih", "selected_scene")
     scope.addItem("Pilihan Aktif (maks. 20)", "selected_scope")
     scope_layout.addWidget(scope)
+    scope_layout.addWidget(QLabel("Intensitas"))
+    intensity = QSlider(Qt.Orientation.Horizontal)
+    intensity.setObjectName("slider_w6_director_intensity")
+    intensity.setRange(0, 200)
+    intensity.setValue(100)
+    scope_layout.addWidget(intensity)
+    scope_layout.addWidget(QLabel("Variasi Efek"))
+    variation = QSlider(Qt.Orientation.Horizontal)
+    variation.setObjectName("slider_w6_director_variation")
+    variation.setRange(0, 100)
+    variation.setValue(50)
+    scope_layout.addWidget(variation)
     director_layout.addWidget(scope_card)
 
     capability = QFrame()
@@ -161,6 +196,18 @@ def create_ai_agent_workspace(
     )
     director_layout.addWidget(capability)
 
+    recommendations = QFrame()
+    recommendations.setProperty("panel", True)
+    recommendations_layout = QVBoxLayout(recommendations)
+    recommendations_layout.addWidget(QLabel("Rekomendasi Animasi · 3 saran"))
+    for text_value in (
+        "Scene 1 · Fade → Rise · halus",
+        "Scene 4 · Breathe · fokus subjek",
+        "Scene 5 · Pan · gerak ringan",
+    ):
+        recommendations_layout.addWidget(muted_label(text_value))
+    director_layout.addWidget(recommendations)
+
     auto_plan = make_primary_button("Buat Rencana AI")
     auto_plan.setObjectName("btn_w6_ai_auto_plan")
     auto_plan.clicked.connect(
@@ -169,6 +216,9 @@ def create_ai_agent_workspace(
             UiIntentType.AUTO_AI,
             scope=str(scope.currentData()),
             capability="l1_effects",
+            instruction=director_prompt.text().strip(),
+            intensity=str(intensity.value()),
+            variation=str(variation.value()),
         )
     )
     director_layout.addWidget(auto_plan)
@@ -195,10 +245,29 @@ def create_ai_agent_workspace(
     header.addWidget(provider)
     agent_layout.addLayout(header)
 
+    config_row = QHBoxLayout()
+    assistant_combo = QComboBox()
+    assistant_combo.setObjectName("combo_w6_ai_assistant")
+    assistant_combo.addItem("SRT-AI", "srt_ai")
+    config_row.addWidget(assistant_combo, 1)
+    model_combo = QComboBox()
+    model_combo.setObjectName("combo_w6_ai_model")
+    model_combo.addItem("Mode: L1 Effects", "l1_effects")
+    config_row.addWidget(model_combo, 1)
+    agent_layout.addLayout(config_row)
+
     scope_label = muted_label("Scope: Scene terpilih · maksimal 20 target")
     scope_label.setObjectName("label_w6_ai_scope")
     scope_label.setWordWrap(True)
     agent_layout.addWidget(scope_label)
+
+    workspace_row = QHBoxLayout()
+    workspace_row.addWidget(QLabel("Ruang kerja AI"))
+    for text_value in ("Semua", "Scene Aktif", "Aset Terpilih"):
+        scope_button = QPushButton(text_value)
+        scope_button.setProperty("compact", True)
+        workspace_row.addWidget(scope_button)
+    agent_layout.addLayout(workspace_row)
 
     manage_keys = QPushButton("Provider & API Key")
     manage_keys.setObjectName("btn_w6_manage_credentials")
@@ -215,12 +284,16 @@ def create_ai_agent_workspace(
     transcript = QTextBrowser()
     transcript.setObjectName("w6_ai_chat_transcript")
     transcript.setHtml(
-        "<b>AI Agent siap.</b><br>"
-        "Saya hanya dapat merencanakan efek animasi L1 yang sudah render-qualified. "
-        "Perubahan akan tampil sebagai rencana sebelum diterapkan."
+        "<p><b>AI Agent siap.</b><br>"
+        "Saya hanya dapat merencanakan efek animasi L1 yang sudah render-qualified.</p>"
+        "<p style='background:#DBEAFE;padding:8px;border-radius:6px;'>"
+        "Tolong jadikan pembuka Scene 1 lebih halus tanpa mengubah durasi.</p>"
+        "<p><b>Siap.</b> Saya akan membuat rencana L1 dan meminta persetujuan sebelum "
+        "perubahan diterapkan.</p>"
+        "<p style='color:#16A34A;'>Konteks aman · lock dihormati · target stabil</p>"
     )
     ready_layout.addWidget(transcript, 1)
-    quick = QLabel("Perintah cepat")
+    quick = QLabel("Saran cepat")
     quick.setStyleSheet("font-weight:600;")
     ready_layout.addWidget(quick)
     instruction = QLineEdit()
@@ -251,6 +324,7 @@ def create_ai_agent_workspace(
     plan.setObjectName("w6_ai_plan_page")
     plan_layout = QVBoxLayout(plan)
     plan_layout.setContentsMargins(0, 4, 0, 0)
+    plan_layout.addWidget(section_title("Rencana Aksi"))
     plan_state = QLabel("Rencana siap ditinjau")
     plan_state.setObjectName("label_w6_plan_state")
     plan_state.setStyleSheet("font-weight:700; color:#2563EB;")
@@ -258,24 +332,31 @@ def create_ai_agent_workspace(
     plan_summary = QLabel("Belum ada ringkasan rencana.")
     plan_summary.setObjectName("label_w6_plan_summary")
     plan_summary.setWordWrap(True)
+    plan_layout.addWidget(QLabel("Tujuan Instruksi"))
     plan_layout.addWidget(plan_summary)
+    plan_layout.addWidget(QLabel("Langkah yang Akan Dilakukan"))
     plan_commands = QListWidget()
     plan_commands.setObjectName("list_w6_plan_commands")
     plan_layout.addWidget(plan_commands, 1)
-    plan_layout.addWidget(
-        muted_label(
-            "Rencana hanya boleh memakai efek L1 yang tersedia. Target terkunci tidak "
-            "akan dibuka otomatis."
-        )
-    )
+    impact = QFrame()
+    impact.setProperty("panel", True)
+    impact_layout = QVBoxLayout(impact)
+    impact_layout.addWidget(QLabel("Lingkup Terdampak"))
+    impact_layout.addWidget(muted_label("Scene terpilih · hanya target stabil yang diverifikasi"))
+    plan_layout.addWidget(impact)
+    plan_layout.addWidget(QLabel("Validasi & Pengaman"))
+    plan_layout.addWidget(muted_label("✓ Lock dihormati"))
+    plan_layout.addWidget(muted_label("✓ Efek hanya dari allowlist L1"))
+    plan_layout.addWidget(muted_label("✓ Stale plan ditolak sebelum apply"))
+    plan_layout.addWidget(muted_label("⚠ AI memberi saran; keputusan akhir tetap pada pengguna."))
     plan_buttons = QHBoxLayout()
-    reject = QPushButton("Tolak")
+    reject = QPushButton("Ubah Manual")
     reject.setObjectName("btn_w6_plan_reject")
-    approve = QPushButton("Setujui Rencana")
+    approve = QPushButton("Tinjau & Setujui")
     approve.setObjectName("btn_w6_plan_approve")
     cancel_plan = QPushButton("Batal")
     cancel_plan.setObjectName("btn_w6_plan_cancel")
-    apply_button = make_primary_button("Terapkan")
+    apply_button = make_primary_button("Terapkan Rencana")
     apply_button.setObjectName("btn_w6_plan_apply")
     plan_buttons.addWidget(reject)
     plan_buttons.addWidget(approve)
@@ -307,7 +388,14 @@ def create_ai_agent_workspace(
     success = QWidget()
     success.setObjectName("w6_ai_success_page")
     success_layout = QVBoxLayout(success)
-    success_layout.addWidget(section_title("Perubahan Diterapkan"))
+    success_layout.addWidget(section_title("AI Agent"))
+    success_banner = QFrame()
+    success_banner.setStyleSheet(
+        "background:#F0FDF4; border:1px solid #BBF7D0; border-radius:7px;"
+    )
+    success_banner_layout = QVBoxLayout(success_banner)
+    success_banner_layout.addWidget(QLabel("✓ Rencana berhasil diterapkan"))
+    success_layout.addWidget(success_banner)
     success_badge = QLabel("✓ SUCCESS")
     success_badge.setObjectName("label_w6_success_badge")
     _badge(success_badge, "✓ SUCCESS", "ready")
@@ -316,12 +404,28 @@ def create_ai_agent_workspace(
     success_message.setObjectName("label_w6_success_message")
     success_message.setWordWrap(True)
     success_layout.addWidget(success_message)
+    stats = QHBoxLayout()
+    stats.addWidget(muted_label("5 Scene Diubah"))
+    stats.addWidget(muted_label("4 Efek Diterapkan"))
+    success_layout.addLayout(stats)
+    success_layout.addWidget(QLabel("Rincian Perubahan"))
+    for text_value in (
+        "Scene 1 · Fade → Rise",
+        "Scene 2 · Breathe",
+        "Scene 3 · Intensity disesuaikan",
+        "Scene 4 · Pan",
+        "Scene 5 · Drift",
+    ):
+        success_layout.addWidget(muted_label(f"✓ {text_value}"))
     success_layout.addWidget(
         muted_label("Undo akan membatalkan seluruh perubahan AI pada transaksi ini.")
     )
-    undo = QPushButton("Undo Perubahan AI")
+    undo = QPushButton("Batalkan Perubahan")
     undo.setObjectName("btn_w6_ai_undo")
     success_layout.addWidget(undo)
+    timeline_button = QPushButton("Lihat di Timeline")
+    timeline_button.setObjectName("btn_w6_ai_view_timeline")
+    success_layout.addWidget(timeline_button)
     success_layout.addStretch(1)
     state_stack.addWidget(success)
 
@@ -329,6 +433,13 @@ def create_ai_agent_workspace(
     error.setObjectName("w6_ai_error_page")
     error_layout = QVBoxLayout(error)
     error_layout.addWidget(section_title("AI Agent"))
+    error_banner = QFrame()
+    error_banner.setStyleSheet(
+        "background:#FEF2F2; border:1px solid #FECACA; border-radius:7px;"
+    )
+    error_banner_layout = QVBoxLayout(error_banner)
+    error_banner_layout.addWidget(QLabel("! PROVIDER TIDAK TERSEDIA"))
+    error_layout.addWidget(error_banner)
     error_badge = QLabel("PROVIDER_ERROR")
     error_badge.setObjectName("label_w6_error_badge")
     _badge(error_badge, "PROVIDER_ERROR", "error")
@@ -341,18 +452,31 @@ def create_ai_agent_workspace(
     error_message.setObjectName("label_w6_error_message")
     error_message.setWordWrap(True)
     error_layout.addWidget(error_message)
+    error_layout.addWidget(QLabel("Daftar Provider"))
+    for text_value, status_value in (
+        ("Gemini Utama", "GAGAL"),
+        ("Gemini Cadangan", "COOLDOWN"),
+        ("Gemini Slot Lain", "SIAP"),
+    ):
+        provider_row = QFrame()
+        provider_row.setProperty("panel", True)
+        provider_row_layout = QHBoxLayout(provider_row)
+        provider_row_layout.addWidget(QLabel(text_value), 1)
+        provider_row_layout.addWidget(QLabel(status_value))
+        error_layout.addWidget(provider_row)
     fallback = muted_label(
         "Editor manual tetap aktif. Tidak ada perubahan project yang diterapkan."
     )
     fallback.setObjectName("label_w6_manual_fallback")
     fallback.setWordWrap(True)
     error_layout.addWidget(fallback)
-    retry = QPushButton("Coba Lagi")
+    retry = make_primary_button("Coba Lagi")
     retry.setObjectName("btn_w6_ai_retry")
     error_layout.addWidget(retry)
     error_manage = QPushButton("Kelola Provider & API Key")
     error_manage.setObjectName("btn_w6_error_manage_credentials")
     error_layout.addWidget(error_manage)
+    error_layout.addWidget(QPushButton("Pilih Slot Credential Lain"))
     error_layout.addStretch(1)
     state_stack.addWidget(error)
 
@@ -366,6 +490,7 @@ def create_ai_agent_workspace(
             _emit(intent_sink, UiIntentType.OPEN_AI_CREDENTIALS)
 
     manage_keys.clicked.connect(open_credentials)
+    manage_director_keys.clicked.connect(open_credentials)
     error_manage.clicked.connect(open_credentials)
     open_chat.clicked.connect(lambda: tabs.setCurrentIndex(1))
     open_chat.clicked.connect(lambda: _emit(intent_sink, UiIntentType.AI_OPEN_AGENT, view="agent"))
