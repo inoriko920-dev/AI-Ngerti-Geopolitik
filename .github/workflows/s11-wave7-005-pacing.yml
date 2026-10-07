@@ -1,0 +1,74 @@
+name: S11 W7-005 L2 Pacing Qualification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/ai_l2_verifier.py"
+      - "src/ai_ngerti_geopolitik/application/commands.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/ffmpeg_slice.py"
+      - "tests/unit/test_step11_w7_005_pacing.py"
+      - "scripts/run_step11_w7_005.py"
+      - "scripts/verify/verify_step11_w7_005_evidence.py"
+      - ".github/workflows/s11-wave7-005-pacing.yml"
+      - "scripts/generate_step10_fixture.py"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w7-005:
+    name: L2 pacing duration speed real-media qualification
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install FFmpeg qualification toolchain
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w7_005_pacing.py
+      - run: uv run pytest -q
+      - name: Generate owned W7-005 fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w7-005/input-video.mp4
+      - name: Run W7-005 real pacing evidence
+        run: >
+          uv run python scripts/run_step11_w7_005.py
+          --video artifacts/step11/w7-005/input-video.mp4
+          --evidence artifacts/step11/w7-005/evidence
+      - name: Verify W7-005 evidence
+        run: >
+          uv run python scripts/verify/verify_step11_w7_005_evidence.py
+          --evidence artifacts/step11/w7-005/evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W7-005-L2-Pacing
+          path: artifacts/step11/w7-005/evidence/**
+          if-no-files-found: error
+          retention-days: 14
