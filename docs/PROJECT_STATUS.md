@@ -2,75 +2,72 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W5 — Subtitle + Narration**  
-**W5 progress:** **S11-W5-001/002/003/004/005 PASS**  
-**Accepted W5-005 implementation HEAD:** `293b369e74771d16dc90956bc6a7be4c71e01d1c`  
-**Accepted W5-005 workflow:** `37575611940` — SUCCESS  
-**Next exact task:** **S11-W5-006 — Narration import + binding**
+**W5 progress:** **S11-W5-001/002/003/004/005/006 PASS**  
+**Accepted W5-006 implementation HEAD:** `77770cd98210dbed18cbe1715111a935f2135b77`  
+**Accepted W5-006 workflow:** `37577639655` — SUCCESS  
+**Next exact task:** **S11-W5-007 — Microphone recording**
 
-## W5-005 proven
+## W5-006 proven
 
-Canonical animation boundary:
-- supported canonical presets are exactly:
-  - `none`;
-  - `Fade`;
-  - `Pop`;
-  - `Slide Up`;
-  - `Clean Documentary`;
-- unsupported/unqualified legacy names remain rejected:
-  - Word Reveal;
-  - Karaoke Highlight;
-  - Typewriter;
-  - Bounce Soft;
-  - Emphasis Word;
-  - Social Caption;
-- animation enter/exit timing is frame-based;
-- non-none animation requires at least one non-zero timing side;
-- enter/exit timing is bounded and must fit every cue;
-- intensity remains bounded 0..200.
+Canonical import/binding:
+- narration import uses the existing canonical media probe and asset identity rules;
+- import + NarrationTrack binding is committed in one CommandBatch;
+- a failed non-audio import does not leave a partial asset or narration binding;
+- one canonical NarrationTrack remains the project source of truth;
+- binding an already-imported audio asset is also supported.
 
-Semantic mutation/history:
-- `SetSubtitleAnimationCommand` requires a bound SubtitleTrack;
-- mutation flows through CommandBus/CommandBatch;
-- Undo/Redo proven;
-- .angproj save/reopen preserves animation.
+Narration controls:
+- frame-aware timeline start/offset;
+- gain 0..400%;
+- mute;
+- fade-in;
+- fade-out;
+- fade validation is bounded by the actually audible narration segment inside
+  the project timeline, not merely the source-file duration.
 
-Real render semantics:
-- **Fade:** real alpha envelope;
-- **Pop:** alpha envelope + real animated font-size entrance;
-- **Slide Up:** alpha envelope + real vertical rise;
-- **Clean Documentary:** alpha envelope + smaller/subtle vertical drift;
-- preview uses canonical cue/frame progress;
-- export uses canonical cue timing windows on the composed timeline;
-- every enabled preset changed a real preview relative to static subtitle;
-- every enabled preset changed a frame extracted from its real exported MP4;
-- every animated export remained valid and retained audio.
+History/persistence:
+- narration import/binding is Undo/Redo safe;
+- narration control edits are Undo/Redo safe;
+- .angproj save/reopen preserves narration source, offset and controls;
+- narration source file remains unchanged.
 
-Per-word boundary:
-- added semantic `SetSubtitleCueWordTimingsCommand`;
-- manual WordTiming remains canonical, frame-aware and undoable;
-- WordTiming persists through .angproj reopen;
-- deterministic even distribution exists only behind the explicit API
-  `evenly_distribute_words_not_speech_alignment(...)`;
-- caller must explicitly acknowledge `NOT speech alignment`;
-- fallback uses only existing written cue text + cue duration;
-- **no audio analysis, ASR, transcription, phoneme recognition or speech
-  alignment is performed or claimed**.
+Real runtime qualification:
+- added FFmpeg narration projection behind the existing qualification adapter;
+- narration source is trimmed to the audible project range;
+- gain/mute/fades compile to real audio filters;
+- canonical timeline offset compiles to real delay;
+- narration mixes with the canonical timeline audio without replacing it;
+- export duration remains governed by the base project timeline.
 
-Source protection:
-- W5-005 does not rewrite source SRT;
-- source SHA-256 remained unchanged in real evidence.
+Preview:
+- added a real narration-preview WAV excerpt rendered from canonical timeline
+  position/range;
+- preview evidence contains measurable 440 Hz narration energy.
+
+Export:
+- real video fixture base audio uses 880 Hz;
+- real narration fixture uses 440 Hz;
+- band-pass/volume evidence proves the 440 Hz narration is absent/low before
+  its offset and present after the offset;
+- real export evidence proves gain changes level, mute removes narration energy,
+  and fade-in changes level near narration start;
+- narrated export remains a valid MP4 with audio.
+
+Microphone boundary:
+- **no microphone/device capture implementation was started in W5-006**;
+- microphone work remains exclusively W5-007.
 
 Evidence:
-`docs/evidence/features/S11_W5_005_SUBTITLE_ANIMATION_WORD_TIMING.md`.
+`docs/evidence/features/S11_W5_006_NARRATION_IMPORT_BINDING.md`.
 
 Artifact:
-- `ANG-S11-W5-005-Subtitle-Animation`;
-- ID `11462966698`;
-- size 39,295,019 bytes.
+- `ANG-S11-W5-006-Narration`;
+- ID `11462194359`;
+- size 28,535,901 bytes.
 
-## W5-005 quality/evidence gate
+## W5-006 quality/evidence gate
 
-Workflow `37575611940`:
+Workflow `37577639655`:
 - Ruff format PASS;
 - Ruff check PASS;
 - mypy PASS;
@@ -78,33 +75,33 @@ Workflow `37575611940`:
 - architecture PASS;
 - source-of-truth 70/70 PASS;
 - secret scan PASS;
-- targeted W5-005 tests: **6/6 PASS**;
+- targeted W5-006 tests: **5/5 PASS**;
 - full pytest PASS;
-- real W5-005 animation/export evidence PASS;
-- evidence verifier: **21/21 PASS**.
+- real W5-006 audio evidence PASS;
+- evidence verifier: **11/11 PASS**.
 
-## Regression lock on accepted W5-005 HEAD
+## Regression lock on accepted W5-006 HEAD
 
 All SUCCESS:
-- W5-005: `37575611940`;
-- W5-004: `37575611926`;
-- W4: `37575611960`;
-- W3: `37575611838`;
-- W2: `37575611846`;
-- W1: `37575611922`;
-- W0: `37575611959`;
-- S10: `37575611977`;
-- S09: `37575611886`;
-- S08: `37575611855`.
+- W5-006: `37577639655`;
+- W5-005: `37577639727`;
+- W5-004: `37577639737`;
+- W4: `37577639656`;
+- W3: `37577639667`;
+- W2: `37577639693`;
+- W1: `37577639687`;
+- W0: `37577639704`;
+- S10: `37577639665`;
+- S09: `37577639668`;
+- S08: `37577639634`.
 
-This includes MLT W0/W2 qualification, W3/W4 real output, W5-004 style real
-output, S10 real-media vertical slice, packaged real-media smoke, portable UI
-regression and S08/S09 portable regressions.
+This includes MLT W0/W2 qualification, W3/W4 real output, W5 subtitle
+qualification, S10 real-media + packaged smoke + portable UI, and S08/S09
+portable regressions.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **S11-W5-006 — Narration import + binding
-only**.
+On owner **"lanjutkan"**, execute **S11-W5-007 — Microphone recording only**.
 
-Do not start microphone recording, frozen UI parity, final W5 qualification,
-Gemini/provider work or later tasks in the same turn.
+Do not start frozen UI parity, combined W5 qualification/closure,
+Gemini/provider work, or later tasks in the same turn.

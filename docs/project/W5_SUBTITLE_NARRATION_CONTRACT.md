@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -249,7 +249,17 @@ semantics are accepted.
   - render-qualified non-none presets:
     Fade, Pop, Slide Up, Clean Documentary;
   - per-word deterministic fallback is explicitly **NOT speech alignment**.
-- S11-W5-006 — **READY**.
-- S11-W5-007..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-006 — **PASS**
+  - accepted implementation HEAD:
+    `77770cd98210dbed18cbe1715111a935f2135b77`;
+  - accepted run: `37577639655`;
+  - evidence:
+    `docs/evidence/features/S11_W5_006_NARRATION_IMPORT_BINDING.md`;
+  - evidence artifact:
+    `ANG-S11-W5-006-Narration` / `11462194359`;
+  - real preview/export evidence proves frame offset, gain, mute and fade;
+  - microphone implementation remains untouched.
+- S11-W5-007 — **READY**.
+- S11-W5-008..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-006 only**.
+On the next owner `lanjutkan`, execute **S11-W5-007 only**.

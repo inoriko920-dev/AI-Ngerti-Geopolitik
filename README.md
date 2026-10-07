@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/002/003/004/005 PASS — NEXT W5-006**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/002/003/004/005/006 PASS — NEXT W5-007**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -16,29 +16,35 @@ Completed:
 - S11-W5-003 — cue editing + safe working-copy = PASS
 - S11-W5-004 — subtitle style = PASS
 - S11-W5-005 — render-backed animation + per-word boundary = PASS
+- S11-W5-006 — narration import + binding = PASS
 
-W5-005 accepted implementation:
-`293b369e74771d16dc90956bc6a7be4c71e01d1c`
+W5-006 accepted implementation:
+`77770cd98210dbed18cbe1715111a935f2135b77`
 
 Workflow:
-`37575611940` — SUCCESS
+`37577639655` — SUCCESS
 
-Render-qualified subtitle animations:
-**Fade, Pop, Slide Up, Clean Documentary**.
+Narration now supports canonical:
+- audio import/binding;
+- frame-aware timeline offset;
+- gain;
+- mute;
+- fade in/out;
+- Undo/Redo;
+- save/reopen;
+- real narration-preview WAV;
+- real narration mix in MP4 export.
 
-Unqualified legacy names remain unavailable.
+Real evidence uses separate 880 Hz base audio and 440 Hz narration so
+offset/gain/mute/fade behavior is measured rather than assumed.
 
-Per-word timing is canonical and editable, but deterministic word distribution
-is explicitly labeled **NOT speech alignment**. No ASR or transcription is
-claimed or used.
+Evidence verifier: **11/11 PASS**.
 
-Evidence verifier: **21/21 PASS**.
-
-All W5-004/W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same
-accepted implementation HEAD.
+All W5-005/W5-004/W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the
+same accepted implementation HEAD.
 
 ## Next
 
-**S11-W5-006 — Narration import + binding only.**
+**S11-W5-007 — Microphone recording only.**
 
-Microphone recording remains W5-007.
+Frozen UI parity remains W5-008.

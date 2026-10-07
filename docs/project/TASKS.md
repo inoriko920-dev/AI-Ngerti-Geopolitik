@@ -118,7 +118,19 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 READY**
+**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 READY**
+
+W5-006 accepted implementation HEAD:
+`77770cd98210dbed18cbe1715111a935f2135b77`
+
+W5-006 workflow:
+`37577639655` — SUCCESS
+
+W5-006 evidence:
+`docs/evidence/features/S11_W5_006_NARRATION_IMPORT_BINDING.md`
+
+W5-006 artifact:
+`ANG-S11-W5-006-Narration` / ID `11462194359`
 
 W5-005 accepted implementation HEAD:
 `293b369e74771d16dc90956bc6a7be4c71e01d1c`
@@ -177,7 +189,7 @@ Serial contract:
 - [x] **S11-W5-003 — Cue editing + safe working-copy flow — PASS**
 - [x] **S11-W5-004 — Subtitle style — PASS**
 - [x] **S11-W5-005 — Render-backed subtitle animation + per-word boundary — PASS**
-- [ ] **S11-W5-006 — Narration import + binding**
+- [x] **S11-W5-006 — Narration import + binding — PASS**
 - [ ] **S11-W5-007 — Microphone recording**
 - [ ] **S11-W5-008 — Frozen UI parity**
 - [ ] **S11-W5-009 — Real subtitle/narration preview/export qualification**
@@ -192,4 +204,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-006 — Narration import + binding only.
+**Exact next task:** S11-W5-007 — Microphone recording only.
