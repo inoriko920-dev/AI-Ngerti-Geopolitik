@@ -101,10 +101,10 @@ def _wait(service: AIPlanJobService, job_id: str) -> object:
 
 def _scan_for_value(root: Path, raw_value: str) -> bool:
     needle = raw_value.encode("utf-8")
-    for path in root.rglob("*"):
-        if path.is_file() and needle in path.read_bytes():
-            return True
-    return False
+    return any(
+        path.is_file() and needle in path.read_bytes()
+        for path in root.rglob("*")
+    )
 
 
 def main() -> int:
