@@ -1,44 +1,68 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W6 is closed as PASS_WITH_PROVISIONAL_LIVE_GEMINI.**
+**SF-STEP 11 remains active. W6 is closed. W7 planning is complete and contract-locked.**
 
-## Closed W6
+## Closed W6 baseline
 
-Accepted implementation:
+W6 final status:
+**PASS_WITH_PROVISIONAL_LIVE_GEMINI**
+
+Accepted W6-010 implementation:
 `0915a7045014e5ea1209f933dd703d6601ff26e9`
 
-Accepted W6-010 workflow:
+Accepted workflow:
 `37628909459` — SUCCESS.
 
-Closure:
-- W6-001..010 implementation chain complete;
-- deterministic failure matrix complete;
-- AI-selected L1 render proof complete;
-- final regression matrix 25/25 SUCCESS;
-- live Gemini network smoke remains provisional because no live credential was
-  available to CI.
+The lack of a real CI Gemini credential remains an honest live-provider qualifier.
+All deterministic provider/security/approval/render/regression behavior is proven.
 
-W6 may only be promoted from provisional live status after a real credential is
-exercised through Windows secure store → official Gemini adapter → PlanVerifier →
-explicit approval → atomic CommandBatch.
+## W7 — AI Auto Edit L2
 
-Evidence:
-`docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
+Master Blueprint:
+**TECH-WAVE STEP 10**.
 
-## Next planning target
+Status:
+**CONTRACT_LOCKED / W7-001 READY / IMPLEMENTATION NOT STARTED**.
 
-**W7 — AI Auto Edit L2**  
-Master Blueprint mapping: **TECH-WAVE STEP 10**.
+Planning sources:
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`;
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.txt`;
+- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`.
 
-Status: **NOT STARTED / PLANNING REQUIRED**.
+## Locked initial L2 capability set
 
-The next action belongs to ASTRA, not SOL:
-- define W7 contract and serial tasks;
-- audit which pacing/duration/transform/transition commands are already legal,
-  render-backed and undoable;
-- forbid unsupported L2 capabilities rather than exposing placeholders;
-- define ContextBuilder/plan schema extensions without breaking W6 L1 ownership;
-- define safety, stale, lock, approval and Undo/Redo behavior;
-- produce the detailed planning DOCX required for AI handoff.
+Allowed:
+- set_clip_effects;
+- set_clip_duration;
+- set_clip_speed;
+- set_clip_transform;
+- set_clip_transition.
 
-No W7 coding is authorized until planning is complete and approved.
+No AI-only backdoor is allowed. These capabilities must translate to the existing
+manual W2/W3/W4 commands.
+
+High-impact structural and unrelated capabilities remain deferred/forbidden:
+reorder, split, trim, delete, duplicate, move, track structure, crop, reverse,
+crossfade, subtitle, narration, title, audio, color, marker/export/project
+settings, credentials and paths.
+
+## Serial W7 plan
+
+1. W7-001 canonical L2 command contracts + capability registry — **READY**
+2. W7-002 L2 ContextBuilder + selected-scope contract
+3. W7-003 strict AutoEditPlan v2 parser/schema
+4. W7-004 L2 semantic verifier + sequential dry-run translator
+5. W7-005 pacing qualification — duration + speed
+6. W7-006 transform qualification
+7. W7-007 transition + mixed-plan qualification
+8. W7-008 Gemini L2 request profile + lifecycle reuse
+9. W7-009 approval/apply/UI diff integration
+10. W7-010 real-media closure + failure/regression lock
+
+Only one task may advance per owner `lanjutkan`.
+
+## Next
+
+**S11-W7-001 only.**
+
+No W7 runtime implementation has been performed by this planning STEP.

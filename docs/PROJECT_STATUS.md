@@ -1,68 +1,63 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Last completed wave:** **W6 — Gemini Credential + L1 AI Animation Planning**  
+**Last completed wave:** W6 — Gemini Credential + L1 AI Animation Planning  
 **W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
 **Accepted W6-010 implementation HEAD:** `0915a7045014e5ea1209f933dd703d6601ff26e9`  
 **Accepted W6-010 workflow:** `37628909459` — SUCCESS  
-**Next wave:** **W7 — AI Auto Edit L2 — NOT STARTED / PLANNING REQUIRED**
+**Current wave:** **W7 — AI Auto Edit L2**  
+**W7 status:** **CONTRACT_LOCKED / W7-001 READY / IMPLEMENTATION NOT STARTED**  
+**Next exact task:** **S11-W7-001 — Canonical L2 command contracts + capability registry**
 
-## W6-010 proof
+## W7 ASTRA planning complete
 
-Deterministic closure:
-- valid L1 plan verified and explicitly approved;
-- one plan = one atomic CommandBatch;
-- exact Undo/Redo;
-- invalid auth failure is safe;
-- quota/rate-limit stops credential rotation;
-- malformed provider payload is rejected;
-- lock conflict is rejected;
-- stale result is rejected;
-- all failure paths remain zero unsafe mutation.
+Master Blueprint mapping:
+**TECH-WAVE STEP 10 — AI Auto Edit L2: pacing/transform/transition bounded commands
+after manual/engine support is proven.**
 
-Render proof:
-- AI path selected `Rise`;
-- intensity = `120`;
-- baseline and AI-applied preview hashes differ;
-- the effect reaches the existing W4 render-backed media engine.
+Planning artifacts:
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`;
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.txt`;
+- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`.
 
-Live Gemini:
-- CI secret `ANG_GEMINI_LIVE_KEY` was unavailable;
-- live request attempted = false;
-- workflow status = `PROVISIONAL_NO_CREDENTIAL`;
-- final W6 qualification = **PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+Initial W7 v2 allowed command union:
+- `set_clip_effects`;
+- `set_clip_duration`;
+- `set_clip_speed`;
+- `set_clip_transform`;
+- `set_clip_transition`.
 
-No live Gemini success is claimed.
+Planning locks:
+- max 20 selected target clips;
+- max 40 commands;
+- one command per family per target;
+- duration and speed mutually exclusive on the same clip;
+- mandatory selected-scope enforcement;
+- strict schema/unknown hard reject;
+- sequential dry-run through existing manual commands;
+- explicit approval;
+- one atomic AI CommandBatch;
+- one Undo/Redo transaction;
+- Gemini/W6 credential/background lifecycle reused;
+- no direct AI ProjectState mutation.
 
-## Quality and regression
+Deferred/forbidden initial W7:
+- reorder/split/trim/delete/duplicate/move and track structure;
+- crop/reverse/crossfade;
+- subtitle/narration/title/audio/color;
+- marker/export/project settings;
+- credential/path/output-folder mutation;
+- any auto-unlock.
 
-Workflow `37628909459`:
-- targeted W6-010 tests 6/6 PASS;
-- full pytest PASS;
-- Ruff/mypy/import contracts PASS;
-- architecture/source-of-truth/security/UI-reference PASS;
-- deterministic render closure PASS;
-- evidence verifier PASS.
+## W6 baseline carried forward
 
-Artifact:
-- ID `11485567340`;
-- SHA-256 `7ee54212f333b685ffa986f81a6b58810fb07a4969ebe61bf767888a00f113ba`.
+W6 deterministic/provider/security/render closure remains accepted.
+Real Gemini network smoke remains provisional because no live CI credential was
+available. This does not authorize fake live-provider evidence in W7.
 
-Regression:
-- **25/25 workflow families SUCCESS** on `0915a7045014e5ea1209f933dd703d6601ff26e9`;
-- all attempt 1;
-- S08 portable foundation PASS;
-- S10 real-media E2E PASS.
+## Exact next action
 
-## Next exact action
+After owner says **lanjutkan**, SOL executes **S11-W7-001 only**.
 
-After owner says **lanjutkan**, start **ASTRA planning only** for
-**W7 — AI Auto Edit L2** (Master Blueprint TECH-WAVE STEP 10).
-
-Required before any W7 implementation:
-- detailed contract/scope;
-- command capability audit against existing manual/render-backed operations;
-- explicit unsupported boundaries;
-- detailed planning DOCX for AI handoff.
-
-W7 implementation is not started.
+W7-001 is contracts/capability-registry work. It must not start W7 ContextBuilder,
+v2 parser/verifier, Gemini request-profile changes, UI changes, or L2 apply work.

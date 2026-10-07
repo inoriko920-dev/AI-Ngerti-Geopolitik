@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED PROVISIONAL MIC — W6 CLOSED PROVISIONAL LIVE GEMINI — NEXT W7 PLANNING**
+> **STATUS: SF-STEP 11 ACTIVE — W6 CLOSED PROVISIONAL LIVE GEMINI — W7 CONTRACT_LOCKED — W7-001 READY**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -39,9 +39,18 @@ What remains provisional:
 Artifact:
 `ANG-S11-W6-010-Closure` / ID `11485567340`.
 
-## Next
+## W7 planning complete
 
-**W7 — AI Auto Edit L2 — NOT STARTED / PLANNING REQUIRED.**
+W7 maps to Master Blueprint TECH-WAVE STEP 10.
 
-The next owner `lanjutkan` starts ASTRA planning/contract work only. No W7 coding
-should begin before its detailed planning DOCX and capability gates are complete.
+Planning:
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`
+- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
+
+Initial L2 allowlist is deliberately narrow: duration, speed, bounded transform,
+none/fade_black transition, plus W6 effects. Structural/destructive commands
+remain deferred or forbidden.
+
+**Next: S11-W7-001 — Canonical L2 command contracts + capability registry.**
+
+Implementation has not started.

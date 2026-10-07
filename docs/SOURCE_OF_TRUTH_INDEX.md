@@ -44,7 +44,8 @@
     - `docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
     - `docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
 12. current wave contract:
-    - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
+    - `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
+    - historical closed W6 contract: `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 13. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
 14. actual source/tests/config/workflows/evidence.
@@ -105,7 +106,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W6 final status: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 - real Gemini network smoke remains provisional because no live CI credential was available.
 - final W6 regression lock: **25/25 workflow families SUCCESS, all attempt 1**.
-- next wave: **W7 AI Auto Edit L2 — NOT STARTED / PLANNING REQUIRED**.
-- exact next action: **ASTRA W7 contract/planning + detailed DOCX only**.
+- W7 planning TXT/DOCX and contract MD: **SOURCE OF TRUTH / CONTRACT LOCKED**.
+- W7 implementation: **NOT STARTED**.
+- S11-W7-001 Canonical L2 command contracts + capability registry: **READY**.
+- S11-W7-002..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- exact next action: **SOL S11-W7-001 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

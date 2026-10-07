@@ -5,7 +5,8 @@
 **W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
 **Accepted W6-010 implementation HEAD:** `0915a7045014e5ea1209f933dd703d6601ff26e9`  
 **Accepted W6-010 workflow:** `37628909459` — SUCCESS  
-**Next wave:** W7 — AI Auto Edit L2 — **NOT STARTED / PLANNING REQUIRED**  
+**Current wave:** W7 — AI Auto Edit L2  
+**W7 status:** **CONTRACT_LOCKED / W7-001 READY / IMPLEMENTATION NOT STARTED**  
 **Previous W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
 ## W6-010 closure
@@ -108,11 +109,29 @@ portable foundation. S10 real-media vertical slice also passes.
 - W6 real Gemini network qualification remains provisional until a real credential
   is supplied and actually exercised.
 
+## W7 planning lock
+
+Planning source:
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.txt`
+- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
+
+Initial W7 AI allowlist:
+- set_clip_effects;
+- set_clip_duration;
+- set_clip_speed;
+- set_clip_transform;
+- set_clip_transition.
+
+High-impact structural commands (reorder/split/trim/delete/duplicate/move),
+crop/reverse/crossfade, subtitle/narration/export/credential/path changes remain
+outside initial W7.
+
+No runtime W7 implementation has started.
+
 ## Next exact action
 
-Do **not** start W7 implementation yet.
+After owner says `lanjutkan`, switch to SOL and execute **S11-W7-001 only —
+Canonical L2 command contracts + capability registry**.
 
-After the owner says `lanjutkan`, ASTRA must create the detailed W7 contract/planning
-for **AI Auto Edit L2** (Master Blueprint TECH-WAVE STEP 10), including the required
-planning DOCX and command/support qualification. SOL implementation remains blocked
-until that planning is complete and approved.
+Do not start W7-002 or later work in the same turn.

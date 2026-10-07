@@ -1,0 +1,106 @@
+S11 W7 — AI AUTO EDIT L2 CONTRACT & IMPLEMENTATION PLAN
+=============================================================
+
+Project: AI Ngerti Geopolitik
+Role: ASTRA Planning
+Date: 2026-10-07
+Status: PLANNING COMPLETE / IMPLEMENTATION NOT STARTED
+
+1. Objective
+------------
+W7 implements Master Blueprint TECH-WAVE STEP 10: bounded AI Auto Edit L2.
+It extends W6 L1 effects planning only with manual/render-proven pacing,
+transform and transition commands. W6 provider/credential/async/approval/
+CommandBus owners are reused; no duplicate AI-only mutation path is allowed.
+
+2. Qualified W7 Command Union
+-----------------------------
+- set_clip_effects — W6 carry-forward.
+- set_clip_duration — SetClipDurationCommand / W2.
+- set_clip_speed — SetClipSpeedCommand / W3.
+- set_clip_transform — SetClipPropertiesCommand + VideoProperties / W3.
+- set_clip_transition — SetClipPropertiesCommand + TransitionProperties / W4.
+
+Initial W7 deliberately excludes reorder, split, trim, delete, duplicate, move,
+track structure, crop, reverse, crossfade, title, subtitle, narration, audio,
+color, markers, selection, render preset, credentials, paths and project
+settings.
+
+3. Bounds
+---------
+- selected targets: max 20.
+- commands: max 40.
+- one command per family per target.
+- duration and speed mutually exclusive on the same target.
+- duration: ripple=true, source-valid, exact representability, min ceil(fps/2),
+  default AI window 50%..200% of current duration.
+- speed: AI 50%..200% (manual remains 25%..400%).
+- transform: position X/Y ± half canvas; uniform scale 50%..200%; rotation
+  ±15 degrees; opacity 60%..100%; no crop.
+- transition: none or fade_black only; fade_black <= min(2*fps, clip/2).
+- effects: exact W6 render-qualified allowlist, intensity 0..200.
+- all locks are respected; no auto-unlock.
+
+4. Schema v2
+------------
+Root exact fields:
+schema_version=2, base_project_revision, request_id, summary, commands.
+
+Command union exact shapes:
+- set_clip_duration(target_clip_id,duration_frames)
+- set_clip_speed(target_clip_id,rate_percent)
+- set_clip_transform(target_clip_id, one or more position_x/position_y/
+  scale_percent/rotation_tenths/opacity_percent)
+- set_clip_transition(target_clip_id,preset,duration_frames)
+- set_clip_effects(target_clip_id, W6 effect fields)
+
+Unknown fields/commands/types and conflicting families hard-reject the complete
+plan.
+
+5. Context
+----------
+Bounded, deterministic, secret-free selected-scope context only. It may expose
+stable IDs, revision, timing/source availability, current speed/transform/
+transition/effects, locks, canvas, dimensions/aspect and bounded neighbors.
+It excludes raw keys, paths, source bytes, arbitrary files, logs, engine
+objects, output/project path, full subtitle/narration and prompt history.
+
+6. Verification
+---------------
+Strict JSON parse -> request/revision/scope -> conflict rules -> target/lock ->
+W7 policy bounds -> canonical value objects -> ordered dry-run through the same
+manual commands. Any command failure rejects the entire plan with zero
+canonical mutation.
+
+7. Provider and Apply
+---------------------
+Reuse official google-genai adapter, credential pool, Windows secure store,
+background job lifecycle and typed provider errors from W6. No second Gemini
+service.
+
+Provider result -> verified plan -> explicit approval -> final stale/hash check
+-> one atomic CommandBatch. One plan = one revision + one Undo/Redo transaction.
+
+8. UI
+-----
+Reuse W6 real PySide6/frozen UI surfaces UI-020/021/022/023/024/033. No new
+image prompt is required for initial W7. If a new screen becomes necessary,
+the mandatory Software Factory UI prompt/image/reference-DOCX STOP gate applies.
+
+9. Serial Tasks
+---------------
+W7-001 Canonical L2 command contracts + capability registry — READY.
+W7-002 L2 ContextBuilder + selected-scope contract.
+W7-003 strict AutoEditPlan v2 parser/schema.
+W7-004 L2 semantic verifier + sequential dry-run translator.
+W7-005 pacing qualification: duration + speed.
+W7-006 transform qualification.
+W7-007 transition + mixed-plan qualification.
+W7-008 Gemini L2 request profile + lifecycle reuse.
+W7-009 approval/apply/UI diff integration.
+W7-010 real-media closure + failure/regression lock.
+
+10. Next
+--------
+After owner says lanjutkan, SOL executes S11-W7-001 only. No W7 runtime coding
+has been performed during this ASTRA planning task.

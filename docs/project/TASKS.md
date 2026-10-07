@@ -497,9 +497,42 @@ Proof:
 - live credential unavailable, so live network request was not attempted;
 - final W6 status is PASS_WITH_PROVISIONAL_LIVE_GEMINI.
 
-### W7 — AI Auto Edit L2
+### W7 — AI Auto Edit L2 — CONTRACT_LOCKED
 
-Status: **NOT STARTED / PLANNING REQUIRED**
+Planning:
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`
+- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.txt`
+- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
 
-**Next:** after owner says `lanjutkan`, ASTRA creates the detailed W7 contract/planning
-and required DOCX. No W7 implementation before planning approval.
+Initial allowlist:
+- set_clip_effects;
+- set_clip_duration;
+- set_clip_speed;
+- set_clip_transform;
+- set_clip_transition.
+
+Serial contract:
+- [ ] **S11-W7-001 — Canonical L2 command contracts + capability registry — READY**
+- [ ] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — BLOCKED_BY_W7_001**
+- [ ] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002**
+- [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003**
+- [ ] **S11-W7-005 — Pacing qualification: duration + speed — BLOCKED_BY_W7_004**
+- [ ] **S11-W7-006 — Transform qualification — BLOCKED_BY_W7_005**
+- [ ] **S11-W7-007 — Transition + mixed-plan qualification — BLOCKED_BY_W7_006**
+- [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007**
+- [ ] **S11-W7-009 — Approval/apply/UI diff integration — BLOCKED_BY_W7_008**
+- [ ] **S11-W7-010 — Real-media closure + failure/regression lock — BLOCKED_BY_W7_009**
+
+Locked safety boundaries:
+- selected scope max 20 clips;
+- plan max 40 commands;
+- no structural/destructive Auto Edit in initial W7;
+- no crop/reverse/crossfade;
+- no subtitle/narration/export/credential/path mutation;
+- reuse W6 provider/credential/approval owners;
+- strict schema + hard reject unknowns;
+- one approved plan = one atomic CommandBatch + one Undo/Redo transaction.
+
+**Exact next task:** S11-W7-001 only.
+
+W7 runtime implementation is not started.
