@@ -182,14 +182,10 @@ class AIPlanApprovalService:
             effects = clip.properties.effects
             updated_effects = EffectProperties(
                 enter_effect=(
-                    effects.enter_effect
-                    if proposal.enter_effect is None
-                    else proposal.enter_effect
+                    effects.enter_effect if proposal.enter_effect is None else proposal.enter_effect
                 ),
                 exit_effect=(
-                    effects.exit_effect
-                    if proposal.exit_effect is None
-                    else proposal.exit_effect
+                    effects.exit_effect if proposal.exit_effect is None else proposal.exit_effect
                 ),
                 intensity_percent=(
                     effects.intensity_percent
