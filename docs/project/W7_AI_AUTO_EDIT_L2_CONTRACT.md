@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..003 PASS / W7-004 READY / W7-005..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..004 PASS / W7-005 READY / W7-006..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..003 PASS  
+**Runtime implementation:** ACTIVE — W7-001..004 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -360,8 +360,8 @@ and a real network smoke succeeds.
 - **W7-001 — Canonical L2 command contracts + capability registry — PASS**
 - **W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
 - **W7-003 — strict AutoEditPlan v2 parser/schema — PASS**
-- W7-004 — L2 semantic verifier + sequential dry-run translator — READY
-- W7-005 — pacing qualification: duration + speed — BLOCKED_BY_W7_004
+- **W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
+- W7-005 — pacing qualification: duration + speed — READY
 - W7-006 — transform qualification — BLOCKED_BY_W7_005
 - W7-007 — transition + mixed-plan qualification — BLOCKED_BY_W7_006
 - W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007
@@ -464,10 +464,44 @@ W7-003 did not start ProjectState semantic verification, selected-scope/lock/sta
 checks, dynamic state-dependent ranges, sequential dry-run translation, provider
 profile changes, runtime UI or canonical apply.
 
+## W7-004 implementation closure
+
+Accepted implementation HEAD:
+`05bbf416e3f4440b23b23a8912aa86e2d1a39d44`
+
+Accepted workflow:
+`37650364257` — SUCCESS.
+
+Implemented:
+- `ai_l2_verifier.py`;
+- provider-agnostic AutoEditPlan semantic verifier;
+- selected-scope + target existence + stale/lock gates;
+- dynamic duration/source/canvas/transition validation;
+- application-owned ripple translation for duration/speed;
+- uniform transform translation preserving crop;
+- sequential dry-run through existing manual commands;
+- pacing revalidation of existing/proposed fade_black;
+- immutable proof with candidate semantic hash and translated manual commands;
+- zero canonical ProjectState/CommandBus mutation.
+
+Evidence:
+`docs/evidence/features/S11_W7_004_L2_SEMANTIC_VERIFIER.md`.
+
+Gates:
+- targeted tests 24/24 PASS;
+- full pytest PASS;
+- mypy 68 source files PASS;
+- evidence verifier 23/23 PASS;
+- 26/26 triggered workflows SUCCESS, all attempt 1;
+- S08/S09/S10/W0 heavy gates PASS.
+
+W7-004 did not start real pacing/render qualification, provider request-profile
+changes, runtime UI changes, or canonical L2 apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-004 only — L2 semantic verifier + sequential dry-run translator**.
+After owner says `lanjutkan`, execute **S11-W7-005 only — Pacing qualification: duration + speed**.
 
-W7-004 must not start W7-005 real pacing qualification in the same turn.
+W7-005 must not start W7-006 transform qualification in the same turn.
 
-After W7-004, report gate PASS/FAIL and stop.
+After W7-005, report gate PASS/FAIL and stop.

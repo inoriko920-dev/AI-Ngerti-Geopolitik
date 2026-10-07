@@ -515,8 +515,8 @@ Serial contract:
 - [x] **S11-W7-001 — Canonical L2 command contracts + capability registry — PASS**
 - [x] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
 - [x] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — PASS**
-- [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — READY**
-- [ ] **S11-W7-005 — Pacing qualification: duration + speed — BLOCKED_BY_W7_004**
+- [x] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
+- [ ] **S11-W7-005 — Pacing qualification: duration + speed — READY**
 - [ ] **S11-W7-006 — Transform qualification — BLOCKED_BY_W7_005**
 - [ ] **S11-W7-007 — Transition + mixed-plan qualification — BLOCKED_BY_W7_006**
 - [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007**
@@ -608,4 +608,29 @@ W7-003 proof:
 - evidence verifier 24/24 PASS;
 - 26/26 triggered regression workflows SUCCESS, all attempt 1.
 
-**Exact next task:** S11-W7-004 only — L2 semantic verifier + sequential dry-run translator.
+Accepted W7-004 implementation HEAD:
+`05bbf416e3f4440b23b23a8912aa86e2d1a39d44`
+
+W7-004 workflow:
+`37650364257` — SUCCESS
+
+W7-004 evidence:
+`docs/evidence/features/S11_W7_004_L2_SEMANTIC_VERIFIER.md`
+
+W7-004 artifact:
+`ANG-S11-W7-004-L2-Verifier` / ID `11496527057`
+
+W7-004 proof:
+- stale/scope/target/lock semantic gates;
+- dynamic duration/source/canvas/transition policy;
+- exact existing manual command translation;
+- application-owned pacing ripple;
+- sequential dry-run with candidate transition revalidation;
+- candidate semantic hash proof;
+- zero canonical mutation/history;
+- targeted tests 24/24 PASS;
+- full pytest PASS;
+- evidence verifier 23/23 PASS;
+- 26/26 triggered workflows SUCCESS, all attempt 1.
+
+**Exact next task:** S11-W7-005 only — Pacing qualification: duration + speed.

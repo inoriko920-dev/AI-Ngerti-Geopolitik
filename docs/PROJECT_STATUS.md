@@ -2,67 +2,66 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W7 — AI Auto Edit L2**  
-**W7 status:** **CONTRACT_LOCKED / W7-001..003 PASS / W7-004 READY**  
-**Accepted W7-003 implementation HEAD:** `a57c8acd96cdcff8b20f659171229ad0bff913d0`  
-**Accepted W7-003 workflow:** `37647150710` — SUCCESS  
-**Next exact task:** **S11-W7-004 — L2 semantic verifier + sequential dry-run translator**  
+**W7 status:** **CONTRACT_LOCKED / W7-001..004 PASS / W7-005 READY**  
+**Accepted W7-004 implementation HEAD:** `05bbf416e3f4440b23b23a8912aa86e2d1a39d44`  
+**Accepted W7-004 workflow:** `37650364257` — SUCCESS  
+**Next exact task:** **S11-W7-005 — Pacing qualification: duration + speed**  
 **W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**
 
-## W7-003 proven
+## W7-004 proven
 
 Application:
-- `src/ai_ngerti_geopolitik/application/ai_l2_parser.py`.
+- `src/ai_ngerti_geopolitik/application/ai_l2_verifier.py`.
 
-Parser/schema:
-- canonical closed JSON Schema v2;
-- exact root fields;
-- strict schema_version=2/base revision typing;
-- 1..40 command array;
-- exact five command discriminators;
-- exact command-specific fields;
-- strict bool-vs-int rejection;
-- forbidden extras including ripple/crop/unlock/crossfade rejected;
-- target IDs must be non-blank and have no outer whitespace;
-- static W7-001 DTO invariants preserved.
+Verifier/translator:
+- consumes W7-003 strict AutoEditPlan v2;
+- request-ID correlation available for provider responses;
+- stale revision gate;
+- selected-scope + target existence gate;
+- track/effect lock policy;
+- duration 50..200% + half-second dynamic policy;
+- source bound + exact frame representability through SetClipDurationCommand;
+- speed 50..200% with application-owned ripple;
+- canvas-relative transform X/Y bounds;
+- uniform scale translation with crop preservation;
+- candidate-duration fade_black maximum;
+- existing transition revalidation after pacing;
+- sequential dry-run through existing manual commands;
+- translated manual commands retained in immutable proof;
+- candidate semantic hash + revision + command/target counts;
+- zero live ProjectState/CommandBus mutation.
 
-Boundary:
-- no ProjectState read;
-- no selected-scope/target existence check;
-- no lock/stale/session check;
-- no dynamic source/canvas/candidate-transition validation;
-- no manual-command dry-run;
-- no provider profile/UI/apply mutation.
+## W7-004 gates
 
-## W7-003 gates
-
-Workflow `37647150710`:
+Workflow `37650364257`:
 - Ruff format/check PASS;
-- mypy PASS — 67 source files;
+- mypy PASS — 68 source files;
 - import contracts PASS;
 - architecture PASS;
 - source-of-truth 70/70 PASS;
 - no-secret PASS;
 - UI references 42/42 PASS;
-- targeted parser tests **41/41 PASS**;
+- targeted verifier tests **24/24 PASS**;
 - full pytest PASS;
 - deterministic evidence PASS;
-- evidence verifier **24/24 PASS**;
+- evidence verifier **23/23 PASS**;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-003-L2-Parser`;
-- ID `11494393982`;
-- SHA-256 `fe7542cad4dbac0af22df2cde72b78d7e3ee6c464f28fed617e76264e7863d9f`.
+- `ANG-S11-W7-004-L2-Verifier`;
+- ID `11496527057`;
+- SHA-256 `d642dfefd5e68336aa585e959b9c7eb6fd44ba70b5f7387a9204436492d69739`.
 
 Regression:
-**26/26 workflows triggered on accepted W7-003 HEAD succeeded, all attempt 1.**
+**26/26 workflows on accepted W7-004 HEAD succeeded, all attempt 1.**
 
 S08 portable build/smoke PASS.  
+S09 portable UI shell PASS.  
 S10 real-media + packaged smoke PASS.  
 W0 engine qualification PASS.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W7-004 only — L2 semantic verifier + sequential dry-run translator**.
+After owner says **lanjutkan**, execute **S11-W7-005 only — Pacing qualification: duration + speed**.
 
-Do not start W7-005 pacing qualification in the same turn.
+Do not start W7-006 transform qualification in the same turn.

@@ -46,6 +46,7 @@
     - `docs/evidence/features/S11_W7_001_L2_CONTRACTS.md`
     - `docs/evidence/features/S11_W7_002_L2_CONTEXT.md`
     - `docs/evidence/features/S11_W7_003_L2_PARSER.md`
+    - `docs/evidence/features/S11_W7_004_L2_SEMANTIC_VERIFIER.md`
 12. current wave contract:
     - `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
     - historical closed W6 contract: `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
@@ -114,11 +115,13 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W7-001 Canonical L2 command contracts + capability registry: **PASS**.
 - S11-W7-002 L2 ContextBuilder + selected-scope contract: **PASS**.
 - S11-W7-003 strict AutoEditPlan v2 parser/schema: **PASS**.
-- S11-W7-004 L2 semantic verifier + sequential dry-run translator: **READY**.
-- S11-W7-005..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W7-004 L2 semantic verifier + sequential dry-run translator: **PASS**.
+- S11-W7-005 pacing qualification — duration + speed: **READY**.
+- S11-W7-006..010: **BLOCKED_BY_PREVIOUS_TASKS**.
 - W7-001 exact capability registry/policy bounds and W6 backward compatibility are qualified.
 - W7-002 selected-scope + bounded deterministic L2 context are qualified.
 - W7-003 strict closed AutoEditPlan v2 parser/schema is qualified.
-- exact next action: **SOL S11-W7-004 only**.
+- W7-004 semantic verifier + sequential manual-command dry-run translator is qualified.
+- exact next action: **SOL S11-W7-005 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
