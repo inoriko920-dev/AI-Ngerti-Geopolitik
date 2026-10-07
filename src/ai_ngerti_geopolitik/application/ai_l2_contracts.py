@@ -15,7 +15,6 @@ from typing import Final, Mapping
 from ai_ngerti_geopolitik.application.ai_contracts import (
     EDIT_PLAN_SCHEMA_VERSION,
     L1_RENDER_QUALIFIED_EFFECTS,
-    EditPlan,
     EffectEditProposal,
     PlanContractError,
     PlanErrorCode,
@@ -220,7 +219,11 @@ class SpeedEditProposal:
             )
         object.__setattr__(self, "target_clip_id", _stable_target(self.target_clip_id))
         rate = _strict_int("rate_percent", self.rate_percent)
-        if not W7_POLICY_BOUNDS.speed_min_percent <= rate <= W7_POLICY_BOUNDS.speed_max_percent:
+        if not (
+            W7_POLICY_BOUNDS.speed_min_percent
+            <= rate
+            <= W7_POLICY_BOUNDS.speed_max_percent
+        ):
             raise PlanContractError(
                 PlanErrorCode.SEMANTIC_INVALID,
                 "W7 AI speed must be between 50 and 200 percent",
