@@ -517,8 +517,8 @@ Serial contract:
 - [x] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — PASS**
 - [x] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
 - [x] **S11-W7-005 — Pacing qualification: duration + speed — PASS**
-- [ ] **S11-W7-006 — Transform qualification — READY**
-- [ ] **S11-W7-007 — Transition + mixed-plan qualification — BLOCKED_BY_W7_006**
+- [x] **S11-W7-006 — Transform qualification — PASS**
+- [ ] **S11-W7-007 — Transition + mixed-plan qualification — READY**
 - [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007**
 - [ ] **S11-W7-009 — Approval/apply/UI diff integration — BLOCKED_BY_W7_008**
 - [ ] **S11-W7-010 — Real-media closure + failure/regression lock — BLOCKED_BY_W7_009**
@@ -661,4 +661,30 @@ W7-005 proof:
 - evidence verifier 11/11 files PASS;
 - 26/26 regression workflows SUCCESS on the same HEAD, all attempt 1.
 
-**Exact next task:** S11-W7-006 only — Transform qualification.
+Accepted W7-006 implementation HEAD:
+`7ba2640068e5e5c0d153bd3c1bd304bc1be64f06`
+
+W7-006 workflow:
+`37656965367` — SUCCESS
+
+W7-006 evidence:
+`docs/evidence/features/S11_W7_006_TRANSFORM_QUALIFICATION.md`
+
+W7-006 artifact:
+`ANG-S11-W7-006-L2-Transform` / ID `11498533256`
+
+W7-006 proof:
+- existing W7-004 transform translation reused through canonical SetClipPropertiesCommand;
+- real position, scale, rotation and opacity previews are distinct from baseline;
+- composite transform real export PASS with audio retained;
+- uniform scale maps to equal X/Y scale;
+- crop and unspecified transform fields are preserved;
+- verifier candidate hash matches translated candidate hash;
+- source media and canonical state/revision/CommandBus history unchanged;
+- targeted tests 5/5 PASS;
+- full pytest PASS;
+- evidence verifier 9/9 files PASS;
+- 28/28 triggered workflows SUCCESS on the accepted HEAD, all attempt 1;
+- S08 portable build/smoke, S09 UI shell, S10 packaged real-media and W0 engine gates PASS.
+
+**Exact next task:** S11-W7-007 only — Transition + mixed-plan qualification.
