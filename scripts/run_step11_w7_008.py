@@ -8,8 +8,6 @@ from pathlib import Path
 
 from ai_ngerti_geopolitik.application.ai_contracts import (
     AIJobState,
-    AIProviderRequest,
-    AIRequestProfile,
     CredentialSecret,
     L2AIProviderRequest,
     ProviderPlanResponse,
