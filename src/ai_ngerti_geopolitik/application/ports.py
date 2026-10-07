@@ -41,6 +41,22 @@ class ExportResult:
     fps: int
 
 
+@dataclass(frozen=True, slots=True)
+class ParsedSubtitleCue:
+    index: int
+    start_milliseconds: int
+    end_milliseconds: int
+    text: str
+
+
+class SubtitleParseError(ValueError):
+    """Typed failure for untrusted subtitle source parsing."""
+
+
+class SubtitleParserPort(Protocol):
+    def parse(self, path: Path) -> tuple[ParsedSubtitleCue, ...]: ...
+
+
 class CancellationToken(Protocol):
     @property
     def cancelled(self) -> bool: ...
