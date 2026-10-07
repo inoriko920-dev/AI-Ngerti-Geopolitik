@@ -214,8 +214,7 @@ def main() -> int:
             "baseline_sha256": baseline_preview_hash,
             "variant_sha256": variant_hashes,
             "all_variants_changed": all(
-                digest != baseline_preview_hash
-                for digest in variant_hashes.values()
+                digest != baseline_preview_hash for digest in variant_hashes.values()
             ),
         },
     )
@@ -260,8 +259,7 @@ def main() -> int:
         "undo_redo": undo_hash == baseline_hash and redo_hash == styled_hash,
         "save_reopen": reopened.state.semantic_hash() == session.state.semantic_hash(),
         "preview_matrix_changed": all(
-            digest != baseline_preview_hash
-            for digest in variant_hashes.values()
+            digest != baseline_preview_hash for digest in variant_hashes.values()
         ),
         "export_valid": export_path.is_file() and export_path.stat().st_size > 0,
         "export_has_audio": export_probe.has_audio,

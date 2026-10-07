@@ -420,16 +420,11 @@ class FfmpegSliceMediaEngine:
             concat_inputs.append(f"[v{index}][a{index}]")
 
         filter_parts.append(
-            "".join(concat_inputs)
-            + f"concat=n={len(clips)}:v=1:a=1[concatv][outa]"
+            "".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[concatv][outa]"
         )
         subtitle_plan = build_subtitle_export_plan(state)
         if subtitle_plan.filters:
-            filter_parts.append(
-                "[concatv]"
-                + ",".join(subtitle_plan.filters)
-                + "[outv]"
-            )
+            filter_parts.append("[concatv]" + ",".join(subtitle_plan.filters) + "[outv]")
         else:
             filter_parts.append("[concatv]null[outv]")
         command.extend(

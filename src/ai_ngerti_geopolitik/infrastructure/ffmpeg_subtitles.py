@@ -104,11 +104,7 @@ def build_subtitle_preview_plan(
     if subtitle is None or not subtitle.enabled:
         return SubtitleRenderPlan(())
     active = next(
-        (
-            cue
-            for cue in subtitle.cues
-            if cue.start.frames <= timeline_frame < cue.end.frames
-        ),
+        (cue for cue in subtitle.cues if cue.start.frames <= timeline_frame < cue.end.frames),
         None,
     )
     if active is None:
@@ -121,8 +117,5 @@ def build_subtitle_export_plan(state: ProjectState) -> SubtitleRenderPlan:
     if subtitle is None or not subtitle.enabled:
         return SubtitleRenderPlan(())
     return SubtitleRenderPlan(
-        tuple(
-            _drawtext(cue, subtitle.style, enabled_window=True)
-            for cue in subtitle.cues
-        )
+        tuple(_drawtext(cue, subtitle.style, enabled_window=True) for cue in subtitle.cues)
     )

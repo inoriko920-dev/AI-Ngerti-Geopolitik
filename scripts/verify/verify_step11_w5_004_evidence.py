@@ -38,15 +38,9 @@ def main() -> int:
     if missing:
         raise SystemExit(f"missing W5-004 evidence: {missing}")
 
-    report = json.loads(
-        (root / "00_w5_004_report.json").read_text(encoding="utf-8")
-    )
-    matrix = json.loads(
-        (root / "02_style_preview_matrix.json").read_text(encoding="utf-8")
-    )
-    history = json.loads(
-        (root / "03_history_persistence.json").read_text(encoding="utf-8")
-    )
+    report = json.loads((root / "00_w5_004_report.json").read_text(encoding="utf-8"))
+    matrix = json.loads((root / "02_style_preview_matrix.json").read_text(encoding="utf-8"))
+    history = json.loads((root / "03_history_persistence.json").read_text(encoding="utf-8"))
     export = json.loads((root / "04_export.json").read_text(encoding="utf-8"))
 
     expected_true = [

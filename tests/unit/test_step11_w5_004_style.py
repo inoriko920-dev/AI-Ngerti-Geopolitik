@@ -158,9 +158,7 @@ def test_preview_plan_only_renders_active_cue() -> None:
 
 
 def test_unqualified_font_is_explicitly_rejected() -> None:
-    state = SetSubtitleStyleCommand(
-        SubtitleStyle(font_family="Unqualified Font")
-    ).apply(_state())
+    state = SetSubtitleStyleCommand(SubtitleStyle(font_family="Unqualified Font")).apply(_state())
     with pytest.raises(ValueError, match="not render-qualified"):
         build_subtitle_preview_plan(state, 45)
 
