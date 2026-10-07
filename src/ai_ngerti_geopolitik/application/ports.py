@@ -57,6 +57,18 @@ class SubtitleParserPort(Protocol):
     def parse(self, path: Path) -> tuple[ParsedSubtitleCue, ...]: ...
 
 
+class SubtitleWriteError(RuntimeError):
+    """Typed failure for safe subtitle-copy writing."""
+
+
+class SubtitleWriterPort(Protocol):
+    def write_copy(
+        self,
+        path: Path,
+        cues: tuple[ParsedSubtitleCue, ...],
+    ) -> None: ...
+
+
 class CancellationToken(Protocol):
     @property
     def cancelled(self) -> bool: ...

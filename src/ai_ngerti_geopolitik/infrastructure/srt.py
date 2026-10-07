@@ -1,13 +1,15 @@
-"""Strict read-only UTF-8 SRT parser for S11 W5-002."""
+"""Strict SRT parser and no-clobber copy writer for W5 subtitle workflow."""
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
 from ai_ngerti_geopolitik.application.ports import (
     ParsedSubtitleCue,
     SubtitleParseError,
+    SubtitleWriteError,
 )
 
 _TIMESTAMP = re.compile(
@@ -30,6 +32,15 @@ def _timestamp_milliseconds(value: str, *, cue_index: int) -> int:
             f"SRT cue index {cue_index} timestamp minute/second is outside 00..59"
         )
     return (((hours * 60) + minutes) * 60 + seconds) * 1000 + millis
+
+
+def _format_timestamp(milliseconds: int) -> str:
+    if milliseconds < 0:
+        raise SubtitleWriteError("subtitle timestamp cannot be negative")
+    hours, remainder = divmod(milliseconds, 3_600_000)
+    minutes, remainder = divmod(remainder, 60_000)
+    seconds, millis = divmod(remainder, 1000)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d},{millis:03d}"
 
 
 class Utf8SrtParser:
@@ -112,3 +123,68 @@ class Utf8SrtParser:
             previous_end = end_ms
 
         return tuple(cues)
+
+
+class Utf8SrtWriter:
+    """Write a new UTF-8 SRT copy without clobbering an existing file."""
+
+    def write_copy(
+        self,
+        path: Path,
+        cues: tuple[ParsedSubtitleCue, ...],
+    ) -> None:
+        destination = path.expanduser()
+        if destination.suffix.lower() != ".srt":
+            raise SubtitleWriteError("subtitle copy destination must use .srt extension")
+        if not cues:
+            raise SubtitleWriteError("subtitle copy requires at least one cue")
+
+        previous_start = -1
+        previous_end = 0
+        blocks: list[str] = []
+        for cue in cues:
+            if cue.index <= 0:
+                raise SubtitleWriteError("subtitle cue index must be positive")
+            if cue.end_milliseconds <= cue.start_milliseconds:
+                raise SubtitleWriteError(
+                    f"subtitle cue index {cue.index} end must be after start"
+                )
+            if not cue.text.strip():
+                raise SubtitleWriteError(
+                    f"subtitle cue index {cue.index} text cannot be empty"
+                )
+            if cue.start_milliseconds < previous_start:
+                raise SubtitleWriteError("subtitle copy cues must be sorted before save")
+            if cue.start_milliseconds < previous_end:
+                raise SubtitleWriteError("subtitle copy cues cannot overlap")
+            blocks.append(
+                f"{cue.index}\n"
+                f"{_format_timestamp(cue.start_milliseconds)} --> "
+                f"{_format_timestamp(cue.end_milliseconds)}\n"
+                f"{cue.text}"
+            )
+            previous_start = cue.start_milliseconds
+            previous_end = cue.end_milliseconds
+
+        payload = "\n\n".join(blocks) + "\n"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        created = False
+        try:
+            with destination.open("x", encoding="utf-8", newline="\n") as handle:
+                created = True
+                handle.write(payload)
+                handle.flush()
+                os.fsync(handle.fileno())
+        except FileExistsError as exc:
+            raise SubtitleWriteError(
+                f"subtitle copy destination already exists: {destination}"
+            ) from exc
+        except OSError as exc:
+            if created and destination.exists():
+                try:
+                    destination.unlink()
+                except OSError:
+                    pass
+            raise SubtitleWriteError(
+                f"cannot write subtitle copy: {destination}"
+            ) from exc

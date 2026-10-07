@@ -1,0 +1,47 @@
+name: S11 W5-003 Subtitle Working Copy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/ports.py"
+      - "src/ai_ngerti_geopolitik/application/subtitle_working_copy.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/srt.py"
+      - "tests/unit/test_step11_w5_003_working_copy.py"
+      - ".github/workflows/s11-wave5-003-working-copy.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w5-003:
+    name: Cue editing and safe working copy
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w5_003_working_copy.py
+      - run: uv run pytest -q
