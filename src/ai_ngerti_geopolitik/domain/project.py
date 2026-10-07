@@ -231,6 +231,24 @@ class SubtitleStyle:
             raise DomainValidationError("subtitle vertical margin must be between 0 and 1000")
 
 
+SUPPORTED_SUBTITLE_ANIMATIONS = (
+    "none",
+    "Fade",
+    "Pop",
+    "Slide Up",
+    "Clean Documentary",
+)
+
+UNSUPPORTED_SUBTITLE_ANIMATIONS = (
+    "Word Reveal",
+    "Karaoke Highlight",
+    "Typewriter",
+    "Bounce Soft",
+    "Emphasis Word",
+    "Social Caption",
+)
+
+
 @dataclass(frozen=True, slots=True)
 class SubtitleAnimation:
     preset: str = "none"
@@ -240,12 +258,24 @@ class SubtitleAnimation:
     highlight_color: str = "#FFD400"
 
     def __post_init__(self) -> None:
-        if self.preset != "none":
+        if self.preset not in SUPPORTED_SUBTITLE_ANIMATIONS:
             raise DomainValidationError(
-                "subtitle animation is not render-qualified until S11-W5-005"
+                f"unsupported or unqualified subtitle animation: {self.preset}"
             )
-        if self.enter_frames != 0 or self.exit_frames != 0:
-            raise DomainValidationError("none subtitle animation must use zero timing")
+        if self.preset == "none":
+            if self.enter_frames != 0 or self.exit_frames != 0:
+                raise DomainValidationError("none subtitle animation must use zero timing")
+        else:
+            if self.enter_frames < 0 or self.exit_frames < 0:
+                raise DomainValidationError("subtitle animation timing must be non-negative")
+            if self.enter_frames == 0 and self.exit_frames == 0:
+                raise DomainValidationError(
+                    "render-backed subtitle animation requires enter or exit timing"
+                )
+            if self.enter_frames > 300 or self.exit_frames > 300:
+                raise DomainValidationError(
+                    "subtitle animation enter/exit timing must not exceed 300 frames"
+                )
         if not 0 <= self.intensity_percent <= 200:
             raise DomainValidationError("subtitle animation intensity must be between 0 and 200")
         _validate_hex_color("subtitle highlight color", self.highlight_color)
@@ -464,11 +494,20 @@ class ProjectState:
         if self.subtitle is not None:
             if timeline_end <= 0:
                 raise DomainValidationError("subtitles require a non-empty timeline")
+            animation = self.subtitle.animation
             for cue in self.subtitle.cues:
                 if cue.start.fps != self.fps or cue.end.fps != self.fps:
                     raise DomainValidationError("subtitle cue FPS must match project FPS")
                 if cue.end.frames > timeline_end:
                     raise DomainValidationError("subtitle cue must stay inside the timeline")
+                cue_duration = cue.end.frames - cue.start.frames
+                if (
+                    animation.preset != "none"
+                    and animation.enter_frames + animation.exit_frames > cue_duration
+                ):
+                    raise DomainValidationError(
+                        "subtitle animation timing must fit every subtitle cue"
+                    )
 
         if self.narration is not None:
             narration = self.narration

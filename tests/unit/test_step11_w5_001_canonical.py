@@ -288,6 +288,6 @@ def test_w5_001_narration_requires_canonical_audio_asset() -> None:
         ).validate()
 
 
-def test_w5_001_animation_stays_unqualified_until_w5_005() -> None:
-    with pytest.raises(DomainValidationError, match="W5-005"):
-        SubtitleAnimation(preset="Fade", enter_frames=8, exit_frames=8)
+def test_w5_001_rejects_unqualified_subtitle_animation_names() -> None:
+    with pytest.raises(DomainValidationError, match="unsupported or unqualified"):
+        SubtitleAnimation(preset="Karaoke Highlight", enter_frames=8, exit_frames=8)

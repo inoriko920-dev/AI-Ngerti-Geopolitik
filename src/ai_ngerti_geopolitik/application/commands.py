@@ -16,9 +16,11 @@ from ai_ngerti_geopolitik.domain import (
     ProjectSettings,
     ProjectState,
     SpeedProperties,
+    SubtitleAnimation,
     SubtitleStyle,
     SubtitleTrack,
     Track,
+    WordTiming,
 )
 
 
@@ -655,6 +657,47 @@ class SetSubtitleStyleCommand:
         candidate = replace(
             state,
             subtitle=replace(state.subtitle, style=self.style),
+        )
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class SetSubtitleAnimationCommand:
+    animation: SubtitleAnimation
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if state.subtitle is None:
+            raise CommandError("subtitle animation requires a bound subtitle track")
+        candidate = replace(
+            state,
+            subtitle=replace(state.subtitle, animation=self.animation),
+        )
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class SetSubtitleCueWordTimingsCommand:
+    cue_id: str
+    word_timings: tuple[WordTiming, ...]
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if state.subtitle is None:
+            raise CommandError("subtitle word timing requires a bound subtitle track")
+        found = False
+        cues = []
+        for cue in state.subtitle.cues:
+            if cue.cue_id == self.cue_id:
+                cues.append(replace(cue, word_timings=self.word_timings))
+                found = True
+            else:
+                cues.append(cue)
+        if not found:
+            raise CommandError(f"unknown subtitle cue: {self.cue_id}")
+        candidate = replace(
+            state,
+            subtitle=replace(state.subtitle, cues=tuple(cues)),
         )
         candidate.validate()
         return candidate
