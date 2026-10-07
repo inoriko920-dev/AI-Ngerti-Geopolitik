@@ -7,10 +7,11 @@ Qt code or ProjectState mutation.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Final, Mapping
+from typing import Final
 
 from ai_ngerti_geopolitik.application.ai_contracts import (
     EDIT_PLAN_SCHEMA_VERSION,
