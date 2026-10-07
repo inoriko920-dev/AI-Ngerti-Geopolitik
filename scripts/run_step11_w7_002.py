@@ -5,8 +5,8 @@ from dataclasses import replace
 from pathlib import Path
 
 from ai_ngerti_geopolitik.application.ai_l2_context import L2ContextBuilder
-from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
 from ai_ngerti_geopolitik.application.ai_l2_contracts import W7_ALLOWED_COMMAND_TYPES
+from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
 from ai_ngerti_geopolitik.domain import (
     Asset,
     Clip,
