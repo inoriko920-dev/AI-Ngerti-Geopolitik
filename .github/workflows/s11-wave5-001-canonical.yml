@@ -1,0 +1,47 @@
+name: S11 W5-001 Canonical Subtitle Narration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/domain/**"
+      - "src/ai_ngerti_geopolitik/application/commands.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/persistence.py"
+      - "tests/unit/test_step11_w5_001_canonical.py"
+      - ".github/workflows/s11-wave5-001-canonical.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w5-001:
+    name: Canonical subtitle narration model
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w5_001_canonical.py
+      - run: uv run pytest -q

@@ -12,9 +12,11 @@ from ai_ngerti_geopolitik.domain import (
     DomainValidationError,
     FrameTime,
     Marker,
+    NarrationTrack,
     ProjectSettings,
     ProjectState,
     SpeedProperties,
+    SubtitleTrack,
     Track,
 )
 
@@ -628,6 +630,28 @@ class DeleteMarkerCommand:
         state.marker(self.marker_id)
         markers = tuple(marker for marker in state.markers if marker.marker_id != self.marker_id)
         candidate = replace(state, markers=markers)
+        candidate.validate()
+        return candidate
+
+
+
+
+@dataclass(frozen=True, slots=True)
+class SetSubtitleTrackCommand:
+    subtitle: SubtitleTrack | None
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        candidate = replace(state, subtitle=self.subtitle)
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class SetNarrationTrackCommand:
+    narration: NarrationTrack | None
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        candidate = replace(state, narration=self.narration)
         candidate.validate()
         return candidate
 

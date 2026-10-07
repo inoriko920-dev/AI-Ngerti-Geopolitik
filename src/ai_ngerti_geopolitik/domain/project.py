@@ -1,8 +1,8 @@
 """Pure canonical project/timeline model.
 
 All canonical edit time is stored as integer frames tied to an explicit project FPS.
-STEP 11 W2 extends schema-v1 compatibly with project markers while preserving the
-W1 media/project guarantees and stable asset/clip identifiers.
+STEP 11 W5 extends schema-v1 compatibly with canonical subtitle/narration state while
+preserving the W1-W4 media/project guarantees and stable identifiers.
 """
 
 from __future__ import annotations
@@ -173,6 +173,171 @@ class Marker:
             raise DomainValidationError(f"unsupported marker_type: {self.marker_type}")
 
 
+
+
+def _validate_hex_color(name: str, value: str) -> None:
+    raw = value.strip()
+    if len(raw) != 7 or not raw.startswith("#"):
+        raise DomainValidationError(f"{name} must use #RRGGBB")
+    if any(character not in "0123456789abcdefABCDEF" for character in raw[1:]):
+        raise DomainValidationError(f"{name} must use #RRGGBB")
+
+
+@dataclass(frozen=True, slots=True)
+class WordTiming:
+    word_id: str
+    word: str
+    start: FrameTime
+    end: FrameTime
+
+    def __post_init__(self) -> None:
+        if not self.word_id:
+            raise DomainValidationError("word timing id is required")
+        if not self.word.strip():
+            raise DomainValidationError("word timing text is required")
+        if self.start.fps != self.end.fps:
+            raise DomainValidationError("word timing values must share one FPS")
+        if self.end.frames <= self.start.frames:
+            raise DomainValidationError("word timing end must be after start")
+
+
+@dataclass(frozen=True, slots=True)
+class SubtitleStyle:
+    font_family: str = "Arial"
+    font_size: int = 54
+    fill_color: str = "#FFFFFF"
+    outline_color: str = "#111111"
+    outline_width_tenths: int = 30
+    shadow_tenths: int = 10
+    background_box: bool = False
+    background_opacity_percent: int = 0
+    alignment: str = "bottom_center"
+    margin_v: int = 64
+
+    def __post_init__(self) -> None:
+        if not self.font_family.strip():
+            raise DomainValidationError("subtitle font family is required")
+        if not 12 <= self.font_size <= 160:
+            raise DomainValidationError("subtitle font size must be between 12 and 160")
+        _validate_hex_color("subtitle fill color", self.fill_color)
+        _validate_hex_color("subtitle outline color", self.outline_color)
+        if not 0 <= self.outline_width_tenths <= 100:
+            raise DomainValidationError("subtitle outline width must be between 0 and 10")
+        if not 0 <= self.shadow_tenths <= 100:
+            raise DomainValidationError("subtitle shadow must be between 0 and 10")
+        if not 0 <= self.background_opacity_percent <= 100:
+            raise DomainValidationError("subtitle background opacity must be between 0 and 100")
+        if self.alignment not in {"top_center", "center", "bottom_center"}:
+            raise DomainValidationError(f"unsupported subtitle alignment: {self.alignment}")
+        if not 0 <= self.margin_v <= 1000:
+            raise DomainValidationError("subtitle vertical margin must be between 0 and 1000")
+
+
+@dataclass(frozen=True, slots=True)
+class SubtitleAnimation:
+    preset: str = "none"
+    enter_frames: int = 0
+    exit_frames: int = 0
+    intensity_percent: int = 100
+    highlight_color: str = "#FFD400"
+
+    def __post_init__(self) -> None:
+        if self.preset != "none":
+            raise DomainValidationError(
+                "subtitle animation is not render-qualified until S11-W5-005"
+            )
+        if self.enter_frames != 0 or self.exit_frames != 0:
+            raise DomainValidationError("none subtitle animation must use zero timing")
+        if not 0 <= self.intensity_percent <= 200:
+            raise DomainValidationError("subtitle animation intensity must be between 0 and 200")
+        _validate_hex_color("subtitle highlight color", self.highlight_color)
+
+
+@dataclass(frozen=True, slots=True)
+class SubtitleCue:
+    cue_id: str
+    index: int
+    start: FrameTime
+    end: FrameTime
+    text: str
+    word_timings: tuple[WordTiming, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.cue_id:
+            raise DomainValidationError("subtitle cue id is required")
+        if self.index <= 0:
+            raise DomainValidationError("subtitle cue index must be positive")
+        if self.start.fps != self.end.fps:
+            raise DomainValidationError("subtitle cue time values must share one FPS")
+        if self.end.frames <= self.start.frames:
+            raise DomainValidationError("subtitle cue end must be after start")
+        if not self.text.strip():
+            raise DomainValidationError("subtitle cue text is required")
+        word_ids = [item.word_id for item in self.word_timings]
+        if len(word_ids) != len(set(word_ids)):
+            raise DomainValidationError("duplicate subtitle word timing id")
+        previous_end = self.start.frames
+        for timing in self.word_timings:
+            if timing.start.fps != self.start.fps or timing.end.fps != self.start.fps:
+                raise DomainValidationError("subtitle word timing FPS must match cue FPS")
+            if timing.start.frames < self.start.frames or timing.end.frames > self.end.frames:
+                raise DomainValidationError("subtitle word timing must stay inside cue")
+            if timing.start.frames < previous_end:
+                raise DomainValidationError("overlapping subtitle word timings are not supported")
+            previous_end = timing.end.frames
+
+
+@dataclass(frozen=True, slots=True)
+class SubtitleTrack:
+    source_ref: str
+    cues: tuple[SubtitleCue, ...]
+    style: SubtitleStyle = SubtitleStyle()
+    animation: SubtitleAnimation = SubtitleAnimation()
+    enabled: bool = True
+
+    def __post_init__(self) -> None:
+        if not self.source_ref.strip():
+            raise DomainValidationError("subtitle source reference is required")
+        if not self.cues:
+            raise DomainValidationError("subtitle track requires at least one cue")
+        cue_ids = [cue.cue_id for cue in self.cues]
+        indexes = [cue.index for cue in self.cues]
+        if len(cue_ids) != len(set(cue_ids)):
+            raise DomainValidationError("duplicate subtitle cue id")
+        if len(indexes) != len(set(indexes)):
+            raise DomainValidationError("duplicate subtitle cue index")
+        previous_end = 0
+        previous_start = -1
+        for cue in self.cues:
+            if cue.start.frames < previous_start:
+                raise DomainValidationError("subtitle cues must be ordered by start frame")
+            if cue.start.frames < previous_end:
+                raise DomainValidationError("overlapping subtitle cues are not canonical")
+            previous_start = cue.start.frames
+            previous_end = cue.end.frames
+
+
+@dataclass(frozen=True, slots=True)
+class NarrationTrack:
+    narration_id: str
+    asset_id: str
+    timeline_start: FrameTime
+    gain_percent: int = 100
+    muted: bool = False
+    fade_in_frames: int = 0
+    fade_out_frames: int = 0
+
+    def __post_init__(self) -> None:
+        if not self.narration_id:
+            raise DomainValidationError("narration id is required")
+        if not self.asset_id:
+            raise DomainValidationError("narration asset id is required")
+        if not 0 <= self.gain_percent <= 400:
+            raise DomainValidationError("narration gain must be between 0 and 400")
+        if self.fade_in_frames < 0 or self.fade_out_frames < 0:
+            raise DomainValidationError("narration fade frames must be non-negative")
+
+
 @dataclass(frozen=True, slots=True)
 class ProjectState:
     project_id: str
@@ -183,6 +348,8 @@ class ProjectState:
     assets: tuple[Asset, ...] = ()
     tracks: tuple[Track, ...] = ()
     markers: tuple[Marker, ...] = ()
+    subtitle: SubtitleTrack | None = None
+    narration: NarrationTrack | None = None
     settings: ProjectSettings = ProjectSettings()
 
     @classmethod
@@ -295,6 +462,36 @@ class ProjectState:
                 raise DomainValidationError("markers require a non-empty timeline")
             if marker.frame.frames >= timeline_end:
                 raise DomainValidationError("marker must be inside the timeline")
+
+        if self.subtitle is not None:
+            if timeline_end <= 0:
+                raise DomainValidationError("subtitles require a non-empty timeline")
+            for cue in self.subtitle.cues:
+                if cue.start.fps != self.fps or cue.end.fps != self.fps:
+                    raise DomainValidationError("subtitle cue FPS must match project FPS")
+                if cue.end.frames > timeline_end:
+                    raise DomainValidationError("subtitle cue must stay inside the timeline")
+
+        if self.narration is not None:
+            narration = self.narration
+            if timeline_end <= 0:
+                raise DomainValidationError("narration requires a non-empty timeline")
+            if narration.timeline_start.fps != self.fps:
+                raise DomainValidationError("narration FPS must match project FPS")
+            if narration.timeline_start.frames >= timeline_end:
+                raise DomainValidationError("narration must start inside the timeline")
+            try:
+                narration_asset = self.asset(narration.asset_id)
+            except DomainValidationError as exc:
+                raise DomainValidationError("narration must reference a canonical asset") from exc
+            if narration_asset.media_type != "audio":
+                raise DomainValidationError("narration must reference an audio asset")
+            if narration.fade_in_frames > narration_asset.duration.frames:
+                raise DomainValidationError("narration fade-in exceeds source duration")
+            if narration.fade_out_frames > narration_asset.duration.frames:
+                raise DomainValidationError("narration fade-out exceeds source duration")
+            if narration.fade_in_frames + narration.fade_out_frames > narration_asset.duration.frames:
+                raise DomainValidationError("narration fades exceed source duration")
 
     def semantic_dict(self, *, include_revision: bool = False) -> dict[str, object]:
         data = asdict(self)

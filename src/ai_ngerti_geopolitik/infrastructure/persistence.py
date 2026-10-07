@@ -18,13 +18,19 @@ from ai_ngerti_geopolitik.domain import (
     EffectProperties,
     FrameTime,
     Marker,
+    NarrationTrack,
     ProjectSettings,
     ProjectState,
     SpeedProperties,
+    SubtitleAnimation,
+    SubtitleCue,
+    SubtitleStyle,
+    SubtitleTrack,
     TitleProperties,
     Track,
     TransitionProperties,
     VideoProperties,
+    WordTiming,
 )
 
 
@@ -163,10 +169,115 @@ class JsonProjectRepository:
             assets=assets,
             tracks=tuple(tracks),
             markers=markers,
+            subtitle=self._decode_subtitle(raw.get("subtitle"), fps),
+            narration=self._decode_narration(raw.get("narration"), fps),
             settings=settings,
         )
         state.validate()
         return state
+
+
+    @staticmethod
+    def _decode_subtitle(raw: object, fps: int) -> SubtitleTrack | None:
+        if raw is None:
+            return None
+        if not isinstance(raw, dict):
+            raise TypeError("subtitle must be an object")
+        style_raw = raw.get("style", {})
+        animation_raw = raw.get("animation", {})
+        cues_raw = raw.get("cues", [])
+        if not isinstance(style_raw, dict) or not isinstance(animation_raw, dict):
+            raise TypeError("subtitle style/animation must be objects")
+        if not isinstance(cues_raw, list):
+            raise TypeError("subtitle cues must be a list")
+
+        cues: list[SubtitleCue] = []
+        for cue_raw in cues_raw:
+            if not isinstance(cue_raw, dict):
+                raise TypeError("subtitle cue must be an object")
+            words_raw = cue_raw.get("word_timings", [])
+            if not isinstance(words_raw, list):
+                raise TypeError("subtitle word timings must be a list")
+            words = tuple(
+                WordTiming(
+                    word_id=str(word["word_id"]),
+                    word=str(word["word"]),
+                    start=FrameTime(
+                        int(word["start"]["frames"]),
+                        int(word["start"].get("fps", fps)),
+                    ),
+                    end=FrameTime(
+                        int(word["end"]["frames"]),
+                        int(word["end"].get("fps", fps)),
+                    ),
+                )
+                for word in words_raw
+            )
+            cues.append(
+                SubtitleCue(
+                    cue_id=str(cue_raw["cue_id"]),
+                    index=int(cue_raw["index"]),
+                    start=FrameTime(
+                        int(cue_raw["start"]["frames"]),
+                        int(cue_raw["start"].get("fps", fps)),
+                    ),
+                    end=FrameTime(
+                        int(cue_raw["end"]["frames"]),
+                        int(cue_raw["end"].get("fps", fps)),
+                    ),
+                    text=str(cue_raw["text"]),
+                    word_timings=words,
+                )
+            )
+
+        return SubtitleTrack(
+            source_ref=str(raw["source_ref"]),
+            cues=tuple(cues),
+            style=SubtitleStyle(
+                font_family=str(style_raw.get("font_family", "Arial")),
+                font_size=int(style_raw.get("font_size", 54)),
+                fill_color=str(style_raw.get("fill_color", "#FFFFFF")),
+                outline_color=str(style_raw.get("outline_color", "#111111")),
+                outline_width_tenths=int(style_raw.get("outline_width_tenths", 30)),
+                shadow_tenths=int(style_raw.get("shadow_tenths", 10)),
+                background_box=bool(style_raw.get("background_box", False)),
+                background_opacity_percent=int(
+                    style_raw.get("background_opacity_percent", 0)
+                ),
+                alignment=str(style_raw.get("alignment", "bottom_center")),
+                margin_v=int(style_raw.get("margin_v", 64)),
+            ),
+            animation=SubtitleAnimation(
+                preset=str(animation_raw.get("preset", "none")),
+                enter_frames=int(animation_raw.get("enter_frames", 0)),
+                exit_frames=int(animation_raw.get("exit_frames", 0)),
+                intensity_percent=int(animation_raw.get("intensity_percent", 100)),
+                highlight_color=str(animation_raw.get("highlight_color", "#FFD400")),
+            ),
+            enabled=bool(raw.get("enabled", True)),
+        )
+
+    @staticmethod
+    def _decode_narration(raw: object, fps: int) -> NarrationTrack | None:
+        if raw is None:
+            return None
+        if not isinstance(raw, dict):
+            raise TypeError("narration must be an object")
+        start_raw = raw.get("timeline_start")
+        if not isinstance(start_raw, dict):
+            raise TypeError("narration timeline_start must be an object")
+        return NarrationTrack(
+            narration_id=str(raw["narration_id"]),
+            asset_id=str(raw["asset_id"]),
+            timeline_start=FrameTime(
+                int(start_raw["frames"]),
+                int(start_raw.get("fps", fps)),
+            ),
+            gain_percent=int(raw.get("gain_percent", 100)),
+            muted=bool(raw.get("muted", False)),
+            fade_in_frames=int(raw.get("fade_in_frames", 0)),
+            fade_out_frames=int(raw.get("fade_out_frames", 0)),
+        )
 
     @staticmethod
     def _decode_clip_properties(raw: object) -> ClipProperties:
