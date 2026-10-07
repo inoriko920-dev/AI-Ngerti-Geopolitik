@@ -1,0 +1,60 @@
+name: S11 W6-007 Gemini Adapter Async Lifecycle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/run_step11_w6_007.py"
+      - "scripts/verify/verify_step11_w6_007_*.py"
+      - ".github/workflows/s11-wave6-007-gemini-async.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w6-007:
+    name: Official Gemini adapter and async lifecycle
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - name: Verify official google-genai runtime
+        run: uv run python scripts/verify/verify_step11_w6_007_google_genai_runtime.py
+      - run: uv run pytest -q tests/unit/test_step11_w6_007_gemini_jobs.py
+      - run: uv run pytest -q
+      - name: Run W6-007 deterministic evidence
+        run: uv run python scripts/run_step11_w6_007.py
+      - name: Verify W6-007 evidence
+        run: uv run python scripts/verify/verify_step11_w6_007_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W6-007-Gemini-Async-Lifecycle
+          path: artifacts/step11/w6-007/evidence/**
+          if-no-files-found: error
+          retention-days: 14
