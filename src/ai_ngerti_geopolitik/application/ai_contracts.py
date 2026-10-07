@@ -13,6 +13,7 @@ from typing import Final
 
 EDIT_PLAN_SCHEMA_VERSION: Final = 1
 MAX_CREDENTIAL_SLOTS: Final = 100
+MASKED_CREDENTIAL_VALUE: Final = "••••••••"
 
 L1_RENDER_QUALIFIED_EFFECTS: Final = (
     "None",
@@ -60,6 +61,14 @@ class CredentialContractError(RuntimeError):
     def __init__(self, code: CredentialErrorCode, safe_message: str) -> None:
         self.code = code
         self.safe_message = safe_message.strip() or code.value
+        super().__init__(self.safe_message)
+
+
+class CredentialMetadataError(ValueError):
+    """Safe validation failure for non-secret credential-slot metadata."""
+
+    def __init__(self, safe_message: str) -> None:
+        self.safe_message = safe_message.strip() or "invalid credential metadata"
         super().__init__(self.safe_message)
 
 
@@ -112,6 +121,33 @@ class CredentialSlotRef:
                 CredentialErrorCode.INVALID_SLOT,
                 f"credential slot must be between 1 and {MAX_CREDENTIAL_SLOTS}",
             )
+
+
+@dataclass(frozen=True, slots=True)
+class CredentialSlotMetadata:
+    """Non-secret logical-slot metadata safe for presentation/persistence."""
+
+    slot: CredentialSlotRef
+    label: str
+    enabled: bool = True
+
+    def __post_init__(self) -> None:
+        normalized = self.label.strip()
+        if not normalized:
+            raise CredentialMetadataError("credential slot label cannot be empty")
+        if len(normalized) > 80:
+            raise CredentialMetadataError("credential slot label must not exceed 80 characters")
+        if any(character in normalized for character in "\r\n\t"):
+            raise CredentialMetadataError("credential slot label cannot contain control whitespace")
+        object.__setattr__(self, "label", normalized)
+
+    @property
+    def slot_id(self) -> int:
+        return self.slot.slot_id
+
+    @property
+    def masked_value(self) -> str:
+        return MASKED_CREDENTIAL_VALUE
 
 
 @dataclass(frozen=True, slots=True)

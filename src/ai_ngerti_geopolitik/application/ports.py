@@ -9,6 +9,7 @@ from typing import Protocol, runtime_checkable
 from ai_ngerti_geopolitik.application.ai_contracts import (
     AIProviderRequest,
     CredentialSecret,
+    CredentialSlotMetadata,
     CredentialSlotRef,
     ProviderPlanResponse,
 )
@@ -166,6 +167,22 @@ class CredentialPort(Protocol):
     def delete_secret(self, slot: CredentialSlotRef) -> None: ...
 
     def has_secret(self, slot: CredentialSlotRef) -> bool: ...
+
+
+@runtime_checkable
+class CredentialMetadataPort(Protocol):
+    """Non-secret logical-slot metadata boundary."""
+
+    def save_metadata(self, metadata: CredentialSlotMetadata) -> None: ...
+
+    def load_metadata(
+        self,
+        slot: CredentialSlotRef,
+    ) -> CredentialSlotMetadata | None: ...
+
+    def delete_metadata(self, slot: CredentialSlotRef) -> None: ...
+
+    def list_metadata(self) -> tuple[CredentialSlotMetadata, ...]: ...
 
 
 @runtime_checkable
