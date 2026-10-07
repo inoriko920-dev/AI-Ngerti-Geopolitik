@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/002/003/004 PASS — NEXT W5-005**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/002/003/004/005 PASS — NEXT W5-006**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -15,27 +15,30 @@ Completed:
 - S11-W5-002 — SRT import + validation = PASS
 - S11-W5-003 — cue editing + safe working-copy = PASS
 - S11-W5-004 — subtitle style = PASS
+- S11-W5-005 — render-backed animation + per-word boundary = PASS
 
-W5-004 accepted implementation:
-`687d31585d476541711978d5f69e5e7eafe72245`
+W5-005 accepted implementation:
+`293b369e74771d16dc90956bc6a7be4c71e01d1c`
 
 Workflow:
-`37574406573` — SUCCESS
+`37575611940` — SUCCESS
 
-The app now has canonical subtitle styling with Undo/Redo and persistence plus
-real preview/export qualification for font family/size, fill, outline, shadow,
-background box/opacity, alignment and vertical margin.
+Render-qualified subtitle animations:
+**Fade, Pop, Slide Up, Clean Documentary**.
 
-For the current FFmpeg qualification adapter, render-proven fonts are **Arial**
-and **Segoe UI** only.
+Unqualified legacy names remain unavailable.
 
-Evidence verifier: **18/18 PASS**.
+Per-word timing is canonical and editable, but deterministic word distribution
+is explicitly labeled **NOT speech alignment**. No ASR or transcription is
+claimed or used.
 
-All W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same accepted
-implementation HEAD.
+Evidence verifier: **21/21 PASS**.
+
+All W5-004/W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same
+accepted implementation HEAD.
 
 ## Next
 
-**S11-W5-005 — Render-backed subtitle animation + per-word boundary only.**
+**S11-W5-006 — Narration import + binding only.**
 
-Narration and recording remain later tasks.
+Microphone recording remains W5-007.

@@ -118,7 +118,19 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 READY**
+**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 READY**
+
+W5-005 accepted implementation HEAD:
+`293b369e74771d16dc90956bc6a7be4c71e01d1c`
+
+W5-005 workflow:
+`37575611940` — SUCCESS
+
+W5-005 evidence:
+`docs/evidence/features/S11_W5_005_SUBTITLE_ANIMATION_WORD_TIMING.md`
+
+W5-005 artifact:
+`ANG-S11-W5-005-Subtitle-Animation` / ID `11462966698`
 
 W5-004 accepted implementation HEAD:
 `687d31585d476541711978d5f69e5e7eafe72245`
@@ -164,7 +176,7 @@ Serial contract:
 - [x] **S11-W5-002 — SRT import + validation — PASS**
 - [x] **S11-W5-003 — Cue editing + safe working-copy flow — PASS**
 - [x] **S11-W5-004 — Subtitle style — PASS**
-- [ ] **S11-W5-005 — Render-backed subtitle animation + per-word boundary**
+- [x] **S11-W5-005 — Render-backed subtitle animation + per-word boundary — PASS**
 - [ ] **S11-W5-006 — Narration import + binding**
 - [ ] **S11-W5-007 — Microphone recording**
 - [ ] **S11-W5-008 — Frozen UI parity**
@@ -180,4 +192,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-005 — Render-backed subtitle animation + per-word boundary only.
+**Exact next task:** S11-W5-006 — Narration import + binding only.

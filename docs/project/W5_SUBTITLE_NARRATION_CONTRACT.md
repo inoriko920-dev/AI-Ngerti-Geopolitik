@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -238,7 +238,18 @@ semantics are accepted.
     `ANG-S11-W5-004-Subtitle-Style` / `11461154582`;
   - FFmpeg qualification font families:
     Arial and Segoe UI.
-- S11-W5-005 — **READY**.
-- S11-W5-006..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-005 — **PASS**
+  - accepted implementation HEAD:
+    `293b369e74771d16dc90956bc6a7be4c71e01d1c`;
+  - accepted run: `37575611940`;
+  - evidence:
+    `docs/evidence/features/S11_W5_005_SUBTITLE_ANIMATION_WORD_TIMING.md`;
+  - evidence artifact:
+    `ANG-S11-W5-005-Subtitle-Animation` / `11462966698`;
+  - render-qualified non-none presets:
+    Fade, Pop, Slide Up, Clean Documentary;
+  - per-word deterministic fallback is explicitly **NOT speech alignment**.
+- S11-W5-006 — **READY**.
+- S11-W5-007..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-005 only**.
+On the next owner `lanjutkan`, execute **S11-W5-006 only**.
