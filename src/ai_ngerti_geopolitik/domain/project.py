@@ -173,8 +173,6 @@ class Marker:
             raise DomainValidationError(f"unsupported marker_type: {self.marker_type}")
 
 
-
-
 def _validate_hex_color(name: str, value: str) -> None:
     raw = value.strip()
     if len(raw) != 7 or not raw.startswith("#"):
@@ -490,7 +488,10 @@ class ProjectState:
                 raise DomainValidationError("narration fade-in exceeds source duration")
             if narration.fade_out_frames > narration_asset.duration.frames:
                 raise DomainValidationError("narration fade-out exceeds source duration")
-            if narration.fade_in_frames + narration.fade_out_frames > narration_asset.duration.frames:
+            if (
+                narration.fade_in_frames + narration.fade_out_frames
+                > narration_asset.duration.frames
+            ):
                 raise DomainValidationError("narration fades exceed source duration")
 
     def semantic_dict(self, *, include_revision: bool = False) -> dict[str, object]:

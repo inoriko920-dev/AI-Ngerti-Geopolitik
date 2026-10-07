@@ -176,7 +176,6 @@ class JsonProjectRepository:
         state.validate()
         return state
 
-
     @staticmethod
     def _decode_subtitle(raw: object, fps: int) -> SubtitleTrack | None:
         if raw is None:
@@ -241,9 +240,7 @@ class JsonProjectRepository:
                 outline_width_tenths=int(style_raw.get("outline_width_tenths", 30)),
                 shadow_tenths=int(style_raw.get("shadow_tenths", 10)),
                 background_box=bool(style_raw.get("background_box", False)),
-                background_opacity_percent=int(
-                    style_raw.get("background_opacity_percent", 0)
-                ),
+                background_opacity_percent=int(style_raw.get("background_opacity_percent", 0)),
                 alignment=str(style_raw.get("alignment", "bottom_center")),
                 margin_v=int(style_raw.get("margin_v", 64)),
             ),

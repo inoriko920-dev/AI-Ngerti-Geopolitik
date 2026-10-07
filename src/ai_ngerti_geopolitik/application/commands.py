@@ -634,8 +634,6 @@ class DeleteMarkerCommand:
         return candidate
 
 
-
-
 @dataclass(frozen=True, slots=True)
 class SetSubtitleTrackCommand:
     subtitle: SubtitleTrack | None
