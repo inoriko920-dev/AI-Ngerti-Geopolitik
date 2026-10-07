@@ -10,19 +10,21 @@ def main() -> int:
     args = parser.parse_args()
     root = args.evidence.resolve()
 
-    ids = ("010", "011", "012", "013", "014", "023")
+    ids = ("010", "021", "022", "023", "024", "033")
     actual = {
-        "010": "UI-010_ACTUAL_AI_DIRECTOR.png",
-        "011": "UI-011_ACTUAL_AI_READY.png",
-        "012": "UI-012_ACTUAL_AI_PLAN.png",
-        "013": "UI-013_ACTUAL_AI_APPLIED.png",
-        "014": "UI-014_ACTUAL_PROVIDER_UNAVAILABLE.png",
-        "023": "UI-023_ACTUAL_PROVIDER_KEYS.png",
+        "010": "UI-010_ACTUAL_EDITOR_AI_ENTRY.png",
+        "021": "UI-021_ACTUAL_AI_READY.png",
+        "022": "UI-022_ACTUAL_AI_PLAN.png",
+        "023": "UI-023_ACTUAL_AI_APPLIED.png",
+        "024": "UI-024_ACTUAL_PROVIDER_UNAVAILABLE.png",
+        "033": "UI-033_ACTUAL_PROVIDER_KEYS.png",
     }
     required = [
         "00_w6_009_ui_report.txt",
         "00_w6_009_security_report.txt",
+        "00_w6_009_reference_mapping_report.txt",
         "00_FROZEN_REFERENCE_CONTACT_SHEET.png",
+        "W6-AI-DIRECTOR_ACTUAL.png",
         *actual.values(),
         *(f"UI-{ui_id}_REFERENCE_VS_ACTUAL.png" for ui_id in ids),
     ]
@@ -35,19 +37,38 @@ def main() -> int:
 
     ui_report = (root / "00_w6_009_ui_report.txt").read_text(encoding="utf-8")
     security = (root / "00_w6_009_security_report.txt").read_text(encoding="utf-8")
+    mapping = (root / "00_w6_009_reference_mapping_report.txt").read_text(
+        encoding="utf-8"
+    )
     for token in (
         "status=PASS",
-        "ui_010=ai_director_real_widgets",
-        "ui_011=ready_chat_real_widgets",
-        "ui_012=plan_approval_real_widgets",
-        "ui_013=applied_success_real_widgets",
-        "ui_014=provider_unavailable_manual_fallback",
-        "ui_023=provider_api_key_manager_real_widgets",
+        "ui_010=baseline_editor_ai_entry",
+        "ui_021=ready_chat_real_widgets",
+        "ui_022=plan_approval_real_widgets",
+        "ui_023=applied_success_real_widgets",
+        "ui_024=provider_unavailable_manual_fallback",
+        "ui_033=provider_api_key_manager_real_widgets",
+        "ai_director=real_widgets_actual_only_no_dedicated_frozen_raster",
         "l1_only=true",
         "manual_fallback=true",
     ):
         if token not in ui_report:
             raise SystemExit(f"W6-009 UI report token missing: {token}")
+    for token in (
+        "status=PASS",
+        "authority=actual_frozen_raster_visual",
+        "planning_id_title_conflict=true",
+        "gap_ux_001_applied=true",
+        "ui_021=ai_ready_chat",
+        "ui_022=ai_plan_approval",
+        "ui_023=ai_applied_success",
+        "ui_024=provider_unavailable",
+        "ui_033=provider_api_key_manager",
+        "ai_director_dedicated_frozen_raster=none_found",
+        "raw_frozen_png_modified=0",
+    ):
+        if token not in mapping:
+            raise SystemExit(f"W6-009 mapping report token missing: {token}")
     for token in (
         "status=PASS",
         "saved_credentials_display=masked_only",
