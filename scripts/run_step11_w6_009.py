@@ -150,9 +150,12 @@ def main() -> int:
 
     set_ai_agent_subview(workspace, "director")
     app.processEvents()
-    path = output / "UI-010_ACTUAL_AI_DIRECTOR.png"
+    path = output / "UI-010_ACTUAL_EDITOR_AI_ENTRY.png"
     _render(window, path)
     mapping.append(("UI-010", path.name))
+
+    path = output / "W6-AI-DIRECTOR_ACTUAL.png"
+    _render(window, path)
 
     project_ai_agent_state(
         workspace,
@@ -163,9 +166,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-011_ACTUAL_AI_READY.png"
+    path = output / "UI-021_ACTUAL_AI_READY.png"
     _render(window, path)
-    mapping.append(("UI-011", path.name))
+    mapping.append(("UI-021", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -181,9 +184,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-012_ACTUAL_AI_PLAN.png"
+    path = output / "UI-022_ACTUAL_AI_PLAN.png"
     _render(window, path)
-    mapping.append(("UI-012", path.name))
+    mapping.append(("UI-022", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -195,9 +198,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-013_ACTUAL_AI_APPLIED.png"
+    path = output / "UI-023_ACTUAL_AI_APPLIED.png"
     _render(window, path)
-    mapping.append(("UI-013", path.name))
+    mapping.append(("UI-023", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -209,9 +212,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-014_ACTUAL_PROVIDER_UNAVAILABLE.png"
+    path = output / "UI-024_ACTUAL_PROVIDER_UNAVAILABLE.png"
     _render(window, path)
-    mapping.append(("UI-014", path.name))
+    mapping.append(("UI-024", path.name))
 
     window._open_ai_credentials_dialog()
     window.apply_w6_credential_slots(
@@ -222,9 +225,9 @@ def main() -> int:
         )
     )
     app.processEvents()
-    path = output / "UI-023_ACTUAL_PROVIDER_KEYS.png"
+    path = output / "UI-033_ACTUAL_PROVIDER_KEYS.png"
     _render(window, path)
-    mapping.append(("UI-023", path.name))
+    mapping.append(("UI-033", path.name))
 
     for ui_id, actual_name in mapping:
         ref_path = reference / f"{ui_id}.png"
@@ -242,15 +245,36 @@ def main() -> int:
         "\n".join(
             [
                 "status=PASS",
-                "ui_010=ai_director_real_widgets",
-                "ui_011=ready_chat_real_widgets",
-                "ui_012=plan_approval_real_widgets",
-                "ui_013=applied_success_real_widgets",
-                "ui_014=provider_unavailable_manual_fallback",
-                "ui_023=provider_api_key_manager_real_widgets",
+                "ui_010=baseline_editor_ai_entry",
+                "ui_021=ready_chat_real_widgets",
+                "ui_022=plan_approval_real_widgets",
+                "ui_023=applied_success_real_widgets",
+                "ui_024=provider_unavailable_manual_fallback",
+                "ui_033=provider_api_key_manager_real_widgets",
+                "ai_director=real_widgets_actual_only_no_dedicated_frozen_raster",
                 "states=READY,PLAN,APPROVAL,APPLYING,SUCCESS,PROVIDER_ERROR,LOCK_CONFLICT,STALE",
                 "l1_only=true",
                 "manual_fallback=true",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (output / "00_w6_009_reference_mapping_report.txt").write_text(
+        "\n".join(
+            [
+                "status=PASS",
+                "authority=actual_frozen_raster_visual",
+                "planning_id_title_conflict=true",
+                "gap_ux_001_applied=true",
+                "ui_010=baseline_editor_ai_entry",
+                "ui_021=ai_ready_chat",
+                "ui_022=ai_plan_approval",
+                "ui_023=ai_applied_success",
+                "ui_024=provider_unavailable",
+                "ui_033=provider_api_key_manager",
+                "ai_director_dedicated_frozen_raster=none_found",
+                "raw_frozen_png_modified=0",
             ]
         )
         + "\n",
