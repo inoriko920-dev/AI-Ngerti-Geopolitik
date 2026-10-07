@@ -159,13 +159,9 @@ def main() -> int:
         base_y=transition_base.overlay_y,
     )
     transition_fades = tuple(
-        item
-        for item in transition_render_plan.post_filters
-        if item.startswith("fade=t=")
+        item for item in transition_render_plan.post_filters if item.startswith("fade=t=")
     )
-    if len(transition_fades) != 2 or not all(
-        "color=black" in item for item in transition_fades
-    ):
+    if len(transition_fades) != 2 or not all("color=black" in item for item in transition_fades):
         raise AssertionError("fade_black did not map to two black fade filters")
 
     baseline_preview = evidence / "preview_transition_baseline_frame1.png"
@@ -240,9 +236,7 @@ def main() -> int:
         "SetClipPropertiesCommand",
     )
     if mixed_verified.translated_command_types != expected_types:
-        raise AssertionError(
-            "mixed plan did not reuse expected canonical manual owners"
-        )
+        raise AssertionError("mixed plan did not reuse expected canonical manual owners")
     if mixed_candidate.timeline_end_frame != 210:
         raise AssertionError("mixed plan sequential pacing result mismatch")
     if clip1.properties.transition != TransitionProperties("fade_black", 45):
@@ -278,8 +272,7 @@ def main() -> int:
         "request_id": transition_verified.plan.request_id,
         "translated_command": type(transition_command).__name__,
         "candidate_hash_matches_verifier": (
-            transition_candidate.semantic_hash()
-            == transition_verified.candidate_semantic_hash
+            transition_candidate.semantic_hash() == transition_verified.candidate_semantic_hash
         ),
         "preset": transition_state.preset,
         "duration_frames": transition_state.duration_frames,
@@ -291,8 +284,7 @@ def main() -> int:
         "real_export_frames": transition_probe.duration_frames,
         "real_export_audio": transition_probe.has_audio,
         "none_clear_verified": (
-            cleared_candidate.clip("C001").properties.transition
-            == TransitionProperties()
+            cleared_candidate.clip("C001").properties.transition == TransitionProperties()
         ),
     }
     _write(evidence / "01_transition_qualification.json", transition_detail)
@@ -342,8 +334,7 @@ def main() -> int:
             SetClipPropertiesCommand,
         ),
         "transition_filter_fade_black": (
-            len(transition_fades) == 2
-            and all("color=black" in item for item in transition_fades)
+            len(transition_fades) == 2 and all("color=black" in item for item in transition_fades)
         ),
         "transition_real_preview": baseline_preview_hash != transition_preview_hash,
         "transition_real_export": (
@@ -351,8 +342,7 @@ def main() -> int:
         ),
         "transition_export_audio": transition_probe.has_audio,
         "transition_none_clear": (
-            cleared_candidate.clip("C001").properties.transition
-            == TransitionProperties()
+            cleared_candidate.clip("C001").properties.transition == TransitionProperties()
         ),
         "mixed_l1_l2_plan": (
             mixed_verified.command_count == 6
@@ -364,9 +354,7 @@ def main() -> int:
         "mixed_candidate_hash_matches_verifier": (
             mixed_candidate.semantic_hash() == mixed_verified.candidate_semantic_hash
         ),
-        "mixed_candidate_revision_unchanged": (
-            mixed_candidate.revision == baseline.revision
-        ),
+        "mixed_candidate_revision_unchanged": (mixed_candidate.revision == baseline.revision),
         "mixed_real_export": mixed_export.is_file() and mixed_export.stat().st_size > 0,
         "mixed_export_audio": mixed_probe.has_audio,
         "mixed_export_frames": mixed_probe.duration_frames,
