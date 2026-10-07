@@ -137,9 +137,7 @@ def create_ai_agent_workspace(
         tab_button = QPushButton(text_value)
         tab_button.setEnabled(selected)
         tab_button.setStyleSheet(
-            "font-weight:700; border-bottom:2px solid #2563EB;"
-            if selected
-            else "color:#64748B;"
+            "font-weight:700; border-bottom:2px solid #2563EB;" if selected else "color:#64748B;"
         )
         director_tabs.addWidget(tab_button)
     director_layout.addLayout(director_tabs)
@@ -390,9 +388,7 @@ def create_ai_agent_workspace(
     success_layout = QVBoxLayout(success)
     success_layout.addWidget(section_title("AI Agent"))
     success_banner = QFrame()
-    success_banner.setStyleSheet(
-        "background:#F0FDF4; border:1px solid #BBF7D0; border-radius:7px;"
-    )
+    success_banner.setStyleSheet("background:#F0FDF4; border:1px solid #BBF7D0; border-radius:7px;")
     success_banner_layout = QVBoxLayout(success_banner)
     success_banner_layout.addWidget(QLabel("✓ Rencana berhasil diterapkan"))
     success_layout.addWidget(success_banner)
@@ -434,9 +430,7 @@ def create_ai_agent_workspace(
     error_layout = QVBoxLayout(error)
     error_layout.addWidget(section_title("AI Agent"))
     error_banner = QFrame()
-    error_banner.setStyleSheet(
-        "background:#FEF2F2; border:1px solid #FECACA; border-radius:7px;"
-    )
+    error_banner.setStyleSheet("background:#FEF2F2; border:1px solid #FECACA; border-radius:7px;")
     error_banner_layout = QVBoxLayout(error_banner)
     error_banner_layout.addWidget(QLabel("! PROVIDER TIDAK TERSEDIA"))
     error_layout.addWidget(error_banner)
@@ -754,9 +748,7 @@ def create_provider_credentials_dialog(
         nav_button = QPushButton(text_value)
         nav_button.setEnabled(selected)
         nav_button.setStyleSheet(
-            "background:#2563EB;color:white;font-weight:700;"
-            if selected
-            else "color:#64748B;"
+            "background:#2563EB;color:white;font-weight:700;" if selected else "color:#64748B;"
         )
         nav_layout.addWidget(nav_button)
     nav_layout.addStretch(1)
@@ -837,7 +829,9 @@ def create_provider_credentials_dialog(
     policy_layout.addWidget(
         muted_label("Gemini slot sehat → retry jaringan terbatas → berhenti pada quota/cooldown.")
     )
-    policy_layout.addWidget(muted_label("Maks. percobaan mengikuti policy W6; tidak ada quota evasion."))
+    policy_layout.addWidget(
+        muted_label("Maks. percobaan mengikuti policy W6; tidak ada quota evasion.")
+    )
     right_layout.addWidget(policy)
 
     footer = QHBoxLayout()
