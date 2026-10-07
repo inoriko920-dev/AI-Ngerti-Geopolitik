@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..004 PASS / S11-W6-005 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..005 PASS / S11-W6-006 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -221,8 +221,8 @@ Serial contract:
 - [x] **S11-W6-002 — Secure credential slots 1–100 — PASS**
 - [x] **S11-W6-003 — Windows secure-store qualification — PASS**
 - [x] **S11-W6-004 — Credential health + safe failover — PASS**
-- [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — READY**
-- [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — BLOCKED_BY_W6_005**
+- [x] **S11-W6-005 — L1 ContextBuilder + allowlist — PASS**
+- [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — READY**
 - [ ] **S11-W6-007 — Gemini adapter + async lifecycle — BLOCKED_BY_W6_006**
 - [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — BLOCKED_BY_W6_007**
 - [ ] **S11-W6-009 — Frozen UI parity — BLOCKED_BY_W6_008**
@@ -332,4 +332,31 @@ W6-004 proof:
 - evidence verifier 18/18 PASS;
 - W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
 
-**Exact next task:** S11-W6-005 only — L1 ContextBuilder + allowlist.
+Accepted W6-005 implementation HEAD:
+`043f8f250b7d61356bdf71757e8c6a7904615a06`
+
+W6-005 workflow:
+`37604630826` — SUCCESS
+
+W6-005 evidence:
+`docs/evidence/features/S11_W6_005_L1_CONTEXT_BUILDER.md`
+
+W6-005 artifact:
+`ANG-S11-W6-005-L1-Context-Builder` / ID `11474213026`
+
+W6-005 proof:
+- bounded deterministic context, max 20 selected clips;
+- stable clip/track IDs + current revision;
+- media type/dimensions/aspect ratio only;
+- current effect/intensity + effect/track/effective lock;
+- exact W4 render-qualified effect allowlist + 0..200 intensity range;
+- bounded previous/next neighbor summary;
+- project text normalized and marked untrusted;
+- credential/path/source-name/fingerprint/title/subtitle/narration/log/engine data excluded;
+- project state remains byte/semantic unchanged;
+- targeted tests 10/10 PASS;
+- full pytest PASS;
+- evidence verifier 23/23 PASS;
+- W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
+
+**Exact next task:** S11-W6-006 only — EditPlan schema + PlanVerifier.

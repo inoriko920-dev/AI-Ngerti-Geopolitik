@@ -1,48 +1,53 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003/004 PASS.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003/004/005 PASS.**
 
-## Accepted W6-004
+## Accepted W6-005
 
 Implementation:
-`2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`
+`043f8f250b7d61356bdf71757e8c6a7904615a06`
 
 Workflow:
-`37602706734` — SUCCESS.
+`37604630826` — SUCCESS.
 
 Implemented:
-- credential health/test state machine;
-- invalid-auth isolation;
-- bounded same-slot network retry and bounded distinct-slot failover;
-- provider-wide quota/rate-limit cooldown that blocks immediate rotation;
-- typed all-slots-unavailable handling;
-- bulk TXT trim/dedupe/max100/count-only preview/no-retention path;
-- deterministic evidence + secret leak scan.
+- deterministic bounded L1 ContextBuilder;
+- max 20 selected clips;
+- stable target + track IDs;
+- media type/aspect/dimensions only, with private source metadata excluded;
+- current effect/intensity/effect-lock/track-lock/effective-lock;
+- bounded one-before/one-after neighbor summary;
+- exact W4 render-qualified effect allowlist and 0..200 intensity range;
+- untrusted project text normalization/isolation;
+- no credential, filesystem, private log, engine object, title/subtitle/narration text leakage.
 
 Gates:
 - targeted 10/10 PASS;
 - full pytest PASS;
-- evidence verifier 18/18 PASS;
+- evidence verifier 23/23 PASS;
 - quality/architecture/security/source-of-truth/UI-reference PASS;
 - full regression matrix SUCCESS.
 
 ## Active next task
 
-**S11-W6-005 — L1 ContextBuilder + allowlist**
+**S11-W6-006 — EditPlan schema + PlanVerifier**
 
 Scope:
-- bounded provider context;
-- no API key/credential secret in context;
-- supported render-qualified W4 effect enum only;
-- stable canonical target IDs;
-- lock-state representation;
-- untrusted project/prompt text isolation.
+- strict provider payload JSON/schema parsing;
+- reject unknown root fields;
+- reject unsupported command types;
+- reject unknown targets;
+- reject unsupported effects/ranges;
+- reject locked targets;
+- stale revision gate;
+- dry-run candidate-state validation;
+- zero canonical mutation on every reject path.
 
-W6-005 must not:
+W6-006 must not:
 - make Gemini network calls;
-- build PlanVerifier;
-- apply AI plans;
+- apply approved plans to CommandBus;
+- build approval/Undo/Redo flow;
 - build W6 UI;
-- implement AI L2 or unsupported effect capabilities.
+- implement AI L2.
 
-Do not begin W6-005 until owner says `lanjutkan`.
+Do not begin W6-006 until owner says `lanjutkan`.

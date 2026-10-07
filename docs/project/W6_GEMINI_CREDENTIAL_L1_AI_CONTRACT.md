@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 READY / W6-006..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 READY / W6-007..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -523,8 +523,38 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
 
+### S11-W6-005 — PASS
+
+Accepted implementation HEAD:
+`043f8f250b7d61356bdf71757e8c6a7904615a06`
+
+Accepted workflow:
+`37604630826` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_005_L1_CONTEXT_BUILDER.md`.
+
+Implemented:
+- deterministic bounded L1ContextBuilder;
+- selected-scope max 20 clips;
+- stable clip/track target representation;
+- project revision/canvas/FPS + media aspect/type metadata;
+- effect/intensity + effect/track/effective lock state;
+- exact render-qualified W4 effect allowlist + 0..200 intensity range;
+- bounded previous/next neighbor summary;
+- untrusted project-text isolation;
+- credential/filesystem/private-media/title/subtitle/narration/log/engine exclusion.
+
+Quality:
+- targeted W6-005 tests 10/10 PASS;
+- full pytest PASS;
+- deterministic evidence PASS;
+- evidence verifier 23/23 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-005 only — L1 ContextBuilder + allowlist**.
+On the next owner **lanjutkan**, execute **S11-W6-006 only — EditPlan schema + PlanVerifier**.
 
-Do not implement PlanVerifier, Gemini network, W6 UI or AI-plan application in W6-005.
+Do not implement Gemini network, W6 UI, approval/apply or AI-plan CommandBus integration in W6-006.

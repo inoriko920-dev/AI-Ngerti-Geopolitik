@@ -2,91 +2,96 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W6 — Gemini Credential + L1 AI Animation Planning  
-**Last completed task:** S11-W6-004 — PASS  
-**Accepted W6-004 implementation HEAD:** `2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`  
-**Accepted W6-004 workflow:** `37602706734` — SUCCESS  
-**Next exact task:** S11-W6-005 — L1 ContextBuilder + allowlist  
+**Last completed task:** S11-W6-005 — PASS  
+**Accepted W6-005 implementation HEAD:** `043f8f250b7d61356bdf71757e8c6a7904615a06`  
+**Accepted W6-005 workflow:** `37604630826` — SUCCESS  
+**Next exact task:** S11-W6-006 — EditPlan schema + PlanVerifier  
 **Previous W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W6-004 implementation now available
+## W6-005 implementation now available
 
 Application:
-- `application/credential_pool.py`;
-- provider-agnostic credential health state machine;
-- bounded per-request failover session;
-- count-only bulk TXT preview/import boundary.
+- `application/ai_context.py`;
+- deterministic bounded `L1ContextBuilder`;
+- strict W4/L1 effect allowlist parity;
+- max 20 selected clips per context;
+- one previous + one next neighbor summary per selected target.
 
-Health behavior:
-- states: UNKNOWN / HEALTHY / INVALID_AUTH / NETWORK_DEGRADED / COOLDOWN;
-- invalid auth disables only the affected slot;
-- network timeout retries the same slot only within the configured bound, then may fail over;
-- rate/quota sets a bounded provider cooldown and blocks immediate rotation;
-- all unavailable returns typed `ALL_SLOTS_UNAVAILABLE`;
-- non-credential provider failures are not rotated.
+Provider context contains only:
+- project id/name-as-untrusted-data/revision/fps/canvas;
+- stable clip + track IDs;
+- clip enabled state;
+- media type/width/height/aspect ratio;
+- current enter/exit effect + intensity;
+- effect lock, track lock and effective lock;
+- bounded neighboring clip effect summary;
+- fixed allowed command type and effect/range policy.
 
-Bulk TXT:
-- trim;
-- dedupe;
-- maximum 100 unique credentials;
-- free-slot preflight before mutation;
-- rollback on partial storage failure;
-- source TXT is not retained;
-- preview exposes counts only.
+Explicitly excluded:
+- credentials/API keys;
+- credential metadata labels;
+- arbitrary filesystem paths/listings;
+- asset source path/name/fingerprint;
+- source media bytes;
+- title/subtitle/narration text;
+- logs;
+- engine objects;
+- Gemini/provider calls.
 
-Security:
-- raw secrets remain behind `CredentialPort`;
-- lease repr is masked;
-- no raw credential is written to evidence;
-- no Gemini network request exists yet;
-- no quota-evasion rotation exists.
+Untrusted project text is normalized/bounded and carried only as data with fixed
+policy flags stating that project text cannot override application policy.
 
 ## Tests/evidence
 
-Targeted W6-004 tests: **10/10 PASS**.  
+Targeted W6-005 tests: **10/10 PASS**.  
 Full pytest: **PASS**.  
-Evidence verifier: **18/18 PASS**.  
-Workflow: `37602706734` — **SUCCESS**.
+Evidence verifier: **23/23 PASS**.  
+Workflow: `37604630826` — **SUCCESS**.
 
 Artifact:
-- `ANG-S11-W6-004-Credential-Health-Safe-Failover`;
-- ID `11472879781`;
-- size 775 bytes.
+- `ANG-S11-W6-005-L1-Context-Builder`;
+- ID `11474213026`;
+- size 1,158 bytes.
 
-## Regression lock on accepted W6-004 implementation HEAD
+## Regression lock on accepted W6-005 implementation HEAD
 
 All SUCCESS:
-- W6-004 `37602706734`
-- W6-003 `37602706876`
-- W6-002 `37602706766`
-- W6-001 `37602706721`
-- W5-010 `37602706804`
-- W5-009 `37602706750`
-- W5-008 `37602706894`
-- W5-007 `37602706907`
-- W5-006 `37602706764`
-- W5-005 `37602706936`
-- W5-004 `37602706756`
-- W4 `37602706703`
-- W3 `37602706733`
-- W2 `37602706702`
-- W1 `37602706775`
-- W0 `37602706791`
-- S10 `37602706802`
-- S09 `37602706884`
-- S08 `37602706767`.
+- W6-005 `37604630826`
+- W6-004 `37604630749`
+- W6-003 `37604630776`
+- W6-002 `37604631067`
+- W6-001 `37604630883`
+- W5-010 `37604630852`
+- W5-009 `37604630844`
+- W5-008 `37604630864`
+- W5-007 `37604630810`
+- W5-006 `37604630863` — attempt 2
+- W5-005 `37604630869`
+- W5-004 `37604630760` — attempt 2
+- W4 `37604630905`
+- W3 `37604630824`
+- W2 `37604630943` — attempt 2
+- W1 `37604630878` — attempt 2
+- W0 `37604630972` — attempt 2
+- S10 `37604630887`
+- S09 `37604630896`
+- S08 `37604630811`.
 
-## Critical boundaries for W6-005
+The second attempts were required only because FFmpeg was temporarily unavailable
+on the Windows runner during the first fixture-generation attempt. No product-code
+change was made for those retry-only failures.
 
-- build only bounded L1 ContextBuilder + allowlist;
-- context must never contain credential/API-key secrets;
-- only render-qualified W4 effects may be represented;
-- stable canonical target IDs and lock state must be explicit;
-- project/prompt text remains untrusted data and cannot override application policy;
-- no PlanVerifier yet;
+## Critical boundaries for W6-006
+
+- strict EditPlan JSON/schema parsing;
+- reject unknown root fields, commands, targets and effects;
+- enforce target existence, lock state, L1 capability and intensity range;
+- enforce base project revision / stale-plan rejection;
+- dry-run against candidate state only, with zero canonical mutation;
 - no Gemini network call yet;
 - no W6 UI yet;
-- no AI plan application yet.
+- no approval/apply transaction yet.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W6-005 only — L1 ContextBuilder + allowlist**.
+After owner says `lanjutkan`, execute **S11-W6-006 only — EditPlan schema + PlanVerifier**.
