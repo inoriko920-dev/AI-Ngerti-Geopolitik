@@ -22,8 +22,8 @@ from ai_ngerti_geopolitik.domain import (
     ProjectState,
     SpeedProperties,
     TitleProperties,
-    TransitionProperties,
     Track,
+    TransitionProperties,
     VideoProperties,
 )
 

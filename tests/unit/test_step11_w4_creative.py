@@ -18,6 +18,7 @@ from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntentType,
 )
 from ai_ngerti_geopolitik.domain import (
+    UNSUPPORTED_LEGACY_EFFECTS,
     Asset,
     Clip,
     EffectProperties,
@@ -25,7 +26,6 @@ from ai_ngerti_geopolitik.domain import (
     ProjectState,
     TitleProperties,
     TransitionProperties,
-    UNSUPPORTED_LEGACY_EFFECTS,
 )
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_creative import (
     build_w4_creative_plan,

@@ -11,18 +11,18 @@ from ai_ngerti_geopolitik.domain.project import (
     Track,
 )
 from ai_ngerti_geopolitik.domain.properties import (
+    SUPPORTED_W4_EFFECTS,
+    SUPPORTED_W4_TRANSITIONS,
+    TITLE_POSITIONS,
+    UNSUPPORTED_LEGACY_EFFECTS,
     AudioProperties,
     ClipProperties,
     ColorProperties,
     EffectProperties,
     PropertyValidationError,
     SpeedProperties,
-    SUPPORTED_W4_EFFECTS,
-    SUPPORTED_W4_TRANSITIONS,
-    TITLE_POSITIONS,
     TitleProperties,
     TransitionProperties,
-    UNSUPPORTED_LEGACY_EFFECTS,
     VideoProperties,
 )
 

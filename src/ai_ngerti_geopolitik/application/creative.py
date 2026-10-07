@@ -13,13 +13,13 @@ from ai_ngerti_geopolitik.application.commands import (
 from ai_ngerti_geopolitik.application.playback import PlaybackController
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentType
 from ai_ngerti_geopolitik.domain import (
-    EffectProperties,
-    ProjectState,
     SUPPORTED_W4_EFFECTS,
     SUPPORTED_W4_TRANSITIONS,
+    UNSUPPORTED_LEGACY_EFFECTS,
+    EffectProperties,
+    ProjectState,
     TitleProperties,
     TransitionProperties,
-    UNSUPPORTED_LEGACY_EFFECTS,
 )
 
 

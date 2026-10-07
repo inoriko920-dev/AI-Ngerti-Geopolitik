@@ -19,12 +19,12 @@ from ai_ngerti_geopolitik.application.project_session import (
     ProjectSession,
 )
 from ai_ngerti_geopolitik.domain import (
+    UNSUPPORTED_LEGACY_EFFECTS,
     Clip,
     EffectProperties,
     FrameTime,
     TitleProperties,
     TransitionProperties,
-    UNSUPPORTED_LEGACY_EFFECTS,
 )
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
     FfmpegSliceMediaEngine,
