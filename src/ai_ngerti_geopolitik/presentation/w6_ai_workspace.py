@@ -452,12 +452,12 @@ def create_ai_agent_workspace(
         ("Gemini Cadangan", "COOLDOWN"),
         ("Gemini Slot Lain", "SIAP"),
     ):
-        provider_row = QFrame()
-        provider_row.setProperty("panel", True)
-        provider_row_layout = QHBoxLayout(provider_row)
-        provider_row_layout.addWidget(QLabel(text_value), 1)
-        provider_row_layout.addWidget(QLabel(status_value))
-        error_layout.addWidget(provider_row)
+        provider_status_card = QFrame()
+        provider_status_card.setProperty("panel", True)
+        provider_status_layout = QHBoxLayout(provider_status_card)
+        provider_status_layout.addWidget(QLabel(text_value), 1)
+        provider_status_layout.addWidget(QLabel(status_value))
+        error_layout.addWidget(provider_status_card)
     fallback = muted_label(
         "Editor manual tetap aktif. Tidak ada perubahan project yang diterapkan."
     )
