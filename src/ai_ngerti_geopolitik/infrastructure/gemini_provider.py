@@ -305,5 +305,6 @@ class GeminiAIProvider:
         except RuntimeError:
             return asyncio.run(self._request_async(request, credential, cancellation))
         raise RuntimeError(
-            "GeminiAIProvider.request_plan must run in a background worker without an active event loop"
+            "GeminiAIProvider.request_plan must run in a background worker "
+            "without an active event loop"
         )
