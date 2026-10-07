@@ -1,37 +1,38 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001 is PASS.**
+**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001..002 are PASS.**
 
-## Accepted W7-001
+## Accepted W7-002
 
 Implementation:
-`f301c10a16ba33e051ef97e9d166262b7fbac327`
+`23aad912cb789f98dd3ec61d11e799390d602381`
 
 Workflow:
-`37640973646` — SUCCESS.
+`37644007477` — SUCCESS.
 
 Implemented:
-- canonical AutoEditPlan v2 DTO contract;
-- exact five-capability registry;
-- manual command/property ownership metadata;
-- max 20 selected targets / max 40 commands;
-- one command family per target;
-- duration/speed mutual exclusion;
-- typed W7 policy bounds;
-- strict integer-safe proposal DTOs for duration/speed/transform/transition;
-- W6 effect contract reuse and compatibility assertion.
+- explicit selected scope 1..20 stable unique clip IDs;
+- deterministic L2 context schema v2;
+- bounded current pacing state + source-duration availability;
+- bounded transform/transition/effect state;
+- lock/editability state;
+- one previous + one next neighbor;
+- exact W7 capability/policy surface;
+- bounded untrusted project text;
+- explicit exclusion of credential/path/media-byte/log/engine/private-content surfaces;
+- zero mutation.
 
 Evidence:
-- targeted tests 27/27 PASS;
+- targeted tests 18/18 PASS;
 - full pytest PASS;
-- evidence verifier 18/18 PASS;
-- 26/26 regression workflow families SUCCESS, all attempt 1.
+- evidence verifier 24/24 PASS;
+- 26/26 triggered regression workflows SUCCESS, all attempt 1.
 
 ## Serial W7 plan
 
 1. W7-001 canonical L2 command contracts + capability registry — **PASS**
-2. W7-002 L2 ContextBuilder + selected-scope contract — **READY**
-3. W7-003 strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002
+2. W7-002 L2 ContextBuilder + selected-scope contract — **PASS**
+3. W7-003 strict AutoEditPlan v2 parser/schema — **READY**
 4. W7-004 L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003
 5. W7-005 pacing qualification — duration + speed — BLOCKED
 6. W7-006 transform qualification — BLOCKED
@@ -40,22 +41,22 @@ Evidence:
 9. W7-009 approval/apply/UI diff integration — BLOCKED
 10. W7-010 real-media closure + failure/regression lock — BLOCKED
 
-## W7-002 boundary
+## W7-003 boundary
 
-W7-002 may build bounded deterministic selected-scope context only:
-- stable target/track IDs;
-- timing/source-duration availability;
-- speed/transform/transition/effect state;
-- locks/editability;
-- dimensions/aspect;
-- bounded neighbor summaries;
-- project fps/canvas;
-- exact capability registry/policy bounds.
+W7-003 may implement strict provider JSON parsing for AutoEditPlan schema v2 only:
+- exact root fields;
+- exact command discriminators and command-specific fields;
+- strict integer typing with booleans rejected;
+- max command/target structural bounds;
+- unknown-field/unknown-command hard rejection;
+- conversion into W7-001 typed DTOs;
+- provider request-ID correlation if owned by parser boundary.
 
-It must exclude credentials, paths, media bytes, arbitrary files, logs,
-engine objects, output paths and full subtitle/narration/prompt history.
+W7-003 must not:
+- run semantic range/lock/selected-target checks owned by W7-004;
+- dry-run manual commands;
+- mutate ProjectState/CommandBus;
+- change Gemini request profile;
+- change UI.
 
-W7-002 must not parse provider plans, dry-run commands, call Gemini, mutate UI or
-apply canonical edits.
-
-Do not begin W7-002 until owner says `lanjutkan`.
+Do not begin W7-003 until owner says `lanjutkan`.
