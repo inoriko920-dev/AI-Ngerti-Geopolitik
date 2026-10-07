@@ -4,6 +4,9 @@ Provider JSON is parsed by the W7-003 parser first. This verifier then applies
 state-dependent policy to an immutable candidate ProjectState and translates each
 proposal to the exact existing manual command path. It never touches CommandBus
 history or the live canonical ProjectState.
+
+W7-006 qualifies this existing transform translation through the real-media
+preview/export path; this module remains the canonical non-mutating verifier.
 """
 
 from __future__ import annotations
