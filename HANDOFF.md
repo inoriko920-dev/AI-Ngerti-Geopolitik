@@ -2,10 +2,10 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-001 — PASS  
-**Accepted W5-001 HEAD:** `b5bf8543554bcf38d22a65510fe0376195676d46`  
-**Accepted W5-001 run:** `37571740654` — SUCCESS  
-**Next exact task:** S11-W5-002 — SRT import + validation
+**Last completed task:** S11-W5-002 — PASS  
+**Accepted W5-002 HEAD:** `d4349c925cc0f475cfa94b0db55347320954e1cf`  
+**Accepted W5-002 run:** `37572463564` — SUCCESS  
+**Next exact task:** S11-W5-003 — Cue editing + safe working-copy flow
 
 ## Read first
 
@@ -15,59 +15,67 @@ Read:
 - W0–W4 evidence in order;
 - `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`;
 - `docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`;
+- `docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`;
 - current PLAN/TASKS/PROJECT_STATUS.
 
-## W5-001 canonical model now available
+## W5-001 foundation
 
-Domain:
-- SubtitleTrack;
-- SubtitleCue;
-- SubtitleStyle;
-- SubtitleAnimation;
-- WordTiming;
+Canonical ProjectState owns:
+- SubtitleTrack / SubtitleCue / SubtitleStyle / SubtitleAnimation / WordTiming;
 - NarrationTrack.
 
-ProjectState:
-- `subtitle: SubtitleTrack | None`;
-- `narration: NarrationTrack | None`.
+## W5-002 import path
 
-Commands:
-- `SetSubtitleTrackCommand`;
-- `SetNarrationTrackCommand`.
+Application:
+- `SubtitleParserPort`;
+- `ParsedSubtitleCue`;
+- `SubtitleImportService`;
+- `SubtitleImportError`.
 
-Persistence:
-- W5-001 state round-trips through .angproj;
-- old files missing W5 fields load with safe None defaults;
-- schema remains version 1.
+Infrastructure:
+- `Utf8SrtParser`;
+- typed `SubtitleParseError`.
 
-Important constraint:
-`SubtitleAnimation` currently accepts only `none`. This is intentional.
-Do not enable Fade/Pop/Slide Up/Clean Documentary until W5-005 real-render
-qualification.
+Behavior proven:
+- UTF-8 / UTF-8 BOM SRT;
+- multiline preservation;
+- strict timestamp/range/text validation;
+- duplicate/order/overlap rejection;
+- deterministic project-FPS conversion;
+- sub-frame/frame-overlap/timeline-overflow rejection;
+- import through CommandBus;
+- Undo;
+- source SRT SHA-256 unchanged.
 
-## W5-001 regression lock
+## Critical boundary carried forward
 
-All are SUCCESS on the accepted implementation HEAD:
-- W5-001 `37571740654`
-- W4 `37571740680`
-- W3 `37571740678`
-- W2 `37571740732`
-- W1 `37571741010`
-- W0 `37571740664`
-- S10 `37571740757`
-- S09 `37571740743`
-- S08 `37571740660`
+W5-003 may edit a **working copy** of canonical cues, but:
+- source SRT may not be silently overwritten;
+- dirty working-copy leave/reload must be guarded;
+- save defaults to a new/copy SRT;
+- commit of the new source/binding remains semantic and undoable;
+- no style/animation/narration/recorder work yet.
+
+SubtitleAnimation still accepts only `none`; do not enable any visual
+animation until W5-005.
+
+## Regression lock on W5-002 accepted HEAD
+
+All SUCCESS:
+- W5-002 `37572463564`
+- W4 `37572463547`
+- W3 `37572463561`
+- W2 `37572463569`
+- W1 `37572463539`
+- W0 `37572463562`
+- S10 `37572463627`
+- S09 `37572463558`
+- S08 `37572463571`
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-002 only**.
+After owner says `lanjutkan`, execute **S11-W5-003 only**:
+cue text/IN/OUT edit, insert/delete, split/merge, explicit sort/index
+normalization, safe dirty working copy, reload guard and save-copy semantics.
 
-W5-002 scope:
-- SRT UTF-8 / UTF-8 BOM parsing;
-- timestamp/range/text validation;
-- multiline text preservation;
-- overlap/order detection with actionable typed failure;
-- map valid parsed cues into the existing canonical SubtitleCue model;
-- never overwrite/rewrite the source SRT during import.
-
-Do not implement cue editor/working-copy save flow (W5-003) yet.
+Do not start W5-004 or later tasks.

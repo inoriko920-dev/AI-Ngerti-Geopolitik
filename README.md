@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001 PASS — NEXT W5-002**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/W5-002 PASS — NEXT W5-003**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -10,24 +10,24 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 W5 is **Subtitle + Narration**.
 
-**S11-W5-001 — Canonical subtitle/narration model = PASS.**
+Completed:
+- **S11-W5-001 — Canonical subtitle/narration model = PASS**
+- **S11-W5-002 — SRT import + validation = PASS**
 
-Accepted implementation:
-`b5bf8543554bcf38d22a65510fe0376195676d46`
+W5-002 accepted implementation:
+`d4349c925cc0f475cfa94b0db55347320954e1cf`
 
 Accepted workflow:
-`37571740654` — SUCCESS
+`37572463564` — SUCCESS
 
-W5-001 adds canonical subtitle/narration entities, frame-aware validation,
-CommandBus mutation, .angproj persistence and backward-compatible defaults.
-No parser/UI/recorder/AI work was started.
+The app now has a strict read-only UTF-8/BOM SRT parser, typed validation,
+canonical frame mapping, CommandBus subtitle import and source-file preservation.
 
 All W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same accepted
 implementation HEAD.
 
 ## Next
 
-**S11-W5-002 — SRT import + validation only.**
+**S11-W5-003 — Cue editing + safe working-copy flow only.**
 
-It must parse/validate SRT into the W5-001 canonical model without rewriting
-the source file. Cue editing UI belongs to W5-003, not W5-002.
+Style, subtitle animation, narration and recording remain later tasks.

@@ -118,7 +118,16 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**W5-001 PASS / W5-002 READY**
+**W5-001 PASS / W5-002 PASS / W5-003 READY**
+
+W5-002 accepted implementation HEAD:
+`d4349c925cc0f475cfa94b0db55347320954e1cf`
+
+W5-002 workflow:
+`37572463564` — SUCCESS
+
+W5-002 evidence:
+`docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`
 
 W5-001 accepted implementation HEAD:
 `b5bf8543554bcf38d22a65510fe0376195676d46`
@@ -131,7 +140,7 @@ W5-001 evidence:
 
 Serial contract:
 - [x] **S11-W5-001 — Canonical subtitle/narration model — PASS**
-- [ ] **S11-W5-002 — SRT import + validation**
+- [x] **S11-W5-002 — SRT import + validation — PASS**
 - [ ] **S11-W5-003 — Cue editing + safe working-copy flow**
 - [ ] **S11-W5-004 — Subtitle style**
 - [ ] **S11-W5-005 — Render-backed subtitle animation + per-word boundary**
@@ -150,4 +159,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-002 — SRT import + validation only.
+**Exact next task:** S11-W5-003 — Cue editing + safe working-copy flow only.

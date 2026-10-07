@@ -1,59 +1,72 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Last completed wave:** **W4 — PASS**  
 **Current wave:** **W5 — Subtitle + Narration**  
-**W5 progress:** **S11-W5-001 — PASS**  
-**Accepted W5-001 implementation HEAD:** `b5bf8543554bcf38d22a65510fe0376195676d46`  
-**Accepted W5-001 workflow:** `37571740654` — SUCCESS  
-**Next exact task:** **S11-W5-002 — SRT import + validation**
+**W5 progress:** **S11-W5-001 PASS / S11-W5-002 PASS**  
+**Accepted W5-002 implementation HEAD:** `d4349c925cc0f475cfa94b0db55347320954e1cf`  
+**Accepted W5-002 workflow:** `37572463564` — SUCCESS  
+**Next exact task:** **S11-W5-003 — Cue editing + safe working-copy flow**
 
-## W5-001 proven
+## W5-002 proven
 
-Canonical domain now owns:
-- `SubtitleTrack`;
-- `SubtitleCue`;
-- `SubtitleStyle`;
-- `SubtitleAnimation`;
-- optional `WordTiming`;
-- `NarrationTrack`.
+Architecture:
+- application owns `SubtitleParserPort`, `ParsedSubtitleCue` and import use-case;
+- concrete `Utf8SrtParser` lives in infrastructure;
+- parser output is mapped into the W5-001 canonical `SubtitleCue` /
+  `SubtitleTrack` model;
+- no parallel subtitle project-state owner was created.
 
-ProjectState now stores subtitle/narration as first-class optional state without
-reusing W4 title overlay or generic video-track state.
+SRT input:
+- `.srt` extension required;
+- UTF-8 and UTF-8 BOM accepted;
+- CRLF/CR/LF normalized in memory only;
+- multiline cue meaning is preserved;
+- terminal file newline is not treated as subtitle text;
+- source file is opened read-only and is never rewritten during import.
 
-Validation proven:
-- cue IDs/indexes are unique;
-- cue timing is frame-aware and ordered;
-- overlapping canonical subtitle cues are rejected;
-- empty/invalid timing ranges are rejected;
-- word timings must stay inside their cue and share project FPS;
-- subtitle cues must stay inside the canonical video timeline;
-- narration must reference a canonical audio Asset;
-- narration timing/FPS/fades are bounded;
-- narration may not start outside the project timeline.
+Validation:
+- strict `HH:MM:SS,mmm` timestamps;
+- minute/second components must be within 00..59;
+- positive numeric cue index;
+- duplicate cue index rejected;
+- end must be after start;
+- empty cue text rejected;
+- out-of-order cues rejected;
+- overlapping SRT cues rejected;
+- malformed/unreadable/non-UTF8 sources produce typed actionable failures.
 
-Mutation/persistence:
-- `SetSubtitleTrackCommand` and `SetNarrationTrackCommand` use the existing
+Canonical frame mapping:
+- milliseconds are deterministically mapped to project FPS;
+- cue timing that collapses below one representable frame is rejected;
+- overlap introduced by frame conversion is rejected;
+- cues outside the canonical project timeline are rejected.
+
+Import transaction:
+- valid SRT is committed through `SetSubtitleTrackCommand` and the existing
   CommandBus/CommandBatch path;
-- Undo/Redo restores semantic state;
-- .angproj round-trip preserves W5-001 state;
-- legacy W4/schema-v1 files without `subtitle` or `narration` load with
-  safe `None` defaults;
-- schema version remains 1 because the new fields are backward-compatible
-  optional extensions.
-
-No capability overclaim:
-- subtitle animation remains canonical `none` only at W5-001;
-- render-backed animation names remain blocked until W5-005;
-- no SRT parser, subtitle UI, narration runtime, recorder or Gemini work was
-  started.
+- import increments project revision;
+- Undo removes the imported subtitle binding;
+- source-file SHA-256 remains unchanged before/after import.
 
 Evidence:
-`docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`.
+`docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`.
 
-## W5-001 quality gate
+## Explicit non-claims
 
-Workflow `37571740654`:
+W5-002 does **not** implement:
+- cue editor/working-copy save flow;
+- source overwrite/save-copy behavior;
+- subtitle style rendering;
+- subtitle animation rendering;
+- narration runtime/recording;
+- ASR/speech alignment;
+- Gemini/provider/AI Auto Edit.
+
+Those remain gated to later W5 tasks.
+
+## W5-002 quality gate
+
+Workflow `37572463564`:
 - uv lock/sync PASS;
 - Ruff format PASS;
 - Ruff check PASS;
@@ -62,28 +75,29 @@ Workflow `37571740654`:
 - architecture PASS;
 - source-of-truth 70/70 PASS;
 - secret scan PASS;
-- W5-001 targeted tests: 7/7 PASS;
+- W5-002 targeted tests: **11/11 PASS**;
 - full pytest PASS.
 
-## Regression lock on accepted W5-001 HEAD
+## Regression lock on accepted W5-002 HEAD
 
 All SUCCESS:
-- W5-001: `37571740654`;
-- W4: `37571740680`;
-- W3: `37571740678`;
-- W2: `37571740732`;
-- W1: `37571741010`;
-- W0: `37571740664`;
-- S10: `37571740757`;
-- S09: `37571740743`;
-- S08: `37571740660`.
+- W5-002: `37572463564`;
+- W4: `37572463547`;
+- W3: `37572463561`;
+- W2: `37572463569`;
+- W1: `37572463539`;
+- W0: `37572463562`;
+- S10: `37572463627`;
+- S09: `37572463558`;
+- S08: `37572463571`.
 
-S10 real-media, packaged real-media and portable UI regression remain green.
-MLT W0/W2 qualification also remains green.
+S10 real-media vertical slice, packaged real-media smoke and portable UI
+regression all remain green. MLT W0/W2 qualification remains green.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **S11-W5-002 — SRT import + validation only**.
+On owner **"lanjutkan"**, execute **S11-W5-003 — Cue editing + safe
+working-copy flow only**.
 
-Do not start cue UI/editing, style, animations, narration binding/recording,
-Gemini, or later W5 tasks in the same turn.
+Do not start W5-004 style, W5-005 animation, narration, microphone, Gemini or
+later tasks in the same turn.
