@@ -126,10 +126,12 @@ def test_w6_plan_approval_and_apply_buttons_are_state_gated(qtbot) -> None:
     approve = workspace.findChild(QPushButton, "btn_w6_plan_approve")
     apply_button = workspace.findChild(QPushButton, "btn_w6_plan_apply")
     reject = workspace.findChild(QPushButton, "btn_w6_plan_reject")
+    cancel_plan = workspace.findChild(QPushButton, "btn_w6_plan_cancel")
     assert items is not None and items.count() == 2
     assert approve is not None and not approve.isHidden()
     assert apply_button is not None and apply_button.isHidden()
-    assert reject is not None
+    assert reject is not None and not reject.isHidden()
+    assert cancel_plan is not None and cancel_plan.isHidden()
 
     qtbot.mouseClick(approve, Qt.MouseButton.LeftButton)
     assert sink.intents[-1].kind is UiIntentType.AI_APPROVE_PLAN
@@ -145,12 +147,15 @@ def test_w6_plan_approval_and_apply_buttons_are_state_gated(qtbot) -> None:
         ),
     )
     assert approve.isHidden()
+    assert reject.isHidden()
+    assert not cancel_plan.isHidden()
     assert not apply_button.isHidden()
+
+    qtbot.mouseClick(cancel_plan, Qt.MouseButton.LeftButton)
+    assert sink.intents[-1].kind is UiIntentType.AI_CANCEL_PLAN
+
     qtbot.mouseClick(apply_button, Qt.MouseButton.LeftButton)
     assert sink.intents[-1].kind is UiIntentType.AI_APPLY_PLAN
-
-    qtbot.mouseClick(reject, Qt.MouseButton.LeftButton)
-    assert sink.intents[-1].kind is UiIntentType.AI_REJECT_PLAN
     shell.root.close()
 
 
