@@ -133,8 +133,32 @@ def main() -> int:
         "candidate_ranking_started": False,
         "ui_redesign_started": False,
     }
+    required_true = (
+        "asset_id_preserved",
+        "clip_reference_preserved",
+        "old_path_absent_after_move",
+        "new_path_online",
+        "path_updated",
+        "source_name_updated",
+        "fingerprint_preserved",
+        "duration_preserved",
+        "metadata_preserved",
+        "one_revision_apply",
+        "validation_clear_after_relink",
+        "save_reopen_exact",
+        "save_reopen_path_exact",
+        "undo_restores_original_binding",
+        "redo_restores_relink",
+    )
+    required_false = (
+        "batch_scan_started",
+        "candidate_ranking_started",
+        "ui_redesign_started",
+    )
     failed_checks = [
-        key for key, value in report.items() if isinstance(value, bool) and value is not True
+        key for key in required_true if report[key] is not True
+    ] + [
+        key for key in required_false if report[key] is not False
     ]
     if failed_checks:
         raise RuntimeError("W8-003 real relocation proof failed: " + ", ".join(failed_checks))
