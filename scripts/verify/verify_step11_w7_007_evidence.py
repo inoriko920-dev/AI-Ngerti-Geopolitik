@@ -28,16 +28,10 @@ def main() -> int:
         raise SystemExit("W7-007 evidence contains an empty file")
 
     report = json.loads(
-        (root / "00_w7_007_transition_mixed_report.json").read_text(
-            encoding="utf-8"
-        )
+        (root / "00_w7_007_transition_mixed_report.json").read_text(encoding="utf-8")
     )
-    transition = json.loads(
-        (root / "01_transition_qualification.json").read_text(encoding="utf-8")
-    )
-    mixed = json.loads(
-        (root / "02_mixed_plan_qualification.json").read_text(encoding="utf-8")
-    )
+    transition = json.loads((root / "01_transition_qualification.json").read_text(encoding="utf-8"))
+    mixed = json.loads((root / "02_mixed_plan_qualification.json").read_text(encoding="utf-8"))
 
     if report.get("status") != "PASS":
         raise SystemExit("W7-007 report is not PASS")
@@ -80,13 +74,14 @@ def main() -> int:
         raise SystemExit("transition candidate hash mismatch")
     if transition.get("none_clear_verified") is not True:
         raise SystemExit("none transition clear evidence mismatch")
-    if sum(
-        1
-        for item in transition.get("post_filters", [])
-        if isinstance(item, str)
-        and item.startswith("fade=t=")
-        and "color=black" in item
-    ) != 2:
+    if (
+        sum(
+            1
+            for item in transition.get("post_filters", [])
+            if isinstance(item, str) and item.startswith("fade=t=") and "color=black" in item
+        )
+        != 2
+    ):
         raise SystemExit("transition real render mapping evidence mismatch")
 
     expected_types = [
