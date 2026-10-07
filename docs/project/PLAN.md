@@ -1,44 +1,49 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001..008 are PASS.**
+**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001..009 are PASS.**
 
-## Accepted W7-008
+## Accepted W7-009
 
 Implementation:
-`fa142e4d7eee21f79f79837339e76dfb974b8ba8`
+`2eef5762454f367c2fad5550f75209f8ffeb0a16`
 
 Workflow:
-`37671042698` — SUCCESS.
+`37673518251` — SUCCESS.
 
 Qualified:
-- one existing GeminiAIProvider now supports bounded L1 and L2 request profiles;
-- L1 remains schema v1 / effect-only and backward-compatible;
-- L2 uses canonical AutoEditPlan schema v2;
-- W6 AIProviderRequest stays frozen at exactly four dataclass fields;
-- L2AIProviderRequest selects L2 without adding provider-request fields;
-- same AIPlanJobService background worker is reused;
-- same CredentialPoolService and provider error mapping are reused;
-- L2 dispatches to AutoEditPlanVerifier + W7SelectedScope;
-- take_verified() remains L1-only and take_verified_l2() is L2-only;
-- cancellation, stale-session/revision and invalid-auth failover are shared;
-- canonical ProjectState remains unchanged;
-- no W7-009 approval/apply/UI integration started.
+- existing W6 AIPlanApprovalService generalized for verified W7 L2 results;
+- no second approval owner;
+- explicit L2 review/approval before any canonical mutation;
+- final stale/revision/semantic-base + AutoEditPlanVerifier revalidation;
+- candidate hash proof checked again immediately before apply;
+- one approved six-command mixed plan = one CommandBatch(actor="ai");
+- one apply = one revision increment;
+- one Undo restores the original semantic state;
+- one Redo restores the applied semantic state;
+- reject/cancel create no history;
+- duplicate apply rejected;
+- same-revision semantic replacement rejected as stale;
+- six bounded before→after L2 diff lines generated from the exact sequential candidate;
+- existing W6 plan surface reused for L2 mode/diffs/button gating;
+- no new screen/layout and no new UI-prompt gate.
 
 Evidence:
-- targeted W7-008 tests 9/9 PASS;
-- full pytest 370/370 PASS;
-- official google-genai 2.28.0 runtime PASS;
-- evidence verifier 1/1 PASS;
+- targeted W7-009 application + Qt tests 8/8 PASS;
+- full pytest 386/386 PASS;
+- mypy 68 source files PASS;
+- import contracts 4/4 PASS;
+- frozen UI references 42/42 PASS;
+- evidence verifier 2/2 files PASS;
 - 26/26 triggered workflow families SUCCESS, all attempt 1;
 - S08 portable foundation PASS;
 - S09 UI shell PASS;
 - S10 Windows E2E PASS;
-- all prior W0..W7 regression families green.
+- W0 and prior W1..W7 gates PASS.
 
 Artifact:
-- `ANG-S11-W7-008-Gemini-L2-Lifecycle`;
-- ID `11505072385`;
-- SHA-256 `75207c3be32f8b967848719e48c3677de34e6608d063fe38121a6deb03f3be39`.
+- `ANG-S11-W7-009-Approval-UI-Diff`;
+- ID `11505484572`;
+- SHA-256 `4b1fd4b585bb2739c42fc314345a8961c743defa7eadea37245045fb1b42de59`.
 
 ## Serial W7 plan
 
@@ -50,20 +55,17 @@ Artifact:
 6. W7-006 transform qualification — **PASS**
 7. W7-007 transition + mixed-plan qualification — **PASS**
 8. W7-008 Gemini L2 request profile + lifecycle reuse — **PASS**
-9. W7-009 approval/apply/UI diff integration — **READY**
-10. W7-010 real-media closure + failure/regression lock — BLOCKED_BY_W7_009
+9. W7-009 approval/apply/UI diff integration — **PASS**
+10. W7-010 real-media closure + failure/regression lock — **READY**
 
-## W7-009 boundary
+## W7-010 boundary
 
-W7-009 owns only:
-- consume a successful verified L2 job result through explicit review/approval;
-- final stale/hash/lock revalidation before apply;
-- one atomic `CommandBatch(actor="ai")` for the approved mixed plan;
-- one Undo / one Redo transaction;
-- bounded before→after command differences on the existing frozen W6 AI surfaces;
-- no new screen/layout unless the Software Factory UI gate is explicitly triggered.
+W7-010 owns the final W7 closure only:
+- integrated real-media L2 proof through the completed W7 path;
+- required failure-path evidence;
+- final regression lock across prior waves and portable/package gates;
+- final W7 source-of-truth closure status.
 
-It must not start:
-- W7-010 final real-media/failure/regression closure.
+It must not start a later feature wave.
 
-Do not begin W7-009 until owner says `lanjutkan`.
+Do not begin W7-010 until owner says `lanjutkan`.

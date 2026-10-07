@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..008 PASS / W7-009 READY / W7-010 BLOCKED_BY_W7_009  
+**Status:** CONTRACT_LOCKED / W7-001..009 PASS / W7-010 READY  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..008 PASS / W7-009 READY  
+**Runtime implementation:** ACTIVE — W7-001..009 PASS / W7-010 READY  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -365,8 +365,8 @@ and a real network smoke succeeds.
 - **W7-006 — transform qualification — PASS**
 - **W7-007 — transition + mixed-plan qualification — PASS**
 - **W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
-- W7-009 — approval/apply/UI diff integration — READY
-- W7-010 — real-media failure/regression closure — BLOCKED_BY_W7_009
+- **W7-009 — approval/apply/UI diff integration — PASS**
+- W7-010 — real-media failure/regression closure — READY
 
 ## W7-001 implementation closure
 
@@ -640,10 +640,48 @@ Gates:
 Live Gemini network success is not claimed because deterministic evidence did not
 use a real provider credential.
 
+## W7-009 implementation closure
+
+Accepted implementation HEAD:
+`2eef5762454f367c2fad5550f75209f8ffeb0a16`
+
+Accepted workflow:
+`37673518251` — SUCCESS.
+
+Implemented/qualified:
+- existing AIPlanApprovalService remains the only W6/W7 approval owner;
+- stage_from_job_l2() consumes the verified L2 result once;
+- final semantic-base + AutoEditPlanVerifier revalidation runs before apply;
+- verified canonical translated commands are rechecked against candidate hash;
+- one approved mixed six-command plan executes in one CommandBatch(actor="ai");
+- revision increments exactly once;
+- one Undo restores the original semantic state;
+- one Redo restores the applied semantic state;
+- reject/cancel create no history;
+- duplicate apply is rejected;
+- same-revision semantic replacement is stale;
+- bounded before→after diff text is generated from the sequential candidate path;
+- W6 AI Agent surface is reused for L2 mode + diff review;
+- no new screen/layout or UI-prompt gate was needed.
+
+Evidence:
+`docs/evidence/features/S11_W7_009_APPROVAL_APPLY_UI_DIFF.md`.
+
+Gates:
+- targeted application + Qt tests 8/8 PASS;
+- full pytest 386/386 PASS;
+- mypy 68 source files PASS;
+- frozen UI references 42/42 PASS;
+- evidence verifier 2/2 files PASS;
+- 26/26 triggered workflow families SUCCESS, all attempt 1;
+- S08/S09/S10/W0 and prior W1..W7 gates PASS.
+
+W7-009 did not start W7-010 final real-media/failure/regression closure.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-009 only — Approval/apply/UI diff integration**.
+After owner says `lanjutkan`, execute **S11-W7-010 only — Real-media closure + failure/regression lock**.
 
-Do not start W7-010 final closure in the same turn.
+Do not start any later wave in the same turn.
 
-After W7-009, report gate PASS/FAIL and stop.
+After W7-010, report gate PASS/FAIL and stop.

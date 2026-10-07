@@ -2,54 +2,52 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W7 — AI Auto Edit L2  
-**W7 status:** **CONTRACT_LOCKED / W7-001..008 PASS / W7-009 READY**  
-**Last completed task:** S11-W7-008 — PASS  
-**Accepted W7-008 implementation HEAD:** `fa142e4d7eee21f79f79837339e76dfb974b8ba8`  
-**Accepted W7-008 workflow:** `37671042698` — SUCCESS  
-**Next exact task:** S11-W7-009 — Approval/apply/UI diff integration  
+**W7 status:** **CONTRACT_LOCKED / W7-001..009 PASS / W7-010 READY**  
+**Last completed task:** S11-W7-009 — PASS  
+**Accepted W7-009 implementation HEAD:** `2eef5762454f367c2fad5550f75209f8ffeb0a16`  
+**Accepted W7-009 workflow:** `37673518251` — SUCCESS  
+**Next exact task:** S11-W7-010 — Real-media closure + failure/regression lock  
 **W6 final status:** PASS_WITH_PROVISIONAL_LIVE_GEMINI  
 **W5 final status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W7-008 implementation now qualified
-
-W7-008 generalizes the existing W6 provider lifecycle without creating a second
-Gemini/provider/credential owner.
+## W7-009 implementation now qualified
 
 Canonical reuse:
-- `GeminiAIProvider`;
-- `AIProviderPort`;
-- `CredentialPoolService`;
-- `AIPlanJobService`;
-- W6 typed provider errors/cancellation/stale-session gates;
-- W7 `AutoEditPlanVerifier + W7SelectedScope`.
+- existing AIPlanJobService supplies the verified L2 result;
+- existing AIPlanApprovalService remains the only approval owner;
+- existing AutoEditPlanVerifier performs final semantic verification;
+- existing canonical manual commands remain the only mutation commands;
+- existing CommandBus owns the one atomic history transaction.
 
-Compatibility lock:
-- W6 `AIProviderRequest` still has exactly four dataclass fields;
-- L1 remains the default profile;
-- `L2AIProviderRequest` adds no fields and selects L2;
-- L1 consumers continue to use `take_verified()`;
-- L2 consumers use `take_verified_l2()`.
+Review:
+- stage_from_job_l2() is non-mutating;
+- six before→after diff lines are derived from the exact sequential candidate;
+- diff display is bounded;
+- explicit approve/reject/cancel state machine is reused.
 
-Proof:
-- official google-genai structured output runtime importable;
-- L2 schema v2 profile selected correctly;
-- L1 schema v1/effect-only profile preserved;
-- L2 job executes off caller thread;
-- same credential failover path reused;
-- cancellation and stale session gates reused;
-- six-command L2 provider result verified successfully;
-- canonical state remains unchanged.
+Apply:
+- current project/session/revision/semantic base must still match;
+- candidate hash must still match the original verifier proof;
+- six mixed commands execute in one CommandBatch(actor="ai");
+- revision increments exactly once;
+- one Undo restores the original semantic hash;
+- one Redo restores the applied semantic hash;
+- duplicate apply rejected;
+- reject/cancel create no history;
+- same-revision semantic replacement is stale.
 
-Safety:
-- no credential in prompt/config/snapshot;
-- no live Gemini success claimed;
-- no runtime UI change;
-- no canonical approval/apply;
-- W7-009 not started.
+UI:
+- completed W6 AI Agent surface is reused;
+- model combo adds explicit Auto Edit L2;
+- L2 submit emits profile=l2_auto_edit;
+- L1 remains default/backward-compatible;
+- existing plan list renders bounded L2 diffs;
+- existing PLAN/APPROVAL buttons remain state-gated;
+- no new screen/layout/UI reference generation was needed.
 
 ## Gates
 
-Workflow `37671042698` — **SUCCESS**:
+Workflow `37673518251` — **SUCCESS**:
 - Ruff format/check PASS;
 - mypy PASS — 68 source files;
 - import contracts PASS;
@@ -57,34 +55,33 @@ Workflow `37671042698` — **SUCCESS**:
 - source-of-truth PASS;
 - no-secret PASS;
 - UI references 42/42 PASS;
-- google-genai runtime PASS;
-- targeted W7-008 tests **9/9 PASS**;
-- full pytest **370/370 PASS**;
+- targeted tests **8/8 PASS**;
+- full pytest **386/386 PASS**;
 - deterministic evidence PASS;
-- evidence verifier **1/1 PASS**;
+- evidence verifier **2/2 PASS**;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-008-Gemini-L2-Lifecycle`;
-- ID `11505072385`;
-- size 485 bytes;
-- SHA-256 `75207c3be32f8b967848719e48c3677de34e6608d063fe38121a6deb03f3be39`.
+- `ANG-S11-W7-009-Approval-UI-Diff`;
+- ID `11505484572`;
+- size 820 bytes;
+- SHA-256 `4b1fd4b585bb2739c42fc314345a8961c743defa7eadea37245045fb1b42de59`.
 
 Evidence:
-`docs/evidence/features/S11_W7_008_GEMINI_L2_LIFECYCLE.md`.
+`docs/evidence/features/S11_W7_009_APPROVAL_APPLY_UI_DIFF.md`.
 
 ## Regression lock
 
-All **26/26 triggered workflow families** on accepted W7-008 HEAD are SUCCESS,
+All **26/26 triggered workflow families** on accepted W7-009 HEAD are SUCCESS,
 all on attempt 1.
 
 S08 portable foundation PASS.  
 S09 UI shell PASS.  
-S10 Windows E2E PASS.  
-Prior W0..W7 gates remain green.
+S10 Windows E2E + packaged smoke PASS.  
+W0 and prior W1..W7 gates remain green.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W7-009 only — Approval/apply/UI diff integration**.
+After owner says `lanjutkan`, execute **S11-W7-010 only — Real-media closure + failure/regression lock**.
 
-Do not start W7-010 final closure in the same turn.
+Do not start a later wave in the same turn.

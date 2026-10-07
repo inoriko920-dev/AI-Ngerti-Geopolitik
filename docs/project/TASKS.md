@@ -520,8 +520,8 @@ Serial contract:
 - [x] **S11-W7-006 — Transform qualification — PASS**
 - [x] **S11-W7-007 — Transition + mixed-plan qualification — PASS**
 - [x] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
-- [ ] **S11-W7-009 — Approval/apply/UI diff integration — READY**
-- [ ] **S11-W7-010 — Real-media closure + failure/regression lock — BLOCKED_BY_W7_009**
+- [x] **S11-W7-009 — Approval/apply/UI diff integration — PASS**
+- [ ] **S11-W7-010 — Real-media closure + failure/regression lock — READY**
 
 Locked safety boundaries:
 - selected scope max 20 clips;
@@ -743,4 +743,37 @@ W7-008 proof:
 - 26/26 triggered workflow families SUCCESS, all attempt 1;
 - S08/S09/S10 and prior W0..W7 regression families PASS.
 
-**Exact next task:** S11-W7-009 only — Approval/apply/UI diff integration.
+Accepted W7-009 implementation HEAD:
+`2eef5762454f367c2fad5550f75209f8ffeb0a16`
+
+W7-009 workflow:
+`37673518251` — SUCCESS
+
+W7-009 evidence:
+`docs/evidence/features/S11_W7_009_APPROVAL_APPLY_UI_DIFF.md`
+
+W7-009 artifact:
+`ANG-S11-W7-009-Approval-UI-Diff` / ID `11505484572`
+
+W7-009 proof:
+- existing W6 AIPlanApprovalService remains the only approval owner;
+- successful verified L2 result stages without canonical mutation/history;
+- six bounded before→after diff lines are generated from the exact candidate path;
+- explicit approval is required before apply;
+- final stale/hash/semantic revalidation runs before canonical mutation;
+- approved mixed six-command plan executes as one CommandBatch(actor="ai");
+- apply increments revision exactly once;
+- one Undo restores pre-AI semantic state;
+- one Redo restores applied semantic state;
+- reject/cancel create no history;
+- duplicate apply is rejected;
+- same-revision semantic replacement is stale;
+- existing W6 AI Agent surface gains L2 mode + diff review without a new screen/layout;
+- L1 UI submit behavior remains backward-compatible;
+- targeted tests 8/8 PASS;
+- full pytest 386/386 PASS;
+- evidence verifier 2/2 files PASS;
+- 26/26 triggered workflow families SUCCESS, all attempt 1;
+- S08/S09/S10/W0 and prior W1..W7 gates PASS.
+
+**Exact next task:** S11-W7-010 only — Real-media closure + failure/regression lock.
