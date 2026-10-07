@@ -12,7 +12,7 @@ from math import gcd
 from typing import Final
 
 from ai_ngerti_geopolitik.application.ai_contracts import L1_RENDER_QUALIFIED_EFFECTS
-from ai_ngerti_geopolitik.domain import ProjectState, SUPPORTED_W4_EFFECTS
+from ai_ngerti_geopolitik.domain import Clip, ProjectState, SUPPORTED_W4_EFFECTS, Track
 
 L1_CONTEXT_SCHEMA_VERSION: Final = 1
 MAX_L1_CONTEXT_TARGETS: Final = 20
@@ -55,7 +55,7 @@ class L1ContextBuilder:
             )
 
     @staticmethod
-    def _clip_location(state: ProjectState, clip_id: str):
+    def _clip_location(state: ProjectState, clip_id: str) -> tuple[Track, Clip]:
         for track in state.tracks:
             for clip in track.clips:
                 if clip.clip_id == clip_id:
@@ -63,7 +63,7 @@ class L1ContextBuilder:
         raise ContextBuildError(f"unknown selected clip id: {clip_id}")
 
     @staticmethod
-    def _neighbor_summary(track, clip_id: str) -> dict[str, object]:
+    def _neighbor_summary(track: Track, clip_id: str) -> dict[str, object]:
         ordered = sorted(track.clips, key=lambda item: item.timeline_start.frames)
         index = next(
             position for position, item in enumerate(ordered) if item.clip_id == clip_id
