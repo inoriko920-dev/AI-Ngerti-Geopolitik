@@ -266,9 +266,7 @@ class AutoEditPlanParser:
 
     def parse(self, payload_json: str) -> AutoEditPlan:
         if not isinstance(payload_json, str) or not payload_json.strip():
-            raise self._schema_error(
-                "AutoEditPlan payload must be a non-empty JSON string"
-            )
+            raise self._schema_error("AutoEditPlan payload must be a non-empty JSON string")
         try:
             raw = json.loads(payload_json)
         except json.JSONDecodeError as exc:
@@ -292,9 +290,7 @@ class AutoEditPlanParser:
             raw["base_project_revision"],
         )
         if base_revision < 0:
-            raise self._schema_error(
-                "AutoEditPlan base_project_revision must be non-negative"
-            )
+            raise self._schema_error("AutoEditPlan base_project_revision must be non-negative")
 
         request_id = self._strict_string("request_id", raw["request_id"])
         summary = self._strict_string("summary", raw["summary"])
@@ -304,9 +300,7 @@ class AutoEditPlanParser:
         if not commands_raw:
             raise self._schema_error("AutoEditPlan must contain at least one command")
         if len(commands_raw) > MAX_W7_COMMANDS:
-            raise self._schema_error(
-                f"AutoEditPlan supports at most {MAX_W7_COMMANDS} commands"
-            )
+            raise self._schema_error(f"AutoEditPlan supports at most {MAX_W7_COMMANDS} commands")
 
         commands = tuple(self._parse_command(item) for item in commands_raw)
         return AutoEditPlan(
@@ -338,9 +332,7 @@ class AutoEditPlanParser:
             return self._parse_transform(raw, target)
         if command_type == "set_clip_transition":
             return self._parse_transition(raw, target)
-        raise self._schema_error(
-            f"unsupported AutoEditPlan command_type: {command_type}"
-        )
+        raise self._schema_error(f"unsupported AutoEditPlan command_type: {command_type}")
 
     def _parse_effects(
         self,
@@ -355,9 +347,7 @@ class AutoEditPlanParser:
         )
         effect_fields = {"enter_effect", "exit_effect", "intensity_percent"}
         if not set(raw).intersection(effect_fields):
-            raise self._schema_error(
-                "set_clip_effects requires at least one effect change"
-            )
+            raise self._schema_error("set_clip_effects requires at least one effect change")
 
         enter_effect: str | None = None
         exit_effect: str | None = None
@@ -419,15 +409,11 @@ class AutoEditPlanParser:
             label="set_clip_transform",
         )
         if not set(raw).intersection(_TRANSFORM_OPTIONAL_FIELDS):
-            raise self._schema_error(
-                "set_clip_transform requires at least one transform change"
-            )
+            raise self._schema_error("set_clip_transform requires at least one transform change")
 
         values: dict[str, int | None] = {}
         for name in _TRANSFORM_OPTIONAL_FIELDS:
-            values[name] = (
-                self._strict_int(name, raw[name]) if name in raw else None
-            )
+            values[name] = self._strict_int(name, raw[name]) if name in raw else None
         return TransformEditProposal(
             target_clip_id=target,
             position_x=values["position_x"],
