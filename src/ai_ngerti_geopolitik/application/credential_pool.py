@@ -159,10 +159,7 @@ class CredentialPoolService:
 
     def _refresh(self) -> None:
         now = self._clock()
-        if (
-            self._provider_cooldown_until is not None
-            and now >= self._provider_cooldown_until
-        ):
+        if self._provider_cooldown_until is not None and now >= self._provider_cooldown_until:
             self._provider_cooldown_until = None
         for runtime in self._health.values():
             if (
@@ -310,9 +307,7 @@ class CredentialPoolService:
             return ()
         occupied = {item.slot_id for item in self._slots.list_slots()}
         free_slots = [
-            slot_id
-            for slot_id in range(1, MAX_CREDENTIAL_SLOTS + 1)
-            if slot_id not in occupied
+            slot_id for slot_id in range(1, MAX_CREDENTIAL_SLOTS + 1) if slot_id not in occupied
         ]
         if len(unique) > len(free_slots):
             raise CredentialMetadataError(
