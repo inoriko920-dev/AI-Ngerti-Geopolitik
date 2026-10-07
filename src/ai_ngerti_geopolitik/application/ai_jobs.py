@@ -110,10 +110,10 @@ class AIPlanJobService:
         verifier: PlanVerifier | None = None,
         *,
         executor: ThreadPoolExecutor | None = None,
-        max_workers: int = 2,
+        max_workers: int = 1,
     ) -> None:
-        if not 1 <= max_workers <= 8:
-            raise ValueError("AI job max_workers must be between 1 and 8")
+        if max_workers != 1:
+            raise ValueError("W6 AI provider lifecycle requires exactly one background worker")
         self._provider = provider
         self._pool = pool
         self._verifier = verifier or PlanVerifier()
