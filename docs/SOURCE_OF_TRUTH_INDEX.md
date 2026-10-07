@@ -144,11 +144,14 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - final W7 regression lock is **27/27 workflow families SUCCESS, all attempt 1**.
 - W7 final status: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 - W8 planning TXT/DOCX + contract: **SOURCE OF TRUTH / CONTRACT_LOCKED**.
-- W8 runtime implementation: **NOT STARTED**.
-- W8-001 Canonical Validation Contracts + Baseline Rules: **READY**.
-- W8-002..W8-010: **SERIAL_BLOCKED**.
+- W8 runtime implementation: **ACTIVE**.
+- W8-001 Canonical Validation Contracts + Baseline Rules: **PASS**.
+- W8-002 Real Media Integrity + Validation Center Projection: **READY**.
+- W8-003..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
-- exact next action: **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
+- W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
+- W8-001 regression lock: **27/27 workflow families SUCCESS, all attempt 1**.
+- exact next action: **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

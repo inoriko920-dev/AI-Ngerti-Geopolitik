@@ -819,8 +819,8 @@ Planning:
 Master Blueprint mapping: **TECH-WAVE STEP 11**.
 
 Serial contract:
-- [ ] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — READY**
-- [ ] **S11-W8-002 — Real Media Integrity + Validation Center Projection — BLOCKED_BY_W8_001**
+- [x] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
+- [ ] **S11-W8-002 — Real Media Integrity + Validation Center Projection — READY**
 - [ ] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — BLOCKED_BY_W8_002**
 - [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003**
 - [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
@@ -842,4 +842,32 @@ Locked boundaries:
 - UI-039/UI-040/UI-041 are reused without redesign;
 - STEP 12 export matrix is outside W8.
 
-**Exact next task:** S11-W8-001 only — Canonical Validation Contracts + Baseline Rules.
+Accepted W8-001 implementation HEAD:
+`fd319947ea8ce2579de4918b5c4b49c046851609`
+
+W8-001 workflow:
+`37681708473` — SUCCESS
+
+W8-001 evidence:
+`docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`
+
+W8-001 artifact:
+`ANG-S11-W8-001-Validation-Contracts` / ID `11509960710`
+
+W8-001 proof:
+- frozen typed ValidationIssue/ValidationResult contracts;
+- deterministic non-mutating ValidationService;
+- ProjectState.validate() remains structural authority;
+- referenced missing BLOCKER;
+- referenced offline ERROR;
+- unreferenced missing WARNING;
+- unreferenced offline INFO;
+- exact Asset/Clip/Narration target IDs;
+- revision/project/same-revision semantic stale detection;
+- targeted tests 9/9 PASS;
+- full pytest 395/395 PASS;
+- evidence verifier 22/22 PASS;
+- regression 27/27 workflow families SUCCESS, all attempt 1;
+- S08/S09/S10/W0 and W1–W7 remain green.
+
+**Exact next task:** S11-W8-002 only — Real Media Integrity + Validation Center Projection.

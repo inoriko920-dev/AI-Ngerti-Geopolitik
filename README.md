@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8 CONTRACT_LOCKED / IMPLEMENTATION NOT STARTED — NEXT W8-001**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8 CONTRACT_LOCKED — W8-001 PASS — NEXT W8-002**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -8,25 +8,36 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## Last accepted runtime
 
-W7 Auto Edit L2:
-- **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**
-- accepted regression HEAD: `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
-- final regression: 27/27 workflow families SUCCESS, all attempt 1.
+W7 Auto Edit L2 remains:
+**CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 
-## W8 planning
+## W8
 
-W8 = **Validation / Recovery / Diagnostics Hardening**, mapped to Master Blueprint TECH-WAVE STEP 11.
+W8 = **Validation / Recovery / Diagnostics Hardening**, mapped to Master Blueprint
+TECH-WAVE STEP 11.
 
-Planning/contract:
-- `docs/planning/11_S11_W8_VALIDATION_RECOVERY_DIAGNOSTICS_HARDENING_CONTRACT_PLAN_2026-10-08.docx`
-- `docs/planning/11_S11_W8_VALIDATION_RECOVERY_DIAGNOSTICS_HARDENING_CONTRACT_PLAN_2026-10-08.txt`
-- `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
+W8-001 **Canonical Validation Contracts + Baseline Rules = PASS**.
 
-Frozen UI reuse: UI-039 Recovery, UI-040 Asset Scan, UI-041 Validation Center.
-No new UI prompt/image is required.
+Accepted implementation:
+`fd319947ea8ce2579de4918b5c4b49c046851609`
 
-Runtime W8 has **not started**.
+Workflow:
+`37681708473` — SUCCESS.
+
+Proof:
+- typed deterministic non-mutating validation contracts;
+- exact missing/offline severity + target IDs;
+- stale result safety;
+- targeted 9/9 PASS;
+- full pytest 395/395 PASS;
+- evidence 22/22 PASS;
+- regression 27/27 SUCCESS, all attempt 1.
+
+Artifact:
+`ANG-S11-W8-001-Validation-Contracts` / ID `11509960710`.
+
+Frozen UI reuse remains UI-039 Recovery, UI-040 Asset Scan, UI-041 Validation Center.
 
 ## Next
 
-After owner says `lanjutkan`: **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
+After owner says `lanjutkan`: **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.

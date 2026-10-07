@@ -1,7 +1,7 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / IMPLEMENTATION_NOT_STARTED / W8-001 READY / W8-002..010 SERIAL_BLOCKED  
-**Role:** ASTRA planning  
+**Status:** CONTRACT_LOCKED / W8-001 PASS / W8-002 READY / W8-003..010 SERIAL_BLOCKED  
+**Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
 **Planning baseline:** `a39c6c6d5941f69a2b5b662f26df94d82b7f94ac`  
@@ -13,9 +13,9 @@ Planning sources:
 
 ## Purpose
 
-W8 hardens the existing product against missing/relocated/corrupt media, stale background
-results, persistence failures, crash recovery and support diagnostics. It adds no new editing
-family and does not enter Master Blueprint STEP 12 export work.
+W8 hardens the existing product against missing/relocated/corrupt media, stale
+background results, persistence failures, crash recovery and support diagnostics.
+It adds no new editing family and does not enter Master Blueprint STEP 12 export work.
 
 ## Canonical owners
 
@@ -23,8 +23,8 @@ family and does not enter Master Blueprint STEP 12 export work.
 - `CommandBus / CommandBatch`: only committed mutation/history owner.
 - `ProjectSession`: lifecycle/dirty/open/save/autosave owner.
 - `JsonProjectRepository`: atomic project persistence owner.
-- planned `ValidationService`: non-mutating typed issue aggregation.
-- planned `RelinkAssetCommand`: canonical relink mutation preserving `asset_id`.
+- `ValidationService`: non-mutating typed issue aggregation — **qualified W8-001**.
+- planned `RelinkAssetCommand`: canonical relink mutation preserving asset_id.
 - planned `RelinkService`: candidate verification + command construction.
 - planned `RelinkScanJobService`: background scan/hash/probe with stale token.
 - planned `RecoveryCatalogService / RecoveryManager`: snapshot discovery/validation/retention/decision.
@@ -33,9 +33,10 @@ family and does not enter Master Blueprint STEP 12 export work.
 
 No parallel project store, history owner, serializer, media identity or AI stale owner is allowed.
 
-## Validation contract
+## Validation contract — W8-001 qualified
 
-`ValidationIssue` is transient application state, never a new ProjectState field.
+`ValidationIssue` and `ValidationResult` are transient frozen application DTOs,
+never new ProjectState fields.
 
 Severity:
 - BLOCKER
@@ -43,53 +44,66 @@ Severity:
 - WARNING
 - INFO
 
-Result is immutable and bound to `project_revision`. Revision change makes prior result STALE.
+Scopes:
+PROJECT, MEDIA, TIMELINE_SCENE, SUBTITLE, NARRATION, AI, RENDER, RUNTIME.
+
+Result is bound to project ID + revision + semantic SHA-256.
+Different project, changed revision or same-revision semantic replacement is STALE.
 
 Canonical `Asset.availability` remains `online/offline/missing`.
-CORRUPT/DUPLICATE are derived validation/media-health projections for W8.
+CORRUPT/DUPLICATE remain derived validation/media-health projections for W8-002.
+
+Baseline:
+- ProjectState.validate() remains structural authority;
+- referenced missing = BLOCKER;
+- referenced offline = ERROR;
+- unreferenced missing = WARNING;
+- unreferenced offline = INFO;
+- validation is deterministic and non-mutating.
+
+Accepted W8-001:
+- HEAD `fd319947ea8ce2579de4918b5c4b49c046851609`;
+- workflow `37681708473` SUCCESS;
+- targeted 9/9 PASS;
+- full pytest 395/395 PASS;
+- evidence 22/22 PASS;
+- regression 27/27 SUCCESS, all attempt 1;
+- artifact `ANG-S11-W8-001-Validation-Contracts` / ID `11509960710`.
+
+Evidence:
+`docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
 
 ## Relink contract
 
-Candidate ranking:
+Candidate ranking remains locked:
 1. exact canonical Axxx basename + compatible probe;
 2. exact source_name + compatible media/metadata;
 3. exact SHA-256 fingerprint;
 4. compatible metadata candidate = manual choice only.
 
-Filename similarity alone never auto-applies. Explicit confirmation is required before commit.
-Relink preserves Asset ID and clip references. One confirmed multi-relink operation is one
-intentional `CommandBatch`.
+Filename similarity alone never auto-applies. Relink preserves Asset ID and clip references.
 
 ## Recovery contract
 
-- autosave never silently overwrites source;
-- snapshot identity supports project_id + revision + timestamp;
-- old revision/hash snapshots remain discoverable;
-- default retention max 20 validated managed snapshots/project;
-- source `.angproj` and `.bak` are never prune targets;
-- unclean session + valid newer snapshot produces explicit recovery decision;
-- recovered snapshot opens as working state and source remains untouched until Save;
-- corrupt snapshot is isolated/reported, not destructive.
+Autosave never silently overwrites source. Default managed retention max 20 validated
+snapshots/project. Source .angproj and .bak are never prune targets. Recovery remains explicit.
 
 ## Diagnostics contract
 
-Structured safe fields include timestamp/severity/subsystem/action/job/project/revision/error code.
-Never include raw credentials, full prompt/subtitle/narration/media by default. Paths are redacted
-where practical. Diagnostic bundle manifest must be deterministic and secret-scannable.
+Structured diagnostics must redact credentials/private content and remain bounded.
+Diagnostic bundle implementation is deferred to W8-009.
 
 ## Frozen UI reuse
 
-No new UI image-generation gate is required:
-- UI-039 — Pemulihan Project — Final Parity Variant;
-- UI-040 — Asset Scan — Final Parity Variant;
-- UI-041 — Validation Center — Final Parity Variant.
-
-Existing geometry/hierarchy remains frozen. Any structural delta requires DELTA_FROM_AAVC.
+No new UI image-generation gate:
+- UI-039 — Pemulihan Project;
+- UI-040 — Asset Scan;
+- UI-041 — Validation Center.
 
 ## Serial implementation contract
 
-- **W8-001 — Canonical Validation Contracts + Baseline Rules — READY**
-- W8-002 — Real Media Integrity + Validation Center Projection — BLOCKED_BY_W8_001
+- **W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
+- **W8-002 — Real Media Integrity + Validation Center Projection — READY**
 - W8-003 — Single Asset Relink Command + Exact Identity Preservation — BLOCKED_BY_W8_002
 - W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003
 - W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004
@@ -99,23 +113,8 @@ Existing geometry/hierarchy remains frozen. Any structural delta requires DELTA_
 - W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008
 - W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009
 
-Every task must pass Ruff, mypy, import contracts, architecture, source-of-truth, no-secret,
-frozen UI manifest, targeted tests, full pytest and task-specific deterministic/real evidence.
-Media/filesystem tasks require real-file evidence. Final W8 regression must include all prior
-implementation families plus every W8 family on the same accepted HEAD.
-
-## Non-goals
-
-- no STEP 12 export matrix;
-- no legacy AAVC importer;
-- no 100–300 scene stress wave;
-- no UI redesign/regeneration;
-- no new AI editing capability;
-- no auto-relink by filename similarity;
-- no source overwrite during recovery without explicit Save.
-
 ## Exact next action
 
-After owner says `lanjutkan`, execute **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
+After owner says `lanjutkan`, execute **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.
 
-Do not start W8-002 in the same turn. Report W8-001 gate PASS/FAIL and stop.
+Do not start W8-003 in the same turn.

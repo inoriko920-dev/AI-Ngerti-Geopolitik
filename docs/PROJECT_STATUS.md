@@ -2,37 +2,52 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 planning status:** **CONTRACT_LOCKED**  
-**W8 runtime status:** **IMPLEMENTATION_NOT_STARTED**  
-**W8-001:** **READY**  
-**W8-002..010:** **SERIAL_BLOCKED**  
-**Master Blueprint mapping:** **TECH-WAVE STEP 11**  
-**W8 planning baseline:** `a39c6c6d5941f69a2b5b662f26df94d82b7f94ac`  
-**Accepted W7 implementation/regression HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
+**W8 status:** **CONTRACT_LOCKED / W8-001 PASS / W8-002 READY**  
+**W8 runtime:** **ACTIVE**  
+**Accepted W8-001 implementation HEAD:** `fd319947ea8ce2579de4918b5c4b49c046851609`  
+**Accepted W8-001 workflow:** `37681708473` — SUCCESS  
+**Next exact task:** **S11-W8-002 — Real Media Integrity + Validation Center Projection**  
+**Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
-## W7
+## W8-001 proven
 
-W7 Auto Edit L2 remains **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
-Its final 27/27 regression lock remains the accepted product baseline.
+- ValidationIssue and ValidationResult are typed/frozen application DTOs.
+- ProjectState remains canonical truth.
+- ValidationService is deterministic and non-mutating.
+- ProjectState.validate() remains structural validator for project/timeline/subtitle/narration.
+- Referenced missing media => BLOCKER.
+- Referenced offline media => ERROR.
+- Unreferenced missing media => WARNING.
+- Unreferenced offline media => INFO.
+- Issues carry exact stable target IDs.
+- Validation result is bound to project ID + revision + semantic hash.
+- revision/project/same-revision semantic replacement becomes stale.
+- no filesystem probe/relink/recovery/diagnostics/UI implementation entered W8-001.
 
-## W8 scope
+## Gates
 
-W8 owns:
-- Validation Center real contracts/projections;
-- real media integrity issues;
-- single/batch relink with stable Axxx identity;
-- autosave catalog/retention;
-- crash marker/startup recovery decision;
-- atomic persistence fault injection;
-- stale result hardening for W8 background jobs;
-- structured redacted diagnostics;
-- frozen UI-039/UI-040/UI-041 wiring;
-- GOLDEN-03-equivalent final closure/regression.
+- targeted tests **9/9 PASS**;
+- full pytest **395/395 PASS**;
+- mypy **69 source files PASS**;
+- import contracts **4/4 PASS**;
+- architecture PASS;
+- source-of-truth **70/70 PASS**;
+- no-secret PASS;
+- UI references **42/42 PASS**;
+- evidence **22/22 PASS**;
+- artifact ID `11509960710`.
 
-W8 does not own STEP 12 export matrix, legacy importer, stress wave, or UI redesign.
+Regression: **27/27 workflow families SUCCESS, all attempt 1**.
+
+S08 portable PASS.  
+S09 UI PASS.  
+S10 packaged E2E PASS.  
+W0 and W1–W7 PASS.
+
+W7 remains CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **SOL S11-W8-001 only — Canonical Validation Contracts + Baseline Rules**.
+After owner says **lanjutkan**, execute **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.
 
-No W8 runtime code has been implemented by the ASTRA planning turn.
+Do not start W8-003 in the same turn.
