@@ -11,6 +11,7 @@ from ai_ngerti_geopolitik.application.ai_contracts import (
     AIProviderRequest,
     AIRequestProfile,
     CredentialSecret,
+    L2AIProviderRequest,
     ProviderPlanResponse,
 )
 from ai_ngerti_geopolitik.application.ai_jobs import AIPlanJobService
@@ -160,12 +161,11 @@ def main() -> int:
     before = state.semantic_json(include_revision=True)
     caller_thread = threading.get_ident()
     scope = W7SelectedScope(("C001", "C002"))
-    request = AIProviderRequest(
+    request = L2AIProviderRequest(
         request_id="REQ-W7-008-EVIDENCE",
         base_project_revision=state.revision,
         instruction="Improve pacing and motion without structural edits.",
         context_json=L2ContextBuilder().build(state, scope),
-        profile=AIRequestProfile.L2_AUTO_EDIT,
     )
 
     with AIPlanJobService(provider, pool) as service:

@@ -249,7 +249,6 @@ class AIProviderRequest:
     base_project_revision: int
     instruction: str
     context_json: str
-    profile: AIRequestProfile = AIRequestProfile.L1_EFFECTS
 
     def __post_init__(self) -> None:
         if not self.request_id.strip():
@@ -272,11 +271,19 @@ class AIProviderRequest:
                 PlanErrorCode.SCHEMA_INVALID,
                 "provider context is required",
             )
-        if not isinstance(self.profile, AIRequestProfile):
-            raise PlanContractError(
-                PlanErrorCode.SCHEMA_INVALID,
-                "provider request profile is unsupported",
-            )
+
+    @property
+    def profile(self) -> AIRequestProfile:
+        return AIRequestProfile.L1_EFFECTS
+
+
+@dataclass(frozen=True, slots=True)
+class L2AIProviderRequest(AIProviderRequest):
+    """W7 L2 provider request preserving the frozen W6 request field contract."""
+
+    @property
+    def profile(self) -> AIRequestProfile:
+        return AIRequestProfile.L2_AUTO_EDIT
 
 
 @dataclass(frozen=True, slots=True)

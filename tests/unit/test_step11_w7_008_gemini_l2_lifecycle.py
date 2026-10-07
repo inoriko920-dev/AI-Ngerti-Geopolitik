@@ -16,6 +16,7 @@ from ai_ngerti_geopolitik.application.ai_contracts import (
     AIProviderRequest,
     AIRequestProfile,
     CredentialSecret,
+    L2AIProviderRequest,
     PlanContractError,
     PlanErrorCode,
     ProviderContractError,
@@ -238,12 +239,16 @@ def _request(
 ) -> AIProviderRequest:
     state = _state()
     scope = W7SelectedScope(("clip-1", "clip-2"))
-    return AIProviderRequest(
+    request_type = (
+        L2AIProviderRequest
+        if profile is AIRequestProfile.L2_AUTO_EDIT
+        else AIProviderRequest
+    )
+    return request_type(
         request_id=request_id,
         base_project_revision=state.revision,
         instruction="Improve pacing and visual motion without structural edits.",
         context_json=L2ContextBuilder().build(state, scope),
-        profile=profile,
     )
 
 
