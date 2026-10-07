@@ -222,7 +222,6 @@ class MediaAvailabilityRule:
         return tuple(issues)
 
 
-
 class MediaIntegrityStatus(StrEnum):
     OK = "OK"
     MISSING = "MISSING"
@@ -270,10 +269,7 @@ class RealMediaIntegrityRule:
                 references.setdefault(clip.asset_id, []).append(clip.clip_id)
         if state.narration is not None:
             references.setdefault(state.narration.asset_id, []).append(state.narration.narration_id)
-        return {
-            asset_id: tuple(sorted(items))
-            for asset_id, items in references.items()
-        }
+        return {asset_id: tuple(sorted(items)) for asset_id, items in references.items()}
 
     @staticmethod
     def _severity(referenced: bool, *, hard: bool) -> ValidationSeverity:

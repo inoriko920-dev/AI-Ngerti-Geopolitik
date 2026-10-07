@@ -197,11 +197,36 @@ def create_validation_dialog(
             ("Render", 1),
         )
         fixture_issues = (
-            ("ERROR", "A037 MISSING — Scene 12, 13", "File media tidak ditemukan. Digunakan di Scene 12 dan Scene 13.", "Relink"),
-            ("ERROR", "Subtitle cue tumpang tindih", "Terdapat 3 subtitle yang saling tumpang tindih pada Scene 05.", "Buka Subtitle"),
-            ("PERINGATAN", "Durasi scene terlalu pendek", "Scene 04 hanya 0,8 detik; disarankan minimal 2 detik.", "Buka Scene"),
-            ("PERINGATAN", "Audio tidak normalisasi", "Audio pada track A1 (voiceover.mp3) belum dinormalisasi.", "Perbaiki Audio"),
-            ("PERINGATAN", "Provider Gemini quota", "Sisa quota hanya 12%. Proses AI mungkin gagal jika quota habis.", "Buka Provider"),
+            (
+                "ERROR",
+                "A037 MISSING — Scene 12, 13",
+                "File media tidak ditemukan. Digunakan di Scene 12 dan Scene 13.",
+                "Relink",
+            ),
+            (
+                "ERROR",
+                "Subtitle cue tumpang tindih",
+                "Terdapat 3 subtitle yang saling tumpang tindih pada Scene 05.",
+                "Buka Subtitle",
+            ),
+            (
+                "PERINGATAN",
+                "Durasi scene terlalu pendek",
+                "Scene 04 hanya 0,8 detik; disarankan minimal 2 detik.",
+                "Buka Scene",
+            ),
+            (
+                "PERINGATAN",
+                "Audio tidak normalisasi",
+                "Audio pada track A1 (voiceover.mp3) belum dinormalisasi.",
+                "Perbaiki Audio",
+            ),
+            (
+                "PERINGATAN",
+                "Provider Gemini quota",
+                "Sisa quota hanya 12%. Proses AI mungkin gagal jika quota habis.",
+                "Buka Provider",
+            ),
         )
     else:
         summary_title_text = projection.summary_title
@@ -273,9 +298,7 @@ def create_validation_dialog(
         badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         badge.setFixedSize(30, 30)
         badge.setAccessibleName(severity)
-        badge.setStyleSheet(
-            f"color:{accent}; background:#FFF7ED; border:none; font-weight:800;"
-        )
+        badge.setStyleSheet(f"color:{accent}; background:#FFF7ED; border:none; font-weight:800;")
 
         block = QVBoxLayout()
         visible_title = f"{severity} · {issue_title}" if projection is not None else issue_title
