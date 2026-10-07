@@ -1,4 +1,4 @@
-"""W8-003 safe single-asset relink through canonical CommandBus history."""
+"""W8-003 qualified single-asset relink through canonical CommandBus history."""
 
 from __future__ import annotations
 
