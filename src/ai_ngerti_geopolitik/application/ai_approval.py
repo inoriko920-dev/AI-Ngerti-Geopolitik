@@ -2,7 +2,8 @@
 
 Provider results never mutate canonical ProjectState directly. W6 L1 and W7 L2
 both stage verified results, require explicit approval, revalidate against the
-current semantic base, then execute exactly one canonical CommandBatch.
+current semantic base, then execute exactly one canonical CommandBatch. W7-010
+closure regression reuses this owner unchanged.
 """
 
 from __future__ import annotations
