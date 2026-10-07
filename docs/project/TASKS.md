@@ -193,3 +193,43 @@ Hard boundaries remain:
 **Next:** the repository currently defines no W6 contract. Do not invent one.
 On the next owner `lanjutkan`, derive and lock the next SF-STEP 11 wave from
 the frozen Product/Master Blueprint before implementation.
+
+
+### W6 — CONTRACT_LOCKED / S11-W6-001 READY
+
+**Gemini Credential + L1 AI Animation Planning**
+
+Derived from frozen Master Blueprint TECH-WAVE STEP 09 immediately after the
+completed Subtitle + Narration wave.
+
+Contract:
+`docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
+
+Planning source:
+- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt`
+- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx`
+
+Serial contract:
+- [ ] **S11-W6-001 — Canonical AI + credential contracts — READY**
+- [ ] **S11-W6-002 — Secure credential slots 1–100 — BLOCKED_BY_W6_001**
+- [ ] **S11-W6-003 — Windows secure-store qualification — BLOCKED_BY_W6_002**
+- [ ] **S11-W6-004 — Credential health + safe failover — BLOCKED_BY_W6_003**
+- [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — BLOCKED_BY_W6_004**
+- [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — BLOCKED_BY_W6_005**
+- [ ] **S11-W6-007 — Gemini adapter + async lifecycle — BLOCKED_BY_W6_006**
+- [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — BLOCKED_BY_W6_007**
+- [ ] **S11-W6-009 — Frozen UI parity — BLOCKED_BY_W6_008**
+- [ ] **S11-W6-010 — Live Gemini + failure + regression closure — BLOCKED_BY_W6_009**
+
+Locked boundaries:
+- Gemini is the only W6 provider;
+- AI L1 may plan only render-qualified W4 effects;
+- no direct AI mutation of ProjectState/JSON/engine;
+- credential slots 1..100 live outside ProjectState in secure OS storage;
+- no raw credential may reach repo/project/log/error/evidence/UI after save;
+- no quota/rate-limit circumvention;
+- no AI L2, Validation hardening, Export matrix or SF-STEP 12 in W6;
+- full live-provider PASS requires a real Gemini smoke; otherwise the final
+  W6 status must retain a provisional live-Gemini qualifier.
+
+**Exact next task:** S11-W6-001 only — Canonical AI + credential contracts.

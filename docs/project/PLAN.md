@@ -1,44 +1,34 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W0/W1/W2/W3/W4 PASS. W5 is CLOSED as PASS_WITH_PROVISIONAL_MIC_HARDWARE.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED.**
 
-## Accepted W5 closure
+## W6
 
-Implementation HEAD:
-`cb54b544dd8c6977d117bb71e137117830feb061`
+**Gemini Credential + L1 AI Animation Planning**
 
-W5-010 workflow:
-`37583174352` — SUCCESS
+The wave is derived directly from Master Blueprint TECH-WAVE STEP 09.
 
-Evidence:
-`docs/evidence/features/S11_W5_010_CLOSURE_REGRESSION.md`
+Planning:
+- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt`
+- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx`
 
-Artifact:
-`ANG-S11-W5-010-Closure` / `11466065855`
+Contract:
+`docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
 
-Closure gates:
-- targeted 6/6 PASS;
-- full pytest PASS;
-- W5 evidence verifier 9/9 PASS;
-- old W4 project compatibility PASS;
-- malformed SRT / dirty reload / missing-corrupt narration / failed recording
-  safety PASS;
-- source SRT and narration source unchanged;
-- full W4/W3/W2/W1/W0/S10/S09/S08 regression lock SUCCESS.
+Serial tasks:
+1. W6-001 canonical AI + credential contracts;
+2. W6-002 secure credential slots 1–100;
+3. W6-003 Windows secure-store qualification;
+4. W6-004 credential health + safe failover;
+5. W6-005 L1 ContextBuilder + allowlist;
+6. W6-006 EditPlan schema + PlanVerifier;
+7. W6-007 Gemini adapter + async lifecycle;
+8. W6-008 approval → CommandBatch → Undo/Redo;
+9. W6-009 frozen UI parity;
+10. W6-010 live Gemini + failure + regression closure.
 
-Physical microphone remains provisional because no DirectShow input device was
-available on hosted Windows CI.
+No W6 implementation has started yet.
 
-## Next planning action
+## Next
 
-The repo does not currently contain a W6 contract.
-
-On the next owner `lanjutkan`, derive the actual next SF-STEP 11 wave from the
-frozen Product/Master Blueprint and create/lock that wave contract before any
-implementation.
-
-Do not:
-- invent a W6 feature set;
-- start Gemini/provider work by assumption;
-- start SF-STEP 12;
-- start final release work.
+After owner says `lanjutkan`, execute **S11-W6-001 only**.

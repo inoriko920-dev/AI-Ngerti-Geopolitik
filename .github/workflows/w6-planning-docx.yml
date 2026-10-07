@@ -1,0 +1,124 @@
+name: Generate W6 Planning DOCX
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt"
+      - ".github/workflows/w6-planning-docx.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-docx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install DOCX dependency
+        run: python -m pip install --disable-pip-version-check python-docx==1.2.0
+      - name: Build planning DOCX from locked TXT
+        shell: python
+        run: |
+          from pathlib import Path
+          from docx import Document
+          from docx.shared import Inches, Pt, RGBColor
+          from docx.enum.text import WD_ALIGN_PARAGRAPH
+          from docx.enum.table import WD_TABLE_ALIGNMENT
+
+          root = Path("docs/planning")
+          src = root / "09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt"
+          dst = root / "09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx"
+          lines = src.read_text(encoding="utf-8").splitlines()
+
+          doc = Document()
+          sec = doc.sections[0]
+          sec.top_margin = Inches(0.6)
+          sec.bottom_margin = Inches(0.6)
+          sec.left_margin = Inches(0.7)
+          sec.right_margin = Inches(0.7)
+          doc.styles["Normal"].font.name = "Aptos"
+          doc.styles["Normal"].font.size = Pt(9.5)
+          doc.styles["Title"].font.name = "Aptos Display"
+          doc.styles["Title"].font.size = Pt(23)
+          doc.styles["Title"].font.bold = True
+          doc.styles["Title"].font.color.rgb = RGBColor(37, 99, 235)
+          doc.styles["Heading 1"].font.name = "Aptos Display"
+          doc.styles["Heading 1"].font.size = Pt(14)
+          doc.styles["Heading 1"].font.bold = True
+          doc.styles["Heading 1"].font.color.rgb = RGBColor(23, 32, 51)
+
+          h = sec.header.paragraphs[0]
+          h.text = "AI NGERTI GEOPOLITIK • SF-STEP 11 W6 PLANNING"
+          h.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+          h.runs[0].font.size = Pt(8)
+          h.runs[0].font.color.rgb = RGBColor(100,116,139)
+          f = sec.footer.paragraphs[0]
+          f.text = "Source-of-truth planning • Gemini Credential + L1 AI • 07 Oktober 2026"
+          f.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          f.runs[0].font.size = Pt(8)
+          f.runs[0].font.color.rgb = RGBColor(100,116,139)
+
+          title = doc.add_paragraph(style="Title")
+          title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          title.add_run("S11-W6\nGemini Credential + L1 AI Animation Planning")
+          sub = doc.add_paragraph()
+          sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          r = sub.add_run("CONTRACT LOCK / PLANNING BEFORE CODING")
+          r.bold = True
+          r.font.size = Pt(12)
+          r.font.color.rgb = RGBColor(37,99,235)
+
+          box = doc.add_table(rows=4, cols=2)
+          box.alignment = WD_TABLE_ALIGNMENT.CENTER
+          box.style = "Table Grid"
+          values = [
+              ("Wave", "S11-W6 — Gemini Credential + L1 AI Animation Planning"),
+              ("Status", "CONTRACT_LOCKED / IMPLEMENTATION NOT STARTED"),
+              ("Previous", "W5 — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE"),
+              ("Next", "S11-W6-001 only after owner says lanjutkan"),
+          ]
+          for row,(a,b) in zip(box.rows, values):
+              row.cells[0].text = a
+              row.cells[1].text = b
+              for run in row.cells[0].paragraphs[0].runs:
+                  run.bold = True
+                  run.font.color.rgb = RGBColor(37,99,235)
+
+          doc.add_page_break()
+          for raw in lines[2:]:
+              line = raw.strip()
+              if not line:
+                  continue
+              if line[:2].isdigit() and ". " in line[:5]:
+                  doc.add_heading(line, level=1)
+              elif line.startswith("- "):
+                  doc.add_paragraph(line[2:], style="List Bullet")
+              elif line.startswith("S11-W6-"):
+                  p = doc.add_paragraph()
+                  p.add_run(line).bold = True
+              else:
+                  p = doc.add_paragraph(line)
+                  p.paragraph_format.space_after = Pt(4)
+
+          doc.save(dst)
+          print(dst, dst.stat().st_size)
+      - name: Validate DOCX ZIP
+        run: python -c "import zipfile; p='docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx'; z=zipfile.ZipFile(p); assert 'word/document.xml' in z.namelist(); print('DOCX VALID')"
+      - name: Commit generated DOCX
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx
+          if git diff --cached --quiet; then
+            echo "DOCX unchanged"
+            exit 0
+          fi
+          git commit -m "docs: generate S11 W6 planning DOCX"
+          git push
