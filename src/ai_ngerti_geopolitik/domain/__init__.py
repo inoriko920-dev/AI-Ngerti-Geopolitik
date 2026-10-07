@@ -1,6 +1,8 @@
 """Pure product/domain types."""
 
 from ai_ngerti_geopolitik.domain.project import (
+    SUPPORTED_SUBTITLE_ANIMATIONS,
+    UNSUPPORTED_SUBTITLE_ANIMATIONS,
     Asset,
     Clip,
     DomainValidationError,
@@ -9,8 +11,6 @@ from ai_ngerti_geopolitik.domain.project import (
     NarrationTrack,
     ProjectSettings,
     ProjectState,
-    SUPPORTED_SUBTITLE_ANIMATIONS,
-    UNSUPPORTED_SUBTITLE_ANIMATIONS,
     SubtitleAnimation,
     SubtitleCue,
     SubtitleStyle,
