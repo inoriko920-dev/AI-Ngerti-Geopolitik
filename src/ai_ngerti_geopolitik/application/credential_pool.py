@@ -7,10 +7,10 @@ only when a bounded session leases one slot for a request/test boundary.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 from time import time
-from typing import Callable
 
 from ai_ngerti_geopolitik.application.ai_contracts import (
     MAX_CREDENTIAL_SLOTS,
