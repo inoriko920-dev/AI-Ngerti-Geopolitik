@@ -55,6 +55,61 @@ def _pair(reference: Path, actual: Path, output: Path, title: str) -> None:
         raise RuntimeError(f"failed to save {output}")
 
 
+def _reference_contact_sheet(reference: Path, output: Path) -> None:
+    from PySide6.QtCore import QRect, Qt
+    from PySide6.QtGui import QColor, QFont, QImage, QPainter
+
+    columns = 7
+    rows = 6
+    cell_w = 360
+    cell_h = 240
+    header_h = 32
+    canvas = QImage(
+        columns * cell_w,
+        rows * cell_h,
+        QImage.Format.Format_RGB32,
+    )
+    canvas.fill(QColor("#F4F7FB"))
+    painter = QPainter(canvas)
+    painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+    font = QFont("Arial", 11)
+    font.setBold(True)
+    painter.setFont(font)
+    painter.setPen(QColor("#172033"))
+
+    for number in range(1, 43):
+        ui_id = f"UI-{number:03d}"
+        path = reference / f"{ui_id}.png"
+        image = QImage(str(path))
+        if image.isNull():
+            raise RuntimeError(f"invalid frozen reference: {ui_id}")
+        index = number - 1
+        row = index // columns
+        col = index % columns
+        x = col * cell_w
+        y = row * cell_h
+        painter.drawText(
+            QRect(x, y, cell_w, header_h),
+            int(Qt.AlignmentFlag.AlignCenter),
+            ui_id,
+        )
+        scaled = image.scaled(
+            cell_w - 12,
+            cell_h - header_h - 12,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+        px = x + (cell_w - scaled.width()) // 2
+        py = y + header_h + (cell_h - header_h - scaled.height()) // 2
+        painter.drawImage(px, py, scaled)
+        painter.setPen(QColor("#D8E2EE"))
+        painter.drawRect(QRect(x + 2, y + 2, cell_w - 4, cell_h - 4))
+        painter.setPen(QColor("#172033"))
+    painter.end()
+    if not canvas.save(str(output), "PNG"):
+        raise RuntimeError("failed to save frozen reference contact sheet")
+
+
 def main() -> int:
     from PySide6.QtWidgets import QApplication, QTabWidget, QWidget
 
@@ -75,6 +130,7 @@ def main() -> int:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     reference = root / "docs" / "ui_reference" / "raw"
+    _reference_contact_sheet(reference, output / "00_FROZEN_REFERENCE_CONTACT_SHEET.png")
 
     app = QApplication.instance() or QApplication(["ANG-W6-009"])
     window = create_main_window("UI-010", fixture_mode=True)
