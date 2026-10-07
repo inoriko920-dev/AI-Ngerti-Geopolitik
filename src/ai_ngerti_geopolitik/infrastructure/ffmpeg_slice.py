@@ -480,9 +480,7 @@ class FfmpegSliceMediaEngine:
             narration_input = len(clips)
             command.extend(["-i", narration_plan.source_path])
             filter_parts.append(
-                f"[{narration_input}:a]"
-                + ",".join(narration_plan.filters)
-                + "[narrationa]"
+                f"[{narration_input}:a]" + ",".join(narration_plan.filters) + "[narrationa]"
             )
             filter_parts.append(
                 "[basea][narrationa]"

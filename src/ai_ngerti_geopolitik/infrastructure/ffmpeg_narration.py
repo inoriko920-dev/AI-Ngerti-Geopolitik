@@ -40,16 +40,11 @@ def build_narration_render_plan(state: ProjectState) -> NarrationRenderPlan | No
         f"volume={_number(gain)}",
     ]
     if narration.fade_in_frames:
-        filters.append(
-            "afade=t=in:st=0:d="
-            + _number(narration.fade_in_frames / state.fps)
-        )
+        filters.append("afade=t=in:st=0:d=" + _number(narration.fade_in_frames / state.fps))
     if narration.fade_out_frames:
         fade_duration = narration.fade_out_frames / state.fps
         fade_start = (audible_frames - narration.fade_out_frames) / state.fps
-        filters.append(
-            f"afade=t=out:st={_number(fade_start)}:d={_number(fade_duration)}"
-        )
+        filters.append(f"afade=t=out:st={_number(fade_start)}:d={_number(fade_duration)}")
     delay_ms = _milliseconds(narration.timeline_start.frames, state.fps)
     if delay_ms:
         filters.append(f"adelay={delay_ms}:all=1")
