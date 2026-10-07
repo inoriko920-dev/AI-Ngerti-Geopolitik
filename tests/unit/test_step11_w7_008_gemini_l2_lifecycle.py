@@ -240,9 +240,7 @@ def _request(
     state = _state()
     scope = W7SelectedScope(("clip-1", "clip-2"))
     request_type = (
-        L2AIProviderRequest
-        if profile is AIRequestProfile.L2_AUTO_EDIT
-        else AIProviderRequest
+        L2AIProviderRequest if profile is AIRequestProfile.L2_AUTO_EDIT else AIProviderRequest
     )
     return request_type(
         request_id=request_id,
