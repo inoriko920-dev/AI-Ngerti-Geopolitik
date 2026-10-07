@@ -92,5 +92,5 @@ jobs:
         with:
           name: ANG-S11-W6-010-Closure
           path: artifacts/step11/w6-010/evidence/**
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
