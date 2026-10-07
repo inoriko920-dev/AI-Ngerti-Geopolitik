@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from contextlib import suppress
 import os
 import re
+from contextlib import suppress
 from pathlib import Path
 
 from ai_ngerti_geopolitik.application.ports import (
