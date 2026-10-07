@@ -62,15 +62,11 @@ def _candidate(
     )
     command = verified.translated_commands[0]
     if not isinstance(command, SetClipPropertiesCommand):
-        raise AssertionError(
-            "transform did not translate to SetClipPropertiesCommand"
-        )
+        raise AssertionError("transform did not translate to SetClipPropertiesCommand")
     candidate = command.apply(state)
     candidate.validate()
     if candidate.semantic_hash() != verified.candidate_semantic_hash:
-        raise AssertionError(
-            "transform candidate diverged from verifier proof"
-        )
+        raise AssertionError("transform candidate diverged from verifier proof")
     return verified, command, candidate
 
 
@@ -177,8 +173,7 @@ def main() -> int:
             "request_id": verified.plan.request_id,
             "translated_command": type(command).__name__,
             "candidate_hash_matches_verifier": (
-                candidate.semantic_hash()
-                == verified.candidate_semantic_hash
+                candidate.semantic_hash() == verified.candidate_semantic_hash
             ),
             "position_x": video_state.position_x,
             "position_y": video_state.position_y,
@@ -193,9 +188,7 @@ def main() -> int:
         }
 
     if len(set(preview_hashes.values())) != len(preview_hashes):
-        raise AssertionError(
-            "transform previews are not visually distinct"
-        )
+        raise AssertionError("transform previews are not visually distinct")
 
     composite = states["composite"]
     export_path = evidence / "transform_composite_90f.mp4"
@@ -208,19 +201,13 @@ def main() -> int:
         raise AssertionError("transform export lost audio")
 
     if baseline.semantic_json(include_revision=True) != baseline_json:
-        raise AssertionError(
-            "transform qualification mutated canonical baseline"
-        )
+        raise AssertionError("transform qualification mutated canonical baseline")
     if bus.can_undo or bus.can_redo:
-        raise AssertionError(
-            "transform qualification created CommandBus history"
-        )
+        raise AssertionError("transform qualification created CommandBus history")
 
     source_after = _sha256(video)
     if source_before != source_after:
-        raise AssertionError(
-            "transform qualification changed source media"
-        )
+        raise AssertionError("transform qualification changed source media")
 
     _write(
         evidence / "01_transform_qualification.json",
@@ -229,39 +216,20 @@ def main() -> int:
 
     report = {
         "status": "PASS",
-        "position_real_preview": (
-            preview_hashes["position"] != preview_hashes["baseline"]
-        ),
-        "scale_real_preview": (
-            preview_hashes["scale"] != preview_hashes["baseline"]
-        ),
-        "rotation_real_preview": (
-            preview_hashes["rotation"] != preview_hashes["baseline"]
-        ),
-        "opacity_real_preview": (
-            preview_hashes["opacity"] != preview_hashes["baseline"]
-        ),
-        "all_previews_distinct": (
-            len(set(preview_hashes.values()))
-            == len(preview_hashes)
-        ),
-        "composite_real_export": (
-            export_path.is_file()
-            and export_path.stat().st_size > 0
-        ),
+        "position_real_preview": (preview_hashes["position"] != preview_hashes["baseline"]),
+        "scale_real_preview": (preview_hashes["scale"] != preview_hashes["baseline"]),
+        "rotation_real_preview": (preview_hashes["rotation"] != preview_hashes["baseline"]),
+        "opacity_real_preview": (preview_hashes["opacity"] != preview_hashes["baseline"]),
+        "all_previews_distinct": (len(set(preview_hashes.values())) == len(preview_hashes)),
+        "composite_real_export": (export_path.is_file() and export_path.stat().st_size > 0),
         "composite_export_frames": export_probe.duration_frames,
         "composite_export_audio": export_probe.has_audio,
         "export_result_frames": export_result.duration_frames,
         "candidate_hashes_match_verifier": all(
-            bool(item["candidate_hash_matches_verifier"])
-            for item in qualification.values()
+            bool(item["candidate_hash_matches_verifier"]) for item in qualification.values()
         ),
-        "canonical_state_unchanged": (
-            baseline.semantic_hash() == baseline_hash
-        ),
-        "command_bus_history_unchanged": (
-            not bus.can_undo and not bus.can_redo
-        ),
+        "canonical_state_unchanged": (baseline.semantic_hash() == baseline_hash),
+        "command_bus_history_unchanged": (not bus.can_undo and not bus.can_redo),
         "source_media_unchanged": source_before == source_after,
         "provider_profile_changed": False,
         "runtime_ui_changed": False,
@@ -283,9 +251,7 @@ def main() -> int:
         "source_media_unchanged",
     ):
         if report[key] is not True:
-            raise AssertionError(
-                f"W7-006 evidence gate failed: {key}"
-            )
+            raise AssertionError(f"W7-006 evidence gate failed: {key}")
 
     for key in (
         "provider_profile_changed",
@@ -294,9 +260,7 @@ def main() -> int:
         "w7_007_transition_mixed_started",
     ):
         if report[key] is not False:
-            raise AssertionError(
-                f"W7-006 crossed later-task boundary: {key}"
-            )
+            raise AssertionError(f"W7-006 crossed later-task boundary: {key}")
 
     _write(
         evidence / "00_w7_006_transform_report.json",
