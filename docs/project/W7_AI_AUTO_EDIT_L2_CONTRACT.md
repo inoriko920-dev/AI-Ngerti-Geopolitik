@@ -1,6 +1,6 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..005 PASS / W7-006 READY / W7-007..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..006 PASS / W7-007 READY / W7-008..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
 **Runtime implementation:** ACTIVE — W7-001..005 PASS  
@@ -362,8 +362,8 @@ and a real network smoke succeeds.
 - **W7-003 — strict AutoEditPlan v2 parser/schema — PASS**
 - **W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
 - **W7-005 — pacing qualification: duration + speed — PASS**
-- W7-006 — transform qualification — READY
-- W7-007 — transition + mixed-plan qualification — BLOCKED_BY_W7_006
+- **W7-006 — transform qualification — PASS**
+- W7-007 — transition + mixed-plan qualification — READY
 - W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007
 - W7-009 — approval/apply/UI diff integration — BLOCKED_BY_W7_008
 - W7-010 — real-media failure/regression closure — BLOCKED_BY_W7_009
@@ -533,10 +533,46 @@ Gates:
 W7-005 did not start transform qualification, transition/mixed-plan work,
 provider request-profile changes, runtime UI changes, or canonical L2 apply.
 
+## W7-006 implementation closure
+
+Accepted implementation HEAD:
+`7ba2640068e5e5c0d153bd3c1bd304bc1be64f06`
+
+Accepted workflow:
+`37656965367` — SUCCESS.
+
+Implemented/qualified:
+- W7-004 transform verifier/manual-command translation reused without a new owner;
+- position X/Y through canonical `SetClipPropertiesCommand + VideoProperties`;
+- uniform scale translated to equal X/Y scale;
+- rotation and opacity through the existing W3 render path;
+- crop and unspecified transform fields preserved;
+- real preview proof for position, scale, rotation, opacity and composite transform;
+- composite 90-frame real export PASS with audio retained;
+- candidate semantic hash proof retained;
+- source media and canonical ProjectState/CommandBus history unchanged.
+
+Evidence:
+`docs/evidence/features/S11_W7_006_TRANSFORM_QUALIFICATION.md`.
+
+Gates:
+- targeted tests 5/5 PASS;
+- full pytest PASS;
+- mypy 68 source files PASS;
+- evidence verifier 9/9 files PASS;
+- 28/28 triggered workflows SUCCESS, all attempt 1;
+- S08 portable build/smoke PASS;
+- S09 UI shell PASS;
+- S10 real-media/package PASS;
+- W0 engine qualification PASS.
+
+W7-006 did not start transition/mixed-plan qualification, provider request-profile
+changes, runtime UI changes, or canonical L2 apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-006 only — Transform qualification**.
+After owner says `lanjutkan`, execute **S11-W7-007 only — Transition + mixed-plan qualification**.
 
-W7-006 must not start W7-007 transition + mixed-plan qualification in the same turn.
+W7-007 must not start W7-008 Gemini L2 request profile/lifecycle reuse in the same turn.
 
-After W7-006, report gate PASS/FAIL and stop.
+After W7-007, report gate PASS/FAIL and stop.
