@@ -158,7 +158,7 @@ def test_parser_rejects_non_utf8_and_wrong_extension(tmp_path: Path) -> None:
 
     wrong_extension = tmp_path / "subtitle.txt"
     wrong_extension.write_text("x", encoding="utf-8")
-    with pytest.raises(SubtitleParseError, match="\.srt"):
+    with pytest.raises(SubtitleParseError, match=r"\.srt"):
         Utf8SrtParser().parse(wrong_extension)
 
 

@@ -64,9 +64,14 @@ class Utf8SrtParser:
 
         for block_number, block in enumerate(blocks, start=1):
             lines = block.rstrip("\n").split("\n")
-            if len(lines) < 3:
+            if len(lines) < 2:
                 raise SubtitleParseError(
-                    f"SRT block {block_number} must contain index, timing, and text"
+                    f"SRT block {block_number} must contain index and timing"
+                )
+            if len(lines) == 2:
+                index_label = lines[0].strip() or str(block_number)
+                raise SubtitleParseError(
+                    f"SRT cue index {index_label} text cannot be empty"
                 )
             try:
                 index = int(lines[0].strip())
