@@ -28,16 +28,8 @@ def main() -> int:
     if any((root / name).stat().st_size <= 0 for name in required):
         raise SystemExit("W7-006 evidence contains an empty file")
 
-    report = json.loads(
-        (root / "00_w7_006_transform_report.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    detail = json.loads(
-        (root / "01_transform_qualification.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    report = json.loads((root / "00_w7_006_transform_report.json").read_text(encoding="utf-8"))
+    detail = json.loads((root / "01_transform_qualification.json").read_text(encoding="utf-8"))
 
     if report.get("status") != "PASS":
         raise SystemExit("W7-006 report is not PASS")
@@ -65,9 +57,7 @@ def main() -> int:
         "w7_007_transition_mixed_started",
     ):
         if report.get(key) is not False:
-            raise SystemExit(
-                f"W7-006 crossed later-task boundary: {key}"
-            )
+            raise SystemExit(f"W7-006 crossed later-task boundary: {key}")
 
     if (
         detail["position"]["position_x"],
@@ -88,18 +78,11 @@ def main() -> int:
 
     for item in detail.values():
         if item.get("translated_command") != "SetClipPropertiesCommand":
-            raise SystemExit(
-                "transform did not use canonical manual command"
-            )
+            raise SystemExit("transform did not use canonical manual command")
         if item.get("candidate_hash_matches_verifier") is not True:
-            raise SystemExit(
-                "transform candidate hash diverged from verifier proof"
-            )
+            raise SystemExit("transform candidate hash diverged from verifier proof")
 
-    print(
-        f"W7-006 evidence verification PASS: "
-        f"{len(required)}/{len(required)} files"
-    )
+    print(f"W7-006 evidence verification PASS: {len(required)}/{len(required)} files")
     return 0
 
 
