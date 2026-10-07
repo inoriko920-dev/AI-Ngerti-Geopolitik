@@ -358,9 +358,7 @@ def test_shared_job_service_runs_l2_off_thread_and_returns_verified_auto_plan() 
     pool, slots = _pool()
     raw_value = "runtime-l2-job-key"
     _add(slots, 1, raw_value)
-    provider = _SequencedProvider(
-        [ProviderPlanResponse("REQ-W7-008", _payload())]
-    )
+    provider = _SequencedProvider([ProviderPlanResponse("REQ-W7-008", _payload())])
     caller_thread = threading.get_ident()
 
     with AIPlanJobService(provider, pool) as service:
@@ -442,9 +440,7 @@ def test_l2_job_reuses_invalid_auth_failover_without_second_provider_service() -
 def test_profile_specific_take_boundary_does_not_consume_wrong_result() -> None:
     pool, slots = _pool()
     _add(slots, 1, "runtime-profile-boundary")
-    provider = _SequencedProvider(
-        [ProviderPlanResponse("REQ-W7-008", _payload())]
-    )
+    provider = _SequencedProvider([ProviderPlanResponse("REQ-W7-008", _payload())])
     state = _state()
 
     with AIPlanJobService(provider, pool) as service:
@@ -527,9 +523,7 @@ def test_l2_job_cancellation_reuses_w6_cancelled_state() -> None:
 def test_l2_stale_session_reuses_existing_stale_plan_gate() -> None:
     pool, slots = _pool()
     _add(slots, 1, "runtime-l2-stale")
-    provider = _SequencedProvider(
-        [ProviderPlanResponse("REQ-W7-008", _payload())]
-    )
+    provider = _SequencedProvider([ProviderPlanResponse("REQ-W7-008", _payload())])
     state = _state()
 
     with AIPlanJobService(provider, pool) as service:

@@ -196,9 +196,7 @@ def main() -> int:
         "candidate_revision": verified.candidate_revision,
         "candidate_hash_present": bool(verified.candidate_semantic_hash),
         "canonical_state_unchanged": state.semantic_json(include_revision=True) == before,
-        "credential_not_in_snapshot": (
-            "runtime-w7-008-evidence-value" not in repr(terminal)
-        ),
+        "credential_not_in_snapshot": ("runtime-w7-008-evidence-value" not in repr(terminal)),
         "gemini_network_used_in_deterministic_evidence": False,
         "second_provider_service_created": False,
         "credential_pool_replaced": False,

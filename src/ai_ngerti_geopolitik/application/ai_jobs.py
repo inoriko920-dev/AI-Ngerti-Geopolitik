@@ -426,13 +426,10 @@ class AIPlanJobService:
                     PlanErrorCode.STALE_PLAN,
                     "AI plan result is stale for the current project session",
                 )
-            if (
-                record.request.profile is not AIRequestProfile.L1_EFFECTS
-                or not isinstance(record.verified, VerifiedEditPlan)
+            if record.request.profile is not AIRequestProfile.L1_EFFECTS or not isinstance(
+                record.verified, VerifiedEditPlan
             ):
-                raise AIPlanJobAccessError(
-                    "AI plan job result is not an L1 verified plan"
-                )
+                raise AIPlanJobAccessError("AI plan job result is not an L1 verified plan")
             record.result_consumed = True
             return record.verified
 
@@ -447,13 +444,9 @@ class AIPlanJobService:
         with self._lock:
             record = self._record(job_id)
             if record.state is not AIJobState.SUCCESS or record.verified is None:
-                raise AIPlanJobAccessError(
-                    "AI plan job has no successful verified result"
-                )
+                raise AIPlanJobAccessError("AI plan job has no successful verified result")
             if record.result_consumed:
-                raise AIPlanJobAccessError(
-                    "verified AI plan result was already consumed"
-                )
+                raise AIPlanJobAccessError("verified AI plan result was already consumed")
             token = record.token
             if (
                 current_state.project_id != token.project_id
@@ -464,13 +457,10 @@ class AIPlanJobService:
                     PlanErrorCode.STALE_PLAN,
                     "AI plan result is stale for the current project session",
                 )
-            if (
-                record.request.profile is not AIRequestProfile.L2_AUTO_EDIT
-                or not isinstance(record.verified, VerifiedAutoEditPlan)
+            if record.request.profile is not AIRequestProfile.L2_AUTO_EDIT or not isinstance(
+                record.verified, VerifiedAutoEditPlan
             ):
-                raise AIPlanJobAccessError(
-                    "AI plan job result is not an L2 verified plan"
-                )
+                raise AIPlanJobAccessError("AI plan job result is not an L2 verified plan")
             record.result_consumed = True
             return record.verified
 
