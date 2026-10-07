@@ -222,7 +222,7 @@ def test_typed_error_taxonomy_and_job_lifecycle_are_locked() -> None:
         "provider request timed out",
     )
     assert error.code is ProviderErrorCode.NETWORK_TIMEOUT
-    assert "provider request timed out" == str(error)
+    assert str(error) == "provider request timed out"
 
 
 def test_provider_response_rejects_empty_payload() -> None:
