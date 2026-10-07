@@ -2,10 +2,10 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-002 — PASS  
-**Accepted W5-002 HEAD:** `d4349c925cc0f475cfa94b0db55347320954e1cf`  
-**Accepted W5-002 run:** `37572463564` — SUCCESS  
-**Next exact task:** S11-W5-003 — Cue editing + safe working-copy flow
+**Last completed task:** S11-W5-003 — PASS  
+**Accepted W5-003 HEAD:** `d8db4d18cb42b71d91a9b727868b25340961702f`  
+**Accepted W5-003 run:** `37573388357` — SUCCESS  
+**Next exact task:** S11-W5-004 — Subtitle style
 
 ## Read first
 
@@ -14,68 +14,63 @@ Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 Read:
 - W0–W4 evidence in order;
 - `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`;
-- `docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`;
-- `docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`;
+- W5-001 / W5-002 / W5-003 evidence;
 - current PLAN/TASKS/PROJECT_STATUS.
 
-## W5-001 foundation
-
-Canonical ProjectState owns:
-- SubtitleTrack / SubtitleCue / SubtitleStyle / SubtitleAnimation / WordTiming;
-- NarrationTrack.
-
-## W5-002 import path
+## W5-003 working-copy path
 
 Application:
-- `SubtitleParserPort`;
-- `ParsedSubtitleCue`;
-- `SubtitleImportService`;
-- `SubtitleImportError`.
+- `SubtitleWorkingCopy`;
+- `SubtitleWorkingCopyService`;
+- `SubtitleWorkingCopyError`;
+- `DirtySubtitleWorkingCopyError`;
+- `SubtitleWriterPort` / `SubtitleWriteError`.
 
 Infrastructure:
-- `Utf8SrtParser`;
-- typed `SubtitleParseError`.
+- `Utf8SrtWriter` no-clobber save-copy writer;
+- existing `Utf8SrtParser` remains the read path.
 
 Behavior proven:
-- UTF-8 / UTF-8 BOM SRT;
-- multiline preservation;
-- strict timestamp/range/text validation;
-- duplicate/order/overlap rejection;
-- deterministic project-FPS conversion;
-- sub-frame/frame-overlap/timeline-overflow rejection;
-- import through CommandBus;
-- Undo;
-- source SRT SHA-256 unchanged.
+- local text/IN/OUT edit;
+- insert/delete;
+- split/merge with explicit text;
+- explicit sort and index normalization;
+- dirty discard/reload guard;
+- default non-colliding save-copy name;
+- no source overwrite;
+- no existing destination clobber;
+- multiline round-trip;
+- failed writer cannot commit project state;
+- save-copy commit is undoable.
 
-## Critical boundary carried forward
+## Critical boundaries carried forward
 
-W5-003 may edit a **working copy** of canonical cues, but:
-- source SRT may not be silently overwritten;
-- dirty working-copy leave/reload must be guarded;
-- save defaults to a new/copy SRT;
-- commit of the new source/binding remains semantic and undoable;
-- no style/animation/narration/recorder work yet.
+- ProjectState is not mutated while typing in the subtitle working copy.
+- Original source SRT cannot be overwritten by W5-003.
+- SubtitleAnimation still accepts only `none`.
+- W5-004 may change only canonical subtitle style.
+- Do not enable visual subtitle animation until W5-005.
+- Do not start narration/recording/Gemini work.
 
-SubtitleAnimation still accepts only `none`; do not enable any visual
-animation until W5-005.
-
-## Regression lock on W5-002 accepted HEAD
+## Regression lock on W5-003 accepted HEAD
 
 All SUCCESS:
-- W5-002 `37572463564`
-- W4 `37572463547`
-- W3 `37572463561`
-- W2 `37572463569`
-- W1 `37572463539`
-- W0 `37572463562`
-- S10 `37572463627`
-- S09 `37572463558`
-- S08 `37572463571`
+- W5-003 `37573388357`
+- W4 `37573388429`
+- W3 `37573388403`
+- W2 `37573388383`
+- W1 `37573388372`
+- W0 `37573388385`
+- S10 `37573388378`
+- S09 `37573388370`
+- S08 `37573388358`
+
+Full pytest in W5-003 also includes W5-002 parser/import tests.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-003 only**:
-cue text/IN/OUT edit, insert/delete, split/merge, explicit sort/index
-normalization, safe dirty working copy, reload guard and save-copy semantics.
+After owner says `lanjutkan`, execute **S11-W5-004 only**:
+canonical subtitle style mutation/persistence/history and render qualification
+for the frozen style properties.
 
-Do not start W5-004 or later tasks.
+Do not start W5-005 or later tasks.

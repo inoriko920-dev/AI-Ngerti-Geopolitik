@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -222,7 +222,13 @@ semantics are accepted.
   - accepted run: `37572463564`;
   - evidence:
     `docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`.
-- S11-W5-003 — **READY**.
-- S11-W5-004..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-003 — **PASS**
+  - accepted implementation HEAD:
+    `d8db4d18cb42b71d91a9b727868b25340961702f`;
+  - accepted run: `37573388357`;
+  - evidence:
+    `docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`.
+- S11-W5-004 — **READY**.
+- S11-W5-005..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-003 only**.
+On the next owner `lanjutkan`, execute **S11-W5-004 only**.
