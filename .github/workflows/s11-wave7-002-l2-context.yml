@@ -1,0 +1,57 @@
+name: S11 W7-002 L2 ContextBuilder
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/ai_l2_scope.py"
+      - "src/ai_ngerti_geopolitik/application/ai_l2_context.py"
+      - "tests/unit/test_step11_w7_002_l2_context.py"
+      - "scripts/run_step11_w7_002.py"
+      - "scripts/verify/verify_step11_w7_002_evidence.py"
+      - ".github/workflows/s11-wave7-002-l2-context.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w7-002:
+    name: L2 ContextBuilder and selected scope
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w7_002_l2_context.py
+      - run: uv run pytest -q
+      - name: Run W7-002 deterministic evidence
+        run: uv run python scripts/run_step11_w7_002.py
+      - name: Verify W7-002 evidence
+        run: uv run python scripts/verify/verify_step11_w7_002_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W7-002-L2-Context
+          path: artifacts/step11/w7-002/evidence/**
+          if-no-files-found: error
+          retention-days: 14
