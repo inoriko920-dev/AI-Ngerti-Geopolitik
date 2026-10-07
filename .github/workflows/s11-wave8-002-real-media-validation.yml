@@ -1,0 +1,99 @@
+name: S11 W8-002 Real Media Validation Center
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/validation.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/media_integrity.py"
+      - "src/ai_ngerti_geopolitik/presentation/validation_center.py"
+      - "src/ai_ngerti_geopolitik/presentation/dialogs.py"
+      - "tests/unit/test_step11_w8_002_media_integrity.py"
+      - "tests/qt/test_step11_w8_002_validation_center.py"
+      - "scripts/run_step11_w8_002.py"
+      - "scripts/verify/verify_step11_w8_002_evidence.py"
+      - "scripts/generate_step10_fixture.py"
+      - ".github/workflows/s11-wave8-002-real-media-validation.yml"
+      - "docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md"
+      - "docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md"
+      - "docs/project/PLAN.md"
+      - "docs/project/TASKS.md"
+      - "docs/PROJECT_STATUS.md"
+      - "docs/SOURCE_OF_TRUTH_INDEX.md"
+      - "HANDOFF.md"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-002:
+    name: Real media integrity and frozen Validation Center projection
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install FFmpeg qualification toolchain
+        shell: pwsh
+        run: |
+          $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
+          if (-not $ffmpeg) {
+            $ok = $false
+            for ($attempt = 1; $attempt -le 3; $attempt++) {
+              choco install ffmpeg -y --no-progress
+              if ($LASTEXITCODE -eq 0) {
+                $ok = $true
+                break
+              }
+              Start-Sleep -Seconds 10
+            }
+            if (-not $ok) {
+              throw "FFmpeg qualification toolchain installation failed after retries"
+            }
+          }
+          ffmpeg -version
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: >
+          uv run pytest -q
+          tests/unit/test_step11_w8_002_media_integrity.py
+          tests/qt/test_step11_w8_002_validation_center.py
+      - run: uv run pytest -q
+      - name: Generate owned W8-002 fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w8-002/input-video.mp4
+      - name: Run W8-002 real-media evidence
+        run: >
+          uv run python scripts/run_step11_w8_002.py
+          --video artifacts/step11/w8-002/input-video.mp4
+          --evidence artifacts/step11/w8-002/evidence
+      - name: Verify W8-002 evidence
+        run: uv run python scripts/verify/verify_step11_w8_002_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-002-Real-Media-Validation
+          path: artifacts/step11/w8-002/evidence/**
+          if-no-files-found: error
+          retention-days: 14
