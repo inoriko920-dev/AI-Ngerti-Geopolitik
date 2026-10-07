@@ -36,9 +36,7 @@ class WindowsCredentialApiError(RuntimeError):
     def __init__(self, operation: str, error_code: int) -> None:
         self.operation = operation
         self.error_code = error_code
-        super().__init__(
-            f"Windows credential API {operation} failed with error {error_code}"
-        )
+        super().__init__(f"Windows credential API {operation} failed with error {error_code}")
 
 
 class _CredentialApi(Protocol):
@@ -172,13 +170,9 @@ class WindowsCredentialStore:
     ) -> None:
         normalized = namespace.strip().rstrip("/")
         if not normalized:
-            raise WindowsCredentialStoreError(
-                "Windows credential namespace cannot be empty"
-            )
+            raise WindowsCredentialStoreError("Windows credential namespace cannot be empty")
         if len(normalized) > 180:
-            raise WindowsCredentialStoreError(
-                "Windows credential namespace is too long"
-            )
+            raise WindowsCredentialStoreError("Windows credential namespace is too long")
         if any(character in normalized for character in "\r\n\t"):
             raise WindowsCredentialStoreError(
                 "Windows credential namespace contains invalid whitespace"
@@ -195,8 +189,7 @@ class WindowsCredentialStore:
     @staticmethod
     def _safe_failure(operation: str, error: WindowsCredentialApiError) -> None:
         raise WindowsCredentialStoreError(
-            f"Windows secure credential store {operation} failed "
-            f"(error {error.error_code})"
+            f"Windows secure credential store {operation} failed (error {error.error_code})"
         ) from error
 
     def store_secret(

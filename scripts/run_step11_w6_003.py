@@ -145,10 +145,7 @@ def main() -> int:
             "slots_1_and_100_round_trip": slot_1_round_trip and slot_100_round_trip,
             "reopen_round_trip": reopen_slot_1 and reopen_slot_100,
             "delete_secret_and_metadata": (
-                slot_1_deleted
-                and metadata_1_deleted
-                and slot_100_deleted
-                and metadata_100_deleted
+                slot_1_deleted and metadata_1_deleted and slot_100_deleted and metadata_100_deleted
             ),
             "failure_after_delete_is_safe": bool(missing_error),
             "fixed_mask_preserved": (
