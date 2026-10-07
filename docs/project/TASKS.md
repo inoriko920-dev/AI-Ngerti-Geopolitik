@@ -110,8 +110,35 @@ Locked boundaries carried forward:
 - Gemini/AI implementation, SF-STEP 12 and release packaging remain blocked
   until their proper wave/STEP.
 
-### W5 — READY
+### W5 — ACTIVE / CONTRACT LOCKED
 
-W5 may start only after its exact task contract is derived from the frozen
-Product/UI/Architecture source-of-truth. Do not guess its scope from legacy
-code and do not jump directly to Gemini/AI or release work.
+**Subtitle + Narration**
+
+Contract:
+`docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
+
+Implementation status:
+**NOT STARTED**
+
+Serial contract:
+- [ ] **S11-W5-001 — Canonical subtitle/narration model**
+- [ ] **S11-W5-002 — SRT import + validation**
+- [ ] **S11-W5-003 — Cue editing + safe working-copy flow**
+- [ ] **S11-W5-004 — Subtitle style**
+- [ ] **S11-W5-005 — Render-backed subtitle animation + per-word boundary**
+- [ ] **S11-W5-006 — Narration import + binding**
+- [ ] **S11-W5-007 — Microphone recording**
+- [ ] **S11-W5-008 — Frozen UI parity**
+- [ ] **S11-W5-009 — Real subtitle/narration preview/export qualification**
+- [ ] **S11-W5-010 — Failure paths + evidence + regression lock**
+
+Hard boundaries:
+- W4 title overlay is not the subtitle model;
+- source SRT is never silently overwritten;
+- no ASR/speech-alignment claim;
+- only render-proven subtitle animations may be enabled;
+- failed recording cannot clobber existing narration;
+- no Gemini/provider/AI Auto Edit work;
+- no SF-STEP 12 or final release work.
+
+**Exact next task:** S11-W5-001 only.

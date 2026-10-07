@@ -4,101 +4,66 @@
 **Last completed wave:** **W4 — PASS**  
 **Accepted W4 implementation HEAD:** `3e3cd376189e9f183e70ca537ad25f037e25bcd7`  
 **Accepted W4 run:** `37570612799` — SUCCESS  
-**Next exact wave:** **W5 — derive its exact contract from source-of-truth before coding**
+**Current wave:** **W5 — Subtitle + Narration**  
+**W5 state:** **CONTRACT_LOCKED / IMPLEMENTATION_NOT_STARTED**  
+**Next exact task:** **S11-W5-001 — Canonical subtitle/narration model**
 
-## W4 proven
+## W5 scope decision
 
-Canonical creative state:
-- per-clip title overlay: enabled, text, font size, position, color and
-  background opacity;
-- transition presets `none` and real `fade_black`;
-- frame-bounded transition duration;
-- render-backed legacy AAVC effects: Fade, Pop, Breathe, Stomp, Tumble,
-  Tectonic, Rise, Pan and Drift;
-- effect enter/exit, bounded intensity and lock;
-- all W4 mutations through CommandBus/CommandBatch;
-- Undo/Redo;
-- .angproj save/reopen;
-- safe defaults when opening schema-v1 projects without W4 fields.
+W5 is definitively Subtitle + Narration.
 
-Runtime/UI:
-- real PySide6 Animation inspector emits semantic intents;
-- unsupported effects are not selectable/faked;
-- dissolve/crossfade is not advertised because canonical W4 timeline semantics
-  still forbid clip overlap.
+Source-of-truth basis:
+- Master Blueprint Subtitle System + Narration/Audio chapters;
+- recommended TECH-WAVE 08 = Subtitle + Narration;
+- product F-010/F-011/F-012 and FR-011/FR-012 = MUST parity;
+- frozen UI SCR-008, SCR-009, UI-017, UI-018, UI-033..UI-036,
+  WIN-001 and WIN-003;
+- architecture requires ProjectState ownership and dependency adapters.
 
-Real media evidence:
-- baseline and W4 creative preview differ;
-- title/transition/effect state reaches the qualification render path;
-- export file is valid;
-- export retains audio;
-- evidence verifier PASS 8/8.
+Full locked contract:
+`docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`.
 
-Evidence:
-`docs/evidence/features/S11_W4_TITLES_TRANSITIONS_EFFECTS.md`.
+## W5 closure boundary
 
-Artifact:
-- name `ANG-S11-W4-Creative`;
-- ID `11460641864`;
-- size `9,549,652` bytes;
-- digest
-  `sha256:06e87e681e0407b6e576b0ab8247eee3c900c50af7bfe2f38f81015bea64630e`.
+W5 must prove:
+- canonical/persisted subtitle and narration state;
+- SRT import/edit/timing safety;
+- render-backed style/animation only;
+- narration audible and synchronized;
+- microphone recording cannot destroy an existing narration on failure;
+- preview/export evidence;
+- full regression lock.
 
-## Explicit W4 non-claims
+A real microphone smoke is required for a full W5 PASS when a Windows capture
+device is available. If only deterministic port/adapter tests are possible, W5
+must be labeled `PASS_WITH_PROVISIONAL_MIC_HARDWARE`.
 
-The following legacy AAVC effects remain unsupported in W4 and must stay
-unavailable until a real engine mapping and evidence exist:
-- Wipe;
-- Blur;
-- Succession;
-- Baseline;
-- Neon;
-- Scrapbook;
-- Brush;
-- Ink;
-- Digital;
-- Spray Paint;
-- Sketch;
-- Gradient.
+## Carried W4 baseline
 
-Dissolve/crossfade is also not claimed. `fade_black` is fade-through-black,
-not overlapping two clips.
+W4 evidence remains accepted:
+- implementation HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`;
+- W4 `37570612799` SUCCESS;
+- W3 `37570612705` SUCCESS;
+- W2 `37570612673` SUCCESS;
+- W1 `37570612719` SUCCESS;
+- W0 `37570612737` SUCCESS;
+- S10 `37570612830` SUCCESS;
+- S09 `37570612683` SUCCESS;
+- S08 `37570612789` SUCCESS.
 
-## Regression lock
+## Locked non-scope
 
-On accepted W4 implementation HEAD:
-- W4: `37570612799` — SUCCESS;
-- W3: `37570612705` — SUCCESS;
-- W2: `37570612673` — SUCCESS;
-- W1: `37570612719` — SUCCESS;
-- W0: `37570612737` — SUCCESS;
-- S10: `37570612830` — SUCCESS;
-- S09: `37570612683` — SUCCESS;
-- S08: `37570612789` — SUCCESS.
-
-S10 includes successful real-media vertical slice, portable UI regression and
-packaged real-media smoke. S08/S09 portable regressions are also green.
-
-## Engine direction
-
-Unchanged:
-- MLT = primary production-engine implementation candidate;
-- ProjectState + CommandBus + MediaEnginePort remain canonical;
-- FFmpeg W4 is a real qualification adapter, not an engine switch;
-- final production MLT mapping/native DLL closure remains a later hardening or
-  release gate.
-
-## Reverse
-
-Reverse remains intentionally **disabled** because it has not passed safe
-backend qualification. Do not expose it as functional until real evidence
-exists.
+Do not start:
+- Gemini credential/provider work;
+- AI Auto Edit;
+- ASR/transcription/speech alignment;
+- final export matrix/release packaging;
+- unsupported subtitle animations;
+- Reverse enablement;
+- W4 unsupported effects/crossfade.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, start **W5 only** by deriving its exact serial task
-contract from the frozen Product/UI/Architecture source-of-truth before any
-implementation.
+On owner **"lanjutkan"**, implement **S11-W5-001 only**.
 
-Do not jump to Gemini/AI coverage, SF-STEP 12, or final release packaging
-unless that work is explicitly the correct gated wave/STEP.
+Do not start W5-002 until W5-001 has its own tests/gate and status report.

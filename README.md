@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — NEXT W5**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5 CONTRACT LOCKED**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -13,39 +13,24 @@ W4 accepted implementation:
 - W4 workflow `37570612799` — SUCCESS;
 - evidence artifact `11460641864`.
 
-W4 now verifies:
-- canonical per-clip title overlay;
-- real `fade_black` transition plus `none`;
-- nine render-backed AAVC effects: Fade, Pop, Breathe, Stomp, Tumble,
-  Tectonic, Rise, Pan and Drift;
-- semantic UI intents + canonical CommandBus mutation;
-- Undo/Redo;
-- project save/reopen and old-schema safe defaults;
-- real preview impact;
-- real export impact with audio retained;
-- evidence verifier PASS 8/8.
+All S08/S09/S10/W0/W1/W2/W3/W4 regressions are green on the accepted W4
+implementation HEAD.
 
-Unsupported legacy effects remain unavailable rather than faked. Dissolve /
-crossfade is also not claimed because W4 canonical timeline semantics do not
-support clip overlap.
+## Current W5
 
-Reverse remains **disabled** until real backend qualification says otherwise.
+W5 has been derived and locked as **Subtitle + Narration**.
 
-All S08/S09/S10/W0/W1/W2/W3 regression workflows are green on the same
-accepted W4 implementation HEAD.
+Contract:
+`docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`.
 
-## Engine direction
+Implementation has **not** started yet.
 
-MLT remains the primary STEP 11 production-engine implementation candidate.
-ProjectState + CommandBus + MediaEnginePort remain canonical boundaries.
+W5 will cover canonical subtitle/narration state, safe SRT workflow, subtitle
+style/render-backed animation, narration import/sync, microphone recording,
+frozen UI parity, real preview/export evidence and regression closure.
 
-The W4 real FFmpeg creative preview/export is qualification evidence behind
-the existing port. It is not a production-engine switch.
+No Gemini/provider/AI Auto Edit work belongs in W5.
 
 ## Next
 
-**W5.** Its exact task contract must be derived from the frozen
-Product/UI/Architecture source-of-truth before implementation.
-
-Do not jump directly to Gemini/AI coverage, SF-STEP 12, or final release
-packaging.
+**S11-W5-001 — Canonical subtitle/narration model only.**

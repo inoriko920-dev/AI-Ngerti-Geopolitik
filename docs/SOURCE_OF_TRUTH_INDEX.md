@@ -22,8 +22,11 @@
     - `docs/evidence/features/S11_W1_PROJECT_MEDIA_PERSISTENCE.md`
     - `docs/evidence/features/S11_W2_TIMELINE_PLAYBACK_CORE.md`
     - `docs/evidence/features/S11_W3_PROPERTIES_VIDEO_AUDIO_COLOR_SPEED.md`
-12. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
-13. actual source/tests/config/workflows/evidence.
+    - `docs/evidence/features/S11_W4_TITLES_TRANSITIONS_EFFECTS.md`
+12. current wave contract:
+    - `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
+13. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
+14. actual source/tests/config/workflows/evidence.
 
 DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 
@@ -36,11 +39,13 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - SF-STEP 11 W0: PASS.
 - SF-STEP 11 W1: PASS.
 - SF-STEP 11 W2: PASS.
-- SF-STEP 11 W3: **PASS**.
-- canonical video/audio/color/speed properties: VERIFIED.
+- SF-STEP 11 W3: PASS.
+- SF-STEP 11 W4: **PASS**.
+- W4 title/transition/render-backed effect evidence: VERIFIED.
 - Reverse: explicitly disabled pending later backend qualification.
-- W3 real preview/export evidence: VERIFIED.
-- regression lock S08/S09/S10/W0/W1/W2 on W3 accepted HEAD: VERIFIED.
-- next exact work: **SF-STEP 11 W4 — Titles / Transitions / Effects**.
+- W4 regression lock S08/S09/S10/W0/W1/W2/W3: VERIFIED.
+- SF-STEP 11 W5 scope: **Subtitle + Narration — CONTRACT LOCKED**.
+- W5 implementation: **NOT STARTED**.
+- exact next task: **S11-W5-001 canonical subtitle/narration model**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
