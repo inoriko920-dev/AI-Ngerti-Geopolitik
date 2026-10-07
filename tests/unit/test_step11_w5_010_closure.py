@@ -41,6 +41,8 @@ from ai_ngerti_geopolitik.domain import (
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.srt import Utf8SrtParser
 
+# W5-010 closure contract regression coverage.
+
 
 def _video_state() -> ProjectState:
     video = Asset(
