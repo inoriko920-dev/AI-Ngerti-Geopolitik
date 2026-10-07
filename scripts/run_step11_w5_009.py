@@ -216,7 +216,6 @@ def main() -> int:
 
     baseline_export = evidence / "export_video_baseline.mp4"
     engine.export(base_video_state, baseline_export)
-    baseline_probe = probe.probe(baseline_export)
 
     before_frame = 30
     active_frame = 51
