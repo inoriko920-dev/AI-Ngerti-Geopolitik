@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..007 PASS / S11-W6-008 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..008 PASS / S11-W6-009 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -224,8 +224,8 @@ Serial contract:
 - [x] **S11-W6-005 — L1 ContextBuilder + allowlist — PASS**
 - [x] **S11-W6-006 — EditPlan schema + PlanVerifier — PASS**
 - [x] **S11-W6-007 — Gemini adapter + async lifecycle — PASS**
-- [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — READY**
-- [ ] **S11-W6-009 — Frozen UI parity — BLOCKED_BY_W6_008**
+- [x] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — PASS**
+- [ ] **S11-W6-009 — Frozen UI parity — READY**
 - [ ] **S11-W6-010 — Live Gemini + failure + regression closure — BLOCKED_BY_W6_009**
 
 Locked boundaries:
@@ -416,4 +416,30 @@ W6-007 proof:
 - W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD;
 - live Gemini network qualification remains W6-010.
 
-**Exact next task:** S11-W6-008 only — Approval → CommandBatch → Undo/Redo.
+Accepted W6-008 implementation HEAD:
+`544bbde03a55c673e26b5e933b04c23b5336ba42`
+
+W6-008 workflow:
+`37613133911` — SUCCESS
+
+W6-008 evidence:
+`docs/evidence/features/S11_W6_008_APPROVAL_COMMANDBATCH_UNDO_REDO.md`
+
+W6-008 artifact:
+`ANG-S11-W6-008-Approval-CommandBatch` / ID `11479655608`
+
+W6-008 proof:
+- verified W6-007 result consumed once into explicit approval lifecycle;
+- staging/approval/reject/cancel zero canonical mutation;
+- stale project/revision/semantic re-check immediately before apply;
+- W6-006 PlanVerifier re-runs before mutation;
+- sequential translation to existing W4 SetClipPropertiesCommand;
+- one approved plan = one atomic AI CommandBatch/history entry;
+- exact semantic Undo/Redo;
+- duplicate stage/apply protection;
+- targeted tests 9/9 PASS;
+- full pytest PASS;
+- evidence verifier 15/15 PASS;
+- W6-007/W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD, all attempt 1.
+
+**Exact next task:** S11-W6-009 only — Frozen UI parity.

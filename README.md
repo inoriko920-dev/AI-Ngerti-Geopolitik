@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..007 PASS — NEXT W6-008**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..008 PASS — NEXT W6-009**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -16,34 +16,33 @@ Completed:
 - W6-005 L1 ContextBuilder + allowlist = PASS
 - W6-006 strict EditPlan schema + PlanVerifier = PASS
 - W6-007 official Gemini adapter + async lifecycle = PASS
+- W6-008 approval → atomic CommandBatch → Undo/Redo = PASS
 
-W6-007 accepted implementation:
-`70fa8cd6f800166176889068202ab53d03044b24`
+W6-008 accepted implementation:
+`544bbde03a55c673e26b5e933b04c23b5336ba42`
 
 Workflow:
-`37609729091` — SUCCESS.
+`37613133911` — SUCCESS.
 
 Now available:
-- official `google-genai==2.28.0` runtime locked by uv;
-- Gemini adapter behind `AIProviderPort`;
-- async SDK request with structured EditPlan JSON schema;
-- background provider lifecycle off the caller/Qt GUI thread;
-- cancellation, timeout and typed provider-error mapping;
-- W6-004 credential-pool retry/failover/cooldown integration;
-- project/session/revision stale-result guard;
-- one-time verified-result consumption;
-- zero CommandBus/canonical mutation in W6-007.
+- one-consume verified-job → approval boundary;
+- explicit approve/reject/cancel lifecycle;
+- zero mutation before approval;
+- project/revision/semantic stale re-check immediately before apply;
+- W6-006 re-verification at apply time;
+- sequential translation to existing manual W4 commands;
+- one approved plan = one atomic CommandBatch/history entry;
+- exact semantic Undo/Redo;
+- duplicate stage/apply protection.
 
-Targeted W6-007 tests: **17/17 PASS**.  
+Targeted W6-008 tests: **9/9 PASS**.  
 Full pytest: **PASS**.  
-Evidence verifier: **11/11 PASS**.  
-Official SDK runtime smoke: **PASS**.
+Evidence verifier: **15/15 PASS**.
 
-All W6-006 through S08 regression workflows are green on the same implementation HEAD.
+All W6-007 through S08 regression workflows are green on the same implementation HEAD, all attempt 1.
 
-Real Gemini network qualification is intentionally deferred to W6-010. W6-007 does
-not claim live-provider PASS.
+Real Gemini network qualification remains W6-010.
 
 ## Next
 
-**S11-W6-008 — Approval → CommandBatch → Undo/Redo only.**
+**S11-W6-009 — Frozen UI parity only.**

@@ -40,6 +40,7 @@
     - `docs/evidence/features/S11_W6_005_L1_CONTEXT_BUILDER.md`
     - `docs/evidence/features/S11_W6_006_EDITPLAN_PLAN_VERIFIER.md`
     - `docs/evidence/features/S11_W6_007_GEMINI_ASYNC_LIFECYCLE.md`
+    - `docs/evidence/features/S11_W6_008_APPROVAL_COMMANDBATCH_UNDO_REDO.md`
 12. current wave contract:
     - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
@@ -89,14 +90,16 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W6-005 L1 ContextBuilder + allowlist: **PASS**.
 - S11-W6-006 EditPlan schema + PlanVerifier: **PASS**.
 - S11-W6-007 Gemini adapter + async lifecycle: **PASS**.
-- S11-W6-008 Approval → CommandBatch → Undo/Redo: **READY**.
-- S11-W6-009..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W6-008 Approval → CommandBatch → Undo/Redo: **PASS**.
+- S11-W6-009 Frozen UI parity: **READY**.
+- S11-W6-010: **BLOCKED_BY_W6_009**.
 - production Windows Credential Manager secure-store path is qualified;
 - credential health/failover/bulk TXT boundary is qualified;
 - bounded secret-free L1 provider context is qualified;
 - strict non-mutating L1 PlanVerifier is qualified;
 - official google-genai adapter + background lifecycle is qualified;
+- approval → atomic CommandBatch → exact Undo/Redo is qualified;
 - real Gemini network qualification is still pending W6-010.
-- exact next task: **S11-W6-008 only**.
+- exact next task: **S11-W6-009 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 PASS / W6-007 PASS / W6-008 READY / W6-009..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 PASS / W6-007 PASS / W6-008 PASS / W6-009 READY / W6-010 BLOCKED_BY_W6_009  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -622,8 +622,39 @@ Quality:
 Live Gemini network qualification is deliberately not claimed by W6-007 and remains
 the W6-010 gate.
 
+### S11-W6-008 — PASS
+
+Accepted implementation HEAD:
+`544bbde03a55c673e26b5e933b04c23b5336ba42`
+
+Accepted workflow:
+`37613133911` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_008_APPROVAL_COMMANDBATCH_UNDO_REDO.md`.
+
+Implemented:
+- explicit approval lifecycle for one-consume W6-007 verified results;
+- zero-mutation staging/approval/reject/cancel;
+- project/revision/semantic stale guard immediately before apply;
+- W6-006 PlanVerifier revalidation before mutation;
+- sequential translation to canonical W4 SetClipPropertiesCommand;
+- one approved plan = one atomic AI CommandBatch;
+- one revision increment for the whole plan;
+- exact semantic Undo/Redo;
+- duplicate stage/apply protection.
+
+Quality:
+- targeted W6-008 tests 9/9 PASS;
+- full pytest PASS;
+- deterministic evidence PASS;
+- evidence verifier 15/15 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-007/W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green, all attempt 1.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-008 only — Approval → CommandBatch → Undo/Redo**.
+On the next owner **lanjutkan**, execute **S11-W6-009 only — Frozen UI parity**.
 
-Do not implement W6 UI or live-provider closure in W6-008.
+Use the existing frozen AAVC UI references. Do not regenerate the void 42-prompt UI set,
+and do not perform live-provider closure in W6-009.

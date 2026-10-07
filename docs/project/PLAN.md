@@ -1,59 +1,54 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001..007 PASS.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001..008 PASS.**
 
-## Accepted W6-007
+## Accepted W6-008
 
 Implementation:
-`70fa8cd6f800166176889068202ab53d03044b24`
+`544bbde03a55c673e26b5e933b04c23b5336ba42`
 
 Workflow:
-`37609729091` — SUCCESS.
+`37613133911` — SUCCESS.
 
 Implemented:
-- official `google-genai==2.28.0` dependency + frozen uv lock;
-- GeminiAIProvider behind AIProviderPort;
-- official async SDK request path + structured JSON EditPlan schema;
-- safe typed provider error mapping;
-- cancellation + bounded timeout handling;
-- provider-agnostic background AIPlanJobService;
-- one serialized provider worker off GUI/caller thread;
-- W6-004 credential-pool failover/cooldown reuse;
-- project/session/revision lifecycle token;
-- stale-result rejection;
-- one-time verified-result consumption;
-- W6-006 PlanVerifier integration after provider response;
-- zero canonical mutation and no CommandBus apply.
+- explicit verified-plan approval lifecycle;
+- one-time W6-007 result consumption;
+- PENDING/APPROVED/REJECTED/CANCELLED/APPLIED states;
+- reject/cancel/approve/stage zero-mutation boundaries;
+- project/revision/semantic stale check before apply;
+- W6-006 re-verification immediately before mutation;
+- sequential translation to canonical W4 SetClipPropertiesCommand;
+- one approved plan = one atomic AI CommandBatch;
+- exact semantic Undo/Redo;
+- duplicate stage/apply protection.
 
 Gates:
-- targeted 17/17 PASS;
+- targeted 9/9 PASS;
 - full pytest PASS;
-- official SDK runtime smoke PASS;
-- evidence verifier 11/11 PASS;
+- evidence verifier 15/15 PASS;
 - quality/architecture/security/source-of-truth/UI-reference PASS;
 - full regression matrix SUCCESS, all attempt 1;
-- S08 portable build/smoke PASS with the new dependency graph.
-
-Live Gemini network qualification is intentionally not claimed in W6-007 and remains
-scheduled for W6-010.
+- S08 portable build/smoke PASS;
+- S10 packaged real-media smoke PASS.
 
 ## Active next task
 
-**S11-W6-008 — Approval → CommandBatch → Undo/Redo**
+**S11-W6-009 — Frozen UI parity**
 
 Scope:
-- explicit plan approval boundary;
-- rejection/cancel = zero mutation;
-- stale check immediately before apply;
-- translate verified L1 proposals to existing manual W4 command equivalents;
-- one approved plan = one atomic CommandBatch;
-- exact Undo/Redo;
-- duplicate-apply/consumption guard.
+- implement real PySide6 surfaces for UI-010/011/012/013/014/023;
+- bind semantic intents to existing W6 application services;
+- present READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
+  LOCK_CONFLICT / STALE truthfully;
+- masked credential manager surface;
+- only L1 capability claims;
+- actual-vs-frozen screenshot/evidence parity.
 
-W6-008 must not:
-- build W6 UI;
+W6-009 must not:
+- regenerate the void 42-prompt UI set;
+- modify the AAVC reference repo;
+- expose raw credentials;
 - perform live Gemini closure;
-- add AI L2 capability;
-- bypass PlanVerifier or CommandBus.
+- add AI L2.
 
-Do not begin W6-008 until owner says `lanjutkan`.
+Do not begin W6-009 until owner says `lanjutkan`.
