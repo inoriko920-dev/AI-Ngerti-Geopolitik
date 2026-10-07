@@ -118,7 +118,23 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 READY**
+**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 READY**
+
+W5-007 accepted implementation HEAD:
+`be4daa667bf5030ba3810460cc6841a2e8be4fee`
+
+W5-007 workflow:
+`37578572691` — SUCCESS
+
+W5-007 evidence:
+`docs/evidence/features/S11_W5_007_MICROPHONE_RECORDING.md`
+
+W5-007 artifact:
+`ANG-S11-W5-007-Microphone` / ID `11463438121`
+
+Hardware gate:
+GitHub Windows runner exposed **0 DirectShow audio input devices**. Deterministic
+recording path is PASS, but physical microphone capture remains provisional.
 
 W5-006 accepted implementation HEAD:
 `77770cd98210dbed18cbe1715111a935f2135b77`
@@ -190,7 +206,7 @@ Serial contract:
 - [x] **S11-W5-004 — Subtitle style — PASS**
 - [x] **S11-W5-005 — Render-backed subtitle animation + per-word boundary — PASS**
 - [x] **S11-W5-006 — Narration import + binding — PASS**
-- [ ] **S11-W5-007 — Microphone recording**
+- [x] **S11-W5-007 — Microphone recording — PASS_WITH_PROVISIONAL_MIC_HARDWARE**
 - [ ] **S11-W5-008 — Frozen UI parity**
 - [ ] **S11-W5-009 — Real subtitle/narration preview/export qualification**
 - [ ] **S11-W5-010 — Failure paths + evidence + regression lock**
@@ -204,4 +220,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-007 — Microphone recording only.
+**Exact next task:** S11-W5-008 — Frozen UI parity only.

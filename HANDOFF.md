@@ -2,10 +2,10 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-006 — PASS  
-**Accepted W5-006 HEAD:** `77770cd98210dbed18cbe1715111a935f2135b77`  
-**Accepted W5-006 run:** `37577639655` — SUCCESS  
-**Next exact task:** S11-W5-007 — Microphone recording
+**Last completed task:** S11-W5-007 — PASS_WITH_PROVISIONAL_MIC_HARDWARE  
+**Accepted W5-007 HEAD:** `be4daa667bf5030ba3810460cc6841a2e8be4fee`  
+**Accepted W5-007 run:** `37578572691` — SUCCESS  
+**Next exact task:** S11-W5-008 — Frozen UI parity
 
 ## Read first
 
@@ -14,102 +14,103 @@ Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 Read:
 - W0–W4 evidence;
 - W5 contract;
-- W5-001 through W5-006 evidence;
-- current PLAN/TASKS/PROJECT_STATUS.
+- W5-001 through W5-007 evidence;
+- current PLAN/TASKS/PROJECT_STATUS;
+- frozen AAVC UI manifest and raw UI-001..UI-042 references.
 
-## W5-006 implementation now available
+## W5-007 implementation now available
 
 Application:
-- `application/narration.py`;
-- `NarrationImportService.import_and_bind(...)`;
-- atomic ImportAssetCommand + SetNarrationTrackCommand;
-- `bind_existing(...)` for an existing canonical audio asset;
-- stable narration IDs;
-- non-audio sources rejected before project mutation.
+- `RecorderPort`;
+- `RecordingDevice`;
+- `RecordingResult`;
+- `MicrophoneRecordingService`.
 
-Domain:
-- NarrationTrack remains canonical;
-- frame-aware offset;
-- gain/mute/fade;
-- fade bounds now use the audible segment remaining inside the project timeline.
+Safety flow:
+1. require active project timeline;
+2. verify real selected input device exists;
+3. record only to unique staging WAV;
+4. validate staging existence, size, media type, duration and sample rate;
+5. choose a collision-safe new final recording path;
+6. reserve final destination without overwriting existing files;
+7. atomically move validated staging to final;
+8. use W5-006 NarrationImportService for canonical import/bind;
+9. remove new final file if canonical bind fails.
 
-Qualification runtime:
-- `infrastructure/ffmpeg_narration.py`;
-- source trim;
-- gain;
-- mute;
-- fade in/out;
-- timeline delay;
-- mix with existing project audio;
-- narration preview WAV excerpt;
-- narration mixed into real exported MP4.
+Failure/cancel behavior:
+- existing narration remains unchanged;
+- no partial canonical asset/binding is created;
+- staging is cleaned;
+- existing destination files are never overwritten.
 
-## Real audio evidence
+Windows adapter:
+- `WindowsFfmpegRecorder`;
+- DirectShow audio device enumeration;
+- PCM s16le / mono / 48 kHz capture;
+- CancellationToken termination support.
 
-Fixture:
-- base video audio: 880 Hz;
-- narration: 440 Hz.
+## Hardware status
 
-Evidence proves:
-- 440 Hz is audible in preview WAV;
-- 440 Hz is low before narration offset and strong after offset;
-- gain boost increases narration band level;
-- mute removes narration band energy;
-- fade-in changes narration level near start;
-- narrated export keeps audio;
-- source narration WAV is unchanged;
-- project save/reopen retains binding/timing/controls.
+GitHub Windows runner exposed:
+- DirectShow audio devices: **0**.
+
+Therefore:
+**PASS_WITH_PROVISIONAL_MIC_HARDWARE**.
+
+No real microphone recording was attempted because there was no physical/input
+device to select. This is not a failure of the deterministic recording path,
+and hardware support is not falsely claimed.
+
+A later real-Windows hardware smoke can remove the provisional qualifier if it
+enumerates a device, captures valid WAV audio and binds it canonically.
+
+## Evidence
 
 Workflow:
-`37577639655` — SUCCESS
-
-Verifier:
-**11/11 PASS**
+`37578572691` — SUCCESS
 
 Artifact:
-`ANG-S11-W5-006-Narration`
-ID: `11462194359`
-Size: 28,535,901 bytes.
+`ANG-S11-W5-007-Microphone`
+ID: `11463438121`
 
-## Critical boundaries carried forward
+Targeted deterministic tests:
+**6/6 PASS**.
 
-- ProjectState + CommandBus remain canonical.
-- FFmpeg remains qualification, not a production-engine switch.
-- Narration is a first-class source/binding, not generic clip-volume state.
-- Only one canonical NarrationTrack is bound at a time.
-- W5-006 does not implement microphone capture.
-- W5-007 must use a dedicated recording application port/adapter.
-- Recording must stage first and validate before binding.
-- Failed/cancelled/empty recording must not clobber existing narration.
-- No Gemini/provider work.
+Full pytest:
+PASS.
 
-## Regression lock on accepted W5-006 HEAD
+## Regression lock
 
 All SUCCESS:
-- W5-006 `37577639655`
-- W5-005 `37577639727`
-- W5-004 `37577639737`
-- W4 `37577639656`
-- W3 `37577639667`
-- W2 `37577639693`
-- W1 `37577639687`
-- W0 `37577639704`
-- S10 `37577639665`
-- S09 `37577639668`
-- S08 `37577639634`
+- W5-007 `37578572691`
+- W5-006 `37578572686`
+- W5-005 `37578572661`
+- W5-004 `37578572726`
+- W4 `37578572750`
+- W3 `37578572725`
+- W2 `37578572751`
+- W1 `37578572684`
+- W0 `37578572742`
+- S10 `37578572702`
+- S09 `37578572748`
+- S08 `37578572764`
+
+## Critical boundaries for W5-008
+
+- Do not redesign the frozen AAVC UI.
+- UI may expose only proven W5 capabilities.
+- Unsupported subtitle animation labels remain hidden/disabled.
+- Per-word fallback must still say **NOT speech alignment**.
+- Microphone controls must surface device-unavailable/capture errors.
+- UI must not claim microphone hardware qualification when hardware evidence is
+  still provisional.
+- Presentation emits semantic intents only; no direct ProjectState/engine JSON
+  mutation.
+- Do not start W5-009 or later work.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-007 only**:
-- define/use a dedicated microphone RecorderPort;
-- require active project and available device;
-- record first to a staging WAV;
-- validate staged recording before canonical import/bind;
-- use safe finalization semantics;
-- failed/empty/cancelled capture must preserve current narration;
-- deterministic tests mandatory;
-- real Windows microphone evidence if a capture device exists;
-- if no physical capture device exists in CI/evidence environment, document
-  the hardware gate precisely instead of faking a PASS.
-
-Do not start W5-008 or later tasks.
+After owner says `lanjutkan`, execute **S11-W5-008 only**:
+wire the real subtitle + narration + microphone workflows into the frozen
+SCR-008/SCR-009/UI-017/UI-018/UI-033/UI-034/UI-035/UI-036/WIN-001/WIN-003
+surfaces, with disabled/hidden state for unqualified capabilities.
