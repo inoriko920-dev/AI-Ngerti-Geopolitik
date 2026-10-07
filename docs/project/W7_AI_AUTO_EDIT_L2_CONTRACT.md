@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..006 PASS / W7-007 READY / W7-008..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..007 PASS / W7-008 READY / W7-009..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..006 PASS / W7-007 READY  
+**Runtime implementation:** ACTIVE — W7-001..007 PASS / W7-008 READY  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -363,8 +363,8 @@ and a real network smoke succeeds.
 - **W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
 - **W7-005 — pacing qualification: duration + speed — PASS**
 - **W7-006 — transform qualification — PASS**
-- W7-007 — transition + mixed-plan qualification — READY
-- W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007
+- **W7-007 — transition + mixed-plan qualification — PASS**
+- W7-008 — Gemini L2 request profile + lifecycle reuse — READY
 - W7-009 — approval/apply/UI diff integration — BLOCKED_BY_W7_008
 - W7-010 — real-media failure/regression closure — BLOCKED_BY_W7_009
 
@@ -569,10 +569,42 @@ Gates:
 W7-006 did not start transition/mixed-plan qualification, provider request-profile
 changes, runtime UI changes, or canonical L2 apply.
 
+## W7-007 implementation closure
+
+Accepted implementation HEAD:
+`642ce15c89b3a0e65011387d67f9898d0cd1f542`
+
+Accepted workflow:
+`37667149646` — SUCCESS.
+
+Implemented/qualified:
+- W7-004 transition verifier/manual-command translation reused without a new owner;
+- fade_black and none semantics through canonical SetClipPropertiesCommand;
+- real fade-through-black preview/export PASS with audio retained;
+- sequential transition maximum revalidated against candidate pacing state;
+- mixed L1/L2 plan qualified across effects, duration, transform, transition and speed;
+- mixed candidate timeline = 210 frames with verifier hash match;
+- source media and canonical ProjectState/CommandBus history unchanged.
+
+Evidence:
+`docs/evidence/features/S11_W7_007_TRANSITION_MIXED_QUALIFICATION.md`.
+
+Gates:
+- targeted tests 5/5 PASS;
+- full pytest 361/361 PASS;
+- mypy 68 source files PASS;
+- evidence verifier 8/8 files PASS;
+- 26/26 triggered workflow families SUCCESS;
+- 23 attempt 1 + 3 attempt 2 after transient Chocolatey HTTP 504 only;
+- S08/S10 and all prior W0..W7 regression families PASS.
+
+W7-007 did not start Gemini L2 request-profile/lifecycle changes, runtime UI
+integration, canonical approval/apply, or W7 final closure.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-007 only — Transition + mixed-plan qualification**.
+After owner says `lanjutkan`, execute **S11-W7-008 only — Gemini L2 request profile + lifecycle reuse**.
 
-W7-007 must not start W7-008 Gemini L2 request profile/lifecycle reuse in the same turn.
+Do not start W7-009 approval/apply/UI integration in the same turn.
 
-After W7-007, report gate PASS/FAIL and stop.
+After W7-008, report gate PASS/FAIL and stop.

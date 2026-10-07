@@ -518,8 +518,8 @@ Serial contract:
 - [x] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
 - [x] **S11-W7-005 — Pacing qualification: duration + speed — PASS**
 - [x] **S11-W7-006 — Transform qualification — PASS**
-- [ ] **S11-W7-007 — Transition + mixed-plan qualification — READY**
-- [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007**
+- [x] **S11-W7-007 — Transition + mixed-plan qualification — PASS**
+- [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — READY**
 - [ ] **S11-W7-009 — Approval/apply/UI diff integration — BLOCKED_BY_W7_008**
 - [ ] **S11-W7-010 — Real-media closure + failure/regression lock — BLOCKED_BY_W7_009**
 
@@ -687,4 +687,32 @@ W7-006 proof:
 - 28/28 triggered workflows SUCCESS on the accepted HEAD, all attempt 1;
 - S08 portable build/smoke, S09 UI shell, S10 packaged real-media and W0 engine gates PASS.
 
-**Exact next task:** S11-W7-007 only — Transition + mixed-plan qualification.
+Accepted W7-007 implementation HEAD:
+`642ce15c89b3a0e65011387d67f9898d0cd1f542`
+
+W7-007 workflow:
+`37667149646` — SUCCESS
+
+W7-007 evidence:
+`docs/evidence/features/S11_W7_007_TRANSITION_MIXED_QUALIFICATION.md`
+
+W7-007 artifact:
+`ANG-S11-W7-007-L2-Transition-Mixed` / ID `11503996235`
+
+W7-007 proof:
+- canonical SetClipPropertiesCommand + TransitionProperties reused for transitions;
+- real fade_black preview/export PASS with audio retained;
+- none transition clears fade_black;
+- sequential candidate transition maximum proven after speed change;
+- six-command mixed L1/L2 plan qualified across effects/duration/transform/transition/speed;
+- mixed real export 210 frames with audio retained;
+- verifier candidate hashes match translated candidates;
+- canonical state/revision/CommandBus history and source media unchanged;
+- targeted tests 5/5 PASS;
+- full pytest 361/361 PASS;
+- evidence verifier 8/8 files PASS;
+- 26/26 triggered workflow families SUCCESS;
+- 23 attempt 1, 3 attempt 2 only after transient Chocolatey HTTP 504 during FFmpeg install;
+- S08/S10 and prior W0..W7 regression families PASS.
+
+**Exact next task:** S11-W7-008 only — Gemini L2 request profile + lifecycle reuse.

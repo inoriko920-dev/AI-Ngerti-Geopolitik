@@ -49,6 +49,7 @@
     - `docs/evidence/features/S11_W7_004_L2_SEMANTIC_VERIFIER.md`
     - `docs/evidence/features/S11_W7_005_PACING_QUALIFICATION.md`
     - `docs/evidence/features/S11_W7_006_TRANSFORM_QUALIFICATION.md`
+    - `docs/evidence/features/S11_W7_007_TRANSITION_MIXED_QUALIFICATION.md`
 12. current wave contract:
     - `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
     - historical closed W6 contract: `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
@@ -120,15 +121,17 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W7-004 L2 semantic verifier + sequential dry-run translator: **PASS**.
 - S11-W7-005 pacing qualification — duration + speed: **PASS**.
 - S11-W7-006 transform qualification: **PASS**.
-- S11-W7-007 transition + mixed-plan qualification: **READY**.
-- S11-W7-008..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W7-007 transition + mixed-plan qualification: **PASS**.
+- S11-W7-008 Gemini L2 request profile + lifecycle reuse: **READY**.
+- S11-W7-009..010: **BLOCKED_BY_PREVIOUS_TASKS**.
 - W7-001 exact capability registry/policy bounds and W6 backward compatibility are qualified.
 - W7-002 selected-scope + bounded deterministic L2 context are qualified.
 - W7-003 strict closed AutoEditPlan v2 parser/schema is qualified.
 - W7-004 semantic verifier + sequential manual-command dry-run translator is qualified.
 - W7-005 real duration/speed pacing and ripple are render-qualified with unchanged canonical state/history.
 - W7-006 real position/scale/rotation/opacity transform preview/export is qualified through the canonical manual command path with unchanged canonical state/history.
-- W7-006 regression lock is 28/28 triggered workflows SUCCESS, all attempt 1.
-- exact next action: **SOL S11-W7-007 only**.
+- W7-007 real fade_black transition + six-command mixed L1/L2 plan are qualified through existing canonical manual/render owners with unchanged canonical state/history.
+- W7-007 regression lock is 26/26 triggered workflow families SUCCESS; 23 attempt 1 and 3 attempt 2 after transient Chocolatey FFmpeg HTTP 504 only.
+- exact next action: **SOL S11-W7-008 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W6 CLOSED PROVISIONAL LIVE GEMINI — W7 CONTRACT_LOCKED — W7-001..006 PASS — NEXT W7-007**
+> **STATUS: SF-STEP 11 ACTIVE — W6 CLOSED PROVISIONAL LIVE GEMINI — W7 CONTRACT_LOCKED — W7-001..007 PASS — NEXT W7-008**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -14,36 +14,36 @@ Completed:
 - W7-003 strict AutoEditPlan v2 parser/schema = **PASS**;
 - W7-004 L2 semantic verifier + sequential dry-run translator = **PASS**;
 - W7-005 pacing qualification — duration + speed = **PASS**;
-- W7-006 transform qualification = **PASS**.
+- W7-006 transform qualification = **PASS**;
+- W7-007 transition + mixed-plan qualification = **PASS**.
 
-Accepted W7-006 implementation:
-`7ba2640068e5e5c0d153bd3c1bd304bc1be64f06`
+Accepted W7-007 implementation:
+`642ce15c89b3a0e65011387d67f9898d0cd1f542`
 
 Workflow:
-`37656965367` — SUCCESS.
+`37667149646` — SUCCESS.
 
-W7-006 proves the bounded L2 transform path through existing manual/render owners:
-- position X/Y real preview PASS;
-- uniform scale real preview PASS;
-- rotation real preview PASS;
-- opacity real preview PASS;
-- composite transform real export PASS;
-- export remains 90 frames within probe tolerance and retains audio;
-- crop/unspecified properties preserved;
-- source media, canonical ProjectState, revision and CommandBus history remain unchanged;
-- no provider/UI/canonical L2 apply work introduced.
+W7-007 proves:
+- real `fade_black` transition preview/export;
+- `none` transition clear;
+- transition bounds against sequential candidate pacing state;
+- six-command mixed L1/L2 plan using existing canonical manual owners;
+- 210-frame mixed real-media export with audio retained;
+- verifier candidate hashes match translated candidates;
+- canonical ProjectState/revision/CommandBus history and source media remain unchanged;
+- no provider/UI/canonical apply work introduced.
 
-Targeted W7-006 tests: **5/5 PASS**.  
-Full pytest: **PASS**.  
-Evidence verifier: **9/9 files PASS**.  
-Regression matrix: **28/28 SUCCESS**, all attempt 1.
+Targeted W7-007 tests: **5/5 PASS**.  
+Full pytest: **361/361 PASS**.  
+Evidence verifier: **8/8 files PASS**.  
+Regression matrix: **26/26 SUCCESS** (23 attempt 1; 3 attempt 2 after transient Chocolatey FFmpeg HTTP 504).
 
 Artifact:
-`ANG-S11-W7-006-L2-Transform` / ID `11498533256`.
+`ANG-S11-W7-007-L2-Transition-Mixed` / ID `11503996235`.
 
 W6 remains closed as **PASS_WITH_PROVISIONAL_LIVE_GEMINI** because no real live
 Gemini credential was available during W6 closure.
 
 ## Next
 
-**S11-W7-007 — Transition + mixed-plan qualification only.**
+**S11-W7-008 — Gemini L2 request profile + lifecycle reuse only.**
