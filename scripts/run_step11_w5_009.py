@@ -548,8 +548,7 @@ def main() -> int:
         "narration_preview_audible": narration_preview_440 >= -35.0,
         "narration_frame_sync_proven": final_mid_440 >= pre_offset_440 + 8.0,
         "subtitle_narration_coexist_same_export": (
-            bool(export_frame_hashes["Slide Up"])
-            and final_mid_440 >= baseline_mid_440 + 8.0
+            bool(export_frame_hashes["Slide Up"]) and final_mid_440 >= baseline_mid_440 + 8.0
         ),
         "output_valid": (
             final_probe.width == 1920
