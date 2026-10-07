@@ -1,0 +1,46 @@
+name: W6-007 branch check
+
+on:
+  push:
+    branches:
+      - work/s11-w6-007
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/run_step11_w6_007.py"
+      - "scripts/verify/verify_step11_w6_007_*.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/w6-007-branch-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run python scripts/verify/verify_step11_w6_007_google_genai_runtime.py
+      - run: uv run pytest -q tests/unit/test_step11_w6_007_gemini_jobs.py
+      - run: uv run pytest -q
+      - run: uv run python scripts/run_step11_w6_007.py
+      - run: uv run python scripts/verify/verify_step11_w6_007_evidence.py
