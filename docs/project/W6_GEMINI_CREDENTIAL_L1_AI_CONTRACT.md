@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 READY / W6-005..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 READY / W6-006..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -495,9 +495,36 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
 
+### S11-W6-004 — PASS
+
+Accepted implementation HEAD:
+`2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`
+
+Accepted workflow:
+`37602706734` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_004_CREDENTIAL_HEALTH_SAFE_FAILOVER.md`.
+
+Implemented:
+- provider-agnostic credential health/test state machine;
+- invalid-auth isolation to the affected slot;
+- bounded network retry and bounded distinct-slot failover;
+- provider-wide bounded quota/rate-limit cooldown that blocks immediate rotation;
+- typed all-slots-unavailable handling;
+- non-credential failure no-rotation rule;
+- bulk TXT trim/dedupe/max100/count-only preview/no-retention boundary.
+
+Quality:
+- targeted W6-004 tests 10/10 PASS;
+- full pytest PASS;
+- deterministic evidence PASS;
+- evidence verifier 18/18 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-004 only — Credential health + safe failover**.
+On the next owner **lanjutkan**, execute **S11-W6-005 only — L1 ContextBuilder + allowlist**.
 
-Do not implement ContextBuilder, PlanVerifier, Gemini network, W6 UI or AI-plan
-application in W6-004.
+Do not implement PlanVerifier, Gemini network, W6 UI or AI-plan application in W6-005.

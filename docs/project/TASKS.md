@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 PASS / S11-W6-003 PASS / S11-W6-004 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..004 PASS / S11-W6-005 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -220,8 +220,8 @@ Serial contract:
 - [x] **S11-W6-001 — Canonical AI + credential contracts — PASS**
 - [x] **S11-W6-002 — Secure credential slots 1–100 — PASS**
 - [x] **S11-W6-003 — Windows secure-store qualification — PASS**
-- [ ] **S11-W6-004 — Credential health + safe failover — READY**
-- [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — BLOCKED_BY_W6_004**
+- [x] **S11-W6-004 — Credential health + safe failover — PASS**
+- [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — READY**
 - [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — BLOCKED_BY_W6_005**
 - [ ] **S11-W6-007 — Gemini adapter + async lifecycle — BLOCKED_BY_W6_006**
 - [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — BLOCKED_BY_W6_007**
@@ -306,4 +306,30 @@ W6-003 proof:
 - evidence verifier 4/4 PASS;
 - W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
 
-**Exact next task:** S11-W6-004 only — Credential health + safe failover.
+Accepted W6-004 implementation HEAD:
+`2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`
+
+W6-004 workflow:
+`37602706734` — SUCCESS
+
+W6-004 evidence:
+`docs/evidence/features/S11_W6_004_CREDENTIAL_HEALTH_SAFE_FAILOVER.md`
+
+W6-004 artifact:
+`ANG-S11-W6-004-Credential-Health-Safe-Failover` / ID `11472879781`
+
+W6-004 proof:
+- non-secret credential health/test state machine;
+- invalid auth disables only the affected slot;
+- bounded same-slot network retry then bounded failover;
+- rate/quota provider-wide cooldown blocks immediate credential rotation;
+- typed all-slots-unavailable behavior;
+- malformed/non-credential provider failures do not rotate;
+- bulk TXT trim/dedupe/max100/count-only preview/no-retention boundary;
+- raw runtime secrets absent from evidence;
+- targeted tests 10/10 PASS;
+- full pytest PASS;
+- evidence verifier 18/18 PASS;
+- W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
+
+**Exact next task:** S11-W6-005 only — L1 ContextBuilder + allowlist.

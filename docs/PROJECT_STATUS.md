@@ -2,88 +2,95 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W6 — Gemini Credential + L1 AI Animation Planning**  
-**W6 status:** **CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 READY**  
+**W6 status:** **CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 READY**  
 **Previous wave:** W5 — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE  
-**Accepted W6-003 implementation HEAD:** `84e8ef7ce30be24875c37faaa8dd94ab9a6d3c7f`  
-**Accepted W6-003 workflow:** `37594820105` — SUCCESS  
-**Next exact task:** **S11-W6-004 — Credential health + safe failover**
+**Accepted W6-004 implementation HEAD:** `2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`  
+**Accepted W6-004 workflow:** `37602706734` — SUCCESS  
+**Next exact task:** **S11-W6-005 — L1 ContextBuilder + allowlist**
 
-## W6-003 proven
+## W6-004 proven
 
-Production secure-store:
-- `WindowsCredentialStore` implements CredentialPort;
-- backend is Windows Credential Manager Generic Credential;
-- native API uses `CredWriteW`, `CredReadW`, `CredDeleteW`, `CredFree`;
-- no new plaintext/keyring dependency was introduced;
-- raw secret remains transient and is never ProjectState.
+Credential health:
+- canonical runtime categories: UNKNOWN, HEALTHY, INVALID_AUTH, NETWORK_DEGRADED, COOLDOWN;
+- successful test/request restores HEALTHY and clears transient network failure state;
+- invalid auth disables only the affected slot;
+- health snapshots expose non-secret metadata only.
 
-Real Windows qualification:
-- slot 1 store/load PASS;
-- slot 100 store/load PASS;
-- a fresh adapter instance reopens and reads both slots;
-- delete removes both secure secret and coordinated non-secret metadata;
-- load-after-delete returns safe typed NO_CREDENTIAL;
-- secure-store targets are cleaned after smoke.
+Safe failover:
+- network retry per slot is bounded;
+- distinct slot attempts per request are bounded;
+- malformed/non-credential provider failures do not trigger credential rotation;
+- all-unavailable returns typed `ALL_SLOTS_UNAVAILABLE`;
+- rate/quota activates a bounded provider-wide cooldown;
+- immediate rotation during rate/quota cooldown is rejected, preventing quota-evasion behavior.
 
-Secret safety:
-- generated runtime secrets are absent from evidence;
-- diagnostics contain namespace/slot metadata only;
-- no raw credential appears in errors;
-- no Gemini network call occurred.
+Bulk TXT:
+- one key per line;
+- trim + dedupe;
+- hard maximum 100 unique credentials;
+- capacity preflight prevents partial import;
+- rollback protects coordinated storage failure;
+- source text is not retained;
+- preview is count-only.
 
-## W6-003 gates
+Security/non-scope:
+- raw credentials remain behind `CredentialPort`;
+- credential lease repr stays masked;
+- runtime-generated secrets are absent from evidence;
+- Gemini network is still not called;
+- ContextBuilder/PlanVerifier/UI/apply are not started.
 
-Workflow `37594820105`:
+## W6-004 gates
+
+Workflow `37602706734`:
 - Ruff format PASS;
 - Ruff check PASS;
-- mypy PASS — 56 source files;
+- mypy PASS;
 - import contracts PASS;
 - architecture PASS;
-- source-of-truth 70/70 PASS;
+- source-of-truth PASS;
 - no-secret scan PASS;
-- frozen UI references 42/42 PASS;
-- targeted W6-003 tests: **7/7 PASS**;
+- frozen UI reference integrity PASS;
+- targeted W6-004 tests **10/10 PASS**;
 - full pytest PASS;
-- real Windows secure-store smoke PASS;
-- evidence verifier **4/4 PASS**.
+- deterministic W6-004 evidence PASS;
+- evidence verifier **18/18 PASS**.
 
 Artifact:
-- `ANG-S11-W6-003-Windows-Secure-Store`;
-- ID `11470101865`;
-- size 1,377 bytes.
+- `ANG-S11-W6-004-Credential-Health-Safe-Failover`;
+- ID `11472879781`;
+- size 775 bytes.
 
-## Regression lock on accepted W6-003 HEAD
+## Regression lock on accepted W6-004 implementation HEAD
 
 All SUCCESS:
-- W6-003: `37594820105`;
-- W6-002: `37594819993`;
-- W6-001: `37594820046`;
-- W5-010: `37594820121`;
-- W5-009: `37594819998`;
-- W5-008: `37594820079`;
-- W5-007: `37594820065`;
-- W5-006: `37594820058`;
-- W5-005: `37594820034`;
-- W5-004: `37594820142`;
-- W4: `37594820038`;
-- W3: `37594820204`;
-- W2: `37594820090`;
-- W1: `37594820078`;
-- W0: `37594820018`;
-- S10: `37594819996`;
-- S09: `37594820042`;
-- S08: `37594819997`.
+- W6-004: `37602706734`;
+- W6-003: `37602706876`;
+- W6-002: `37602706766`;
+- W6-001: `37602706721`;
+- W5-010: `37602706804`;
+- W5-009: `37602706750`;
+- W5-008: `37602706894`;
+- W5-007: `37602706907`;
+- W5-006: `37602706764`;
+- W5-005: `37602706936`;
+- W5-004: `37602706756`;
+- W4: `37602706703`;
+- W3: `37602706733`;
+- W2: `37602706702`;
+- W1: `37602706775`;
+- W0: `37602706791`;
+- S10: `37602706802`;
+- S09: `37602706884`;
+- S08: `37602706767`.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W6-004 only**:
-- credential health/test states;
-- invalid-auth handling;
-- bounded network retry semantics;
-- quota/cooldown state;
-- all-slots-unavailable behavior;
-- bounded legal failover;
-- bulk TXT only within the locked security contract.
+After owner says **lanjutkan**, execute **S11-W6-005 only**:
+- bounded L1 ContextBuilder;
+- no credential secrets in context;
+- supported W4 effect allowlist only;
+- stable target IDs + lock representation;
+- untrusted-text isolation.
 
-Do not start ContextBuilder, PlanVerifier, Gemini network calls, W6 UI or AI
-plan application in W6-004.
+Do not start PlanVerifier, Gemini network calls, W6 UI or AI-plan application in W6-005.

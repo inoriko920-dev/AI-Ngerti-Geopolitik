@@ -1,48 +1,48 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003 PASS.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003/004 PASS.**
 
-## Accepted W6-003
+## Accepted W6-004
 
 Implementation:
-`84e8ef7ce30be24875c37faaa8dd94ab9a6d3c7f`
+`2ebe3fbd89e0cbbf62135a44bb2e4193c4906e32`
 
 Workflow:
-`37594820105` — SUCCESS.
+`37602706734` — SUCCESS.
 
 Implemented:
-- native Windows Credential Manager adapter behind CredentialPort;
-- slot 1/100 real secure-store qualification;
-- fresh-adapter reopen;
-- idempotent delete;
-- safe native failure mapping;
-- no-secret evidence and cleanup.
+- credential health/test state machine;
+- invalid-auth isolation;
+- bounded same-slot network retry and bounded distinct-slot failover;
+- provider-wide quota/rate-limit cooldown that blocks immediate rotation;
+- typed all-slots-unavailable handling;
+- bulk TXT trim/dedupe/max100/count-only preview/no-retention path;
+- deterministic evidence + secret leak scan.
 
 Gates:
-- targeted 7/7 PASS;
+- targeted 10/10 PASS;
 - full pytest PASS;
-- evidence 4/4 PASS;
+- evidence verifier 18/18 PASS;
+- quality/architecture/security/source-of-truth/UI-reference PASS;
 - full regression matrix SUCCESS.
 
 ## Active next task
 
-**S11-W6-004 — Credential health + safe failover**
+**S11-W6-005 — L1 ContextBuilder + allowlist**
 
 Scope:
-- slot health/test categories;
-- invalid auth;
-- rate/quota cooldown state;
-- bounded network retry semantics;
-- all-slots-unavailable;
-- bounded legal failover;
-- bulk TXT only after single-slot secure storage is already proven.
+- bounded provider context;
+- no API key/credential secret in context;
+- supported render-qualified W4 effect enum only;
+- stable canonical target IDs;
+- lock-state representation;
+- untrusted project/prompt text isolation.
 
-W6-004 must not:
-- make live Gemini requests;
-- build ContextBuilder;
+W6-005 must not:
+- make Gemini network calls;
 - build PlanVerifier;
 - apply AI plans;
 - build W6 UI;
-- implement quota-evasion rotation.
+- implement AI L2 or unsupported effect capabilities.
 
-Do not begin W6-004 until owner says `lanjutkan`.
+Do not begin W6-005 until owner says `lanjutkan`.
