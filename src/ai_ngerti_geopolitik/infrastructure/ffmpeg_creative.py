@@ -176,9 +176,7 @@ def build_w4_creative_plan(
             terms.append(f"if(lt(t,{win}),-(1-t/{win})*{max_angle:.6f},0)")
         if effects.exit_effect == "Tumble":
             tumble_start = _number(max(0.0, duration - window))
-            terms.append(
-                f"if(gt(t,{tumble_start}),((t-{tumble_start})/{win})*{max_angle:.6f},0)"
-            )
+            terms.append(f"if(gt(t,{tumble_start}),((t-{tumble_start})/{win})*{max_angle:.6f},0)")
         angle = "+".join(f"({term})" for term in terms)
         source_filters.append(f"rotate=a='{angle}':ow=iw:oh=ih:c=none")
 
