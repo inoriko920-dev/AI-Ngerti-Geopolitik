@@ -6,8 +6,8 @@ import json
 from math import gcd
 from typing import Final
 
-from ai_ngerti_geopolitik.application.ai_contracts import L1_RENDER_QUALIFIED_EFFECTS
 from ai_ngerti_geopolitik.application.ai_context import ContextBuildError
+from ai_ngerti_geopolitik.application.ai_contracts import L1_RENDER_QUALIFIED_EFFECTS
 from ai_ngerti_geopolitik.application.ai_l2_contracts import (
     AUTO_EDIT_PLAN_SCHEMA_VERSION,
     MAX_W7_COMMANDS,
