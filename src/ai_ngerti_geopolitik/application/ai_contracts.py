@@ -149,6 +149,13 @@ class CredentialSlotMetadata:
     def masked_value(self) -> str:
         return MASKED_CREDENTIAL_VALUE
 
+    def __repr__(self) -> str:
+        return (
+            "CredentialSlotMetadata("
+            f"slot_id={self.slot_id}, label={self.label!r}, "
+            f"enabled={self.enabled}, masked_value={MASKED_CREDENTIAL_VALUE!r})"
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class EffectEditProposal:
