@@ -191,12 +191,12 @@ def test_unsupported_legacy_effects_never_appear_in_allowlist() -> None:
 def test_context_has_no_credential_secret_even_when_secure_store_is_configured() -> None:
     backend = InMemoryCredentialStore()
     slots = CredentialSlotService(backend, backend)
-    secret = "runtime-w6-005-credential-secret"
-    slots.add_or_update(1, CredentialSecret(secret), label="Gemini Primary")
+    raw_value = "runtime-w6-005-credential-value"
+    slots.add_or_update(1, CredentialSecret(raw_value), label="Gemini Primary")
 
     raw = L1ContextBuilder().build(_state(), ("clip-1",))
 
-    assert secret not in raw
+    assert raw_value not in raw
     assert "Gemini Primary" not in raw
     assert "credential" in json.loads(raw)["policy"]["forbidden_data_categories"][0]
 
