@@ -164,26 +164,31 @@ class PlanVerifier:
         if not isinstance(target_clip_id, str):
             raise self._schema_error("EditPlan target_clip_id must be a string")
 
-        values: dict[str, object] = {}
-        for field in ("enter_effect", "exit_effect"):
-            if field not in raw:
-                continue
-            value = raw[field]
-            if not isinstance(value, str):
-                raise self._schema_error(f"EditPlan {field} must be a string")
-            values[field] = value
+        enter_effect: str | None = None
+        exit_effect: str | None = None
+        intensity_percent: int | None = None
 
+        if "enter_effect" in raw:
+            value = raw["enter_effect"]
+            if not isinstance(value, str):
+                raise self._schema_error("EditPlan enter_effect must be a string")
+            enter_effect = value
+        if "exit_effect" in raw:
+            value = raw["exit_effect"]
+            if not isinstance(value, str):
+                raise self._schema_error("EditPlan exit_effect must be a string")
+            exit_effect = value
         if "intensity_percent" in raw:
             intensity = raw["intensity_percent"]
             if not self._is_strict_int(intensity):
                 raise self._schema_error("EditPlan intensity_percent must be an integer")
-            values["intensity_percent"] = intensity
+            intensity_percent = intensity
 
         return EffectEditProposal(
             target_clip_id=target_clip_id,
-            enter_effect=values.get("enter_effect"),
-            exit_effect=values.get("exit_effect"),
-            intensity_percent=values.get("intensity_percent"),
+            enter_effect=enter_effect,
+            exit_effect=exit_effect,
+            intensity_percent=intensity_percent,
             command_type=command_type,
         )
 
