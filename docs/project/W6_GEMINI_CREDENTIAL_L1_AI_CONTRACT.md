@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 READY / W6-007..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 PASS / W6-007 READY / W6-008..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -553,8 +553,40 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
 
+### S11-W6-006 — PASS
+
+Accepted implementation HEAD:
+`571cf941e64124628d1f8dadafb022eb20c0a541`
+
+Accepted workflow:
+`37606369024` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_006_EDITPLAN_PLAN_VERIFIER.md`.
+
+Implemented:
+- strict EditPlan JSON parser with exact root/command fields;
+- strict scalar typing and maximum 20 L1 commands;
+- fixed set_clip_effects command capability;
+- selected-scope + canonical target existence checks;
+- W4 effect/range validation;
+- track/effect lock conflict enforcement;
+- stale base-revision rejection;
+- ProviderPlanResponse/inner EditPlan request-ID correlation;
+- canonical W4 SetClipPropertiesCommand dry-run against local candidate state;
+- VerifiedEditPlan proof metadata only;
+- zero live ProjectState mutation and zero CommandBus history.
+
+Quality:
+- targeted W6-006 tests 12/12 PASS;
+- full pytest PASS;
+- deterministic evidence PASS;
+- evidence verifier 24/24 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-006 only — EditPlan schema + PlanVerifier**.
+On the next owner **lanjutkan**, execute **S11-W6-007 only — Gemini adapter + async lifecycle**.
 
-Do not implement Gemini network, W6 UI, approval/apply or AI-plan CommandBus integration in W6-006.
+Do not implement approval/apply, CommandBatch/Undo/Redo integration or W6 UI in W6-007.

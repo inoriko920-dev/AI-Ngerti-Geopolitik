@@ -38,6 +38,7 @@
     - `docs/evidence/features/S11_W6_003_WINDOWS_SECURE_STORE.md`
     - `docs/evidence/features/S11_W6_004_CREDENTIAL_HEALTH_SAFE_FAILOVER.md`
     - `docs/evidence/features/S11_W6_005_L1_CONTEXT_BUILDER.md`
+    - `docs/evidence/features/S11_W6_006_EDITPLAN_PLAN_VERIFIER.md`
 12. current wave contract:
     - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
@@ -85,12 +86,14 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W6-003 Windows secure-store qualification: **PASS**.
 - S11-W6-004 credential health + safe failover: **PASS**.
 - S11-W6-005 L1 ContextBuilder + allowlist: **PASS**.
-- S11-W6-006 EditPlan schema + PlanVerifier: **READY**.
-- S11-W6-007..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W6-006 EditPlan schema + PlanVerifier: **PASS**.
+- S11-W6-007 Gemini adapter + async lifecycle: **READY**.
+- S11-W6-008..010: **BLOCKED_BY_PREVIOUS_TASKS**.
 - production Windows Credential Manager secure-store path is qualified;
 - credential health/failover/bulk TXT boundary is qualified;
 - bounded secret-free L1 provider context is qualified;
+- strict non-mutating L1 PlanVerifier is qualified;
 - Gemini network is still not implemented or called.
-- exact next task: **S11-W6-006 only**.
+- exact next task: **S11-W6-007 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

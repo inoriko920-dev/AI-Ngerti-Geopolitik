@@ -1,53 +1,54 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003/004/005 PASS.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001..006 PASS.**
 
-## Accepted W6-005
+## Accepted W6-006
 
 Implementation:
-`043f8f250b7d61356bdf71757e8c6a7904615a06`
+`571cf941e64124628d1f8dadafb022eb20c0a541`
 
 Workflow:
-`37604630826` — SUCCESS.
+`37606369024` — SUCCESS.
 
 Implemented:
-- deterministic bounded L1 ContextBuilder;
-- max 20 selected clips;
-- stable target + track IDs;
-- media type/aspect/dimensions only, with private source metadata excluded;
-- current effect/intensity/effect-lock/track-lock/effective-lock;
-- bounded one-before/one-after neighbor summary;
-- exact W4 render-qualified effect allowlist and 0..200 intensity range;
-- untrusted project text normalization/isolation;
-- no credential, filesystem, private log, engine object, title/subtitle/narration text leakage.
+- strict EditPlan JSON parsing with exact root/command schema;
+- maximum 20 L1 commands;
+- fixed `set_clip_effects` command allowlist;
+- strict scalar types;
+- target existence and selected-scope checks;
+- effect/range validation;
+- effect-lock + track-lock rejection;
+- stale-revision rejection;
+- ProviderPlanResponse/inner request ID correlation;
+- W4 manual-command-parity dry-run on local candidate state;
+- zero canonical mutation / zero CommandBus history.
 
 Gates:
-- targeted 10/10 PASS;
+- targeted 12/12 PASS;
 - full pytest PASS;
-- evidence verifier 23/23 PASS;
+- evidence verifier 24/24 PASS;
 - quality/architecture/security/source-of-truth/UI-reference PASS;
-- full regression matrix SUCCESS.
+- full regression matrix SUCCESS on attempt 1.
 
 ## Active next task
 
-**S11-W6-006 — EditPlan schema + PlanVerifier**
+**S11-W6-007 — Gemini adapter + async lifecycle**
 
 Scope:
-- strict provider payload JSON/schema parsing;
-- reject unknown root fields;
-- reject unsupported command types;
-- reject unknown targets;
-- reject unsupported effects/ranges;
-- reject locked targets;
-- stale revision gate;
-- dry-run candidate-state validation;
-- zero canonical mutation on every reject path.
+- official google-genai family behind AIProviderPort;
+- asynchronous/background provider execution;
+- structured lifecycle/progress;
+- cancellation and timeout handling;
+- typed provider error mapping;
+- reuse W6-004 credential-pool health/failover/cooldown;
+- stale-result protection token;
+- deterministic fake-provider integration tests.
 
-W6-006 must not:
-- make Gemini network calls;
-- apply approved plans to CommandBus;
-- build approval/Undo/Redo flow;
+W6-007 must not:
+- apply verified plans to CommandBus;
+- create approval/Undo/Redo transactions;
 - build W6 UI;
-- implement AI L2.
+- implement AI L2;
+- add another provider.
 
-Do not begin W6-006 until owner says `lanjutkan`.
+Do not begin W6-007 until owner says `lanjutkan`.

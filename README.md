@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001/002/003/004/005 PASS — NEXT W6-006**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..006 PASS — NEXT W6-007**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -14,31 +14,30 @@ Completed:
 - W6-003 Windows secure-store qualification = PASS
 - W6-004 credential health + safe failover = PASS
 - W6-005 L1 ContextBuilder + allowlist = PASS
+- W6-006 strict EditPlan schema + PlanVerifier = PASS
 
-W6-005 accepted implementation:
-`043f8f250b7d61356bdf71757e8c6a7904615a06`
+W6-006 accepted implementation:
+`571cf941e64124628d1f8dadafb022eb20c0a541`
 
 Workflow:
-`37604630826` — SUCCESS.
+`37606369024` — SUCCESS.
 
 Now available:
-- bounded deterministic L1 provider context;
-- stable target IDs + lock representation;
-- media aspect/type metadata without filesystem paths;
-- exact render-qualified W4 effect allowlist + intensity range;
-- bounded one-before/one-after neighbor summary;
-- untrusted project text isolation;
-- no credential/API-key or private media metadata in context.
+- strict EditPlan JSON parser with exact root/command fields;
+- max 20 L1 commands and fixed `set_clip_effects` capability;
+- target existence + selected-scope enforcement;
+- effect/range, lock, stale revision and request-ID correlation gates;
+- dry-run through the same W4 `SetClipPropertiesCommand` path used by manual editing;
+- zero canonical mutation and no CommandBus history during verification.
 
-Targeted W6-005 tests: **10/10 PASS**.  
+Targeted W6-006 tests: **12/12 PASS**.  
 Full pytest: **PASS**.  
-Evidence verifier: **23/23 PASS**.
+Evidence verifier: **24/24 PASS**.
 
-All W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08
-regressions are green on the same implementation HEAD.
+All W6-005 through S08 regression workflows are green on the same implementation HEAD.
 
-No Gemini network call, PlanVerifier, W6 UI or AI-plan apply is implemented by W6-005.
+No Gemini network, provider background job, approval/apply, CommandBatch integration or W6 UI is implemented by W6-006.
 
 ## Next
 
-**S11-W6-006 — EditPlan schema + PlanVerifier only.**
+**S11-W6-007 — Gemini adapter + async lifecycle only.**

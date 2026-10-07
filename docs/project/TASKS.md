@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..005 PASS / S11-W6-006 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..006 PASS / S11-W6-007 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -222,8 +222,8 @@ Serial contract:
 - [x] **S11-W6-003 — Windows secure-store qualification — PASS**
 - [x] **S11-W6-004 — Credential health + safe failover — PASS**
 - [x] **S11-W6-005 — L1 ContextBuilder + allowlist — PASS**
-- [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — READY**
-- [ ] **S11-W6-007 — Gemini adapter + async lifecycle — BLOCKED_BY_W6_006**
+- [x] **S11-W6-006 — EditPlan schema + PlanVerifier — PASS**
+- [ ] **S11-W6-007 — Gemini adapter + async lifecycle — READY**
 - [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — BLOCKED_BY_W6_007**
 - [ ] **S11-W6-009 — Frozen UI parity — BLOCKED_BY_W6_008**
 - [ ] **S11-W6-010 — Live Gemini + failure + regression closure — BLOCKED_BY_W6_009**
@@ -359,4 +359,32 @@ W6-005 proof:
 - evidence verifier 23/23 PASS;
 - W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
 
-**Exact next task:** S11-W6-006 only — EditPlan schema + PlanVerifier.
+Accepted W6-006 implementation HEAD:
+`571cf941e64124628d1f8dadafb022eb20c0a541`
+
+W6-006 workflow:
+`37606369024` — SUCCESS
+
+W6-006 evidence:
+`docs/evidence/features/S11_W6_006_EDITPLAN_PLAN_VERIFIER.md`
+
+W6-006 artifact:
+`ANG-S11-W6-006-EditPlan-PlanVerifier` / ID `11475207107`
+
+W6-006 proof:
+- strict exact-field EditPlan JSON parser;
+- maximum 20 L1 commands;
+- fixed set_clip_effects command family;
+- unknown root/command/type rejected;
+- target existence + selected-scope gate;
+- W4 effect/range validation;
+- track/effect lock enforcement;
+- stale revision + request-ID correlation;
+- dry-run through manual W4 SetClipPropertiesCommand;
+- live ProjectState and CommandBus history remain unchanged;
+- targeted tests 12/12 PASS;
+- full pytest PASS;
+- evidence verifier 24/24 PASS;
+- W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
+
+**Exact next task:** S11-W6-007 only — Gemini adapter + async lifecycle.
