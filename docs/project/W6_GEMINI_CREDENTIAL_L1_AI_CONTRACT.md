@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 READY / W6-004..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 READY / W6-005..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -467,9 +467,37 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
 
+### S11-W6-003 — PASS
+
+Accepted implementation HEAD:
+`84e8ef7ce30be24875c37faaa8dd94ab9a6d3c7f`
+
+Accepted workflow:
+`37594820105` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_003_WINDOWS_SECURE_STORE.md`.
+
+Implemented:
+- production WindowsCredentialStore behind CredentialPort;
+- native Windows Generic Credential API through ctypes;
+- transient UTF-8 credential blob with write-buffer zeroing;
+- slot-target namespace mapping;
+- typed/safe no-credential and secure-store failure behavior;
+- idempotent delete;
+- real Windows slot 1/100 store/load/reopen/delete qualification.
+
+Quality:
+- targeted W6-003 tests 7/7 PASS;
+- full pytest PASS;
+- real Windows secure-store smoke PASS;
+- evidence verifier 4/4 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-003 only — Windows secure-store qualification**.
+On the next owner **lanjutkan**, execute **S11-W6-004 only — Credential health + safe failover**.
 
-Do not implement health/failover, bulk TXT, Gemini network, W6 UI, ContextBuilder,
-PlanVerifier or AI-plan application in W6-003.
+Do not implement ContextBuilder, PlanVerifier, Gemini network, W6 UI or AI-plan
+application in W6-004.

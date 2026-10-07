@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 PASS / S11-W6-003 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 PASS / S11-W6-003 PASS / S11-W6-004 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -219,8 +219,8 @@ W6-001 evidence:
 Serial contract:
 - [x] **S11-W6-001 — Canonical AI + credential contracts — PASS**
 - [x] **S11-W6-002 — Secure credential slots 1–100 — PASS**
-- [ ] **S11-W6-003 — Windows secure-store qualification — READY**
-- [ ] **S11-W6-004 — Credential health + safe failover — BLOCKED_BY_W6_003**
+- [x] **S11-W6-003 — Windows secure-store qualification — PASS**
+- [ ] **S11-W6-004 — Credential health + safe failover — READY**
 - [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — BLOCKED_BY_W6_004**
 - [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — BLOCKED_BY_W6_005**
 - [ ] **S11-W6-007 — Gemini adapter + async lifecycle — BLOCKED_BY_W6_006**
@@ -280,4 +280,30 @@ W6-002 proof:
 - evidence verifier 5/5 PASS;
 - W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the accepted HEAD.
 
-**Exact next task:** S11-W6-003 only — Windows secure-store qualification.
+Accepted W6-003 implementation HEAD:
+`84e8ef7ce30be24875c37faaa8dd94ab9a6d3c7f`
+
+W6-003 workflow:
+`37594820105` — SUCCESS
+
+W6-003 evidence:
+`docs/evidence/features/S11_W6_003_WINDOWS_SECURE_STORE.md`
+
+W6-003 artifact:
+`ANG-S11-W6-003-Windows-Secure-Store` / ID `11470101865`
+
+W6-003 proof:
+- production Windows Generic Credential adapter behind CredentialPort;
+- native CredWriteW/CredReadW/CredDeleteW via ctypes;
+- slot 1 and slot 100 real Windows round-trip PASS;
+- fresh adapter reopen reads both slots;
+- delete removes secure secret + non-secret metadata;
+- load-after-delete returns safe typed NO_CREDENTIAL;
+- raw secrets absent from evidence/diagnostics;
+- secure-store targets cleaned after smoke;
+- targeted tests 7/7 PASS;
+- full pytest PASS;
+- evidence verifier 4/4 PASS;
+- W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
+
+**Exact next task:** S11-W6-004 only — Credential health + safe failover.

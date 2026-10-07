@@ -1,55 +1,48 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001 PASS. W6-002 PASS.**
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001/002/003 PASS.**
 
-## Completed
+## Accepted W6-003
 
-### S11-W6-001 — PASS
-Canonical AI + credential contracts.
-
-### S11-W6-002 — PASS
-
-Accepted implementation:
-`7a3f3551b9080347c64ab53cca0be4ee646c41ed`
+Implementation:
+`84e8ef7ce30be24875c37faaa8dd94ab9a6d3c7f`
 
 Workflow:
-`37593139064` — SUCCESS.
+`37594820105` — SUCCESS.
 
 Implemented:
-- non-secret CredentialSlotMetadata;
-- CredentialMetadataPort;
-- fixed safe mask;
-- CredentialSlotService add/update/delete/enable/disable/list/mask;
-- deterministic in-memory credential+metadata fake;
-- consistency rollback behavior;
-- no-secret project/persistence/diagnostic proof.
+- native Windows Credential Manager adapter behind CredentialPort;
+- slot 1/100 real secure-store qualification;
+- fresh-adapter reopen;
+- idempotent delete;
+- safe native failure mapping;
+- no-secret evidence and cleanup.
 
 Gates:
-- targeted tests 9/9 PASS;
+- targeted 7/7 PASS;
 - full pytest PASS;
-- evidence 5/5 PASS;
-- no-secret/architecture/UI/source-of-truth PASS;
-- W6-001 and W5→S08 regressions all SUCCESS.
+- evidence 4/4 PASS;
+- full regression matrix SUCCESS.
 
 ## Active next task
 
-**S11-W6-003 — Windows secure-store qualification**
+**S11-W6-004 — Credential health + safe failover**
 
 Scope:
-- production Windows secure-store adapter behind CredentialPort;
-- real Windows secure-store smoke;
-- slot 1 + 100;
-- store/load/has/delete;
-- reopen qualification;
-- safe error behavior;
-- no raw secret in output/evidence.
+- slot health/test categories;
+- invalid auth;
+- rate/quota cooldown state;
+- bounded network retry semantics;
+- all-slots-unavailable;
+- bounded legal failover;
+- bulk TXT only after single-slot secure storage is already proven.
 
-W6-003 must not:
-- implement credential health/failover;
-- implement bulk TXT;
-- call Gemini;
-- implement ContextBuilder/PlanVerifier;
+W6-004 must not:
+- make live Gemini requests;
+- build ContextBuilder;
+- build PlanVerifier;
 - apply AI plans;
-- implement W6 UI.
+- build W6 UI;
+- implement quota-evasion rotation.
 
-Do not begin W6-003 until owner says `lanjutkan`.
+Do not begin W6-004 until owner says `lanjutkan`.

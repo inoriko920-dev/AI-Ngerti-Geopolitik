@@ -35,6 +35,7 @@
     - `docs/evidence/features/S11_W5_010_CLOSURE_REGRESSION.md`
     - `docs/evidence/features/S11_W6_001_AI_CREDENTIAL_CONTRACTS.md`
     - `docs/evidence/features/S11_W6_002_CREDENTIAL_SLOTS.md`
+    - `docs/evidence/features/S11_W6_003_WINDOWS_SECURE_STORE.md`
 12. current wave contract:
     - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
@@ -79,10 +80,11 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W6 planning TXT/DOCX and contract MD are source-of-truth.
 - S11-W6-001 canonical AI + credential contracts: **PASS**.
 - S11-W6-002 secure credential slots 1–100: **PASS**.
-- S11-W6-003 Windows secure-store qualification: **READY**.
-- S11-W6-004..010: **BLOCKED_BY_PREVIOUS_TASKS**.
-- W6 implementation includes canonical contracts + logical credential slots;
-  no production Windows secure-store adapter or Gemini network call exists yet.
-- exact next task: **S11-W6-003 only**.
+- S11-W6-003 Windows secure-store qualification: **PASS**.
+- S11-W6-004 credential health + safe failover: **READY**.
+- S11-W6-005..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- production Windows Credential Manager secure-store path is qualified;
+- Gemini network is still not implemented or called.
+- exact next task: **S11-W6-004 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
