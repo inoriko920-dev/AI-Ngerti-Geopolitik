@@ -1,0 +1,62 @@
+name: S11 W6-005 L1 Context Builder
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/run_step11_w6_005.py"
+      - "scripts/verify/verify_step11_w6_005_evidence.py"
+      - ".github/workflows/s11-wave6-005-context-builder.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w6-005:
+    name: Bounded L1 context and allowlist
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w6_005_ai_context.py
+      - run: uv run pytest -q
+      - name: Run W6-005 deterministic evidence
+        run: >
+          uv run python scripts/run_step11_w6_005.py
+          --evidence artifacts/step11/w6-005/evidence
+      - name: Verify W6-005 evidence
+        run: >
+          uv run python scripts/verify/verify_step11_w6_005_evidence.py
+          --evidence artifacts/step11/w6-005/evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W6-005-L1-Context-Builder
+          path: artifacts/step11/w6-005/evidence/**
+          if-no-files-found: error
+          retention-days: 14
