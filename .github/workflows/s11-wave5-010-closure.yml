@@ -1,0 +1,71 @@
+name: S11 W5-010 Closure Regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "scripts/run_step11_w5_010.py"
+      - "scripts/verify/verify_step11_w5_010_evidence.py"
+      - ".github/workflows/s11-wave5-010-closure.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w5-010:
+    name: W5 history failures backward compatibility closure
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install FFmpeg qualification toolchain
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w5_010_closure.py
+      - run: uv run pytest -q
+      - name: Generate owned W5-010 video fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w5-010/input-video.mp4
+      - name: Run W5 closure failure evidence
+        run: >
+          uv run python scripts/run_step11_w5_010.py
+          --root .
+          --video artifacts/step11/w5-010/input-video.mp4
+          --evidence artifacts/step11/w5-010/evidence
+      - name: Verify W5-010 evidence
+        run: >
+          uv run python scripts/verify/verify_step11_w5_010_evidence.py
+          --evidence artifacts/step11/w5-010/evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W5-010-Closure
+          path: artifacts/step11/w5-010/evidence/**
+          if-no-files-found: error
+          retention-days: 14
