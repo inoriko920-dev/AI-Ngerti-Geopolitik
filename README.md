@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..006 PASS — NEXT W6-007**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..007 PASS — NEXT W6-008**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -15,29 +15,35 @@ Completed:
 - W6-004 credential health + safe failover = PASS
 - W6-005 L1 ContextBuilder + allowlist = PASS
 - W6-006 strict EditPlan schema + PlanVerifier = PASS
+- W6-007 official Gemini adapter + async lifecycle = PASS
 
-W6-006 accepted implementation:
-`571cf941e64124628d1f8dadafb022eb20c0a541`
+W6-007 accepted implementation:
+`70fa8cd6f800166176889068202ab53d03044b24`
 
 Workflow:
-`37606369024` — SUCCESS.
+`37609729091` — SUCCESS.
 
 Now available:
-- strict EditPlan JSON parser with exact root/command fields;
-- max 20 L1 commands and fixed `set_clip_effects` capability;
-- target existence + selected-scope enforcement;
-- effect/range, lock, stale revision and request-ID correlation gates;
-- dry-run through the same W4 `SetClipPropertiesCommand` path used by manual editing;
-- zero canonical mutation and no CommandBus history during verification.
+- official `google-genai==2.28.0` runtime locked by uv;
+- Gemini adapter behind `AIProviderPort`;
+- async SDK request with structured EditPlan JSON schema;
+- background provider lifecycle off the caller/Qt GUI thread;
+- cancellation, timeout and typed provider-error mapping;
+- W6-004 credential-pool retry/failover/cooldown integration;
+- project/session/revision stale-result guard;
+- one-time verified-result consumption;
+- zero CommandBus/canonical mutation in W6-007.
 
-Targeted W6-006 tests: **12/12 PASS**.  
+Targeted W6-007 tests: **17/17 PASS**.  
 Full pytest: **PASS**.  
-Evidence verifier: **24/24 PASS**.
+Evidence verifier: **11/11 PASS**.  
+Official SDK runtime smoke: **PASS**.
 
-All W6-005 through S08 regression workflows are green on the same implementation HEAD.
+All W6-006 through S08 regression workflows are green on the same implementation HEAD.
 
-No Gemini network, provider background job, approval/apply, CommandBatch integration or W6 UI is implemented by W6-006.
+Real Gemini network qualification is intentionally deferred to W6-010. W6-007 does
+not claim live-provider PASS.
 
 ## Next
 
-**S11-W6-007 — Gemini adapter + async lifecycle only.**
+**S11-W6-008 — Approval → CommandBatch → Undo/Redo only.**

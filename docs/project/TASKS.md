@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..006 PASS / S11-W6-007 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..007 PASS / S11-W6-008 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -223,8 +223,8 @@ Serial contract:
 - [x] **S11-W6-004 — Credential health + safe failover — PASS**
 - [x] **S11-W6-005 — L1 ContextBuilder + allowlist — PASS**
 - [x] **S11-W6-006 — EditPlan schema + PlanVerifier — PASS**
-- [ ] **S11-W6-007 — Gemini adapter + async lifecycle — READY**
-- [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — BLOCKED_BY_W6_007**
+- [x] **S11-W6-007 — Gemini adapter + async lifecycle — PASS**
+- [ ] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — READY**
 - [ ] **S11-W6-009 — Frozen UI parity — BLOCKED_BY_W6_008**
 - [ ] **S11-W6-010 — Live Gemini + failure + regression closure — BLOCKED_BY_W6_009**
 
@@ -387,4 +387,33 @@ W6-006 proof:
 - evidence verifier 24/24 PASS;
 - W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD.
 
-**Exact next task:** S11-W6-007 only — Gemini adapter + async lifecycle.
+Accepted W6-007 implementation HEAD:
+`70fa8cd6f800166176889068202ab53d03044b24`
+
+W6-007 workflow:
+`37609729091` — SUCCESS
+
+W6-007 evidence:
+`docs/evidence/features/S11_W6_007_GEMINI_ASYNC_LIFECYCLE.md`
+
+W6-007 artifact:
+`ANG-S11-W6-007-Gemini-Async-Lifecycle` / ID `11477281563`
+
+W6-007 proof:
+- official google-genai 2.28.0 runtime locked by uv;
+- Gemini adapter behind AIProviderPort;
+- async structured JSON provider request;
+- provider work off caller/Qt GUI thread;
+- cancellation/timeout/typed safe provider errors;
+- W6-004 retry/failover/cooldown reuse;
+- stale project/session/revision guard;
+- one-time verified result consumption;
+- no credential in prompt/context/snapshot;
+- no CommandBus/canonical mutation;
+- targeted tests 17/17 PASS;
+- full pytest PASS;
+- evidence verifier 11/11 PASS;
+- W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD;
+- live Gemini network qualification remains W6-010.
+
+**Exact next task:** S11-W6-008 only — Approval → CommandBatch → Undo/Redo.

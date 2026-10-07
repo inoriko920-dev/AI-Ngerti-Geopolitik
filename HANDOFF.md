@@ -2,101 +2,106 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W6 — Gemini Credential + L1 AI Animation Planning  
-**Last completed task:** S11-W6-006 — PASS  
-**Accepted W6-006 implementation HEAD:** `571cf941e64124628d1f8dadafb022eb20c0a541`  
-**Accepted W6-006 workflow:** `37606369024` — SUCCESS  
-**Next exact task:** S11-W6-007 — Gemini adapter + async lifecycle  
+**Last completed task:** S11-W6-007 — PASS  
+**Accepted W6-007 implementation HEAD:** `70fa8cd6f800166176889068202ab53d03044b24`  
+**Accepted W6-007 workflow:** `37609729091` — SUCCESS  
+**Next exact task:** S11-W6-008 — Approval → CommandBatch → Undo/Redo  
 **Previous W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W6-006 implementation now available
+## W6-007 implementation now available
 
-Application:
-- `application/ai_plan_verifier.py`;
-- strict untrusted JSON parser owned by `PlanVerifier`;
-- immutable `VerifiedEditPlan` proof DTO;
-- manual-command-parity dry-run through `SetClipPropertiesCommand`.
+Runtime:
+- official `google-genai==2.28.0` is locked in `pyproject.toml` and `uv.lock`;
+- `infrastructure/gemini_provider.py` implements `AIProviderPort`;
+- `application/ai_jobs.py` owns the provider-agnostic background lifecycle.
 
-Strict schema:
-- exact root fields only: schema_version, base_project_revision, request_id,
-  summary, commands;
-- commands must be a non-empty array, maximum 20;
-- exact L1 command fields only;
-- command type fixed to `set_clip_effects`;
-- strict integer typing rejects booleans as intensity/revision/schema values;
-- unknown root/command fields and malformed JSON fail as SCHEMA_INVALID.
+Gemini adapter:
+- uses the official async `client.aio.models.generate_content` path;
+- requests JSON structured output with the locked W6 L1 EditPlan schema;
+- Gemini credential is supplied only to the SDK client constructor;
+- raw credential is never inserted into instruction/context/prompt, response DTO,
+  job snapshot, evidence or error text;
+- cancellation is best-effort and checked before/during/after provider work;
+- bounded timeout maps to `NETWORK_TIMEOUT`;
+- 401/403 → `INVALID_AUTH`;
+- 429 → `RATE_LIMIT_OR_QUOTA`;
+- timeout/transient 5xx class → `NETWORK_TIMEOUT`;
+- malformed/unreadable provider response → `MALFORMED_RESPONSE`;
+- raw provider exception details are not surfaced as safe UI messages.
 
-Semantic gates:
-- request ID correlation between ProviderPlanResponse and inner EditPlan;
-- selected-scope allowlist is mandatory, unique and bounded;
-- target must both exist and be inside the allowed selected scope;
-- unsupported W4 effect and intensity outside 0..200 fail;
-- effect lock or track lock returns LOCK_CONFLICT;
-- base revision mismatch returns STALE_PLAN.
-
-Dry-run:
-- proposals execute in order only against a local candidate ProjectState;
-- existing unspecified enter/exit/intensity values are preserved;
-- existing effect lock is preserved and cannot be changed by AI;
-- candidate revision remains unchanged;
-- live ProjectState and CommandBus history remain untouched;
-- candidate state is not returned as an apply path; only semantic hash/revision/count proof is returned.
-
-Still not implemented:
-- Gemini SDK/network;
-- background provider job implementation;
-- approval/apply;
-- CommandBatch integration;
-- W6 UI.
+Provider-agnostic lifecycle:
+- states: QUEUED / RUNNING / SUCCESS / FAILED / CANCELLED;
+- one background provider worker keeps network work off the caller/Qt GUI thread and
+  serializes access to the mutable credential-health/failover state;
+- reuses W6-004 `CredentialPoolService` rather than bypassing it;
+- invalid auth may legally fail over to another enabled credential;
+- network timeout may retry the same credential according to W6-004 policy;
+- quota/rate-limit records provider cooldown and does not rotate around policy;
+- project/session/revision token is captured at submit time;
+- stale project revision/session is rejected before a verified result is released;
+- verified result can be consumed only once;
+- no CommandBus apply or canonical mutation exists in W6-007.
 
 ## Tests/evidence
 
-Targeted W6-006 tests: **12/12 PASS**.  
+Targeted W6-007 tests: **17/17 PASS**.  
 Full pytest: **PASS**.  
-Evidence verifier: **24/24 PASS**.  
-Workflow: `37606369024` — **SUCCESS**.
+Evidence verifier: **11/11 PASS**.  
+Official google-genai runtime smoke: **PASS**.  
+Workflow: `37609729091` — **SUCCESS**.
 
 Artifact:
-- `ANG-S11-W6-006-EditPlan-PlanVerifier`;
-- ID `11475207107`;
-- size 800 bytes.
+- `ANG-S11-W6-007-Gemini-Async-Lifecycle`;
+- ID `11477281563`;
+- size 373 bytes;
+- SHA-256 `46205199699c9a01eb099e664196a14e63d077e17e6cee80da45025e129528e9`.
 
-## Regression lock on accepted W6-006 implementation HEAD
+## Regression lock on accepted W6-007 implementation HEAD
 
 All SUCCESS, attempt 1:
-- W6-006 `37606369024`
-- W6-005 `37606368964`
-- W6-004 `37606368943`
-- W6-003 `37606369038`
-- W6-002 `37606368839`
-- W6-001 `37606369003`
-- W5-010 `37606368937`
-- W5-009 `37606369064`
-- W5-008 `37606368830`
-- W5-007 `37606368954`
-- W5-006 `37606369030`
-- W5-005 `37606369016`
-- W5-004 `37606368963`
-- W4 `37606368993`
-- W3 `37606368996`
-- W2 `37606368898`
-- W1 `37606369019`
-- W0 `37606369029`
-- S10 `37606369131`
-- S09 `37606369020`
-- S08 `37606368969`.
+- W6-007 `37609729091`
+- W6-006 `37609729078`
+- W6-005 `37609729100`
+- W6-004 `37609729302`
+- W6-003 `37609729109`
+- W6-002 `37609729276`
+- W6-001 `37609729237`
+- W5-010 `37609729164`
+- W5-009 `37609729309`
+- W5-008 `37609729138`
+- W5-007 `37609729331`
+- W5-006 `37609729173`
+- W5-005 `37609729188`
+- W5-004 `37609729203`
+- W4 `37609729175`
+- W3 `37609729338`
+- W2 `37609729334`
+- W1 `37609729301`
+- W0 `37609729217`
+- S10 `37609729234`
+- S09 `37609729182`
+- S08 `37609729148`.
 
-## Critical boundaries for W6-007
+## Live Gemini qualification status
 
-- official google-genai family only, behind AIProviderPort;
-- provider network work must stay off the Qt GUI thread;
-- provider timeout/cancel/error mapping must remain typed;
-- credential retrieval remains transient and outside request/context DTOs;
-- bounded credential-pool behavior from W6-004 must be reused, not bypassed;
-- stale/cancelled results must never mutate canonical state;
-- deterministic fake-provider integration tests remain mandatory;
-- no approval/apply transaction yet;
-- no W6 UI yet.
+W6-007 proves the official SDK adapter/runtime and deterministic provider lifecycle.
+It deliberately performs **no real Gemini network request in evidence** and therefore
+does not claim live-provider qualification. Real live-provider qualification remains
+the W6-010 gate.
+
+## Critical boundaries for W6-008
+
+- only a W6-006/W6-007 verified, non-stale result may enter approval;
+- PLAN/APPROVAL is mandatory before canonical mutation;
+- Cancel/reject = zero mutation;
+- stale revision must be checked again immediately before apply;
+- one approved plan must become exactly one atomic CommandBatch/history entry;
+- commands must use the existing legal manual command path;
+- Undo must restore the exact before-state; Redo must restore exact applied state;
+- duplicate consumption/apply must fail safely;
+- no W6 UI implementation yet;
+- no live Gemini closure yet.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W6-007 only — Gemini adapter + async lifecycle**.
+After owner says `lanjutkan`, execute **S11-W6-008 only — Approval → CommandBatch → Undo/Redo**.
