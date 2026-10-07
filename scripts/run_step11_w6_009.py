@@ -146,13 +146,13 @@ def main() -> int:
         raise RuntimeError("W6-009 AI Agent tab is missing")
     right.setCurrentIndex(ai_index)
 
-    mapping: list[tuple[str, str]] = []
+    mapping: list[tuple[str, str, str]] = []
 
     set_ai_agent_subview(workspace, "director")
     app.processEvents()
-    path = output / "UI-010_ACTUAL_AI_DIRECTOR.png"
+    path = output / "AI_DIRECTOR_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-010", path.name))
+    mapping.append(("AI_DIRECTOR", "UI-020", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -163,9 +163,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-011_ACTUAL_AI_READY.png"
+    path = output / "AI_READY_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-011", path.name))
+    mapping.append(("AI_READY", "UI-021", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -181,9 +181,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-012_ACTUAL_AI_PLAN.png"
+    path = output / "AI_PLAN_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-012", path.name))
+    mapping.append(("AI_PLAN", "UI-022", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -195,9 +195,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-013_ACTUAL_AI_APPLIED.png"
+    path = output / "AI_APPLIED_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-013", path.name))
+    mapping.append(("AI_APPLIED", "UI-023", path.name))
 
     project_ai_agent_state(
         workspace,
@@ -209,9 +209,9 @@ def main() -> int:
         ),
     )
     app.processEvents()
-    path = output / "UI-014_ACTUAL_PROVIDER_UNAVAILABLE.png"
+    path = output / "AI_PROVIDER_UNAVAILABLE_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-014", path.name))
+    mapping.append(("AI_PROVIDER_UNAVAILABLE", "UI-024", path.name))
 
     window._open_ai_credentials_dialog()
     window.apply_w6_credential_slots(
@@ -222,32 +222,34 @@ def main() -> int:
         )
     )
     app.processEvents()
-    path = output / "UI-023_ACTUAL_PROVIDER_KEYS.png"
+    path = output / "PROVIDER_API_KEYS_ACTUAL.png"
     _render(window, path)
-    mapping.append(("UI-023", path.name))
+    mapping.append(("PROVIDER_API_KEYS", "UI-033", path.name))
 
-    for ui_id, actual_name in mapping:
-        ref_path = reference / f"{ui_id}.png"
+    for semantic_name, reference_id, actual_name in mapping:
+        ref_path = reference / f"{reference_id}.png"
         actual_path = output / actual_name
         if not ref_path.is_file():
-            raise RuntimeError(f"missing frozen reference {ui_id}")
+            raise RuntimeError(f"missing frozen reference {reference_id}")
         _pair(
             ref_path,
             actual_path,
-            output / f"{ui_id}_REFERENCE_VS_ACTUAL.png",
-            ui_id,
+            output / f"{semantic_name}__{reference_id}_REFERENCE_VS_ACTUAL.png",
+            f"{semantic_name} — frozen {reference_id}",
         )
 
     (output / "00_w6_009_ui_report.txt").write_text(
         "\n".join(
             [
                 "status=PASS",
-                "ui_010=ai_director_real_widgets",
-                "ui_011=ready_chat_real_widgets",
-                "ui_012=plan_approval_real_widgets",
-                "ui_013=applied_success_real_widgets",
-                "ui_014=provider_unavailable_manual_fallback",
-                "ui_023=provider_api_key_manager_real_widgets",
+                "ai_director=real_widgets",
+                "ai_ready=real_widgets",
+                "ai_plan=real_widgets",
+                "ai_applied=real_widgets",
+                "ai_provider_unavailable=real_widgets",
+                "provider_api_keys=real_widgets",
+                "reference_mapping=AI_DIRECTOR:UI-020,AI_READY:UI-021,AI_PLAN:UI-022,AI_APPLIED:UI-023,AI_PROVIDER_UNAVAILABLE:UI-024,PROVIDER_API_KEYS:UI-033",
+                "historical_w6_reference_numbers_corrected=true",
                 "states=READY,PLAN,APPROVAL,APPLYING,SUCCESS,PROVIDER_ERROR,LOCK_CONFLICT,STALE",
                 "l1_only=true",
                 "manual_fallback=true",
