@@ -148,8 +148,7 @@ class RelinkAssetCommand:
         ):
             raise CommandError("relink path is already bound to another asset")
         assets = tuple(
-            self.replacement if item.asset_id == current.asset_id else item
-            for item in state.assets
+            self.replacement if item.asset_id == current.asset_id else item for item in state.assets
         )
         candidate = replace(state, assets=assets)
         candidate.validate()
