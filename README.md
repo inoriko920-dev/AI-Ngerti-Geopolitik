@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/W5-002/W5-003 PASS — NEXT W5-004**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001/002/003/004 PASS — NEXT W5-005**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -11,27 +11,31 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 W5 is **Subtitle + Narration**.
 
 Completed:
-- **S11-W5-001 — Canonical subtitle/narration model = PASS**
-- **S11-W5-002 — SRT import + validation = PASS**
-- **S11-W5-003 — Cue editing + safe working-copy flow = PASS**
+- S11-W5-001 — canonical subtitle/narration model = PASS
+- S11-W5-002 — SRT import + validation = PASS
+- S11-W5-003 — cue editing + safe working-copy = PASS
+- S11-W5-004 — subtitle style = PASS
 
-W5-003 accepted implementation:
-`d8db4d18cb42b71d91a9b727868b25340961702f`
+W5-004 accepted implementation:
+`687d31585d476541711978d5f69e5e7eafe72245`
 
-Accepted workflow:
-`37573388357` — SUCCESS
+Workflow:
+`37574406573` — SUCCESS
 
-The subtitle workflow now supports local cue editing, insert/delete,
-split/merge, explicit sort/index normalization, dirty reload protection and
-safe no-clobber SRT save-copy with an undoable canonical commit.
+The app now has canonical subtitle styling with Undo/Redo and persistence plus
+real preview/export qualification for font family/size, fill, outline, shadow,
+background box/opacity, alignment and vertical margin.
 
-The original SRT is not overwritten by W5-003.
+For the current FFmpeg qualification adapter, render-proven fonts are **Arial**
+and **Segoe UI** only.
+
+Evidence verifier: **18/18 PASS**.
 
 All W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same accepted
 implementation HEAD.
 
 ## Next
 
-**S11-W5-004 — Subtitle style only.**
+**S11-W5-005 — Render-backed subtitle animation + per-word boundary only.**
 
-Subtitle animation, narration and recording remain later tasks.
+Narration and recording remain later tasks.

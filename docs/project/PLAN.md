@@ -1,52 +1,57 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001/W5-002/W5-003 PASS.**
+**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001/W5-002/W5-003/W5-004 PASS.**
 
-## Accepted W5-003
+## Accepted W5-004
 
 - implementation HEAD:
-  `d8db4d18cb42b71d91a9b727868b25340961702f`;
-- W5-003 run: `37573388357` — SUCCESS;
-- application-level subtitle working copy implemented;
-- text/IN/OUT edit, insert/delete, split/merge implemented;
-- explicit sort/index normalization implemented;
-- dirty reload/discard guard implemented;
-- no-clobber UTF-8 save-copy writer implemented;
-- default non-colliding copy naming implemented;
-- source SRT overwrite remains disabled;
-- successful copy commit uses CommandBus and is undoable;
-- failed writer does not alter project binding;
-- targeted 12/12 tests + full pytest green;
+  `687d31585d476541711978d5f69e5e7eafe72245`;
+- workflow:
+  `37574406573` — SUCCESS;
+- canonical subtitle-style command/history implemented;
+- persistence/reopen proven;
+- dirty cue working-copy compatibility fixed and tested;
+- real preview qualification for every enabled style dimension;
+- real styled export with audio;
+- source SRT unchanged;
+- render-qualified font-family boundary locked to Arial + Segoe UI;
+- targeted 6/6 tests + full pytest green;
+- evidence verifier 18/18 PASS;
 - W4/W3/W2/W1/W0/S10/S09/S08 regressions all green on the same HEAD.
 
 Evidence:
-`docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`.
+`docs/evidence/features/S11_W5_004_SUBTITLE_STYLE.md`.
 
 ## Active next task
 
-**S11-W5-004 — Subtitle style**
+**S11-W5-005 — Render-backed subtitle animation + per-word boundary**
 
-W5-004 must build on the existing canonical `SubtitleStyle` and preserve the
-safe W5-003 working-copy/source behavior.
+Candidate animation names may be enabled only after independent real render
+proof.
 
-W5-004 scope:
-- font family and size;
-- fill color;
-- outline color/width;
-- shadow;
-- optional background box/opacity;
-- alignment;
-- safe vertical margin;
-- semantic mutation through CommandBus;
-- Undo/Redo;
-- persistence/reopen;
-- real preview/export proof for each enabled style property.
+Legacy AAVC code gives concrete behavior candidates:
+- Fade;
+- Pop;
+- Slide Up;
+- Clean Documentary.
 
-W5-004 must not:
-- enable subtitle animation presets;
-- add per-word animation/alignment behavior;
-- implement narration/recording;
-- start UI parity beyond what is minimally required for qualification;
-- start Gemini/provider work.
+Keep hidden/disabled unless independently proven:
+- Word Reveal;
+- Karaoke Highlight;
+- Typewriter;
+- Bounce Soft;
+- Emphasis Word;
+- Social Caption;
+- any label that merely falls back to a generic effect.
 
-Do not begin W5-004 until owner says `lanjutkan`.
+Per-word timing:
+- canonical WordTiming already exists;
+- explicit edit/representation is allowed;
+- deterministic even word distribution is allowed only as an explicit
+  fallback and must be labeled **not speech alignment**;
+- no ASR, transcription or phoneme/word auto-alignment claim.
+
+W5-005 must not start narration, microphone, full frozen UI parity, Gemini or
+later tasks.
+
+Do not begin W5-005 until owner says `lanjutkan`.

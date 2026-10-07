@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -228,7 +228,17 @@ semantics are accepted.
   - accepted run: `37573388357`;
   - evidence:
     `docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`.
-- S11-W5-004 — **READY**.
-- S11-W5-005..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-004 — **PASS**
+  - accepted implementation HEAD:
+    `687d31585d476541711978d5f69e5e7eafe72245`;
+  - accepted run: `37574406573`;
+  - evidence:
+    `docs/evidence/features/S11_W5_004_SUBTITLE_STYLE.md`;
+  - evidence artifact:
+    `ANG-S11-W5-004-Subtitle-Style` / `11461154582`;
+  - FFmpeg qualification font families:
+    Arial and Segoe UI.
+- S11-W5-005 — **READY**.
+- S11-W5-006..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-004 only**.
+On the next owner `lanjutkan`, execute **S11-W5-005 only**.

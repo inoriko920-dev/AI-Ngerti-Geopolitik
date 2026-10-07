@@ -2,97 +2,100 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W5 — Subtitle + Narration**  
-**W5 progress:** **S11-W5-001 PASS / S11-W5-002 PASS / S11-W5-003 PASS**  
-**Accepted W5-003 implementation HEAD:** `d8db4d18cb42b71d91a9b727868b25340961702f`  
-**Accepted W5-003 workflow:** `37573388357` — SUCCESS  
-**Next exact task:** **S11-W5-004 — Subtitle style**
+**W5 progress:** **S11-W5-001/002/003/004 PASS**  
+**Accepted W5-004 implementation HEAD:** `687d31585d476541711978d5f69e5e7eafe72245`  
+**Accepted W5-004 workflow:** `37574406573` — SUCCESS  
+**Next exact task:** **S11-W5-005 — Render-backed subtitle animation + per-word boundary**
 
-## W5-003 proven
+## W5-004 proven
 
-Working-copy ownership:
-- cue edits live in application-level `SubtitleWorkingCopy`;
-- typing/edit operations do not mutate ProjectState directly;
-- ProjectState changes only at explicit save-copy + commit;
-- canonical `SubtitleTrack` remains the project truth.
+Canonical mutation/history:
+- added semantic `SetSubtitleStyleCommand`;
+- style mutation requires an existing canonical SubtitleTrack;
+- mutation flows through CommandBus/CommandBatch;
+- Undo restores the prior style;
+- Redo restores the styled state.
 
-Cue editing:
-- select cue by stable cue ID;
-- edit text, IN frame and OUT frame;
-- invalid/overlapping edits are rejected before mutation;
-- insert/delete supported where valid;
-- deleting the final cue is rejected;
-- split requires an explicit split frame and explicit left/right text;
-- merge requires explicit merged text;
-- split/merge do not invent or silently rewrite wording.
+Persistence:
+- font family/size, fill, outline, shadow, background box/opacity,
+  alignment and margin persist in .angproj;
+- save/reopen semantic hash remains stable;
+- legacy W5 defaults remain compatible.
 
-Explicit ordering/index behavior:
-- insert does not silently renumber existing cue indexes;
-- working-copy list may remain intentionally unsorted;
-- stable chronological sort occurs only via explicit `sort_by_time()`;
-- index normalization occurs only via explicit `normalize_indexes()`;
-- save/commit refuses a non-canonical unsorted result.
+Working-copy integration:
+- dirty cue edits stay local;
+- changing project subtitle style does not discard the cue working copy;
+- later Save Copy carries the latest project style forward instead of reverting
+  to the working-copy baseline metadata;
+- source SRT remains unchanged.
 
-Dirty/reload safety:
-- working copy tracks dirty state against its baseline;
-- reload/leave guard raises when unsaved changes would be discarded;
-- discard requires an explicit `discard_dirty=True` decision.
+Render qualification:
+- FFmpeg remains a qualification adapter only;
+- preview renders the cue active at the requested canonical timeline frame;
+- export applies subtitle cues after canonical timeline composition;
+- every enabled style dimension received an independent real preview variant:
+  font family, font size, fill, outline, shadow, background box/opacity,
+  alignment and safe vertical margin;
+- every preview variant differed from the baseline image;
+- final styled export is valid and retains audio.
 
-Safe save-copy:
-- default destination is `<source>.edited.srt`;
-- collisions advance to `edited-2`, etc.;
-- source path is rejected as a save-copy destination;
-- existing destinations are never silently clobbered;
-- concrete UTF-8 writer uses exclusive create;
-- multiline subtitle text survives write + parse round-trip;
-- writer failure leaves canonical project binding unchanged.
+Render-qualified font-family boundary for this adapter:
+- Arial;
+- Segoe UI.
 
-Commit/history:
-- successful copy becomes the new canonical subtitle source binding;
-- commit flows through `SetSubtitleTrackCommand` + CommandBus/CommandBatch;
-- working copy becomes clean only after successful commit;
-- Undo restores the previously bound subtitle track;
-- original source SRT remains unchanged.
+Other font-family strings may remain canonical data but are explicitly rejected
+by this qualification adapter until independently proven. Future UI must not
+advertise unqualified fonts as available.
 
-W5-003 intentionally supports **save-copy only**. Explicit overwrite of the
-original source is not enabled here; that is stricter than the minimum safety
-requirement and may only be revisited by a later explicit product policy.
+Animation boundary:
+- SubtitleAnimation remains `none` only;
+- W5-004 does not enable Fade/Pop/Slide Up/Clean Documentary;
+- animation qualification remains W5-005.
 
 Evidence:
-`docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`.
+`docs/evidence/features/S11_W5_004_SUBTITLE_STYLE.md`.
 
-## W5-003 quality gate
+Artifact:
+- `ANG-S11-W5-004-Subtitle-Style`;
+- ID `11461154582`;
+- size 10,534,700 bytes.
 
-Workflow `37573388357`:
-- uv lock/sync PASS;
+## W5-004 quality/evidence gate
+
+Workflow `37574406573`:
 - Ruff format PASS;
 - Ruff check PASS;
 - mypy PASS;
 - import contracts PASS;
 - architecture PASS;
-- source-of-truth 70/70 PASS on implementation HEAD;
+- source-of-truth 70/70 PASS;
 - secret scan PASS;
-- W5-003 targeted tests: **12/12 PASS**;
-- full pytest PASS, including W5-002 parser/import regressions.
+- targeted W5-004 tests: **6/6 PASS**;
+- full pytest PASS;
+- real W5-004 evidence PASS;
+- evidence verifier: **18/18 PASS**.
 
-## Regression lock on accepted W5-003 HEAD
+## Regression lock on accepted W5-004 HEAD
 
 All SUCCESS:
-- W5-003: `37573388357`;
-- W4: `37573388429`;
-- W3: `37573388403`;
-- W2: `37573388383`;
-- W1: `37573388372`;
-- W0: `37573388385`;
-- S10: `37573388378`;
-- S09: `37573388370`;
-- S08: `37573388358`.
+- W5-004: `37574406573`;
+- W4: `37574406598`;
+- W3: `37574406680`;
+- W2: `37574406711`;
+- W1: `37574406582`;
+- W0: `37574406562`;
+- S10: `37574406568`;
+- S09: `37574406585`;
+- S08: `37574406553`.
 
-S10 real-media vertical slice, packaged real-media smoke and portable UI
-regression remain green. MLT W0/W2 qualification remains green.
+This includes MLT W0/W2 qualification, W3/W4 real-output evidence, S10
+real-media vertical slice, packaged real-media smoke, portable UI regression,
+and S08/S09 portable regressions.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **S11-W5-004 — Subtitle style only**.
+On owner **"lanjutkan"**, execute **S11-W5-005 only**.
 
-Do not start W5-005 animation/per-word behavior, narration, microphone, UI
-parity, Gemini or later tasks in the same turn.
+W5-005 must qualify actual subtitle animation behavior and the per-word timing
+boundary. Do not start narration import, microphone recording, frozen UI parity,
+Gemini/provider work or later W5 tasks in the same turn.

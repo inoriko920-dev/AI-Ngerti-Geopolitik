@@ -26,6 +26,7 @@
     - `docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`
     - `docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`
     - `docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`
+    - `docs/evidence/features/S11_W5_004_SUBTITLE_STYLE.md`
 12. current wave contract:
     - `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 13. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
@@ -51,6 +52,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - SF-STEP 11 W5-001 canonical subtitle/narration model: **PASS**.
 - SF-STEP 11 W5-002 SRT import + validation: **PASS**.
 - SF-STEP 11 W5-003 cue editing + safe working-copy flow: **PASS**.
-- exact next task: **S11-W5-004 subtitle style**.
+- SF-STEP 11 W5-004 subtitle style: **PASS**.
+- exact next task: **S11-W5-005 render-backed subtitle animation + per-word boundary**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

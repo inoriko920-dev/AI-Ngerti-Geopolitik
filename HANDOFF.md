@@ -2,10 +2,10 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-003 — PASS  
-**Accepted W5-003 HEAD:** `d8db4d18cb42b71d91a9b727868b25340961702f`  
-**Accepted W5-003 run:** `37573388357` — SUCCESS  
-**Next exact task:** S11-W5-004 — Subtitle style
+**Last completed task:** S11-W5-004 — PASS  
+**Accepted W5-004 HEAD:** `687d31585d476541711978d5f69e5e7eafe72245`  
+**Accepted W5-004 run:** `37574406573` — SUCCESS  
+**Next exact task:** S11-W5-005 — Render-backed subtitle animation + per-word boundary
 
 ## Read first
 
@@ -13,64 +13,80 @@ Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 Read:
 - W0–W4 evidence in order;
-- `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`;
-- W5-001 / W5-002 / W5-003 evidence;
+- W5 contract;
+- W5-001 / W5-002 / W5-003 / W5-004 evidence;
 - current PLAN/TASKS/PROJECT_STATUS.
 
-## W5-003 working-copy path
+## W5-004 implementation now available
 
-Application:
-- `SubtitleWorkingCopy`;
-- `SubtitleWorkingCopyService`;
-- `SubtitleWorkingCopyError`;
-- `DirtySubtitleWorkingCopyError`;
-- `SubtitleWriterPort` / `SubtitleWriteError`.
+Application/domain path:
+- existing canonical SubtitleStyle;
+- new `SetSubtitleStyleCommand`;
+- CommandBus Undo/Redo;
+- .angproj persistence/reopen.
 
-Infrastructure:
-- `Utf8SrtWriter` no-clobber save-copy writer;
-- existing `Utf8SrtParser` remains the read path.
+Qualification renderer:
+- `infrastructure/ffmpeg_subtitles.py`;
+- preview chooses the canonical active cue;
+- export applies cue timing windows after timeline composition;
+- render-qualified font families: Arial and Segoe UI.
 
-Behavior proven:
-- local text/IN/OUT edit;
-- insert/delete;
-- split/merge with explicit text;
-- explicit sort and index normalization;
-- dirty discard/reload guard;
-- default non-colliding save-copy name;
-- no source overwrite;
-- no existing destination clobber;
-- multiline round-trip;
-- failed writer cannot commit project state;
-- save-copy commit is undoable.
+Qualified style surface:
+- font family;
+- font size;
+- fill color;
+- outline color/width;
+- shadow;
+- background box/opacity;
+- top/center/bottom-center alignment;
+- safe vertical margin.
+
+Working-copy interaction:
+- style changes do not discard dirty cue edits;
+- Save Copy carries current project style into the newly bound copied SRT;
+- source SRT protection from W5-003 remains intact.
+
+## W5-004 evidence
+
+Workflow:
+`37574406573` — SUCCESS
+
+Evidence verifier:
+18/18 PASS.
+
+Artifact:
+`ANG-S11-W5-004-Subtitle-Style`
+ID: `11461154582`
 
 ## Critical boundaries carried forward
 
-- ProjectState is not mutated while typing in the subtitle working copy.
-- Original source SRT cannot be overwritten by W5-003.
-- SubtitleAnimation still accepts only `none`.
-- W5-004 may change only canonical subtitle style.
-- Do not enable visual subtitle animation until W5-005.
+- FFmpeg is qualification, not a production-engine switch.
+- SubtitleAnimation is still canonical `none` only.
+- Do not advertise unqualified fonts.
+- W5-005 may enable only animations with real preview/export proof.
+- No ASR/transcription/automatic word alignment claims.
+- Deterministic word distribution, if added, must be explicitly labeled
+  **not speech alignment**.
 - Do not start narration/recording/Gemini work.
 
-## Regression lock on W5-003 accepted HEAD
+## Regression lock on W5-004 accepted HEAD
 
 All SUCCESS:
-- W5-003 `37573388357`
-- W4 `37573388429`
-- W3 `37573388403`
-- W2 `37573388383`
-- W1 `37573388372`
-- W0 `37573388385`
-- S10 `37573388378`
-- S09 `37573388370`
-- S08 `37573388358`
-
-Full pytest in W5-003 also includes W5-002 parser/import tests.
+- W5-004 `37574406573`
+- W4 `37574406598`
+- W3 `37574406680`
+- W2 `37574406711`
+- W1 `37574406582`
+- W0 `37574406562`
+- S10 `37574406568`
+- S09 `37574406585`
+- S08 `37574406553`
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-004 only**:
-canonical subtitle style mutation/persistence/history and render qualification
-for the frozen style properties.
+After owner says `lanjutkan`, execute **S11-W5-005 only**:
+qualify supported subtitle animation presets with real preview/export evidence,
+then implement the explicit per-word timing boundary without claiming speech
+alignment.
 
-Do not start W5-005 or later tasks.
+Do not start W5-006 or later tasks.
