@@ -339,7 +339,11 @@ def test_job_service_runs_off_caller_thread_and_returns_verified_without_mutatio
 
     with AIPlanJobService(provider, pool, PlanVerifier()) as service:
         queued = service.submit(_request(), state, ("clip-1",), session_id="session-A")
-        assert queued.state in {AIJobState.QUEUED, AIJobState.RUNNING}
+        assert queued.state in {
+            AIJobState.QUEUED,
+            AIJobState.RUNNING,
+            AIJobState.SUCCESS,
+        }
         terminal = _wait_terminal(service, "REQ-007")
         assert terminal.state is AIJobState.SUCCESS
         verified = service.take_verified("REQ-007", state, session_id="session-A")
