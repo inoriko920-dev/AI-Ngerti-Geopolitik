@@ -41,6 +41,7 @@ class AIAgentProjection:
     scope_text: str = "Scene terpilih · maksimal 20 target"
     summary: str = ""
     commands: tuple[str, ...] = ()
+    diffs: tuple[str, ...] = ()
     message: str = ""
     error_code: str = ""
     request_id: str = ""
@@ -48,6 +49,8 @@ class AIAgentProjection:
     def __post_init__(self) -> None:
         if len(self.commands) > 20:
             raise ValueError("W6 UI plan projection cannot exceed 20 commands")
+        if len(self.diffs) > 40:
+            raise ValueError("W7 UI diff projection cannot exceed 40 commands")
 
 
 @dataclass(frozen=True, slots=True)
@@ -251,6 +254,7 @@ def create_ai_agent_workspace(
     model_combo = QComboBox()
     model_combo.setObjectName("combo_w6_ai_model")
     model_combo.addItem("Mode: L1 Effects", "l1_effects")
+    model_combo.addItem("Mode: Auto Edit L2", "l2_auto_edit")
     config_row.addWidget(model_combo, 1)
     agent_layout.addLayout(config_row)
 
@@ -344,7 +348,9 @@ def create_ai_agent_workspace(
     plan_layout.addWidget(impact)
     plan_layout.addWidget(QLabel("Validasi & Pengaman"))
     plan_layout.addWidget(muted_label("✓ Lock dihormati"))
-    plan_layout.addWidget(muted_label("✓ Efek hanya dari allowlist L1"))
+    capability_safety = muted_label("✓ Efek hanya dari allowlist L1")
+    capability_safety.setObjectName("label_w6_plan_capability_safety")
+    plan_layout.addWidget(capability_safety)
     plan_layout.addWidget(muted_label("✓ Stale plan ditolak sebelum apply"))
     plan_layout.addWidget(muted_label("⚠ AI memberi saran; keputusan akhir tetap pada pengguna."))
     plan_buttons = QHBoxLayout()
@@ -488,9 +494,23 @@ def create_ai_agent_workspace(
     error_manage.clicked.connect(open_credentials)
     open_chat.clicked.connect(lambda: tabs.setCurrentIndex(1))
     open_chat.clicked.connect(lambda: _emit(intent_sink, UiIntentType.AI_OPEN_AGENT, view="agent"))
-    send.clicked.connect(lambda: _submit_instruction(root, instruction, scope_label, intent_sink))
+    send.clicked.connect(
+        lambda: _submit_instruction(
+            root,
+            instruction,
+            scope_label,
+            model_combo,
+            intent_sink,
+        )
+    )
     instruction.returnPressed.connect(
-        lambda: _submit_instruction(root, instruction, scope_label, intent_sink)
+        lambda: _submit_instruction(
+            root,
+            instruction,
+            scope_label,
+            model_combo,
+            intent_sink,
+        )
     )
     approve.clicked.connect(
         lambda: _emit(
@@ -544,16 +564,22 @@ def _submit_instruction(
     workspace: Any,
     instruction: Any,
     scope_label: Any,
+    mode_combo: Any,
     intent_sink: UiIntentSink | None,
 ) -> None:
     text = instruction.text().strip()
     if not text:
         return
+    payload = {
+        "instruction": text,
+        "scope": scope_label.text(),
+    }
+    if str(mode_combo.currentData()) == "l2_auto_edit":
+        payload["profile"] = "l2_auto_edit"
     _emit(
         intent_sink,
         UiIntentType.AI_SUBMIT_PROMPT,
-        instruction=text,
-        scope=scope_label.text(),
+        **payload,
     )
     instruction.clear()
     workspace.setProperty("w6_last_instruction_submitted", True)
@@ -641,6 +667,10 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
         summary = workspace.findChild(QLabel, "label_w6_plan_summary")
         state_label = workspace.findChild(QLabel, "label_w6_plan_state")
         commands = workspace.findChild(QListWidget, "list_w6_plan_commands")
+        capability_safety = workspace.findChild(QLabel, "label_w6_plan_capability_safety")
+        from PySide6.QtWidgets import QComboBox
+
+        mode_combo = workspace.findChild(QComboBox, "combo_w6_ai_model")
         approve = workspace.findChild(QPushButton, "btn_w6_plan_approve")
         reject = workspace.findChild(QPushButton, "btn_w6_plan_reject")
         cancel_plan = workspace.findChild(QPushButton, "btn_w6_plan_cancel")
@@ -649,6 +679,8 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
             summary is None
             or state_label is None
             or commands is None
+            or capability_safety is None
+            or mode_combo is None
             or approve is None
             or reject is None
             or cancel_plan is None
@@ -657,12 +689,29 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
             raise RuntimeError("W6 plan widgets are missing")
         summary.setText(projection.summary or "Rencana AI siap ditinjau.")
         commands.clear()
-        for index, command in enumerate(projection.commands, start=1):
+        lines = projection.diffs if projection.diffs else projection.commands
+        for index, command in enumerate(lines, start=1):
             commands.addItem(f"{index:02d}. {command}")
+        is_l2 = bool(projection.diffs)
+        if is_l2:
+            mode_index = mode_combo.findData("l2_auto_edit")
+            if mode_index >= 0:
+                mode_combo.setCurrentIndex(mode_index)
+            capability_safety.setText(
+                "✓ Hanya capability Auto Edit L2 yang sudah diizinkan"
+            )
+        else:
+            mode_index = mode_combo.findData("l1_effects")
+            if mode_index >= 0:
+                mode_combo.setCurrentIndex(mode_index)
+            capability_safety.setText("✓ Efek hanya dari allowlist L1")
         is_approval = projection.state is AIAgentUiState.APPROVAL
-        state_label.setText(
-            "Rencana disetujui · siap diterapkan" if is_approval else "Rencana siap ditinjau"
-        )
+        if is_approval:
+            state_label.setText("Rencana disetujui · siap diterapkan")
+        elif is_l2:
+            state_label.setText("Rencana Auto Edit L2 siap ditinjau")
+        else:
+            state_label.setText("Rencana siap ditinjau")
         approve.setVisible(not is_approval)
         reject.setVisible(not is_approval)
         cancel_plan.setVisible(is_approval)
