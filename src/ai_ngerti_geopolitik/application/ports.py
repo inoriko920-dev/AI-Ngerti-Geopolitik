@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
+from ai_ngerti_geopolitik.application.ai_contracts import (
+    AIProviderRequest,
+    CredentialSecret,
+    CredentialSlotRef,
+    ProviderPlanResponse,
+)
 from ai_ngerti_geopolitik.domain import ProjectState
 
 
@@ -143,3 +149,32 @@ class RealtimePlaybackPort(Protocol):
     def pause(self) -> None: ...
 
     def stop(self) -> None: ...
+
+
+@runtime_checkable
+class CredentialPort(Protocol):
+    """Secure secret storage boundary. Metadata orchestration belongs to W6-002."""
+
+    def store_secret(
+        self,
+        slot: CredentialSlotRef,
+        secret: CredentialSecret,
+    ) -> None: ...
+
+    def load_secret(self, slot: CredentialSlotRef) -> CredentialSecret: ...
+
+    def delete_secret(self, slot: CredentialSlotRef) -> None: ...
+
+    def has_secret(self, slot: CredentialSlotRef) -> bool: ...
+
+
+@runtime_checkable
+class AIProviderPort(Protocol):
+    """Provider-agnostic L1 plan generation boundary."""
+
+    def request_plan(
+        self,
+        request: AIProviderRequest,
+        credential: CredentialSecret,
+        cancellation: CancellationToken | None = None,
+    ) -> ProviderPlanResponse: ...
