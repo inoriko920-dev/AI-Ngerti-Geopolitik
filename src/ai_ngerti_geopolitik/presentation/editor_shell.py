@@ -335,25 +335,6 @@ def _narration_inspector(
     )
 
 
-def _ai_placeholder() -> Any:
-    from PySide6.QtWidgets import QLineEdit, QPushButton, QVBoxLayout, QWidget
-
-    widget = QWidget()
-    layout = QVBoxLayout(widget)
-    layout.addWidget(section_title("AI Agent"))
-    layout.addWidget(muted_label("Scope: Seluruh Proyek · Scene 08 · A014"))
-    for text in [
-        "Acak animasi scene 1–10",
-        "Cari aset missing",
-        "Atur scene ini lebih rapat",
-    ]:
-        layout.addWidget(QPushButton(text))
-    layout.addStretch(1)
-    layout.addWidget(QLineEdit("Tulis perintah..."))
-    layout.addWidget(make_primary_button("Kirim"))
-    return widget
-
-
 def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     from PySide6.QtCore import Qt
     from PySide6.QtGui import QAction
