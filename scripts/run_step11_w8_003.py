@@ -137,9 +137,7 @@ def main() -> int:
         key for key, value in report.items() if isinstance(value, bool) and value is not True
     ]
     if failed_checks:
-        raise RuntimeError(
-            "W8-003 real relocation proof failed: " + ", ".join(failed_checks)
-        )
+        raise RuntimeError("W8-003 real relocation proof failed: " + ", ".join(failed_checks))
 
     _write(evidence / "00_w8_003_relink_report.json", report)
     _write(
