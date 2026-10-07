@@ -222,7 +222,10 @@ def main() -> int:
         diff_texts = approvals.diff_texts(staged.approval_id)
         if staged.state is not AIApprovalState.PENDING or len(diff_texts) != 6:
             raise RuntimeError("W7-010 review staging proof failed")
-        if session.state.semantic_json(include_revision=True) != baseline_json:
+        canonical_unchanged_before_approval = (
+            session.state.semantic_json(include_revision=True) == baseline_json
+        )
+        if not canonical_unchanged_before_approval:
             raise RuntimeError("W7-010 staging mutated canonical project")
 
         approvals.approve(staged.approval_id)
@@ -230,7 +233,8 @@ def main() -> int:
 
     if applied.state is not AIApprovalState.APPLIED:
         raise RuntimeError("W7-010 L2 plan was not atomically applied")
-    if session.state.revision != baseline_revision + 1:
+    one_revision_apply = session.state.revision == baseline_revision + 1
+    if not one_revision_apply:
         raise RuntimeError("W7-010 apply did not increment revision exactly once")
     if session.state.timeline_end_frame != 210:
         raise RuntimeError("W7-010 mixed pacing result is not 210 frames")
@@ -297,10 +301,8 @@ def main() -> int:
         "mixed_l1_l2_plan": True,
         "review_diff_count": len(diff_texts),
         "review_diffs_bounded": all(len(item) <= 280 and "→" in item for item in diff_texts),
-        "canonical_unchanged_before_approval": baseline_json
-        != ""
-        and staged.base_project_revision == baseline_revision,
-        "one_revision_apply": session.state.revision >= baseline_revision + 3,
+        "canonical_unchanged_before_approval": canonical_unchanged_before_approval,
+        "one_revision_apply": one_revision_apply,
         "applied_revision_recorded": applied.applied_revision == baseline_revision + 1,
         "real_pacing_timeline_frames": 210,
         "real_preview_changed": _sha256(baseline_preview) != _sha256(applied_preview),
@@ -331,6 +333,7 @@ def main() -> int:
         "mixed_l1_l2_plan",
         "review_diffs_bounded",
         "canonical_unchanged_before_approval",
+        "one_revision_apply",
         "applied_revision_recorded",
         "real_preview_changed",
         "real_export_audio",

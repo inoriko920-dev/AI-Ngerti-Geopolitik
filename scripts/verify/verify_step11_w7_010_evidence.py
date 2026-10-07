@@ -39,9 +39,7 @@ def main() -> int:
     report = json.loads((root / "00_w7_010_report.json").read_text(encoding="utf-8"))
     review = json.loads((root / "01_review_and_apply.json").read_text(encoding="utf-8"))
     media = json.loads((root / "02_real_media.json").read_text(encoding="utf-8"))
-    persistence = json.loads(
-        (root / "03_persistence_undo_redo.json").read_text(encoding="utf-8")
-    )
+    persistence = json.loads((root / "03_persistence_undo_redo.json").read_text(encoding="utf-8"))
 
     if report.get("status") != "PASS":
         raise SystemExit("W7-010 report status is not PASS")
@@ -56,6 +54,7 @@ def main() -> int:
         "mixed_l1_l2_plan",
         "review_diffs_bounded",
         "canonical_unchanged_before_approval",
+        "one_revision_apply",
         "applied_revision_recorded",
         "real_preview_changed",
         "real_export_audio",
@@ -79,8 +78,7 @@ def main() -> int:
     if review.get("batch_id") != "AI-BATCH:REQ-W7-010-REAL":
         raise SystemExit("W7-010 batch id mismatch")
     if not all(
-        isinstance(item, str) and "→" in item and len(item) <= 280
-        for item in review["diffs"]
+        isinstance(item, str) and "→" in item and len(item) <= 280 for item in review["diffs"]
     ):
         raise SystemExit("W7-010 diff evidence is not bounded before/after text")
 
