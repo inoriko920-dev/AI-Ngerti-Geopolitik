@@ -184,9 +184,9 @@ def test_pacing_source_availability_and_dynamic_bounds() -> None:
 
 
 def test_transform_transition_effects_and_locks_are_bounded() -> None:
-    target = json.loads(
-        L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",)))
-    )["targets"][0]
+    target = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",))))[
+        "targets"
+    ][0]
     assert target["transform"] == {
         "position_x": 20,
         "position_y": -10,
@@ -214,18 +214,14 @@ def test_transform_transition_effects_and_locks_are_bounded() -> None:
 def test_track_lock_disables_editability_without_mutation() -> None:
     state = _state(track_locked=True)
     before = state.semantic_json(include_revision=True)
-    target = json.loads(L2ContextBuilder().build(state, W7SelectedScope(("clip-1",))))[
-        "targets"
-    ][0]
+    target = json.loads(L2ContextBuilder().build(state, W7SelectedScope(("clip-1",))))["targets"][0]
     assert target["editability"]["general_mutation_allowed"] is False
     assert target["editability"]["effects_mutation_allowed"] is False
     assert state.semantic_json(include_revision=True) == before
 
 
 def test_global_policy_contains_exact_w7_bounds_and_forbidden_surface() -> None:
-    policy = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",))))[
-        "policy"
-    ]
+    policy = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",))))["policy"]
     assert policy["duration"]["minimum_ratio_percent"] == 50
     assert policy["duration"]["maximum_ratio_percent"] == 200
     assert policy["duration"]["minimum_half_second_frames"] == 15
