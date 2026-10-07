@@ -26,6 +26,9 @@ from ai_ngerti_geopolitik.application.ports import (
 )
 from ai_ngerti_geopolitik.domain import Clip, ProjectState
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_creative import build_w4_creative_plan
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_narration import (
+    build_narration_render_plan,
+)
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_properties import build_w3_filter_plan
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_subtitles import (
     build_subtitle_export_plan,
@@ -357,6 +360,55 @@ class FfmpegSliceMediaEngine:
             output_path=output_path,
         )
 
+    def preview_narration_audio(
+        self,
+        state: ProjectState,
+        timeline_frame: int,
+        duration_frames: int,
+        output_path: Path,
+    ) -> Path:
+        state.validate()
+        if timeline_frame < 0 or duration_frames <= 0:
+            raise MediaToolError("narration preview range must be positive")
+        if timeline_frame >= state.timeline_end_frame:
+            raise MediaToolError("narration preview starts outside timeline")
+        preview_end = min(
+            state.timeline_end_frame,
+            timeline_frame + duration_frames,
+        )
+        plan = build_narration_render_plan(state)
+        if plan is None:
+            raise MediaToolError("project has no narration")
+
+        output_path = output_path.resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        start = _seconds_string(timeline_frame, state.fps)
+        end = _seconds_string(preview_end, state.fps)
+        command = [
+            self.ffmpeg,
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-i",
+            plan.source_path,
+            "-filter_complex",
+            (
+                "[0:a]"
+                + ",".join(plan.filters)
+                + f",atrim=start={start}:end={end},asetpts=PTS-STARTPTS[outa]"
+            ),
+            "-map",
+            "[outa]",
+            "-c:a",
+            "pcm_s16le",
+            str(output_path),
+        ]
+        self.runner.run(command)
+        if not output_path.is_file() or output_path.stat().st_size == 0:
+            raise MediaToolError("narration preview audio was not created")
+        return output_path
+
     def export(
         self,
         state: ProjectState,
@@ -420,8 +472,25 @@ class FfmpegSliceMediaEngine:
             concat_inputs.append(f"[v{index}][a{index}]")
 
         filter_parts.append(
-            "".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[concatv][outa]"
+            "".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[concatv][basea]"
         )
+
+        narration_plan = build_narration_render_plan(state)
+        if narration_plan is not None:
+            narration_input = len(clips)
+            command.extend(["-i", narration_plan.source_path])
+            filter_parts.append(
+                f"[{narration_input}:a]"
+                + ",".join(narration_plan.filters)
+                + "[narrationa]"
+            )
+            filter_parts.append(
+                "[basea][narrationa]"
+                "amix=inputs=2:duration=first:dropout_transition=0:normalize=0[audioout]"
+            )
+        else:
+            filter_parts.append("[basea]anull[audioout]")
+
         subtitle_plan = build_subtitle_export_plan(state)
         if subtitle_plan.filters:
             filter_parts.append("[concatv]" + ",".join(subtitle_plan.filters) + "[outv]")
@@ -434,7 +503,7 @@ class FfmpegSliceMediaEngine:
                 "-map",
                 "[outv]",
                 "-map",
-                "[outa]",
+                "[audioout]",
                 "-c:v",
                 "libx264",
                 "-preset",

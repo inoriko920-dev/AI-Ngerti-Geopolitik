@@ -523,15 +523,16 @@ class ProjectState:
                 raise DomainValidationError("narration must reference a canonical asset") from exc
             if narration_asset.media_type != "audio":
                 raise DomainValidationError("narration must reference an audio asset")
-            if narration.fade_in_frames > narration_asset.duration.frames:
-                raise DomainValidationError("narration fade-in exceeds source duration")
-            if narration.fade_out_frames > narration_asset.duration.frames:
-                raise DomainValidationError("narration fade-out exceeds source duration")
-            if (
-                narration.fade_in_frames + narration.fade_out_frames
-                > narration_asset.duration.frames
-            ):
-                raise DomainValidationError("narration fades exceed source duration")
+            audible_frames = min(
+                narration_asset.duration.frames,
+                timeline_end - narration.timeline_start.frames,
+            )
+            if narration.fade_in_frames > audible_frames:
+                raise DomainValidationError("narration fade-in exceeds audible duration")
+            if narration.fade_out_frames > audible_frames:
+                raise DomainValidationError("narration fade-out exceeds audible duration")
+            if narration.fade_in_frames + narration.fade_out_frames > audible_frames:
+                raise DomainValidationError("narration fades exceed audible duration")
 
     def semantic_dict(self, *, include_revision: bool = False) -> dict[str, object]:
         data = asdict(self)
