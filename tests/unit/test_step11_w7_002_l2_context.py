@@ -10,13 +10,13 @@ from ai_ngerti_geopolitik.application.ai_l2_context import (
     L2_CONTEXT_SCHEMA_VERSION,
     L2ContextBuilder,
 )
-from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
 from ai_ngerti_geopolitik.application.ai_l2_contracts import (
     AUTO_EDIT_PLAN_SCHEMA_VERSION,
     MAX_W7_COMMANDS,
     MAX_W7_SELECTED_TARGETS,
     W7_ALLOWED_COMMAND_TYPES,
 )
+from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
 from ai_ngerti_geopolitik.domain import (
     Asset,
     Clip,
