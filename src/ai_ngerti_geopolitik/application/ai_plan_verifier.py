@@ -44,9 +44,7 @@ _ROOT_REQUIRED_FIELDS: Final = frozenset(
     }
 )
 _COMMAND_REQUIRED_FIELDS: Final = frozenset({"command_type", "target_clip_id"})
-_COMMAND_OPTIONAL_FIELDS: Final = frozenset(
-    {"enter_effect", "exit_effect", "intensity_percent"}
-)
+_COMMAND_OPTIONAL_FIELDS: Final = frozenset({"enter_effect", "exit_effect", "intensity_percent"})
 _COMMAND_ALLOWED_FIELDS: Final = _COMMAND_REQUIRED_FIELDS | _COMMAND_OPTIONAL_FIELDS
 
 
@@ -245,9 +243,7 @@ class PlanVerifier:
 
             updated_effects = EffectProperties(
                 enter_effect=(
-                    effects.enter_effect
-                    if proposal.enter_effect is None
-                    else proposal.enter_effect
+                    effects.enter_effect if proposal.enter_effect is None else proposal.enter_effect
                 ),
                 exit_effect=(
                     effects.exit_effect if proposal.exit_effect is None else proposal.exit_effect
