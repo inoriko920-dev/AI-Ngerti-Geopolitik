@@ -736,7 +736,43 @@ def create_provider_credentials_dialog(
     layout = QVBoxLayout(dialog)
     layout.setContentsMargins(14, 14, 14, 14)
     layout.setSpacing(10)
-    layout.addWidget(section_title("Provider & API Key Manager"))
+    layout.addWidget(section_title("Pengaturan"))
+
+    body = QHBoxLayout()
+    nav = QFrame()
+    nav.setProperty("panel", True)
+    nav.setFixedWidth(170)
+    nav_layout = QVBoxLayout(nav)
+    for text_value, selected in (
+        ("Umum", False),
+        ("Provider & API Key", True),
+        ("Export", False),
+        ("Render", False),
+        ("AI Otomatis", False),
+        ("Pelaporan", False),
+    ):
+        nav_button = QPushButton(text_value)
+        nav_button.setEnabled(selected)
+        nav_button.setStyleSheet(
+            "background:#2563EB;color:white;font-weight:700;"
+            if selected
+            else "color:#64748B;"
+        )
+        nav_layout.addWidget(nav_button)
+    nav_layout.addStretch(1)
+    body.addWidget(nav)
+
+    content = QWidget()
+    right_layout = QVBoxLayout(content)
+    right_layout.setContentsMargins(4, 0, 0, 0)
+    right_layout.addWidget(section_title("Provider & API Key"))
+    right_layout.addWidget(
+        muted_label(
+            "Kelola provider Gemini dan slot credential aman tanpa menampilkan key tersimpan."
+        )
+    )
+    body.addWidget(content, 1)
+    layout.addLayout(body, 1)
 
     provider_card = QFrame()
     provider_card.setProperty("panel", True)
@@ -748,11 +784,11 @@ def create_provider_credentials_dialog(
             "menghindari rate limit atau kuota provider."
         )
     )
-    layout.addWidget(provider_card)
+    right_layout.addWidget(provider_card)
 
     count = QLabel("0 slot terkonfigurasi")
     count.setObjectName("label_w6_credential_count")
-    layout.addWidget(count)
+    right_layout.addWidget(count)
 
     scroll = QScrollArea()
     scroll.setObjectName("scroll_w6_credential_slots")
@@ -764,7 +800,7 @@ def create_provider_credentials_dialog(
     slot_layout.setContentsMargins(0, 0, 0, 0)
     slot_layout.setSpacing(6)
     scroll.setWidget(slot_host)
-    layout.addWidget(scroll, 1)
+    right_layout.addWidget(scroll, 1)
 
     form = QFrame()
     form.setProperty("panel", True)
@@ -792,10 +828,20 @@ def create_provider_credentials_dialog(
     status = muted_label("Key tersimpan tidak pernah ditampilkan kembali.")
     status.setObjectName("label_w6_credential_form_status")
     form_layout.addWidget(status)
-    layout.addWidget(form)
+    right_layout.addWidget(form)
+
+    policy = QFrame()
+    policy.setProperty("panel", True)
+    policy_layout = QVBoxLayout(policy)
+    policy_layout.addWidget(QLabel("Urutan Fallback Provider"))
+    policy_layout.addWidget(
+        muted_label("Gemini slot sehat → retry jaringan terbatas → berhenti pada quota/cooldown.")
+    )
+    policy_layout.addWidget(muted_label("Maks. percobaan mengikuti policy W6; tidak ada quota evasion."))
+    right_layout.addWidget(policy)
 
     footer = QHBoxLayout()
-    import_txt = QPushButton("Impor TXT")
+    import_txt = QPushButton("Tambah dari TXT")
     import_txt.setObjectName("btn_w6_credential_import_txt")
     footer.addWidget(import_txt)
     footer.addStretch(1)
@@ -803,7 +849,7 @@ def create_provider_credentials_dialog(
     close.setObjectName("btn_w6_credential_close")
     close.clicked.connect(dialog.close)
     footer.addWidget(close)
-    layout.addLayout(footer)
+    right_layout.addLayout(footer)
 
     def submit() -> None:
         raw_value = key.text().strip()
