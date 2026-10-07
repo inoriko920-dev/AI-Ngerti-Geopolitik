@@ -433,7 +433,9 @@ def create_subtitle_workspace(sink: UiIntentSink | None) -> Any:
     )
     animation_layout.addWidget(even_button)
 
-    highlight = muted_label("Highlight/karaoke kata belum render-qualified — kontrol dinonaktifkan.")
+    highlight = muted_label(
+        "Highlight/karaoke kata belum render-qualified — kontrol dinonaktifkan."
+    )
     highlight.setObjectName("label_w5_word_highlight_unavailable")
     animation_layout.addWidget(highlight)
     animation_layout.addStretch(1)
@@ -630,9 +632,7 @@ def create_narration_recording_dialog(
     start.setEnabled(False)
     cancel_capture = QPushButton("Hentikan / Batal")
     cancel_capture.setObjectName("btn_w5_cancel_recording")
-    cancel_capture.clicked.connect(
-        lambda: _emit(sink, UiIntentType.MICROPHONE_CANCEL_RECORDING)
-    )
+    cancel_capture.clicked.connect(lambda: _emit(sink, UiIntentType.MICROPHONE_CANCEL_RECORDING))
     start.clicked.connect(
         lambda: _emit(
             sink,
