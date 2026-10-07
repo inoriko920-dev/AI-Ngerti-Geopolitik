@@ -31,18 +31,10 @@ def main() -> int:
         if (root / name).stat().st_size <= 0:
             raise SystemExit(f"empty W7-005 evidence: {name}")
 
-    report = json.loads(
-        (root / "00_w7_005_pacing_report.json").read_text(encoding="utf-8")
-    )
-    duration = json.loads(
-        (root / "01_duration_qualification.json").read_text(encoding="utf-8")
-    )
-    speed = json.loads(
-        (root / "02_speed_qualification.json").read_text(encoding="utf-8")
-    )
-    boundaries = json.loads(
-        (root / "03_baseline_and_boundaries.json").read_text(encoding="utf-8")
-    )
+    report = json.loads((root / "00_w7_005_pacing_report.json").read_text(encoding="utf-8"))
+    duration = json.loads((root / "01_duration_qualification.json").read_text(encoding="utf-8"))
+    speed = json.loads((root / "02_speed_qualification.json").read_text(encoding="utf-8"))
+    boundaries = json.loads((root / "03_baseline_and_boundaries.json").read_text(encoding="utf-8"))
 
     true_checks = [
         "duration_real_timing",
