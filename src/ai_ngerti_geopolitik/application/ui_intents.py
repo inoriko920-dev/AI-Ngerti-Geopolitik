@@ -58,6 +58,9 @@ class UiIntentType(StrEnum):
     PROPERTY_SET_COLOR = "property_set_color"
     PROPERTY_SET_SPEED = "property_set_speed"
     PROPERTY_SET_REVERSE = "property_set_reverse"
+    CREATIVE_SET_TITLE = "creative_set_title"
+    CREATIVE_SET_TRANSITION = "creative_set_transition"
+    CREATIVE_SET_EFFECTS = "creative_set_effects"
 
 
 @dataclass(frozen=True, slots=True)

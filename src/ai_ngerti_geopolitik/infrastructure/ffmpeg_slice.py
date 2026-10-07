@@ -25,6 +25,7 @@ from ai_ngerti_geopolitik.application.ports import (
     ProbeResult,
 )
 from ai_ngerti_geopolitik.domain import Clip, ProjectState
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_creative import build_w4_creative_plan
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_properties import build_w3_filter_plan
 
 
