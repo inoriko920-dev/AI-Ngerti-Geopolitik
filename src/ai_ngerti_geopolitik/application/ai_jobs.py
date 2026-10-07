@@ -307,6 +307,15 @@ class AIPlanJobService:
                     session.report_error(exc.code)
                 self._mark_provider_failed(record, exc)
                 return
+            except Exception:
+                self._mark_provider_failed(
+                    record,
+                    ProviderContractError(
+                        ProviderErrorCode.MALFORMED_RESPONSE,
+                        "provider job failed safely",
+                    ),
+                )
+                return
 
             if record.cancellation.cancelled:
                 self._mark_cancelled(record)
