@@ -2,81 +2,81 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W7 — AI Auto Edit L2**  
-**W7 status:** **CONTRACT_LOCKED / W7-001 PASS / W7-002 READY**  
-**Accepted W7-001 implementation HEAD:** `f301c10a16ba33e051ef97e9d166262b7fbac327`  
-**Accepted W7-001 workflow:** `37640973646` — SUCCESS  
-**Next exact task:** **S11-W7-002 — L2 ContextBuilder + selected-scope contract**  
+**W7 status:** **CONTRACT_LOCKED / W7-001..002 PASS / W7-003 READY**  
+**Accepted W7-002 implementation HEAD:** `23aad912cb789f98dd3ec61d11e799390d602381`  
+**Accepted W7-002 workflow:** `37644007477` — SUCCESS  
+**Next exact task:** **S11-W7-003 — strict AutoEditPlan v2 parser/schema**  
 **W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**
 
-## W7-001 proven
+## W7-002 proven
 
-Canonical L2 contract module:
-`src/ai_ngerti_geopolitik/application/ai_l2_contracts.py`.
+Application modules:
+- `src/ai_ngerti_geopolitik/application/ai_l2_scope.py`;
+- `src/ai_ngerti_geopolitik/application/ai_l2_context.py`.
 
-Exact command union:
-- set_clip_effects;
-- set_clip_duration;
-- set_clip_speed;
-- set_clip_transform;
-- set_clip_transition.
+Selected-scope contract:
+- 1..20 stable non-empty clip IDs;
+- no outer whitespace;
+- no duplicates;
+- application order preserved.
 
-Structural bounds:
-- schema version 2;
-- selected targets max 20;
-- commands max 40;
-- one family per target;
-- duration and speed mutually exclusive per target.
+Context boundary:
+- deterministic schema version 2;
+- exact W7 five-command allowlist;
+- max 20 selected targets / max 40 commands;
+- duration/speed/transform/transition/effect policy bounds;
+- source-duration availability;
+- track/effect lock and effective editability;
+- bounded media metadata + one previous/next neighbor;
+- bounded untrusted project text.
 
-Manual ownership:
-- effects → SetClipPropertiesCommand + EffectProperties;
-- duration → SetClipDurationCommand;
-- speed → SetClipSpeedCommand + SpeedProperties;
-- transform → SetClipPropertiesCommand + VideoProperties;
-- transition → SetClipPropertiesCommand + TransitionProperties.
+Excluded:
+- credentials/API keys;
+- local paths/source names/fingerprints;
+- media bytes;
+- crop/unrelated property surfaces;
+- subtitle/narration/title/audio/color content;
+- logs/engine objects;
+- output/project paths and prompt history.
 
-AI policy:
-- duration 50%..200%, min ceil(fps/2);
-- speed 50%..200%;
-- position ± half canvas;
-- uniform scale 50%..200%;
-- rotation ±15°;
-- opacity 60%..100%;
-- transition none/fade_black only;
-- fade_black dynamic max helper;
-- W6 effects allowlist unchanged.
+## W7-002 gates
 
-## Gates
-
-Workflow `37640973646`:
+Workflow `37644007477`:
 - Ruff format/check PASS;
-- mypy PASS — 64 source files;
+- mypy PASS — 66 source files;
 - import contracts PASS;
 - architecture PASS;
 - source-of-truth 70/70 PASS;
 - no-secret PASS;
 - UI references 42/42 PASS;
-- targeted tests 27/27 PASS;
+- targeted W7-002 tests **18/18 PASS**;
 - full pytest PASS;
 - deterministic evidence PASS;
-- evidence verifier 18/18 PASS.
+- evidence verifier **24/24 PASS**;
+- artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-001-L2-Contracts`;
-- ID `11491927299`;
-- SHA-256 `2adab3d3e6a010134b820344d9609962634c0fd2f6846b65575d3d4394c9cc5f`.
+- `ANG-S11-W7-002-L2-Context`;
+- ID `11494315331`;
+- SHA-256 `5ffc24ff6afa0de1942a4e6e4c9eabf1cf55004fd07a77f0263721caf8da4960`.
 
 Regression:
-**26/26 workflow families SUCCESS on the same HEAD, all attempt 1.**
+**26/26 workflows triggered on the accepted W7-002 HEAD succeeded, all attempt 1.**
 
-## Not started by W7-001
+S08 portable build/smoke PASS.  
+S10 real-media + packaged smoke PASS.  
+W0 MLT Windows playback/decode/render qualification PASS.
 
-- L2 ContextBuilder;
-- strict JSON parser;
+## Not started by W7-002
+
+- strict AutoEditPlan v2 provider JSON parser;
 - semantic verifier/dry-run translator;
-- provider profile changes;
+- provider request-profile changes;
 - runtime UI;
-- L2 apply.
+- L2 canonical apply.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W7-002 only**.
+After owner says **lanjutkan**, execute **S11-W7-003 only — strict AutoEditPlan v2 parser/schema**.
+
+Do not start W7-004 semantic verification in the same turn.
