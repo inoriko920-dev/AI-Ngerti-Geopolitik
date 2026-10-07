@@ -185,6 +185,8 @@ def create_validation_dialog(
     title_row.addWidget(close_button)
     layout.addLayout(title_row)
 
+    tab_specs: tuple[tuple[str, int], ...]
+    fixture_issues: tuple[tuple[str, str, str, str], ...]
     if projection is None:
         summary_title_text = "2 Error, 3 Peringatan"
         summary_detail_text = "Ditemukan 5 masalah dalam project ini"
@@ -340,6 +342,7 @@ def create_validation_dialog(
         page_layout.setContentsMargins(4, 14, 4, 6)
         page_layout.setSpacing(10)
 
+        page_items: tuple[Any, ...]
         if projection is None:
             page_items = fixture_issues if category == "Semua" else ()
         else:
