@@ -81,6 +81,7 @@ class UiIntentType(StrEnum):
     AI_CANCEL_JOB = "ai_cancel_job"
     AI_APPROVE_PLAN = "ai_approve_plan"
     AI_REJECT_PLAN = "ai_reject_plan"
+    AI_CANCEL_PLAN = "ai_cancel_plan"
     AI_APPLY_PLAN = "ai_apply_plan"
     AI_RETRY = "ai_retry"
     OPEN_AI_CREDENTIALS = "open_ai_credentials"
