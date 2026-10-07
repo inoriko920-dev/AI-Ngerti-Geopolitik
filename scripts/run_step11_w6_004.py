@@ -138,11 +138,7 @@ def main() -> int:
         raise AssertionError("all-unavailable did not return typed credential error")
 
     bulk_pool, bulk_slots, _ = _pool()
-    bulk_text = (
-        f"  {runtime_secrets[6]}  \n\n"
-        f"{runtime_secrets[7]}\n"
-        f"{runtime_secrets[6]}\n"
-    )
+    bulk_text = f"  {runtime_secrets[6]}  \n\n{runtime_secrets[7]}\n{runtime_secrets[6]}\n"
     preview = bulk_pool.preview_bulk_text(bulk_text)
     imported = bulk_pool.import_bulk_text(bulk_text)
     bulk_rules_pass = (
