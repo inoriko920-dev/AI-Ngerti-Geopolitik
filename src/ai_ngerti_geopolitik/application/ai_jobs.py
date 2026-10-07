@@ -1,4 +1,4 @@
-"""Provider-agnostic W6-007 background lifecycle for L1 plan generation."""
+"""Provider-agnostic shared W6/W7 background lifecycle for L1/L2 plan generation."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Official google-genai W6-007 adapter behind AIProviderPort."""
+"""Official google-genai adapter shared by W6 L1 and W7 L2 behind AIProviderPort."""
 
 from __future__ import annotations
 
