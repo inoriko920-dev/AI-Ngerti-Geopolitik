@@ -310,14 +310,10 @@ class FfmpegSliceMediaEngine:
         )
         source_filters = (*plan.video_filters, *creative.source_filters)
         overlay_chain = (
-            "[w4bg][w4src]overlay="
-            f"x='{creative.overlay_x}':"
-            f"y='{creative.overlay_y}':shortest=1"
+            f"[w4bg][w4src]overlay=x='{creative.overlay_x}':y='{creative.overlay_y}':shortest=1"
         )
         if creative.post_filters:
-            overlay_chain += "," + ",".join(
-                creative.post_filters
-            )
+            overlay_chain += "," + ",".join(creative.post_filters)
         overlay_chain += ",format=yuv420p[outv]"
         filter_parts = [
             f"[0:v]{','.join(source_filters)}[w4src]",
@@ -405,9 +401,7 @@ class FfmpegSliceMediaEngine:
                 f"y='{creative.overlay_y}':shortest=1"
             )
             if creative.post_filters:
-                overlay_chain += "," + ",".join(
-                    creative.post_filters
-                )
+                overlay_chain += "," + ",".join(creative.post_filters)
             overlay_chain += f",format=yuv420p[v{index}]"
             filter_parts.append(overlay_chain)
             audio_chain = [

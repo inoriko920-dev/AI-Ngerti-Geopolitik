@@ -35,21 +35,14 @@ def _scale_factor(
     enter = None
     if enter_floor is not None:
         excursion = 1.0 - enter_floor
-        enter = (
-            f"{enter_floor:.2f}+{excursion:.2f}*t/{win}"
-        )
+        enter = f"{enter_floor:.2f}+{excursion:.2f}*t/{win}"
     exit_expr = None
     if exit_floor is not None:
         excursion = 1.0 - exit_floor
-        exit_expr = (
-            f"1-{excursion:.2f}*(t-{exit_start})/{win}"
-        )
+        exit_expr = f"1-{excursion:.2f}*(t-{exit_start})/{win}"
 
     if enter is not None and exit_expr is not None:
-        return (
-            f"if(lt(t,{win}),{enter},"
-            f"if(gt(t,{exit_start}),{exit_expr},1))"
-        )
+        return f"if(lt(t,{win}),{enter},if(gt(t,{exit_start}),{exit_expr},1))"
     if enter is not None:
         return f"if(lt(t,{win}),{enter},1)"
     return f"if(gt(t,{exit_start}),{exit_expr},1)"
@@ -68,11 +61,7 @@ def _motion_term(
         distance = 0.012 * intensity
         phase = "18.849556"
         if entering:
-            expression = (
-                f"if(lt(t,{win}),"
-                f"cos((t/{win})*{phase})*(1-t/{win})*"
-                f"W*{distance:.6f},0)"
-            )
+            expression = f"if(lt(t,{win}),cos((t/{win})*{phase})*(1-t/{win})*W*{distance:.6f},0)"
         else:
             start = _number(max(0.0, duration - window))
             expression = (
@@ -95,21 +84,15 @@ def _motion_term(
 
     amount = f"{dimension}*{distance:.6f}"
     if entering:
-        return axis, (
-            f"if(lt(t,{win}),(1-t/{win})*{amount},0)"
-        )
+        return axis, (f"if(lt(t,{win}),(1-t/{win})*{amount},0)")
     start = _number(max(0.0, duration - window))
-    return axis, (
-        f"if(gt(t,{start}),((t-{start})/{win})*{amount},0)"
-    )
+    return axis, (f"if(gt(t,{start}),((t-{start})/{win})*{amount},0)")
 
 
 def _combine(base: str, terms: list[str]) -> str:
     if not terms:
         return base
-    return f"({base})+" + "+".join(
-        f"({term})" for term in terms
-    )
+    return f"({base})+" + "+".join(f"({term})" for term in terms)
 
 
 def _drawtext_filter(clip: Clip) -> str | None:
@@ -173,52 +156,29 @@ def build_w4_creative_plan(
     )
     source_filters: list[str] = []
 
-    if (
-        effects.enter_effect == "Fade"
-        or effects.exit_effect == "Fade"
-    ):
+    if effects.enter_effect == "Fade" or effects.exit_effect == "Fade":
         source_filters.append("format=rgba")
         if effects.enter_effect == "Fade":
-            source_filters.append(
-                f"fade=t=in:st=0:d={_number(window)}:alpha=1"
-            )
+            source_filters.append(f"fade=t=in:st=0:d={_number(window)}:alpha=1")
         if effects.exit_effect == "Fade":
             start = max(0.0, duration - window)
-            source_filters.append(
-                f"fade=t=out:st={_number(start)}:"
-                f"d={_number(window)}:alpha=1"
-            )
+            source_filters.append(f"fade=t=out:st={_number(start)}:d={_number(window)}:alpha=1")
 
     factor = _scale_factor(clip, duration, window)
     if factor is not None:
-        source_filters.append(
-            "scale="
-            f"w='max(2,trunc(iw*({factor})/2)*2)':"
-            "h=-2:eval=frame"
-        )
+        source_filters.append(f"scale=w='max(2,trunc(iw*({factor})/2)*2)':h=-2:eval=frame")
 
-    if (
-        effects.enter_effect == "Tumble"
-        or effects.exit_effect == "Tumble"
-    ):
+    if effects.enter_effect == "Tumble" or effects.exit_effect == "Tumble":
         max_angle = 0.209440 * intensity
         terms: list[str] = []
         win = _number(window)
         if effects.enter_effect == "Tumble":
-            terms.append(
-                f"if(lt(t,{win}),"
-                f"-(1-t/{win})*{max_angle:.6f},0)"
-            )
+            terms.append(f"if(lt(t,{win}),-(1-t/{win})*{max_angle:.6f},0)")
         if effects.exit_effect == "Tumble":
             start = _number(max(0.0, duration - window))
-            terms.append(
-                f"if(gt(t,{start}),"
-                f"((t-{start})/{win})*{max_angle:.6f},0)"
-            )
+            terms.append(f"if(gt(t,{start}),((t-{start})/{win})*{max_angle:.6f},0)")
         angle = "+".join(f"({term})" for term in terms)
-        source_filters.append(
-            f"rotate=a='{angle}':ow=iw:oh=ih:c=none"
-        )
+        source_filters.append(f"rotate=a='{angle}':ow=iw:oh=ih:c=none")
 
     x_terms: list[str] = []
     y_terms: list[str] = []
@@ -252,14 +212,10 @@ def build_w4_creative_plan(
             transition.duration_frames / fps,
             max(1.0 / fps, duration / 2.0),
         )
-        post_filters.append(
-            f"fade=t=in:st=0:d={_number(transition_seconds)}:"
-            "color=black"
-        )
+        post_filters.append(f"fade=t=in:st=0:d={_number(transition_seconds)}:color=black")
         start = max(0.0, duration - transition_seconds)
         post_filters.append(
-            f"fade=t=out:st={_number(start)}:"
-            f"d={_number(transition_seconds)}:color=black"
+            f"fade=t=out:st={_number(start)}:d={_number(transition_seconds)}:color=black"
         )
 
     return W4CreativePlan(

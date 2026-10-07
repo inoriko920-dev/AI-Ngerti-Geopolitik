@@ -90,9 +90,7 @@ def main() -> int:
     )
     asset = session.state.asset(asset_id)
     if asset.duration.frames < 180:
-        raise AssertionError(
-            "W4 fixture requires at least 180 frames"
-        )
+        raise AssertionError("W4 fixture requires at least 180 frames")
     segment = min(120, asset.duration.frames // 2)
 
     _add_clip(
@@ -136,9 +134,7 @@ def main() -> int:
             background_opacity_percent=60,
         )
     )
-    controller.set_transition(
-        TransitionProperties("fade_black", 12)
-    )
+    controller.set_transition(TransitionProperties("fade_black", 12))
     controller.set_effects(
         EffectProperties(
             enter_effect="Rise",
@@ -157,34 +153,26 @@ def main() -> int:
         creative_preview,
     )
     if _sha256(baseline_preview) == _sha256(creative_preview):
-        raise AssertionError(
-            "W4 creative preview is byte-identical to baseline"
-        )
+        raise AssertionError("W4 creative preview is byte-identical to baseline")
 
     for _ in range(3):
         controller.undo()
     undo_hash = session.state.semantic_hash()
     if undo_hash != baseline_hash:
-        raise AssertionError(
-            "W4 Undo did not restore baseline"
-        )
+        raise AssertionError("W4 Undo did not restore baseline")
 
     for _ in range(3):
         controller.redo()
     redo_hash = session.state.semantic_hash()
     if redo_hash != creative_hash:
-        raise AssertionError(
-            "W4 Redo did not restore creative state"
-        )
+        raise AssertionError("W4 Redo did not restore creative state")
 
     project_path = evidence / "w4_creative.angproj"
     session.save(project_path)
     reopened = ProjectSession(repository)
     reopened.open_project(project_path)
     if reopened.state.semantic_hash() != creative_hash:
-        raise AssertionError(
-            "W4 project round-trip changed canonical state"
-        )
+        raise AssertionError("W4 project round-trip changed canonical state")
 
     export_path = evidence / "w4_creative_export.mp4"
     export = engine.export(
@@ -193,9 +181,7 @@ def main() -> int:
     )
     export_probe = probe.probe(export_path)
     expected_frames = session.state.timeline_end_frame
-    if abs(
-        export_probe.duration_frames - expected_frames
-    ) > 3:
+    if abs(export_probe.duration_frames - expected_frames) > 3:
         raise AssertionError(
             f"W4 export duration mismatch: expected "
             f"{expected_frames}, got "
@@ -212,31 +198,19 @@ def main() -> int:
                 "font_size": edited.properties.title.font_size,
                 "position": edited.properties.title.position,
                 "color_hex": edited.properties.title.color_hex,
-                "background_opacity_percent": (
-                    edited.properties.title.background_opacity_percent
-                ),
+                "background_opacity_percent": (edited.properties.title.background_opacity_percent),
             },
             "transition": {
                 "preset": edited.properties.transition.preset,
-                "duration_frames": (
-                    edited.properties.transition.duration_frames
-                ),
+                "duration_frames": (edited.properties.transition.duration_frames),
             },
             "effects": {
-                "enter_effect": (
-                    edited.properties.effects.enter_effect
-                ),
-                "exit_effect": (
-                    edited.properties.effects.exit_effect
-                ),
-                "intensity_percent": (
-                    edited.properties.effects.intensity_percent
-                ),
+                "enter_effect": (edited.properties.effects.enter_effect),
+                "exit_effect": (edited.properties.effects.exit_effect),
+                "intensity_percent": (edited.properties.effects.intensity_percent),
                 "locked": edited.properties.effects.locked,
             },
-            "unsupported_legacy_effects": list(
-                UNSUPPORTED_LEGACY_EFFECTS
-            ),
+            "unsupported_legacy_effects": list(UNSUPPORTED_LEGACY_EFFECTS),
         },
     )
     _write_json(
@@ -248,25 +222,15 @@ def main() -> int:
             "redo_hash": redo_hash,
             "undo_restored": undo_hash == baseline_hash,
             "redo_restored": redo_hash == creative_hash,
-            "save_reopen_hash_match": (
-                reopened.state.semantic_hash()
-                == creative_hash
-            ),
+            "save_reopen_hash_match": (reopened.state.semantic_hash() == creative_hash),
         },
     )
     _write_json(
         evidence / "03_preview_export.json",
         {
-            "baseline_preview_sha256": _sha256(
-                baseline_preview
-            ),
-            "creative_preview_sha256": _sha256(
-                creative_preview
-            ),
-            "preview_changed": (
-                _sha256(baseline_preview)
-                != _sha256(creative_preview)
-            ),
+            "baseline_preview_sha256": _sha256(baseline_preview),
+            "creative_preview_sha256": _sha256(creative_preview),
+            "preview_changed": (_sha256(baseline_preview) != _sha256(creative_preview)),
             "export_file": export_path.name,
             "export_sha256": _sha256(export_path),
             "export_frames": export_probe.duration_frames,
@@ -280,34 +244,17 @@ def main() -> int:
     report = {
         "status": "PASS",
         "title_overlay": edited.properties.title.enabled,
-        "transition_fade_black": (
-            edited.properties.transition.preset
-            == "fade_black"
-        ),
+        "transition_fade_black": (edited.properties.transition.preset == "fade_black"),
         "render_backed_effects": (
             edited.properties.effects.enter_effect == "Rise"
             and edited.properties.effects.exit_effect == "Fade"
         ),
-        "unsupported_legacy_hidden": (
-            len(UNSUPPORTED_LEGACY_EFFECTS) == 12
-        ),
+        "unsupported_legacy_hidden": (len(UNSUPPORTED_LEGACY_EFFECTS) == 12),
         "crossfade_claimed": False,
-        "undo_redo": (
-            undo_hash == baseline_hash
-            and redo_hash == creative_hash
-        ),
-        "save_reopen": (
-            reopened.state.semantic_hash()
-            == creative_hash
-        ),
-        "preview_changed": (
-            _sha256(baseline_preview)
-            != _sha256(creative_preview)
-        ),
-        "export_valid": (
-            export_path.is_file()
-            and export_path.stat().st_size > 0
-        ),
+        "undo_redo": (undo_hash == baseline_hash and redo_hash == creative_hash),
+        "save_reopen": (reopened.state.semantic_hash() == creative_hash),
+        "preview_changed": (_sha256(baseline_preview) != _sha256(creative_preview)),
+        "export_valid": (export_path.is_file() and export_path.stat().st_size > 0),
         "export_has_audio": export_probe.has_audio,
     }
     _write_json(

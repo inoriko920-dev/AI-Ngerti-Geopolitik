@@ -36,9 +36,7 @@ from ai_ngerti_geopolitik.infrastructure.persistence import (
 
 
 def _controller() -> CreativeController:
-    bus = CommandBus(
-        ProjectState.create("W4-CREATIVE", "W4 creative", 30)
-    )
+    bus = CommandBus(ProjectState.create("W4-CREATIVE", "W4 creative", 30))
     asset = Asset(
         "A001",
         "fixture.mp4",
@@ -94,9 +92,7 @@ def test_w4_creative_state_is_undoable_and_persisted(
             background_opacity_percent=60,
         )
     )
-    controller.set_transition(
-        TransitionProperties("fade_black", 12)
-    )
+    controller.set_transition(TransitionProperties("fade_black", 12))
     controller.set_effects(
         EffectProperties(
             enter_effect="Rise",
@@ -130,9 +126,7 @@ def test_w4_creative_state_is_undoable_and_persisted(
 def test_w4_transition_cannot_exceed_half_clip() -> None:
     controller = _controller()
     with pytest.raises(CreativeEditError, match="half"):
-        controller.set_transition(
-            TransitionProperties("fade_black", 61)
-        )
+        controller.set_transition(TransitionProperties("fade_black", 61))
 
 
 def test_w4_ffmpeg_plan_contains_real_creative_mapping() -> None:
@@ -144,9 +138,7 @@ def test_w4_ffmpeg_plan_contains_real_creative_mapping() -> None:
             position="center",
         )
     )
-    controller.set_transition(
-        TransitionProperties("fade_black", 12)
-    )
+    controller.set_transition(TransitionProperties("fade_black", 12))
     controller.set_effects(
         EffectProperties(
             enter_effect="Rise",
@@ -162,18 +154,9 @@ def test_w4_ffmpeg_plan_contains_real_creative_mapping() -> None:
     )
 
     assert plan.overlay_y != "(main_h-overlay_h)/2"
-    assert any(
-        item.startswith("drawtext=")
-        for item in plan.post_filters
-    )
-    assert sum(
-        item.startswith("fade=t=")
-        for item in plan.post_filters
-    ) == 2
-    assert any(
-        "alpha=1" in item
-        for item in plan.source_filters
-    )
+    assert any(item.startswith("drawtext=") for item in plan.post_filters)
+    assert sum(item.startswith("fade=t=") for item in plan.post_filters) == 2
+    assert any("alpha=1" in item for item in plan.source_filters)
     assert "Wipe" in UNSUPPORTED_LEGACY_EFFECTS
 
 
@@ -193,10 +176,7 @@ def test_w4_router_uses_semantic_intents() -> None:
             ),
         )
     )
-    assert (
-        controller.state.clip("C001").properties.title.text
-        == "Judul"
-    )
+    assert controller.state.clip("C001").properties.title.text == "Judul"
 
     router(
         UiIntent(

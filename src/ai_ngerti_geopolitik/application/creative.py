@@ -91,13 +91,8 @@ class CreativeController:
     def set_transition(self, transition: TransitionProperties) -> ProjectState:
         clip_id = self._selected_clip_id()
         clip = self.state.clip(clip_id)
-        if (
-            transition.preset != "none"
-            and transition.duration_frames * 2 > clip.duration_frames
-        ):
-            raise CreativeEditError(
-                "transition duration must not exceed half of the clip duration"
-            )
+        if transition.preset != "none" and transition.duration_frames * 2 > clip.duration_frames:
+            raise CreativeEditError("transition duration must not exceed half of the clip duration")
         return self._execute(
             "Set transition",
             SetClipPropertiesCommand(
@@ -156,9 +151,7 @@ class CreativeIntentRouter:
                     font_size=int(data.get("font_size", "54")),
                     position=data.get("position", "bottom"),
                     color_hex=data.get("color_hex", "FFFFFF"),
-                    background_opacity_percent=int(
-                        data.get("background_opacity_percent", "55")
-                    ),
+                    background_opacity_percent=int(data.get("background_opacity_percent", "55")),
                 )
             )
             return
@@ -167,9 +160,7 @@ class CreativeIntentRouter:
             self.last_result = self.controller.set_transition(
                 TransitionProperties(
                     preset=data.get("preset", "none"),
-                    duration_frames=int(
-                        data.get("duration_frames", "0")
-                    ),
+                    duration_frames=int(data.get("duration_frames", "0")),
                 )
             )
             return
@@ -179,13 +170,9 @@ class CreativeIntentRouter:
                 EffectProperties(
                     enter_effect=data.get("enter_effect", "None"),
                     exit_effect=data.get("exit_effect", "None"),
-                    intensity_percent=int(
-                        data.get("intensity_percent", "100")
-                    ),
+                    intensity_percent=int(data.get("intensity_percent", "100")),
                     locked=data.get("locked", "false").lower() == "true",
                 )
             )
             return
-        raise CreativeEditError(
-            f"unsupported W4 creative intent: {intent.kind}"
-        )
+        raise CreativeEditError(f"unsupported W4 creative intent: {intent.kind}")

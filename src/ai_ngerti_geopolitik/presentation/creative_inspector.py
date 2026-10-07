@@ -27,9 +27,7 @@ def _emit(
 ) -> None:
     if sink is None:
         return
-    normalized = tuple(
-        sorted((key, str(value)) for key, value in payload.items())
-    )
+    normalized = tuple(sorted((key, str(value)) for key, value in payload.items()))
     sink(UiIntent(kind, normalized))
 
 
@@ -61,9 +59,7 @@ def create_creative_inspector(
     target.setObjectName("label_w4_creative_target")
     target.setStyleSheet("font-weight:700; color:#172033;")
     outer.addWidget(target)
-    note = muted_label(
-        "Perubahan masuk CommandBus dan dapat Undo/Redo."
-    )
+    note = muted_label("Perubahan masuk CommandBus dan dapat Undo/Redo.")
     note.setStyleSheet("color:#64748B; font-size:10px;")
     outer.addWidget(note)
 
@@ -153,9 +149,7 @@ def create_creative_inspector(
             clip_id=clip_id,
             preset=transition.currentData(),
             duration_frames=(
-                transition_frames.value()
-                if transition.currentData() != "none"
-                else 0
+                transition_frames.value() if transition.currentData() != "none" else 0
             ),
         )
     )
@@ -185,15 +179,10 @@ def create_creative_inspector(
     effects_form.addRow("", locked)
     effects_layout.addLayout(effects_form)
 
-    unsupported = QLabel(
-        "Belum render-backed: "
-        + ", ".join(UNSUPPORTED_LEGACY_EFFECTS)
-    )
+    unsupported = QLabel("Belum render-backed: " + ", ".join(UNSUPPORTED_LEGACY_EFFECTS))
     unsupported.setObjectName("label_w4_unsupported_effects")
     unsupported.setWordWrap(True)
-    unsupported.setStyleSheet(
-        "color:#64748B; font-size:10px;"
-    )
+    unsupported.setStyleSheet("color:#64748B; font-size:10px;")
     effects_layout.addWidget(unsupported)
     apply_effects = make_primary_button(
         "Terapkan Efek",

@@ -228,26 +228,16 @@ class JsonProjectRepository:
                 font_size=int(title_raw.get("font_size", 54)),
                 position=str(title_raw.get("position", "bottom")),
                 color_hex=str(title_raw.get("color_hex", "FFFFFF")),
-                background_opacity_percent=int(
-                    title_raw.get("background_opacity_percent", 55)
-                ),
+                background_opacity_percent=int(title_raw.get("background_opacity_percent", 55)),
             ),
             transition=TransitionProperties(
                 preset=str(transition_raw.get("preset", "none")),
-                duration_frames=int(
-                    transition_raw.get("duration_frames", 0)
-                ),
+                duration_frames=int(transition_raw.get("duration_frames", 0)),
             ),
             effects=EffectProperties(
-                enter_effect=str(
-                    effects_raw.get("enter_effect", "None")
-                ),
-                exit_effect=str(
-                    effects_raw.get("exit_effect", "None")
-                ),
-                intensity_percent=int(
-                    effects_raw.get("intensity_percent", 100)
-                ),
+                enter_effect=str(effects_raw.get("enter_effect", "None")),
+                exit_effect=str(effects_raw.get("exit_effect", "None")),
+                intensity_percent=int(effects_raw.get("intensity_percent", 100)),
                 locked=bool(effects_raw.get("locked", False)),
             ),
         )

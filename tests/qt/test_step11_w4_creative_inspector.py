@@ -64,14 +64,8 @@ def test_w4_creative_inspector_emits_semantic_intents(
         apply_transition,
         Qt.MouseButton.LeftButton,
     )
-    assert (
-        sink.intents[-1].kind
-        is UiIntentType.CREATIVE_SET_TRANSITION
-    )
-    assert (
-        dict(sink.intents[-1].payload)["preset"]
-        == "fade_black"
-    )
+    assert sink.intents[-1].kind is UiIntentType.CREATIVE_SET_TRANSITION
+    assert dict(sink.intents[-1].payload)["preset"] == "fade_black"
 
     enter = shell.root.findChild(
         QComboBox,
@@ -94,10 +88,7 @@ def test_w4_creative_inspector_emits_semantic_intents(
         apply_effects,
         Qt.MouseButton.LeftButton,
     )
-    assert (
-        sink.intents[-1].kind
-        is UiIntentType.CREATIVE_SET_EFFECTS
-    )
+    assert sink.intents[-1].kind is UiIntentType.CREATIVE_SET_EFFECTS
     payload = dict(sink.intents[-1].payload)
     assert payload["enter_effect"] == "Rise"
     assert payload["exit_effect"] == "Fade"
