@@ -116,8 +116,7 @@ def main() -> int:
             ]
             > 0
         ),
-        "neighbors_bounded": set(data["targets"][0]["neighbors"])
-        == {"previous", "next"},
+        "neighbors_bounded": set(data["targets"][0]["neighbors"]) == {"previous", "next"},
         "project_unchanged": state.semantic_json(include_revision=True) == before,
         "path_absent": "fixture-private-path.mp4" not in raw,
         "source_name_absent": "private-fixture-name.mp4" not in raw,
