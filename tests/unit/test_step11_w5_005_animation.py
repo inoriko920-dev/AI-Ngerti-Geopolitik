@@ -103,11 +103,14 @@ def test_only_render_qualified_animation_names_are_canonical() -> None:
     )
     assert "Karaoke Highlight" in UNSUPPORTED_SUBTITLE_ANIMATIONS
     for preset in SUPPORTED_SUBTITLE_ANIMATIONS[1:]:
-        assert SubtitleAnimation(
-            preset=preset,
-            enter_frames=12,
-            exit_frames=12,
-        ).preset == preset
+        assert (
+            SubtitleAnimation(
+                preset=preset,
+                enter_frames=12,
+                exit_frames=12,
+            ).preset
+            == preset
+        )
 
     for preset in UNSUPPORTED_SUBTITLE_ANIMATIONS:
         with pytest.raises(DomainValidationError, match="unsupported or unqualified"):

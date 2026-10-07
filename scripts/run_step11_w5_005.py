@@ -250,8 +250,7 @@ def main() -> int:
             "export_frame_hashes": export_frame_hashes,
             "baseline_export_frame_sha256": baseline_export_frame_hash,
             "all_export_frames_changed": all(
-                value != baseline_export_frame_hash
-                for value in export_frame_hashes.values()
+                value != baseline_export_frame_hash for value in export_frame_hashes.values()
             ),
             "export_probes": export_probes,
         },
@@ -298,13 +297,10 @@ def main() -> int:
             value != baseline_preview_hash for value in preview_hashes.values()
         ),
         "all_export_frames_changed": all(
-            value != baseline_export_frame_hash
-            for value in export_frame_hashes.values()
+            value != baseline_export_frame_hash for value in export_frame_hashes.values()
         ),
         "unsupported_presets_hidden": len(UNSUPPORTED_SUBTITLE_ANIMATIONS) == 6,
-        "word_timing_persisted": (
-            reopened.state.subtitle.cues[0].word_timings == word_timings
-        ),
+        "word_timing_persisted": (reopened.state.subtitle.cues[0].word_timings == word_timings),
         "speech_alignment_claimed": False,
         "asr_used": False,
         "undo_redo": session.state.semantic_hash() == word_hash,

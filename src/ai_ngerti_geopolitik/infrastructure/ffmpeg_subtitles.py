@@ -66,16 +66,8 @@ def _sample_envelope(
 ) -> tuple[float, float]:
     elapsed = max(0, timeline_frame - cue.start.frames)
     remaining = max(0, cue.end.frames - timeline_frame)
-    enter = (
-        min(1.0, elapsed / animation.enter_frames)
-        if animation.enter_frames > 0
-        else 1.0
-    )
-    exit_ = (
-        min(1.0, remaining / animation.exit_frames)
-        if animation.exit_frames > 0
-        else 1.0
-    )
+    enter = min(1.0, elapsed / animation.enter_frames) if animation.enter_frames > 0 else 1.0
+    exit_ = min(1.0, remaining / animation.exit_frames) if animation.exit_frames > 0 else 1.0
     return enter, exit_
 
 
