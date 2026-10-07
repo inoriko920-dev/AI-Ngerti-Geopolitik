@@ -65,9 +65,7 @@ class L1ContextBuilder:
     @staticmethod
     def _neighbor_summary(track: Track, clip_id: str) -> dict[str, object]:
         ordered = sorted(track.clips, key=lambda item: item.timeline_start.frames)
-        index = next(
-            position for position, item in enumerate(ordered) if item.clip_id == clip_id
-        )
+        index = next(position for position, item in enumerate(ordered) if item.clip_id == clip_id)
 
         def summary(position: int) -> dict[str, object] | None:
             if position < 0 or position >= len(ordered):
