@@ -321,7 +321,7 @@ class CredentialPoolService:
 
         added: list[CredentialSlotMetadata] = []
         try:
-            for slot_id, raw_value in zip(free_slots, unique, strict=True):
+            for slot_id, raw_value in zip(free_slots[: len(unique)], unique, strict=True):
                 added.append(
                     self._slots.add_or_update(
                         slot_id,
