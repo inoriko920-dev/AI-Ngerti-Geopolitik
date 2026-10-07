@@ -11,11 +11,12 @@ from ai_ngerti_geopolitik.application.ai_context import (
     L1ContextBuilder,
 )
 from ai_ngerti_geopolitik.application.ai_contracts import (
-    CredentialSecret,
     L1_RENDER_QUALIFIED_EFFECTS,
+    CredentialSecret,
 )
 from ai_ngerti_geopolitik.application.credential_slots import CredentialSlotService
 from ai_ngerti_geopolitik.domain import (
+    UNSUPPORTED_LEGACY_EFFECTS,
     Asset,
     Clip,
     ClipProperties,
@@ -23,7 +24,6 @@ from ai_ngerti_geopolitik.domain import (
     FrameTime,
     ProjectState,
     Track,
-    UNSUPPORTED_LEGACY_EFFECTS,
 )
 from ai_ngerti_geopolitik.infrastructure.in_memory_credentials import (
     InMemoryCredentialStore,
