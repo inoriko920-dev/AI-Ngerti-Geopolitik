@@ -15,12 +15,8 @@ def main() -> int:
         if not path.is_file() or path.stat().st_size <= 0:
             raise SystemExit(f"missing W7-009 evidence: {name}")
 
-    report = json.loads(
-        (root / "00_w7_009_report.json").read_text(encoding="utf-8")
-    )
-    diffs = json.loads(
-        (root / "01_w7_009_diffs.json").read_text(encoding="utf-8")
-    )["diffs"]
+    report = json.loads((root / "00_w7_009_report.json").read_text(encoding="utf-8"))
+    diffs = json.loads((root / "01_w7_009_diffs.json").read_text(encoding="utf-8"))["diffs"]
 
     if report.get("status") != "PASS":
         raise SystemExit("W7-009 evidence status is not PASS")

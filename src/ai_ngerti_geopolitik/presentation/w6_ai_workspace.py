@@ -697,9 +697,7 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
             mode_index = mode_combo.findData("l2_auto_edit")
             if mode_index >= 0:
                 mode_combo.setCurrentIndex(mode_index)
-            capability_safety.setText(
-                "✓ Hanya capability Auto Edit L2 yang sudah diizinkan"
-            )
+            capability_safety.setText("✓ Hanya capability Auto Edit L2 yang sudah diizinkan")
         else:
             mode_index = mode_combo.findData("l1_effects")
             if mode_index >= 0:

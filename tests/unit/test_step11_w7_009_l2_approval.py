@@ -323,8 +323,7 @@ def test_l2_same_revision_semantic_replacement_is_stale_before_apply() -> None:
                 replace(
                     track,
                     clips=tuple(
-                        changed_clip if item.clip_id == "clip-1" else item
-                        for item in track.clips
+                        changed_clip if item.clip_id == "clip-1" else item for item in track.clips
                     ),
                 ),
             ),

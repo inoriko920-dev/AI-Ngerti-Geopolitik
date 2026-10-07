@@ -100,8 +100,7 @@ class AIPlanDiffEntry:
     @property
     def display_text(self) -> str:
         value = (
-            f"{self.target_clip_id} · {self.command_type} · "
-            f"{self.before_text} → {self.after_text}"
+            f"{self.target_clip_id} · {self.command_type} · {self.before_text} → {self.after_text}"
         )
         if len(value) <= _MAX_DIFF_DISPLAY:
             return value
@@ -492,9 +491,7 @@ class AIPlanApprovalService:
         commands: tuple[Command, ...] = tuple(reverified.translated_commands)
         candidate = self._apply_commands(current, commands)
         if candidate.semantic_hash() != reverified.candidate_semantic_hash:
-            raise AIApprovalError(
-                "AI L2 command translation diverged from verified candidate"
-            )
+            raise AIApprovalError("AI L2 command translation diverged from verified candidate")
         return commands, "AI L2"
 
     def apply(self, approval_id: str) -> AIApprovalSnapshot:
