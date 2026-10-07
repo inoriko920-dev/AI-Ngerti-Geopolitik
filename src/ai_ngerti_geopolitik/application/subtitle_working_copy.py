@@ -132,9 +132,7 @@ class SubtitleWorkingCopy:
         candidate = replace(
             cue,
             text=cue.text if text is None else text,
-            start=cue.start
-            if start_frame is None
-            else FrameTime(start_frame, cue.start.fps),
+            start=cue.start if start_frame is None else FrameTime(start_frame, cue.start.fps),
             end=cue.end if end_frame is None else FrameTime(end_frame, cue.end.fps),
         )
         try:
@@ -276,8 +274,7 @@ class SubtitleWorkingCopy:
         if start <= 0:
             raise SubtitleWorkingCopyError("subtitle index normalization must start above zero")
         self._cues = [
-            replace(cue, index=start + position)
-            for position, cue in enumerate(self._cues)
+            replace(cue, index=start + position) for position, cue in enumerate(self._cues)
         ]
 
     def guard_discard(self) -> None:
@@ -338,9 +335,7 @@ class SubtitleWorkingCopyService:
         destination: Path | None = None,
     ) -> Path:
         output = (
-            self.suggest_copy_path(working)
-            if destination is None
-            else destination.expanduser()
+            self.suggest_copy_path(working) if destination is None else destination.expanduser()
         )
         source = Path(working.source_ref).expanduser()
         if output.suffix.lower() != ".srt":

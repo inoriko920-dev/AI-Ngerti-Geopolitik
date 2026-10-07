@@ -146,13 +146,9 @@ class Utf8SrtWriter:
             if cue.index <= 0:
                 raise SubtitleWriteError("subtitle cue index must be positive")
             if cue.end_milliseconds <= cue.start_milliseconds:
-                raise SubtitleWriteError(
-                    f"subtitle cue index {cue.index} end must be after start"
-                )
+                raise SubtitleWriteError(f"subtitle cue index {cue.index} end must be after start")
             if not cue.text.strip():
-                raise SubtitleWriteError(
-                    f"subtitle cue index {cue.index} text cannot be empty"
-                )
+                raise SubtitleWriteError(f"subtitle cue index {cue.index} text cannot be empty")
             if cue.start_milliseconds < previous_start:
                 raise SubtitleWriteError("subtitle copy cues must be sorted before save")
             if cue.start_milliseconds < previous_end:
@@ -185,6 +181,4 @@ class Utf8SrtWriter:
                     destination.unlink()
                 except OSError:
                     pass
-            raise SubtitleWriteError(
-                f"cannot write subtitle copy: {destination}"
-            ) from exc
+            raise SubtitleWriteError(f"cannot write subtitle copy: {destination}") from exc
