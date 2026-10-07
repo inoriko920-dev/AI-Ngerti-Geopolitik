@@ -864,7 +864,7 @@ def create_provider_credentials_dialog(
             UiIntentType.CREDENTIAL_SAVE_SLOT,
             slot_id=str(slot.value()),
             label=label_value,
-            secret_present="true",
+            credential_supplied="true",
         )
         key.clear()
         _badge(
