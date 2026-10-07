@@ -22,6 +22,7 @@ def main() -> int:
     required = [
         "00_w6_009_ui_report.txt",
         "00_w6_009_security_report.txt",
+        "00_FROZEN_REFERENCE_CONTACT_SHEET.png",
         *actual.values(),
         *(f"UI-{ui_id}_REFERENCE_VS_ACTUAL.png" for ui_id in ids),
     ]
