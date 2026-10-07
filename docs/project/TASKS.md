@@ -519,8 +519,8 @@ Serial contract:
 - [x] **S11-W7-005 — Pacing qualification: duration + speed — PASS**
 - [x] **S11-W7-006 — Transform qualification — PASS**
 - [x] **S11-W7-007 — Transition + mixed-plan qualification — PASS**
-- [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — READY**
-- [ ] **S11-W7-009 — Approval/apply/UI diff integration — BLOCKED_BY_W7_008**
+- [x] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
+- [ ] **S11-W7-009 — Approval/apply/UI diff integration — READY**
 - [ ] **S11-W7-010 — Real-media closure + failure/regression lock — BLOCKED_BY_W7_009**
 
 Locked safety boundaries:
@@ -715,4 +715,32 @@ W7-007 proof:
 - 23 attempt 1, 3 attempt 2 only after transient Chocolatey HTTP 504 during FFmpeg install;
 - S08/S10 and prior W0..W7 regression families PASS.
 
-**Exact next task:** S11-W7-008 only — Gemini L2 request profile + lifecycle reuse.
+Accepted W7-008 implementation HEAD:
+`fa142e4d7eee21f79f79837339e76dfb974b8ba8`
+
+W7-008 workflow:
+`37671042698` — SUCCESS
+
+W7-008 evidence:
+`docs/evidence/features/S11_W7_008_GEMINI_L2_LIFECYCLE.md`
+
+W7-008 artifact:
+`ANG-S11-W7-008-Gemini-L2-Lifecycle` / ID `11505072385`
+
+W7-008 proof:
+- one shared Gemini provider supports L1 schema v1 and L2 schema v2 profiles;
+- frozen W6 AIProviderRequest remains exactly four dataclass fields;
+- L2AIProviderRequest selects the L2 profile without adding fields;
+- same AIPlanJobService, CredentialPoolService, cancellation and error taxonomy reused;
+- L2 provider response verified by AutoEditPlanVerifier + W7SelectedScope;
+- profile-specific result access prevents L1/L2 result confusion;
+- invalid-auth failover, cancellation and stale session gates reused;
+- canonical ProjectState unchanged;
+- no W7-009 approval/apply/UI work started;
+- targeted tests 9/9 PASS;
+- full pytest 370/370 PASS;
+- evidence verifier 1/1 PASS;
+- 26/26 triggered workflow families SUCCESS, all attempt 1;
+- S08/S09/S10 and prior W0..W7 regression families PASS.
+
+**Exact next task:** S11-W7-009 only — Approval/apply/UI diff integration.

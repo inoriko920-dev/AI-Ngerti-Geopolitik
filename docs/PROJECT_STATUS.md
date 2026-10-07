@@ -2,49 +2,44 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W7 — AI Auto Edit L2**  
-**W7 status:** **CONTRACT_LOCKED / W7-001..007 PASS / W7-008 READY**  
-**Accepted W7-007 implementation HEAD:** `642ce15c89b3a0e65011387d67f9898d0cd1f542`  
-**Accepted W7-007 workflow:** `37667149646` — SUCCESS  
-**Next exact task:** **S11-W7-008 — Gemini L2 request profile + lifecycle reuse**  
+**W7 status:** **CONTRACT_LOCKED / W7-001..008 PASS / W7-009 READY**  
+**Accepted W7-008 implementation HEAD:** `fa142e4d7eee21f79f79837339e76dfb974b8ba8`  
+**Accepted W7-008 workflow:** `37671042698` — SUCCESS  
+**Next exact task:** **S11-W7-009 — Approval/apply/UI diff integration**  
 **W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**
 
-## W7-007 proven
+## W7-008 proven
 
-Canonical reuse:
-- W7-004 AutoEditPlanVerifier remains semantic owner;
-- transition proposals translate to existing SetClipPropertiesCommand;
-- TransitionProperties remains canonical transition value object;
-- W4 fade-through-black render mapping remains the qualification path;
-- mixed L1/L2 plans reuse existing effects/duration/speed/transform/transition owners;
-- no AI-only transition or mixed-plan mutation path exists.
+Provider:
+- existing GeminiAIProvider remains the only Gemini owner;
+- L1 default profile remains schema v1 and effect-only;
+- L2 profile uses canonical AutoEditPlan schema v2 and exact W7 allowlist;
+- official google-genai structured-output path remains shared.
 
-Real-media proof:
-- fade_black real preview differs from baseline;
-- fade_black real export is valid and retains audio;
-- none clears an existing fade_black;
-- mixed plan real export is valid, 210 frames within probe tolerance;
-- mixed export retains audio.
+Backward compatibility:
+- W6 AIProviderRequest remains exactly four dataclass fields;
+- L2AIProviderRequest adds no dataclass fields and selects only the L2 profile;
+- existing W6 approval code still receives L1 results through take_verified().
 
-Sequential semantic proof:
-- 120-frame clip at 200% speed becomes 60 frames;
-- later fade_black 30 frames is accepted at the exact half-duration bound;
-- 31 frames is rejected;
-- six-command mixed L1/L2 plan resolves deterministically across two clips;
-- verifier candidate hashes match translated candidate states.
+Lifecycle:
+- existing AIPlanJobService remains the only async job owner;
+- existing CredentialPoolService remains the only credential/failover owner;
+- L2 response verification uses AutoEditPlanVerifier + W7SelectedScope;
+- L2 result retrieval uses take_verified_l2();
+- invalid-auth failover, cancellation, stale-session/revision and typed provider
+  errors are shared with W6.
 
 Safety:
+- credential never enters prompt/context/config;
+- deterministic evidence uses no live Gemini network request;
 - canonical ProjectState unchanged;
-- candidate revision unchanged;
-- CommandBus history unchanged;
-- source media byte-identical;
-- provider profile unchanged;
 - runtime UI unchanged;
-- canonical AI apply unchanged;
-- W7-008 not started.
+- canonical approval/apply not started;
+- W7-009 not started.
 
-## W7-007 gates
+## W7-008 gates
 
-Workflow `37667149646`:
+Workflow `37671042698`:
 - Ruff format/check PASS;
 - mypy PASS — 68 source files;
 - import contracts PASS — 4 kept / 0 broken;
@@ -52,29 +47,28 @@ Workflow `37667149646`:
 - source-of-truth PASS;
 - no-secret PASS;
 - UI references 42/42 PASS;
-- targeted tests **5/5 PASS**;
-- full pytest **361/361 PASS**;
-- real-media transition + mixed-plan evidence PASS;
-- evidence verifier **8/8 files PASS**;
+- google-genai runtime PASS — 2.28.0;
+- targeted tests **9/9 PASS**;
+- full pytest **370/370 PASS**;
+- deterministic L2 lifecycle evidence PASS;
+- evidence verifier **1/1 PASS**;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-007-L2-Transition-Mixed`;
-- ID `11503996235`;
-- SHA-256 `767e82d05436c491e984f9d7e3e3f7907d03f6859ceb171c1a0dc6d61a154336`.
+- `ANG-S11-W7-008-Gemini-L2-Lifecycle`;
+- ID `11505072385`;
+- SHA-256 `75207c3be32f8b967848719e48c3677de34e6608d063fe38121a6deb03f3be39`.
 
 Regression:
-**26/26 triggered workflow families succeeded.**  
-23 passed on attempt 1. W5-010, W5-005 and W0 initially hit a transient
-Chocolatey FFmpeg HTTP 504 during dependency installation; all three passed
-unchanged on attempt 2. No application assertion failed.
+**26/26 triggered workflow families SUCCESS, all attempt 1.**
 
 S08 portable foundation PASS.  
-S10 real-media E2E PASS.  
+S09 UI shell PASS.  
+S10 Windows E2E PASS.  
 Prior W0..W7 regression families PASS.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W7-008 only — Gemini L2 request profile + lifecycle reuse**.
+After owner says **lanjutkan**, execute **S11-W7-009 only — Approval/apply/UI diff integration**.
 
-Do not start W7-009 in the same turn.
+Do not start W7-010 in the same turn.

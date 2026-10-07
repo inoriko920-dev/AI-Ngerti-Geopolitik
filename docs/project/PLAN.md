@@ -1,41 +1,44 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001..007 are PASS.**
+**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001..008 are PASS.**
 
-## Accepted W7-007
+## Accepted W7-008
 
 Implementation:
-`642ce15c89b3a0e65011387d67f9898d0cd1f542`
+`fa142e4d7eee21f79f79837339e76dfb974b8ba8`
 
 Workflow:
-`37667149646` — SUCCESS.
+`37671042698` — SUCCESS.
 
 Qualified:
-- existing W7-004 transition translation through canonical SetClipPropertiesCommand;
-- real `fade_black` transition preview/export using the existing W4 render path;
-- `none` transition clear semantics;
-- candidate-dependent transition maximum after pacing changes;
-- mixed L1/L2 sequential plan using effects, duration, transform, transition and speed;
-- mixed candidate timeline 210 frames;
-- real mixed-plan export with audio retained;
-- verifier candidate semantic hashes match translated candidate states;
-- source media unchanged;
-- zero canonical ProjectState/revision/CommandBus history mutation.
+- one existing GeminiAIProvider now supports bounded L1 and L2 request profiles;
+- L1 remains schema v1 / effect-only and backward-compatible;
+- L2 uses canonical AutoEditPlan schema v2;
+- W6 AIProviderRequest stays frozen at exactly four dataclass fields;
+- L2AIProviderRequest selects L2 without adding provider-request fields;
+- same AIPlanJobService background worker is reused;
+- same CredentialPoolService and provider error mapping are reused;
+- L2 dispatches to AutoEditPlanVerifier + W7SelectedScope;
+- take_verified() remains L1-only and take_verified_l2() is L2-only;
+- cancellation, stale-session/revision and invalid-auth failover are shared;
+- canonical ProjectState remains unchanged;
+- no W7-009 approval/apply/UI integration started.
 
 Evidence:
-- targeted W7-007 tests 5/5 PASS;
-- full pytest 361/361 PASS;
-- evidence verifier 8/8 files PASS;
-- 26/26 triggered workflow families SUCCESS;
-- 23 attempt 1 + 3 attempt 2 after transient Chocolatey HTTP 504 only;
+- targeted W7-008 tests 9/9 PASS;
+- full pytest 370/370 PASS;
+- official google-genai 2.28.0 runtime PASS;
+- evidence verifier 1/1 PASS;
+- 26/26 triggered workflow families SUCCESS, all attempt 1;
 - S08 portable foundation PASS;
-- S10 real-media E2E PASS;
+- S09 UI shell PASS;
+- S10 Windows E2E PASS;
 - all prior W0..W7 regression families green.
 
 Artifact:
-- `ANG-S11-W7-007-L2-Transition-Mixed`;
-- ID `11503996235`;
-- SHA-256 `767e82d05436c491e984f9d7e3e3f7907d03f6859ceb171c1a0dc6d61a154336`.
+- `ANG-S11-W7-008-Gemini-L2-Lifecycle`;
+- ID `11505072385`;
+- SHA-256 `75207c3be32f8b967848719e48c3677de34e6608d063fe38121a6deb03f3be39`.
 
 ## Serial W7 plan
 
@@ -46,20 +49,21 @@ Artifact:
 5. W7-005 pacing qualification — duration + speed — **PASS**
 6. W7-006 transform qualification — **PASS**
 7. W7-007 transition + mixed-plan qualification — **PASS**
-8. W7-008 Gemini L2 request profile + lifecycle reuse — **READY**
-9. W7-009 approval/apply/UI diff integration — BLOCKED_BY_W7_008
+8. W7-008 Gemini L2 request profile + lifecycle reuse — **PASS**
+9. W7-009 approval/apply/UI diff integration — **READY**
 10. W7-010 real-media closure + failure/regression lock — BLOCKED_BY_W7_009
 
-## W7-008 boundary
+## W7-009 boundary
 
-W7-008 owns only:
-- Gemini L2 request profile compatible with schema v2;
-- reuse/generalization of the existing W6 provider + async lifecycle where needed;
-- preservation of W6 behavior and error typing;
-- no second Gemini/provider/credential owner.
+W7-009 owns only:
+- consume a successful verified L2 job result through explicit review/approval;
+- final stale/hash/lock revalidation before apply;
+- one atomic `CommandBatch(actor="ai")` for the approved mixed plan;
+- one Undo / one Redo transaction;
+- bounded before→after command differences on the existing frozen W6 AI surfaces;
+- no new screen/layout unless the Software Factory UI gate is explicitly triggered.
 
 It must not start:
-- W7-009 canonical approval/apply/UI diff integration;
-- W7-010 final closure.
+- W7-010 final real-media/failure/regression closure.
 
-Do not begin W7-008 until owner says `lanjutkan`.
+Do not begin W7-009 until owner says `lanjutkan`.

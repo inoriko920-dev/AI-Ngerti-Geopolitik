@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W6 CLOSED PROVISIONAL LIVE GEMINI — W7 CONTRACT_LOCKED — W7-001..007 PASS — NEXT W7-008**
+> **STATUS: SF-STEP 11 ACTIVE — W6 CLOSED PROVISIONAL LIVE GEMINI — W7 CONTRACT_LOCKED — W7-001..008 PASS — NEXT W7-009**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -15,35 +15,36 @@ Completed:
 - W7-004 L2 semantic verifier + sequential dry-run translator = **PASS**;
 - W7-005 pacing qualification — duration + speed = **PASS**;
 - W7-006 transform qualification = **PASS**;
-- W7-007 transition + mixed-plan qualification = **PASS**.
+- W7-007 transition + mixed-plan qualification = **PASS**;
+- W7-008 Gemini L2 request profile + lifecycle reuse = **PASS**.
 
-Accepted W7-007 implementation:
-`642ce15c89b3a0e65011387d67f9898d0cd1f542`
+Accepted W7-008 implementation:
+`fa142e4d7eee21f79f79837339e76dfb974b8ba8`
 
 Workflow:
-`37667149646` — SUCCESS.
+`37671042698` — SUCCESS.
 
-W7-007 proves:
-- real `fade_black` transition preview/export;
-- `none` transition clear;
-- transition bounds against sequential candidate pacing state;
-- six-command mixed L1/L2 plan using existing canonical manual owners;
-- 210-frame mixed real-media export with audio retained;
-- verifier candidate hashes match translated candidates;
-- canonical ProjectState/revision/CommandBus history and source media remain unchanged;
-- no provider/UI/canonical apply work introduced.
+W7-008 proves:
+- one shared Gemini provider supports frozen W6 L1 and W7 L2 profiles;
+- W6 AIProviderRequest field contract remains unchanged;
+- canonical AutoEditPlan schema v2 is used for L2 structured output;
+- same credential pool + background job lifecycle are reused;
+- L1/L2 verified results have separate safe accessors;
+- invalid-auth failover, cancellation and stale-session behavior are reused;
+- canonical ProjectState remains unchanged;
+- no approval/apply/UI integration is introduced.
 
-Targeted W7-007 tests: **5/5 PASS**.  
-Full pytest: **361/361 PASS**.  
-Evidence verifier: **8/8 files PASS**.  
-Regression matrix: **26/26 SUCCESS** (23 attempt 1; 3 attempt 2 after transient Chocolatey FFmpeg HTTP 504).
+Targeted W7-008 tests: **9/9 PASS**.  
+Full pytest: **370/370 PASS**.  
+Evidence verifier: **1/1 PASS**.  
+Regression matrix: **26/26 SUCCESS, all attempt 1**.
 
 Artifact:
-`ANG-S11-W7-007-L2-Transition-Mixed` / ID `11503996235`.
+`ANG-S11-W7-008-Gemini-L2-Lifecycle` / ID `11505072385`.
 
 W6 remains closed as **PASS_WITH_PROVISIONAL_LIVE_GEMINI** because no real live
-Gemini credential was available during W6 closure.
+Gemini credential was available for a network success claim.
 
 ## Next
 
-**S11-W7-008 — Gemini L2 request profile + lifecycle reuse only.**
+**S11-W7-009 — Approval/apply/UI diff integration only.**

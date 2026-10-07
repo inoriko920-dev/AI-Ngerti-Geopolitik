@@ -2,53 +2,54 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W7 — AI Auto Edit L2  
-**W7 status:** **CONTRACT_LOCKED / W7-001..007 PASS / W7-008 READY**  
-**Last completed task:** S11-W7-007 — PASS  
-**Accepted W7-007 implementation HEAD:** `642ce15c89b3a0e65011387d67f9898d0cd1f542`  
-**Accepted W7-007 workflow:** `37667149646` — SUCCESS  
-**Next exact task:** S11-W7-008 — Gemini L2 request profile + lifecycle reuse  
+**W7 status:** **CONTRACT_LOCKED / W7-001..008 PASS / W7-009 READY**  
+**Last completed task:** S11-W7-008 — PASS  
+**Accepted W7-008 implementation HEAD:** `fa142e4d7eee21f79f79837339e76dfb974b8ba8`  
+**Accepted W7-008 workflow:** `37671042698` — SUCCESS  
+**Next exact task:** S11-W7-009 — Approval/apply/UI diff integration  
 **W6 final status:** PASS_WITH_PROVISIONAL_LIVE_GEMINI  
 **W5 final status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W7-007 implementation now qualified
+## W7-008 implementation now qualified
 
-W7-007 adds no new production mutation owner. It qualifies the already-existing
-W7-004 transition translation and sequential mixed-plan path through existing
-manual/render owners.
+W7-008 generalizes the existing W6 provider lifecycle without creating a second
+Gemini/provider/credential owner.
 
 Canonical reuse:
-- `TransitionEditProposal`;
-- `AutoEditPlanVerifier`;
-- `SetClipPropertiesCommand + TransitionProperties`;
-- existing W6 effect path;
-- existing W7 duration/speed/transform paths;
-- W4 `build_w4_creative_plan()`;
-- existing FFmpeg qualification adapter.
+- `GeminiAIProvider`;
+- `AIProviderPort`;
+- `CredentialPoolService`;
+- `AIPlanJobService`;
+- W6 typed provider errors/cancellation/stale-session gates;
+- W7 `AutoEditPlanVerifier + W7SelectedScope`.
+
+Compatibility lock:
+- W6 `AIProviderRequest` still has exactly four dataclass fields;
+- L1 remains the default profile;
+- `L2AIProviderRequest` adds no fields and selects L2;
+- L1 consumers continue to use `take_verified()`;
+- L2 consumers use `take_verified_l2()`.
 
 Proof:
-- real fade_black preview/export PASS;
-- exported audio retained;
-- none transition clears fade_black;
-- candidate-dependent transition maximum proven after speed change;
-- mixed six-command L1/L2 plan PASS;
-- mixed real export = 210 frames with audio;
-- verifier candidate hashes match translated candidates.
+- official google-genai structured output runtime importable;
+- L2 schema v2 profile selected correctly;
+- L1 schema v1/effect-only profile preserved;
+- L2 job executes off caller thread;
+- same credential failover path reused;
+- cancellation and stale session gates reused;
+- six-command L2 provider result verified successfully;
+- canonical state remains unchanged.
 
 Safety:
-- canonical ProjectState unchanged;
-- candidate revision unchanged;
-- CommandBus history untouched;
-- source media SHA-256 unchanged;
-- provider profile unchanged;
-- runtime UI unchanged;
-- canonical AI apply not started;
-- W7-008 provider lifecycle work not started.
+- no credential in prompt/config/snapshot;
+- no live Gemini success claimed;
+- no runtime UI change;
+- no canonical approval/apply;
+- W7-009 not started.
 
 ## Gates
 
-Workflow `37667149646` — **SUCCESS**:
-- FFmpeg toolchain PASS;
-- uv lock/frozen sync PASS;
+Workflow `37671042698` — **SUCCESS**:
 - Ruff format/check PASS;
 - mypy PASS — 68 source files;
 - import contracts PASS;
@@ -56,34 +57,34 @@ Workflow `37667149646` — **SUCCESS**:
 - source-of-truth PASS;
 - no-secret PASS;
 - UI references 42/42 PASS;
-- targeted W7-007 tests **5/5 PASS**;
-- full pytest **361/361 PASS**;
-- real-media evidence PASS;
-- evidence verifier **8/8 files PASS**;
+- google-genai runtime PASS;
+- targeted W7-008 tests **9/9 PASS**;
+- full pytest **370/370 PASS**;
+- deterministic evidence PASS;
+- evidence verifier **1/1 PASS**;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-007-L2-Transition-Mixed`;
-- ID `11503996235`;
-- size 14,566,415 bytes;
-- SHA-256 `767e82d05436c491e984f9d7e3e3f7907d03f6859ceb171c1a0dc6d61a154336`.
+- `ANG-S11-W7-008-Gemini-L2-Lifecycle`;
+- ID `11505072385`;
+- size 485 bytes;
+- SHA-256 `75207c3be32f8b967848719e48c3677de34e6608d063fe38121a6deb03f3be39`.
 
 Evidence:
-`docs/evidence/features/S11_W7_007_TRANSITION_MIXED_QUALIFICATION.md`.
+`docs/evidence/features/S11_W7_008_GEMINI_L2_LIFECYCLE.md`.
 
 ## Regression lock
 
-All **26/26 triggered workflow families** on accepted W7-007 HEAD are SUCCESS.
-23 passed attempt 1; three dependency-install runs hit transient Chocolatey
-FFmpeg HTTP 504 and passed unchanged on attempt 2. No application assertion
-failed.
+All **26/26 triggered workflow families** on accepted W7-008 HEAD are SUCCESS,
+all on attempt 1.
 
 S08 portable foundation PASS.  
-S10 real-media E2E PASS.  
+S09 UI shell PASS.  
+S10 Windows E2E PASS.  
 Prior W0..W7 gates remain green.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W7-008 only — Gemini L2 request profile + lifecycle reuse**.
+After owner says `lanjutkan`, execute **S11-W7-009 only — Approval/apply/UI diff integration**.
 
-Do not start W7-009 approval/apply/UI diff integration in the same turn.
+Do not start W7-010 final closure in the same turn.

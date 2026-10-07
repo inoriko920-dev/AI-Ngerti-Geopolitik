@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..007 PASS / W7-008 READY / W7-009..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..008 PASS / W7-009 READY / W7-010 BLOCKED_BY_W7_009  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..007 PASS / W7-008 READY  
+**Runtime implementation:** ACTIVE — W7-001..008 PASS / W7-009 READY  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -364,8 +364,8 @@ and a real network smoke succeeds.
 - **W7-005 — pacing qualification: duration + speed — PASS**
 - **W7-006 — transform qualification — PASS**
 - **W7-007 — transition + mixed-plan qualification — PASS**
-- W7-008 — Gemini L2 request profile + lifecycle reuse — READY
-- W7-009 — approval/apply/UI diff integration — BLOCKED_BY_W7_008
+- **W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
+- W7-009 — approval/apply/UI diff integration — READY
 - W7-010 — real-media failure/regression closure — BLOCKED_BY_W7_009
 
 ## W7-001 implementation closure
@@ -601,10 +601,49 @@ Gates:
 W7-007 did not start Gemini L2 request-profile/lifecycle changes, runtime UI
 integration, canonical approval/apply, or W7 final closure.
 
+## W7-008 implementation closure
+
+Accepted implementation HEAD:
+`fa142e4d7eee21f79f79837339e76dfb974b8ba8`
+
+Accepted workflow:
+`37671042698` — SUCCESS.
+
+Implemented/qualified:
+- shared request-profile selection inside the existing GeminiAIProvider;
+- W6 L1 remains the default schema-v1 effect-only profile;
+- W7 L2 uses canonical schema-v2 structured output and bounded L2 system policy;
+- frozen W6 AIProviderRequest field contract remains unchanged;
+- L2AIProviderRequest selects the L2 profile without adding request fields;
+- existing AIPlanJobService remains the only background lifecycle owner;
+- existing CredentialPoolService remains the only credential/failover owner;
+- L1 verification continues through PlanVerifier/take_verified();
+- L2 verification dispatches through AutoEditPlanVerifier/W7SelectedScope and
+  take_verified_l2();
+- invalid-auth failover, cancellation, stale-session/revision and safe error
+  behavior are reused;
+- zero canonical ProjectState mutation;
+- no approval/apply/UI integration started.
+
+Evidence:
+`docs/evidence/features/S11_W7_008_GEMINI_L2_LIFECYCLE.md`.
+
+Gates:
+- targeted tests 9/9 PASS;
+- full pytest 370/370 PASS;
+- mypy 68 source files PASS;
+- google-genai runtime PASS;
+- evidence verifier 1/1 PASS;
+- 26/26 triggered workflow families SUCCESS, all attempt 1;
+- S08/S09/S10 and prior W0..W7 regression families PASS.
+
+Live Gemini network success is not claimed because deterministic evidence did not
+use a real provider credential.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-008 only — Gemini L2 request profile + lifecycle reuse**.
+After owner says `lanjutkan`, execute **S11-W7-009 only — Approval/apply/UI diff integration**.
 
-Do not start W7-009 approval/apply/UI integration in the same turn.
+Do not start W7-010 final closure in the same turn.
 
-After W7-008, report gate PASS/FAIL and stop.
+After W7-009, report gate PASS/FAIL and stop.
