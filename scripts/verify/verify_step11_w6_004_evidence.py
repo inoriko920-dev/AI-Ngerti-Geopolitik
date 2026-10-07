@@ -4,7 +4,6 @@ import argparse
 import json
 from pathlib import Path
 
-
 REQUIRED_TRUE = (
     "invalid_auth_disables_affected_slot_only",
     "network_retry_is_bounded",
