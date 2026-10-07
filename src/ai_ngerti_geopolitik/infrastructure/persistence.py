@@ -175,7 +175,19 @@ class JsonProjectRepository:
         audio_raw = raw.get("audio", {})
         color_raw = raw.get("color", {})
         speed_raw = raw.get("speed", {})
-        if not all(isinstance(item, dict) for item in (video_raw, audio_raw, color_raw, speed_raw)):
+        title_raw = raw.get("title", {})
+        transition_raw = raw.get("transition", {})
+        effects_raw = raw.get("effects", {})
+        groups = (
+            video_raw,
+            audio_raw,
+            color_raw,
+            speed_raw,
+            title_raw,
+            transition_raw,
+            effects_raw,
+        )
+        if not all(isinstance(item, dict) for item in groups):
             raise TypeError("clip property groups must be objects")
         return ClipProperties(
             video=VideoProperties(
@@ -206,6 +218,34 @@ class JsonProjectRepository:
             ),
             speed=SpeedProperties(
                 rate_percent=int(speed_raw.get("rate_percent", 100)),
+            ),
+            title=TitleProperties(
+                enabled=bool(title_raw.get("enabled", False)),
+                text=str(title_raw.get("text", "")),
+                font_size=int(title_raw.get("font_size", 54)),
+                position=str(title_raw.get("position", "bottom")),
+                color_hex=str(title_raw.get("color_hex", "FFFFFF")),
+                background_opacity_percent=int(
+                    title_raw.get("background_opacity_percent", 55)
+                ),
+            ),
+            transition=TransitionProperties(
+                preset=str(transition_raw.get("preset", "none")),
+                duration_frames=int(
+                    transition_raw.get("duration_frames", 0)
+                ),
+            ),
+            effects=EffectProperties(
+                enter_effect=str(
+                    effects_raw.get("enter_effect", "None")
+                ),
+                exit_effect=str(
+                    effects_raw.get("exit_effect", "None")
+                ),
+                intensity_percent=int(
+                    effects_raw.get("intensity_percent", 100)
+                ),
+                locked=bool(effects_raw.get("locked", False)),
             ),
         )
 

@@ -605,14 +605,14 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
         right.addTab(_ai_placeholder(), "AI Agent")
     elif mode == "overview":
         right.addTab(_overview_inspector(), "Layout")
-        right.addTab(QWidget(), "Animasi")
+        right.addTab(create_creative_inspector(intent_sink, clip_id="C001"), "Animasi")
         right.addTab(_ai_placeholder(), "AI Agent")
     else:
         right.addTab(
             create_property_inspector(mode, intent_sink, clip_id="C001"),
             "Layout",
         )
-        right.addTab(QWidget(), "Animasi")
+        right.addTab(create_creative_inspector(intent_sink, clip_id="C001"), "Animasi")
         right.addTab(_ai_placeholder(), "AI Agent")
 
     upper.addWidget(left)

@@ -1,8 +1,37 @@
-"""Canonical clip-property value objects for SF-STEP 11 W3."""
+"""Canonical clip-property value objects for SF-STEP 11 W3/W4."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+SUPPORTED_W4_EFFECTS = (
+    "None",
+    "Fade",
+    "Pop",
+    "Breathe",
+    "Stomp",
+    "Tumble",
+    "Tectonic",
+    "Rise",
+    "Pan",
+    "Drift",
+)
+UNSUPPORTED_LEGACY_EFFECTS = (
+    "Wipe",
+    "Blur",
+    "Succession",
+    "Baseline",
+    "Neon",
+    "Scrapbook",
+    "Brush",
+    "Ink",
+    "Digital",
+    "Spray Paint",
+    "Sketch",
+    "Gradient",
+)
+SUPPORTED_W4_TRANSITIONS = ("none", "fade_black")
+TITLE_POSITIONS = ("top", "center", "bottom")
 
 
 class PropertyValidationError(ValueError):
@@ -13,6 +42,15 @@ def _bounded(name: str, value: int, minimum: int, maximum: int) -> None:
     if not minimum <= value <= maximum:
         raise PropertyValidationError(
             f"{name} must be between {minimum} and {maximum}, got {value}"
+        )
+
+
+def _hex_color(value: str) -> None:
+    if len(value) != 6 or any(
+        character not in "0123456789abcdefABCDEF" for character in value
+    ):
+        raise PropertyValidationError(
+            "color_hex must contain exactly six hexadecimal digits"
         )
 
 
@@ -90,8 +128,77 @@ class SpeedProperties:
 
 
 @dataclass(frozen=True, slots=True)
+class TitleProperties:
+    enabled: bool = False
+    text: str = ""
+    font_size: int = 54
+    position: str = "bottom"
+    color_hex: str = "FFFFFF"
+    background_opacity_percent: int = 55
+
+    def __post_init__(self) -> None:
+        if len(self.text) > 160:
+            raise PropertyValidationError("title text must be at most 160 characters")
+        if self.enabled and not self.text.strip():
+            raise PropertyValidationError("enabled title requires non-empty text")
+        _bounded("font_size", self.font_size, 12, 160)
+        if self.position not in TITLE_POSITIONS:
+            raise PropertyValidationError(
+                f"unsupported title position: {self.position}"
+            )
+        _hex_color(self.color_hex)
+        _bounded(
+            "background_opacity_percent",
+            self.background_opacity_percent,
+            0,
+            100,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class TransitionProperties:
+    preset: str = "none"
+    duration_frames: int = 0
+
+    def __post_init__(self) -> None:
+        if self.preset not in SUPPORTED_W4_TRANSITIONS:
+            raise PropertyValidationError(
+                f"unsupported transition preset: {self.preset}"
+            )
+        if self.preset == "none":
+            if self.duration_frames != 0:
+                raise PropertyValidationError(
+                    "none transition must use zero duration"
+                )
+            return
+        _bounded("duration_frames", self.duration_frames, 1, 300)
+
+
+@dataclass(frozen=True, slots=True)
+class EffectProperties:
+    enter_effect: str = "None"
+    exit_effect: str = "None"
+    intensity_percent: int = 100
+    locked: bool = False
+
+    def __post_init__(self) -> None:
+        if self.enter_effect not in SUPPORTED_W4_EFFECTS:
+            raise PropertyValidationError(
+                f"unsupported enter effect: {self.enter_effect}"
+            )
+        if self.exit_effect not in SUPPORTED_W4_EFFECTS:
+            raise PropertyValidationError(
+                f"unsupported exit effect: {self.exit_effect}"
+            )
+        _bounded("intensity_percent", self.intensity_percent, 0, 200)
+
+
+@dataclass(frozen=True, slots=True)
 class ClipProperties:
     video: VideoProperties = VideoProperties()
     audio: AudioProperties = AudioProperties()
     color: ColorProperties = ColorProperties()
     speed: SpeedProperties = SpeedProperties()
+    title: TitleProperties = TitleProperties()
+    transition: TransitionProperties = TransitionProperties()
+    effects: EffectProperties = EffectProperties()

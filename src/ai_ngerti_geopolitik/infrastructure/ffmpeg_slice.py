@@ -301,17 +301,30 @@ class FfmpegSliceMediaEngine:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         plan = build_w3_filter_plan(selected, state.fps)
+        creative = build_w4_creative_plan(
+            selected,
+            state.fps,
+            base_x=plan.overlay_x,
+            base_y=plan.overlay_y,
+        )
+        source_filters = (*plan.video_filters, *creative.source_filters)
+        overlay_chain = (
+            "[w4bg][w4src]overlay="
+            f"x='{creative.overlay_x}':"
+            f"y='{creative.overlay_y}':shortest=1"
+        )
+        if creative.post_filters:
+            overlay_chain += "," + ",".join(
+                creative.post_filters
+            )
+        overlay_chain += ",format=yuv420p[outv]"
         filter_parts = [
-            f"[0:v]{','.join(plan.video_filters)}[w3src]",
+            f"[0:v]{','.join(source_filters)}[w4src]",
             (
                 f"color=c=black:s={state.settings.width}x{state.settings.height}:"
-                f"r={state.fps}:d={_seconds_string(1, state.fps)}[w3bg]"
+                f"r={state.fps}:d={_seconds_string(1, state.fps)}[w4bg]"
             ),
-            (
-                "[w3bg][w3src]overlay="
-                f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
-                "format=yuv420p[outv]"
-            ),
+            overlay_chain,
         ]
         command = [
             self.ffmpeg,
@@ -366,20 +379,36 @@ class FfmpegSliceMediaEngine:
             end = _seconds_string(clip.source_out.frames, state.fps)
             rate = clip.properties.speed.rate_percent / 100.0
             plan = build_w3_filter_plan(clip, state.fps)
+            creative = build_w4_creative_plan(
+                clip,
+                state.fps,
+                base_x=plan.overlay_x,
+                base_y=plan.overlay_y,
+            )
+            source_filters = (
+                *plan.video_filters,
+                *creative.source_filters,
+            )
             filter_parts.append(
                 f"[{index}:v]trim=start={start}:end={end},"
                 f"setpts=(PTS-STARTPTS)/{rate:.8f},"
-                f"{','.join(plan.video_filters)}[vsrc{index}]"
+                f"{','.join(source_filters)}[vsrc{index}]"
             )
             filter_parts.append(
                 f"color=c=black:s={state.settings.width}x{state.settings.height}:"
                 f"r={state.fps}:d={_number_seconds(plan.duration_seconds)}[bg{index}]"
             )
-            filter_parts.append(
+            overlay_chain = (
                 f"[bg{index}][vsrc{index}]overlay="
-                f"x='{plan.overlay_x}':y='{plan.overlay_y}':shortest=1,"
-                f"format=yuv420p[v{index}]"
+                f"x='{creative.overlay_x}':"
+                f"y='{creative.overlay_y}':shortest=1"
             )
+            if creative.post_filters:
+                overlay_chain += "," + ",".join(
+                    creative.post_filters
+                )
+            overlay_chain += f",format=yuv420p[v{index}]"
+            filter_parts.append(overlay_chain)
             audio_chain = [
                 f"atrim=start={start}:end={end}",
                 "asetpts=PTS-STARTPTS",
