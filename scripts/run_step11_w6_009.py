@@ -144,16 +144,17 @@ def main() -> int:
     ai_index = next((i for i in range(right.count()) if right.tabText(i) == "AI Agent"), -1)
     if ai_index < 0:
         raise RuntimeError("W6-009 AI Agent tab is missing")
-    right.setCurrentIndex(ai_index)
 
     mapping: list[tuple[str, str]] = []
 
-    set_ai_agent_subview(workspace, "director")
     app.processEvents()
     path = output / "UI-010_ACTUAL_EDITOR_AI_ENTRY.png"
     _render(window, path)
     mapping.append(("UI-010", path.name))
 
+    right.setCurrentIndex(ai_index)
+    set_ai_agent_subview(workspace, "director")
+    app.processEvents()
     path = output / "W6-AI-DIRECTOR_ACTUAL.png"
     _render(window, path)
 
