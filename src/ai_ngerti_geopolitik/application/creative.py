@@ -1,4 +1,4 @@
-"""Canonical SF-STEP 11 W4 title, transition and effect editing owner."""
+"""Canonical SF-STEP 11 W4 creative editing owner."""
 
 from __future__ import annotations
 
