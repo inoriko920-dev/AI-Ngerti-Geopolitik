@@ -102,9 +102,7 @@ def _audio_asset() -> Asset:
 
 
 def test_pre_w5_w4_fixture_loads_with_safe_w5_defaults() -> None:
-    state = JsonProjectRepository().load(
-        Path("tests/fixtures/step11_w4_pre_w5.angproj")
-    )
+    state = JsonProjectRepository().load(Path("tests/fixtures/step11_w4_pre_w5.angproj"))
     assert state.subtitle is None
     assert state.narration is None
     clip = state.clip("C001")
