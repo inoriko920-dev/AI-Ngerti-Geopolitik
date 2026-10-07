@@ -12,7 +12,7 @@ from math import gcd
 from typing import Final
 
 from ai_ngerti_geopolitik.application.ai_contracts import L1_RENDER_QUALIFIED_EFFECTS
-from ai_ngerti_geopolitik.domain import Clip, ProjectState, SUPPORTED_W4_EFFECTS, Track
+from ai_ngerti_geopolitik.domain import SUPPORTED_W4_EFFECTS, Clip, ProjectState, Track
 
 L1_CONTEXT_SCHEMA_VERSION: Final = 1
 MAX_L1_CONTEXT_TARGETS: Final = 20
