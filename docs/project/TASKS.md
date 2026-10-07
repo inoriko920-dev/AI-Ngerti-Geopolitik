@@ -512,8 +512,8 @@ Initial allowlist:
 - set_clip_transition.
 
 Serial contract:
-- [ ] **S11-W7-001 — Canonical L2 command contracts + capability registry — READY**
-- [ ] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — BLOCKED_BY_W7_001**
+- [x] **S11-W7-001 — Canonical L2 command contracts + capability registry — PASS**
+- [ ] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — READY**
 - [ ] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002**
 - [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003**
 - [ ] **S11-W7-005 — Pacing qualification: duration + speed — BLOCKED_BY_W7_004**
@@ -533,6 +533,28 @@ Locked safety boundaries:
 - strict schema + hard reject unknowns;
 - one approved plan = one atomic CommandBatch + one Undo/Redo transaction.
 
-**Exact next task:** S11-W7-001 only.
+Accepted W7-001 implementation HEAD:
+`f301c10a16ba33e051ef97e9d166262b7fbac327`
 
-W7 runtime implementation is not started.
+W7-001 workflow:
+`37640973646` — SUCCESS
+
+W7-001 evidence:
+`docs/evidence/features/S11_W7_001_L2_CONTRACTS.md`
+
+W7-001 artifact:
+`ANG-S11-W7-001-L2-Contracts` / ID `11491927299`
+
+W7-001 proof:
+- exact five-capability registry tied to existing manual commands;
+- AutoEditPlan schema v2 DTO contract;
+- max 20 targets / 40 commands;
+- typed duration/speed/transform/transition policy bounds;
+- duplicate family and duration/speed conflict rejection;
+- W6 schema v1 + effect allowlist backward compatibility;
+- targeted tests 27/27 PASS;
+- full pytest PASS;
+- evidence verifier 18/18 PASS;
+- 26/26 regression workflows SUCCESS on the same HEAD, all attempt 1.
+
+**Exact next task:** S11-W7-002 only — L2 ContextBuilder + selected-scope contract.

@@ -1,68 +1,61 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W6 is closed. W7 planning is complete and contract-locked.**
+**SF-STEP 11 remains active. W6 is closed. W7 is CONTRACT_LOCKED and W7-001 is PASS.**
 
-## Closed W6 baseline
+## Accepted W7-001
 
-W6 final status:
-**PASS_WITH_PROVISIONAL_LIVE_GEMINI**
+Implementation:
+`f301c10a16ba33e051ef97e9d166262b7fbac327`
 
-Accepted W6-010 implementation:
-`0915a7045014e5ea1209f933dd703d6601ff26e9`
+Workflow:
+`37640973646` — SUCCESS.
 
-Accepted workflow:
-`37628909459` — SUCCESS.
+Implemented:
+- canonical AutoEditPlan v2 DTO contract;
+- exact five-capability registry;
+- manual command/property ownership metadata;
+- max 20 selected targets / max 40 commands;
+- one command family per target;
+- duration/speed mutual exclusion;
+- typed W7 policy bounds;
+- strict integer-safe proposal DTOs for duration/speed/transform/transition;
+- W6 effect contract reuse and compatibility assertion.
 
-The lack of a real CI Gemini credential remains an honest live-provider qualifier.
-All deterministic provider/security/approval/render/regression behavior is proven.
-
-## W7 — AI Auto Edit L2
-
-Master Blueprint:
-**TECH-WAVE STEP 10**.
-
-Status:
-**CONTRACT_LOCKED / W7-001 READY / IMPLEMENTATION NOT STARTED**.
-
-Planning sources:
-- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`;
-- `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.txt`;
-- `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`.
-
-## Locked initial L2 capability set
-
-Allowed:
-- set_clip_effects;
-- set_clip_duration;
-- set_clip_speed;
-- set_clip_transform;
-- set_clip_transition.
-
-No AI-only backdoor is allowed. These capabilities must translate to the existing
-manual W2/W3/W4 commands.
-
-High-impact structural and unrelated capabilities remain deferred/forbidden:
-reorder, split, trim, delete, duplicate, move, track structure, crop, reverse,
-crossfade, subtitle, narration, title, audio, color, marker/export/project
-settings, credentials and paths.
+Evidence:
+- targeted tests 27/27 PASS;
+- full pytest PASS;
+- evidence verifier 18/18 PASS;
+- 26/26 regression workflow families SUCCESS, all attempt 1.
 
 ## Serial W7 plan
 
-1. W7-001 canonical L2 command contracts + capability registry — **READY**
-2. W7-002 L2 ContextBuilder + selected-scope contract
-3. W7-003 strict AutoEditPlan v2 parser/schema
-4. W7-004 L2 semantic verifier + sequential dry-run translator
-5. W7-005 pacing qualification — duration + speed
-6. W7-006 transform qualification
-7. W7-007 transition + mixed-plan qualification
-8. W7-008 Gemini L2 request profile + lifecycle reuse
-9. W7-009 approval/apply/UI diff integration
-10. W7-010 real-media closure + failure/regression lock
+1. W7-001 canonical L2 command contracts + capability registry — **PASS**
+2. W7-002 L2 ContextBuilder + selected-scope contract — **READY**
+3. W7-003 strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002
+4. W7-004 L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003
+5. W7-005 pacing qualification — duration + speed — BLOCKED
+6. W7-006 transform qualification — BLOCKED
+7. W7-007 transition + mixed-plan qualification — BLOCKED
+8. W7-008 Gemini L2 request profile + lifecycle reuse — BLOCKED
+9. W7-009 approval/apply/UI diff integration — BLOCKED
+10. W7-010 real-media closure + failure/regression lock — BLOCKED
 
-Only one task may advance per owner `lanjutkan`.
+## W7-002 boundary
 
-## Next
+W7-002 may build bounded deterministic selected-scope context only:
+- stable target/track IDs;
+- timing/source-duration availability;
+- speed/transform/transition/effect state;
+- locks/editability;
+- dimensions/aspect;
+- bounded neighbor summaries;
+- project fps/canvas;
+- exact capability registry/policy bounds.
 
-**S11-W7-001 only.**
+It must exclude credentials, paths, media bytes, arbitrary files, logs,
+engine objects, output paths and full subtitle/narration/prompt history.
 
-No W7 runtime implementation has been performed by this planning STEP.
+W7-002 must not parse provider plans, dry-run commands, call Gemini, mutate UI or
+apply canonical edits.
+
+Do not begin W7-002 until owner says `lanjutkan`.

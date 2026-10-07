@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001 READY / W7-002..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001 PASS / W7-002 READY / W7-003..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** NOT STARTED  
+**Runtime implementation:** ACTIVE — W7-001 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -357,8 +357,8 @@ and a real network smoke succeeds.
 
 ## 14. Serial implementation contract
 
-- **W7-001 — Canonical L2 command contracts + capability registry — READY**
-- W7-002 — L2 ContextBuilder + selected-scope contract — BLOCKED_BY_W7_001
+- **W7-001 — Canonical L2 command contracts + capability registry — PASS**
+- **W7-002 — L2 ContextBuilder + selected-scope contract — READY**
 - W7-003 — strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002
 - W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003
 - W7-005 — pacing qualification: duration + speed — BLOCKED_BY_W7_004
@@ -368,18 +368,45 @@ and a real network smoke succeeds.
 - W7-009 — approval/apply/UI diff integration — BLOCKED_BY_W7_008
 - W7-010 — real-media failure/regression closure — BLOCKED_BY_W7_009
 
+## W7-001 implementation closure
+
+Accepted implementation HEAD:
+`f301c10a16ba33e051ef97e9d166262b7fbac327`
+
+Accepted workflow:
+`37640973646` — SUCCESS.
+
+Implemented:
+- application-layer `ai_l2_contracts.py`;
+- immutable exact five-command capability registry;
+- manual owner/property owner metadata;
+- AutoEditPlan schema v2 DTO contract;
+- max 20 targets / 40 commands;
+- one family per target and duration/speed conflict guard;
+- typed duration/speed/transform/transition policy bounds;
+- W6 effect contract reuse;
+- W6 schema/effect allowlist backward compatibility assertion.
+
+Evidence:
+`docs/evidence/features/S11_W7_001_L2_CONTRACTS.md`.
+
+Gates:
+- targeted tests 27/27 PASS;
+- full pytest PASS;
+- evidence verifier 18/18 PASS;
+- 26/26 regression workflow families SUCCESS, all attempt 1.
+
+W7-001 did not start ContextBuilder, parser/verifier, provider changes, UI or apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, switch to SOL and execute **S11-W7-001 only**.
+After owner says `lanjutkan`, execute **S11-W7-002 only — L2 ContextBuilder + selected-scope contract**.
 
-W7-001 scope is contract DTOs / capability registry / typed policy bounds and
-backward-compatible ownership strategy.
-
-W7-001 must **not** start:
-- Gemini network/profile changes;
-- W7 ContextBuilder implementation;
-- v2 parser/verifier implementation;
+W7-002 must not start:
+- strict AutoEditPlan v2 provider JSON parser;
+- semantic dry-run translator;
+- Gemini request-profile changes;
 - runtime UI changes;
-- canonical apply of L2 plans.
+- canonical L2 apply.
 
-After W7-001, report gate PASS/FAIL and stop.
+After W7-002, report gate PASS/FAIL and stop.
