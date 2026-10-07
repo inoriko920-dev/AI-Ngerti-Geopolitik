@@ -467,12 +467,9 @@ def main() -> int:
                 "alignment": reopened.state.subtitle.style.alignment,
                 "margin_v": reopened.state.subtitle.style.margin_v,
             },
-            "style_preview_changed": _sha256(default_style_preview)
-            != _sha256(styled_preview),
-            "before_cue_matches_baseline": _sha256(preview_before)
-            == _sha256(baseline_before),
-            "inside_cue_differs_from_baseline": _sha256(preview_active)
-            != _sha256(baseline_active),
+            "style_preview_changed": _sha256(default_style_preview) != _sha256(styled_preview),
+            "before_cue_matches_baseline": _sha256(preview_before) == _sha256(baseline_before),
+            "inside_cue_differs_from_baseline": _sha256(preview_active) != _sha256(baseline_active),
         },
     )
     _write_json(
@@ -489,8 +486,7 @@ def main() -> int:
                 value != static_preview_hash for value in preview_hashes.values()
             ),
             "all_export_frames_changed": all(
-                value != static_export_frame_hash
-                for value in export_frame_hashes.values()
+                value != static_export_frame_hash for value in export_frame_hashes.values()
             ),
         },
     )
@@ -514,8 +510,7 @@ def main() -> int:
             "save_reopen_hash_match": reopened.state.semantic_hash()
             == session.state.semantic_hash(),
             "subtitle_and_narration_present": (
-                reopened.state.subtitle is not None
-                and reopened.state.narration is not None
+                reopened.state.subtitle is not None and reopened.state.narration is not None
             ),
             "final_export": str(final_export),
             "duration_frames": final_probe.duration_frames,
@@ -549,8 +544,7 @@ def main() -> int:
             value != static_preview_hash for value in preview_hashes.values()
         ),
         "all_enabled_animations_export_rendered": all(
-            value != static_export_frame_hash
-            for value in export_frame_hashes.values()
+            value != static_export_frame_hash for value in export_frame_hashes.values()
         ),
         "narration_preview_audible": narration_preview_440 >= -35.0,
         "narration_frame_sync_proven": final_mid_440 >= pre_offset_440 + 8.0,
