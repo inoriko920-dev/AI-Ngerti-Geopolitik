@@ -130,10 +130,7 @@ def test_none_transition_clears_existing_fade_black() -> None:
         tracks=(
             replace(
                 track,
-                clips=tuple(
-                    faded if item.clip_id == "clip-1" else item
-                    for item in track.clips
-                ),
+                clips=tuple(faded if item.clip_id == "clip-1" else item for item in track.clips),
             ),
         ),
     )
