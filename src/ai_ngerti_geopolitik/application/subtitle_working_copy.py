@@ -19,7 +19,9 @@ from ai_ngerti_geopolitik.domain import (
     DomainValidationError,
     FrameTime,
     ProjectState,
+    SubtitleAnimation,
     SubtitleCue,
+    SubtitleStyle,
     SubtitleTrack,
 )
 
@@ -291,14 +293,21 @@ class SubtitleWorkingCopy:
         self._selected_cue_id = track.cues[0].cue_id
         _validate_editable_cues(self._cues)
 
-    def build_track(self, *, source_ref: str | None = None) -> SubtitleTrack:
+    def build_track(
+        self,
+        *,
+        source_ref: str | None = None,
+        style: SubtitleStyle | None = None,
+        animation: SubtitleAnimation | None = None,
+        enabled: bool | None = None,
+    ) -> SubtitleTrack:
         try:
             return SubtitleTrack(
                 source_ref=self.source_ref if source_ref is None else source_ref,
                 cues=tuple(self._cues),
-                style=self._baseline.style,
-                animation=self._baseline.animation,
-                enabled=self._baseline.enabled,
+                style=self._baseline.style if style is None else style,
+                animation=self._baseline.animation if animation is None else animation,
+                enabled=self._baseline.enabled if enabled is None else enabled,
             )
         except DomainValidationError as exc:
             raise SubtitleWorkingCopyError(
@@ -349,7 +358,13 @@ class SubtitleWorkingCopyService:
                 "subtitle save-copy destination already exists; choose a new destination"
             )
 
-        track = working.build_track(source_ref=str(output.resolve()))
+        current = session.state.subtitle
+        track = working.build_track(
+            source_ref=str(output.resolve()),
+            style=current.style if current is not None else None,
+            animation=current.animation if current is not None else None,
+            enabled=current.enabled if current is not None else None,
+        )
         parsed = tuple(_cue_to_parsed(cue) for cue in track.cues)
         try:
             self.writer.write_copy(output, parsed)

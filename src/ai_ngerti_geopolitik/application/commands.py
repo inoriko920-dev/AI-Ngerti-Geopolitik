@@ -16,6 +16,7 @@ from ai_ngerti_geopolitik.domain import (
     ProjectSettings,
     ProjectState,
     SpeedProperties,
+    SubtitleStyle,
     SubtitleTrack,
     Track,
 )
@@ -640,6 +641,21 @@ class SetSubtitleTrackCommand:
 
     def apply(self, state: ProjectState) -> ProjectState:
         candidate = replace(state, subtitle=self.subtitle)
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class SetSubtitleStyleCommand:
+    style: SubtitleStyle
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        if state.subtitle is None:
+            raise CommandError("subtitle style requires a bound subtitle track")
+        candidate = replace(
+            state,
+            subtitle=replace(state.subtitle, style=self.style),
+        )
         candidate.validate()
         return candidate
 

@@ -27,6 +27,10 @@ from ai_ngerti_geopolitik.application.ports import (
 from ai_ngerti_geopolitik.domain import Clip, ProjectState
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_creative import build_w4_creative_plan
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_properties import build_w3_filter_plan
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_subtitles import (
+    build_subtitle_export_plan,
+    build_subtitle_preview_plan,
+)
 
 
 class MediaToolError(RuntimeError):
@@ -314,6 +318,9 @@ class FfmpegSliceMediaEngine:
         )
         if creative.post_filters:
             overlay_chain += "," + ",".join(creative.post_filters)
+        subtitle_plan = build_subtitle_preview_plan(state, timeline_frame)
+        if subtitle_plan.filters:
+            overlay_chain += "," + ",".join(subtitle_plan.filters)
         overlay_chain += ",format=yuv420p[outv]"
         filter_parts = [
             f"[0:v]{','.join(source_filters)}[w4src]",
@@ -412,7 +419,19 @@ class FfmpegSliceMediaEngine:
             filter_parts.append(f"[{index}:a]{','.join(audio_chain)}[a{index}]")
             concat_inputs.append(f"[v{index}][a{index}]")
 
-        filter_parts.append("".join(concat_inputs) + f"concat=n={len(clips)}:v=1:a=1[outv][outa]")
+        filter_parts.append(
+            "".join(concat_inputs)
+            + f"concat=n={len(clips)}:v=1:a=1[concatv][outa]"
+        )
+        subtitle_plan = build_subtitle_export_plan(state)
+        if subtitle_plan.filters:
+            filter_parts.append(
+                "[concatv]"
+                + ",".join(subtitle_plan.filters)
+                + "[outv]"
+            )
+        else:
+            filter_parts.append("[concatv]null[outv]")
         command.extend(
             [
                 "-filter_complex",
