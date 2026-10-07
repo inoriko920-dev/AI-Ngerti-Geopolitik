@@ -194,6 +194,10 @@ def main() -> int:
             state=AIAgentUiState.SUCCESS,
             scope_text="Scene 01 · clip-1, clip-2",
             message="2 perubahan diterapkan sebagai satu transaksi. Undo tersedia.",
+            commands=(
+                "clip-1 · enter: Fade → Rise",
+                "clip-2 · intensity: 90 → 115",
+            ),
             request_id="REQ-EVIDENCE-009",
         ),
     )
