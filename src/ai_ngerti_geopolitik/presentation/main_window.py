@@ -124,6 +124,8 @@ class MainWindow:
                 action.triggered.connect(lambda: self.show_route(UiRoute.NEW_PROJECT_DOCX))
             elif kind is UiIntentType.IMPORT_MEDIA:
                 action.triggered.connect(self._request_import_media)
+            elif kind is UiIntentType.RECORD_NARRATION:
+                action.triggered.connect(self._open_narration_recording_dialog)
             else:
                 action.triggered.connect(lambda _checked=False, value=kind: self._emit(value))
             toolbar.addAction(action)
@@ -206,7 +208,9 @@ class MainWindow:
             "double", self.intent_sink
         ).root
         self._route_widgets[UiRoute.SUBTITLE_EDITOR] = create_editor_shell(
-            "subtitle", self.intent_sink
+            "subtitle",
+            self.intent_sink,
+            narration_record_callback=self._open_narration_recording_dialog,
         ).root
         self._route_widgets[UiRoute.EXPORT_SETTINGS] = create_editor_shell(
             "subtitle", self.intent_sink
@@ -216,6 +220,27 @@ class MainWindow:
         ).root
         for widget in self._route_widgets.values():
             self.stack.addWidget(widget)
+
+    def _open_narration_recording_dialog(self) -> None:
+        from ai_ngerti_geopolitik.presentation.w5_workspace import (
+            create_narration_recording_dialog,
+        )
+
+        self._emit(UiIntentType.RECORD_NARRATION)
+        self.show_route(UiRoute.SUBTITLE_EDITOR)
+        dialog = create_narration_recording_dialog(self.window, self.intent_sink)
+        dialog.setModal(False)
+        dialog.show()
+        self._active_dialog = dialog
+
+    def apply_microphone_devices(
+        self,
+        devices: tuple[tuple[str, str], ...],
+    ) -> None:
+        dialog = self._active_dialog
+        if dialog is None or not hasattr(dialog, "set_devices"):
+            return
+        dialog.set_devices(devices)
 
     def _close_active_dialog(self) -> None:
         if self._active_dialog is None:

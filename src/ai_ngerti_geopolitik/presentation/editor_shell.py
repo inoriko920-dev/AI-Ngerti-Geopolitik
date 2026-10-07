@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from typing import Any
 
@@ -10,6 +10,10 @@ from ai_ngerti_geopolitik.presentation.creative_inspector import create_creative
 from ai_ngerti_geopolitik.presentation.design_tokens import COLORS, METRICS
 from ai_ngerti_geopolitik.presentation.property_inspector import create_property_inspector
 from ai_ngerti_geopolitik.presentation.visual_mock import asset_pixmap, scene_pixmap
+from ai_ngerti_geopolitik.presentation.w5_workspace import (
+    create_narration_workspace,
+    create_subtitle_workspace,
+)
 
 
 @dataclass(slots=True)
@@ -316,65 +320,18 @@ def _layout_inspector(mode: str) -> Any:
     return widget
 
 
-def _subtitle_inspector() -> Any:
-    from PySide6.QtWidgets import (
-        QCheckBox,
-        QFormLayout,
-        QHBoxLayout,
-        QLabel,
-        QLineEdit,
-        QListWidget,
-        QListWidgetItem,
-        QPushButton,
-        QTabWidget,
-        QTextEdit,
-        QVBoxLayout,
-        QWidget,
-    )
+def _subtitle_inspector(intent_sink: UiIntentSink | None) -> Any:
+    return create_subtitle_workspace(intent_sink)
 
-    tabs = QTabWidget()
-    text_page = QWidget()
-    layout = QVBoxLayout(text_page)
-    header = QHBoxLayout()
-    header.addWidget(section_title("Daftar Subtitle (8 cue)"))
-    header.addStretch(1)
-    header.addWidget(QPushButton("＋ Tambah Cue"))
-    layout.addLayout(header)
-    cue_list = QListWidget()
-    cues = [
-        "1   00:00:00:00 → 00:00:04:12\nPagi yang cerah di desa Bromo...",
-        "2   00:00:04:12 → 00:00:08:20\nIa melihat bunga berwarna-warni...",
-        "3   00:00:08:10 → 00:00:12:00  ⚠\nLalu melompat ke arah pagar kayu...",
-        "4   00:00:12:00 → 00:00:16:15\nUdara segar membuatnya bersemangat.",
-    ]
-    for cue in cues:
-        cue_list.addItem(QListWidgetItem(cue))
-    cue_list.setCurrentRow(2)
-    layout.addWidget(cue_list, 1)
-    edit_header = QHBoxLayout()
-    edit_header.addWidget(section_title("Edit Cue"))
-    edit_header.addStretch(1)
-    warning = QLabel("⚠ Tumpang tindih dengan cue sebelumnya")
-    warning.setStyleSheet("color:#B45309; background:#FEF3C7; padding:4px 8px;")
-    edit_header.addWidget(warning)
-    layout.addLayout(edit_header)
-    text = QTextEdit("Lalu melompat ke arah pagar kayu dengan lincah.")
-    text.setMaximumHeight(74)
-    layout.addWidget(text)
-    form = QFormLayout()
-    form.addRow("Waktu Mulai (IN)", QLineEdit("00:00:08:10"))
-    form.addRow("Waktu Selesai (OUT)", QLineEdit("00:00:12:00"))
-    layout.addLayout(form)
-    row = QHBoxLayout()
-    row.addWidget(QPushButton("Pisah Cue"))
-    row.addWidget(QPushButton("Gabung"))
-    row.addWidget(QPushButton("Muat Ulang SRT"))
-    layout.addLayout(row)
-    layout.addWidget(QCheckBox("Kunci timing"))
-    tabs.addTab(text_page, "Teks")
-    tabs.addTab(QWidget(), "Gaya")
-    tabs.addTab(QWidget(), "Animasi")
-    return tabs
+
+def _narration_inspector(
+    intent_sink: UiIntentSink | None,
+    record_callback: Callable[[], None] | None,
+) -> Any:
+    return create_narration_workspace(
+        intent_sink,
+        record_callback=record_callback,
+    )
 
 
 def _ai_placeholder() -> Any:
@@ -571,7 +528,12 @@ def _timeline_widget(intent_sink: UiIntentSink | None) -> Any:
     return outer
 
 
-def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) -> EditorShellParts:
+def create_editor_shell(
+    mode: str = "overview",
+    intent_sink: Any | None = None,
+    *,
+    narration_record_callback: Callable[[], None] | None = None,
+) -> EditorShellParts:
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QLineEdit, QSplitter, QTabWidget, QVBoxLayout, QWidget
 
@@ -582,6 +544,7 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
     upper = QSplitter(Qt.Orientation.Horizontal)
 
     left = QTabWidget()
+    left.setObjectName("editor_left_tabs")
     left.setMinimumWidth(METRICS.left_min_w)
     left.setMaximumWidth(520)
     left.addTab(_scene_list(), "Scene")
@@ -599,10 +562,15 @@ def create_editor_shell(mode: str = "overview", intent_sink: Any | None = None) 
     preview, frame, preview_label = _preview_widget(preview_mode, intent_sink)
 
     right = QTabWidget()
+    right.setObjectName("editor_right_tabs")
     right.setMinimumWidth(300)
     right.setMaximumWidth(METRICS.right_max_w)
     if mode == "subtitle":
-        right.addTab(_subtitle_inspector(), "Subtitle")
+        right.addTab(_subtitle_inspector(intent_sink), "Subtitle")
+        right.addTab(
+            _narration_inspector(intent_sink, narration_record_callback),
+            "Narasi",
+        )
         right.addTab(_ai_placeholder(), "AI Agent")
     elif mode == "overview":
         right.addTab(_overview_inspector(), "Layout")

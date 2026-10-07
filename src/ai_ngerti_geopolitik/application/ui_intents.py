@@ -61,6 +61,21 @@ class UiIntentType(StrEnum):
     CREATIVE_SET_TITLE = "creative_set_title"
     CREATIVE_SET_TRANSITION = "creative_set_transition"
     CREATIVE_SET_EFFECTS = "creative_set_effects"
+    SUBTITLE_IMPORT_SRT = "subtitle_import_srt"
+    SUBTITLE_SELECT_CUE = "subtitle_select_cue"
+    SUBTITLE_EDIT_CUE = "subtitle_edit_cue"
+    SUBTITLE_INSERT_CUE = "subtitle_insert_cue"
+    SUBTITLE_DELETE_CUE = "subtitle_delete_cue"
+    SUBTITLE_SAVE_COPY = "subtitle_save_copy"
+    SUBTITLE_SET_STYLE = "subtitle_set_style"
+    SUBTITLE_SET_ANIMATION = "subtitle_set_animation"
+    SUBTITLE_SET_WORD_TIMING = "subtitle_set_word_timing"
+    NARRATION_IMPORT_AUDIO = "narration_import_audio"
+    NARRATION_SET_CONTROLS = "narration_set_controls"
+    NARRATION_PREVIEW = "narration_preview"
+    MICROPHONE_REFRESH_DEVICES = "microphone_refresh_devices"
+    MICROPHONE_START_RECORDING = "microphone_start_recording"
+    MICROPHONE_CANCEL_RECORDING = "microphone_cancel_recording"
 
 
 @dataclass(frozen=True, slots=True)
