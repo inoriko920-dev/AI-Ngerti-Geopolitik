@@ -497,7 +497,7 @@ Proof:
 - live credential unavailable, so live network request was not attempted;
 - final W6 status is PASS_WITH_PROVISIONAL_LIVE_GEMINI.
 
-### W7 — AI Auto Edit L2 — CONTRACT_LOCKED
+### W7 — AI Auto Edit L2 — CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI
 
 Planning:
 - `docs/planning/10_S11_W7_AI_AUTO_EDIT_L2_CONTRACT_PLAN_2026-10-07.docx`
@@ -521,7 +521,7 @@ Serial contract:
 - [x] **S11-W7-007 — Transition + mixed-plan qualification — PASS**
 - [x] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
 - [x] **S11-W7-009 — Approval/apply/UI diff integration — PASS**
-- [ ] **S11-W7-010 — Real-media closure + failure/regression lock — READY**
+- [x] **S11-W7-010 — Real-media closure + failure/regression lock — PASS**
 
 Locked safety boundaries:
 - selected scope max 20 clips;
@@ -776,4 +776,34 @@ W7-009 proof:
 - 26/26 triggered workflow families SUCCESS, all attempt 1;
 - S08/S09/S10/W0 and prior W1..W7 gates PASS.
 
-**Exact next task:** S11-W7-010 only — Real-media closure + failure/regression lock.
+Accepted W7-010 final implementation HEAD:
+`ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
+
+W7-010 workflow:
+`37675538957` — SUCCESS
+
+W7-010 evidence:
+`docs/evidence/features/S11_W7_010_REAL_MEDIA_FAILURE_REGRESSION_CLOSURE.md`
+
+W7-010 artifact:
+`ANG-S11-W7-010-Closure` / ID `11507307240`
+
+W7-010 proof:
+- integrated L2 context/provider/verifier/approval/apply chain PASS;
+- mixed real-media export = 210 frames with audio retained;
+- real transform/effect/fade_black/pacing PASS;
+- save/reopen semantic hash and rendered preview exact;
+- one atomic apply, one exact Undo, one exact Redo;
+- invalid/out-of-range/out-of-scope/locked/stale/provider failures are safe;
+- targeted tests 8/8 PASS;
+- full pytest 386/386 PASS;
+- evidence verifier 9/9 files PASS;
+- final regression lock 27/27 workflow families SUCCESS, all attempt 1;
+- S08/S09/S10/W0 and earlier waves PASS;
+- no live Gemini network success claimed.
+
+**W7 final status:** CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI.
+
+**Next:** ASTRA planning only for the next wave mapped to Master Blueprint
+TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening. Detailed planning
+DOCX is required before SOL implementation; next wave has not started.

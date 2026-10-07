@@ -1,70 +1,73 @@
 # PROJECT STATUS — AI NGERTI GEOPOLITIK
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
-**Current wave:** **W7 — AI Auto Edit L2**  
-**W7 status:** **CONTRACT_LOCKED / W7-001..009 PASS / W7-010 READY**  
-**Accepted W7-009 implementation HEAD:** `2eef5762454f367c2fad5550f75209f8ffeb0a16`  
-**Accepted W7-009 workflow:** `37673518251` — SUCCESS  
-**Next exact task:** **S11-W7-010 — Real-media closure + failure/regression lock**  
-**W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**
+**Last completed wave:** **W7 — AI Auto Edit L2**  
+**W7 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
+**Accepted final W7 implementation HEAD:** `ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`  
+**Accepted W7-010 workflow:** `37675538957` — SUCCESS  
+**Next wave:** **NOT STARTED — ASTRA planning required**  
+**Master Blueprint next mapping:** **TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening**
 
-## W7-009 proven
+## W7 final proof
 
-Approval/apply:
-- existing W6 AIPlanApprovalService remains the single approval owner;
-- L2 verified result is consumed once and staged without canonical mutation;
-- explicit approval is mandatory;
-- final stale/revision/semantic-base checks run before apply;
-- AutoEditPlanVerifier runs again against the current canonical state;
-- candidate hash must still match the original verified proof;
-- all six translated canonical commands apply inside one CommandBatch(actor="ai");
-- one apply increments revision once;
-- one Undo restores pre-AI semantic state;
-- one Redo restores applied semantic state;
-- reject/cancel create no history;
-- duplicate apply rejected;
-- same-revision semantic replacement rejected as STALE_PLAN.
+W7-001 through W7-010 are PASS.
 
-UI diff:
-- six command-level before→after lines are generated from sequential candidate state;
-- display text is bounded to 280 characters;
-- existing W6 AI Agent plan list renders the L2 diffs;
-- existing model combo adds explicit Auto Edit L2 selection;
-- L1 remains default and its existing submit payload stays unchanged;
-- existing approval/apply buttons retain state gating;
-- no new screen/layout was created.
+The completed Auto Edit L2 path now proves:
+- bounded selected-scope context;
+- strict schema-v2 provider plan parsing;
+- state-aware semantic verification;
+- canonical manual-command translation;
+- real duration/speed pacing;
+- real transform preview/export;
+- real fade_black transition;
+- shared Gemini L1/L2 lifecycle;
+- explicit user review/approval;
+- one atomic AI CommandBatch;
+- bounded before→after UI diff;
+- real mixed L1/L2 export;
+- save/reopen persistence;
+- exact one-transaction Undo/Redo;
+- safe invalid/range/scope/lock/stale/provider failure handling.
 
-## W7-009 gates
+## W7-010 gates
 
-Workflow `37673518251`:
+Workflow `37675538957`:
+- FFmpeg toolchain PASS;
 - Ruff format/check PASS;
 - mypy PASS — 68 source files;
-- import contracts PASS — 4 kept / 0 broken;
+- import contracts 4/4 PASS;
 - architecture PASS;
 - source-of-truth PASS;
 - no-secret PASS;
-- frozen UI references 42/42 PASS;
-- targeted application + Qt tests **8/8 PASS**;
+- UI references 42/42 PASS;
+- targeted W7-010 tests **8/8 PASS**;
 - full pytest **386/386 PASS**;
-- deterministic approval/apply/Undo/Redo evidence PASS;
-- evidence verifier **2/2 files PASS**;
+- integrated real-media closure PASS;
+- evidence verifier **9/9 PASS**;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W7-009-Approval-UI-Diff`;
-- ID `11505484572`;
-- SHA-256 `4b1fd4b585bb2739c42fc314345a8961c743defa7eadea37245045fb1b42de59`.
+- `ANG-S11-W7-010-Closure`;
+- ID `11507307240`;
+- SHA-256 `6d9d2a6507f269f4ed8747f1448f885f88637016d868e36b95441f59ae9079af`.
 
 Regression:
-**26/26 triggered workflow families SUCCESS, all attempt 1.**
+**27/27 workflow families SUCCESS, all attempt 1.**
 
 S08 portable foundation PASS.  
 S09 UI shell PASS.  
-S10 Windows E2E + packaged real-media smoke PASS.  
-W0 and prior W1..W7 regression families PASS.
+S10 Windows E2E + packaged smoke PASS.  
+W0 and all earlier implementation waves PASS.
+
+## Provisional live-provider note
+
+No real Gemini credential was supplied to W7-010, so no live network success is
+claimed. The secure provider software path remains inherited from W6 as
+**PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W7-010 only — Real-media closure + failure/regression lock**.
+After owner says **lanjutkan**, start **ASTRA planning only** for the next wave:
+Master Blueprint **TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening**.
 
-Do not start a later feature wave in the same turn.
+Create a detailed planning DOCX and lock the contract before any SOL implementation.

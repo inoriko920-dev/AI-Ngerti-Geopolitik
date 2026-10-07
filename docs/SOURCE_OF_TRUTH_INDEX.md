@@ -52,6 +52,7 @@
     - `docs/evidence/features/S11_W7_007_TRANSITION_MIXED_QUALIFICATION.md`
     - `docs/evidence/features/S11_W7_008_GEMINI_L2_LIFECYCLE.md`
     - `docs/evidence/features/S11_W7_009_APPROVAL_APPLY_UI_DIFF.md`
+    - `docs/evidence/features/S11_W7_010_REAL_MEDIA_FAILURE_REGRESSION_CLOSURE.md`
 12. current wave contract:
     - `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
     - historical closed W6 contract: `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
@@ -116,7 +117,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - real Gemini network smoke remains provisional because no live CI credential was available.
 - final W6 regression lock: **25/25 workflow families SUCCESS, all attempt 1**.
 - W7 planning TXT/DOCX and contract MD: **SOURCE OF TRUTH / CONTRACT LOCKED**.
-- W7 implementation: **ACTIVE**.
+- W7 implementation: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 - S11-W7-001 Canonical L2 command contracts + capability registry: **PASS**.
 - S11-W7-002 L2 ContextBuilder + selected-scope contract: **PASS**.
 - S11-W7-003 strict AutoEditPlan v2 parser/schema: **PASS**.
@@ -126,7 +127,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W7-007 transition + mixed-plan qualification: **PASS**.
 - S11-W7-008 Gemini L2 request profile + lifecycle reuse: **PASS**.
 - S11-W7-009 approval/apply/UI diff integration: **PASS**.
-- S11-W7-010 real-media closure + failure/regression lock: **READY**.
+- S11-W7-010 real-media closure + failure/regression lock: **PASS**.
 - W7-001 exact capability registry/policy bounds and W6 backward compatibility are qualified.
 - W7-002 selected-scope + bounded deterministic L2 context are qualified.
 - W7-003 strict closed AutoEditPlan v2 parser/schema is qualified.
@@ -138,6 +139,9 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W7-008 shared Gemini L1/L2 profile + async lifecycle reuse is qualified with frozen W6 request fields, canonical schema-v2 L2 verification, unchanged canonical state and no second provider/credential owner.
 - W7-009 explicit L2 review/approval, bounded before→after UI diff, one atomic AI CommandBatch and exact one Undo/Redo transaction are qualified through existing W6 owners.
 - W7-009 regression lock is 26/26 triggered workflow families SUCCESS, all attempt 1.
-- exact next action: **SOL S11-W7-010 only**.
+- W7-010 final integrated real-media/persistence/Undo-Redo/failure closure is qualified.
+- final W7 regression lock is **27/27 workflow families SUCCESS, all attempt 1**.
+- W7 final status: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+- exact next action: **ASTRA planning only for Master Blueprint TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening; detailed planning DOCX required before SOL implementation**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

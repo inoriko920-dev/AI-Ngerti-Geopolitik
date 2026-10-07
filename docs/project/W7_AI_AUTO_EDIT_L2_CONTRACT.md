@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..009 PASS / W7-010 READY  
+**Status:** CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI / W7-001..010 PASS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..009 PASS / W7-010 READY  
+**Runtime implementation:** CLOSED — W7-001..010 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -366,7 +366,7 @@ and a real network smoke succeeds.
 - **W7-007 — transition + mixed-plan qualification — PASS**
 - **W7-008 — Gemini L2 request profile + lifecycle reuse — PASS**
 - **W7-009 — approval/apply/UI diff integration — PASS**
-- W7-010 — real-media failure/regression closure — READY
+- **W7-010 — real-media failure/regression closure — PASS**
 
 ## W7-001 implementation closure
 
@@ -678,10 +678,45 @@ Gates:
 
 W7-009 did not start W7-010 final real-media/failure/regression closure.
 
+## W7-010 final closure
+
+Accepted implementation HEAD:
+`ca6dd582a4916caa4b0ac4affe4c3119e9ad2049`
+
+Accepted workflow:
+`37675538957` — SUCCESS.
+
+Implemented/qualified:
+- integrated L2ContextBuilder → provider job → AutoEditPlanVerifier → explicit approval → one CommandBatch;
+- real mixed L1/L2 pacing/transform/fade_black render and export;
+- real export = 210 frames with audio retained;
+- project save/reopen preserves exact applied semantic state and rendered preview;
+- one Undo restores pre-AI semantic hash and one Redo restores applied hash;
+- invalid schema, out-of-range, out-of-scope, locked, stale and provider failures are safe;
+- source media remains byte-identical;
+- final regression lock 27/27 workflow families SUCCESS, all attempt 1;
+- S08/S09/S10/W0 and all earlier feature-wave regressions PASS.
+
+Evidence:
+`docs/evidence/features/S11_W7_010_REAL_MEDIA_FAILURE_REGRESSION_CLOSURE.md`.
+
+Gates:
+- targeted W7-010 tests 8/8 PASS;
+- full pytest 386/386 PASS;
+- mypy 68 source files PASS;
+- UI references 42/42 PASS;
+- evidence verifier 9/9 files PASS;
+- artifact `ANG-S11-W7-010-Closure` / ID `11507307240`.
+
+Live Gemini network success is not claimed because no real credential was supplied.
+Final W7 status is **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-010 only — Real-media closure + failure/regression lock**.
+Stop W7 implementation here.
 
-Do not start any later wave in the same turn.
+After owner says `lanjutkan`, start **ASTRA planning only** for the next wave mapped
+to Master Blueprint **TECH-WAVE STEP 11 — Validation/recovery/diagnostics hardening**.
 
-After W7-010, report gate PASS/FAIL and stop.
+Create the required detailed planning DOCX before any SOL implementation. Do not
+start the next wave implementation in the same turn.
