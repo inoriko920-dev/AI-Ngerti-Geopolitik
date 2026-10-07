@@ -229,7 +229,11 @@ def create_ai_agent_workspace(
     for object_name, label_text, prompt in (
         ("btn_w6_quick_subtle", "Animasi lebih halus", "Buat animasi masuk lebih halus."),
         ("btn_w6_quick_entry", "Variasikan efek masuk", "Variasikan efek masuk pada target."),
-        ("btn_w6_quick_intensity", "Rapikan intensitas", "Rapikan intensitas efek tanpa mengubah lock."),
+        (
+            "btn_w6_quick_intensity",
+            "Rapikan intensitas",
+            "Rapikan intensitas efek tanpa mengubah lock.",
+        ),
     ):
         button = QPushButton(label_text)
         button.setObjectName(object_name)
@@ -538,9 +542,7 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
             commands.addItem(f"{index:02d}. {command}")
         is_approval = projection.state is AIAgentUiState.APPROVAL
         state_label.setText(
-            "Rencana disetujui · siap diterapkan"
-            if is_approval
-            else "Rencana siap ditinjau"
+            "Rencana disetujui · siap diterapkan" if is_approval else "Rencana siap ditinjau"
         )
         approve.setVisible(not is_approval)
         reject.setVisible(not is_approval)
@@ -559,9 +561,7 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
         stack.setCurrentWidget(page("w6_ai_success_page"))
         message = workspace.findChild(QLabel, "label_w6_success_message")
         if message is not None:
-            message.setText(
-                projection.message or "Rencana AI diterapkan sebagai satu transaksi."
-            )
+            message.setText(projection.message or "Rencana AI diterapkan sebagai satu transaksi.")
         return
 
     stack.setCurrentWidget(page("w6_ai_error_page"))
