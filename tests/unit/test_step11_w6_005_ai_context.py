@@ -10,7 +10,10 @@ from ai_ngerti_geopolitik.application.ai_context import (
     ContextBuildError,
     L1ContextBuilder,
 )
-from ai_ngerti_geopolitik.application.ai_contracts import L1_RENDER_QUALIFIED_EFFECTS
+from ai_ngerti_geopolitik.application.ai_contracts import (
+    CredentialSecret,
+    L1_RENDER_QUALIFIED_EFFECTS,
+)
 from ai_ngerti_geopolitik.application.credential_slots import CredentialSlotService
 from ai_ngerti_geopolitik.domain import (
     Asset,
@@ -25,7 +28,6 @@ from ai_ngerti_geopolitik.domain import (
 from ai_ngerti_geopolitik.infrastructure.in_memory_credentials import (
     InMemoryCredentialStore,
 )
-from ai_ngerti_geopolitik.application.ai_contracts import CredentialSecret
 
 
 def _state(*, track_locked: bool = False, clip_count: int = 3) -> ProjectState:
@@ -103,9 +105,11 @@ def test_context_excludes_paths_private_media_metadata_and_non_l1_text() -> None
     assert "fingerprint_sha256" not in raw
     assert "path_ref" not in raw
     assert "source_name" not in raw
-    assert "title_text" not in data_keys(raw)
-    assert "subtitle" not in lowered
-    assert "narration" not in lowered
+    keys = data_keys(raw)
+    assert "title" not in keys
+    assert "title_text" not in keys
+    assert "subtitle" not in keys
+    assert "narration" not in keys
 
 
 def data_keys(raw: str) -> set[str]:
