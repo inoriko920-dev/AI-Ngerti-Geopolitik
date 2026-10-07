@@ -59,8 +59,7 @@ def _drawtext(cue: SubtitleCue, style: SubtitleStyle, *, enabled_window: bool) -
     border = max(0, round(style.outline_width_tenths / 10))
     shadow = max(0, round(style.shadow_tenths / 10))
     parts = [
-        "drawtext",
-        f"fontfile='{_fontfile(style)}'",
+        f"drawtext=fontfile='{_fontfile(style)}'",
         f"text='{_escape_text(cue.text)}'",
         "expansion=none",
         f"fontsize={style.font_size}",
