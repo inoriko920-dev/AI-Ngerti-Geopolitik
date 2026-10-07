@@ -190,12 +190,10 @@ Hard boundaries remain:
 - Gemini/provider/AI work and SF-STEP 12 remain blocked until their proper
   contracted wave/STEP.
 
-**Next:** the repository currently defines no W6 contract. Do not invent one.
-On the next owner `lanjutkan`, derive and lock the next SF-STEP 11 wave from
-the frozen Product/Master Blueprint before implementation.
+**Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -209,9 +207,18 @@ Planning source:
 - `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt`
 - `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx`
 
+Accepted W6-001 implementation HEAD:
+`160a320768e4d4b788bc9e2bc9e4174569a32f31`
+
+W6-001 workflow:
+`37591531616` — SUCCESS
+
+W6-001 evidence:
+`docs/evidence/features/S11_W6_001_AI_CREDENTIAL_CONTRACTS.md`
+
 Serial contract:
-- [ ] **S11-W6-001 — Canonical AI + credential contracts — READY**
-- [ ] **S11-W6-002 — Secure credential slots 1–100 — BLOCKED_BY_W6_001**
+- [x] **S11-W6-001 — Canonical AI + credential contracts — PASS**
+- [ ] **S11-W6-002 — Secure credential slots 1–100 — READY**
 - [ ] **S11-W6-003 — Windows secure-store qualification — BLOCKED_BY_W6_002**
 - [ ] **S11-W6-004 — Credential health + safe failover — BLOCKED_BY_W6_003**
 - [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — BLOCKED_BY_W6_004**
@@ -232,4 +239,20 @@ Locked boundaries:
 - full live-provider PASS requires a real Gemini smoke; otherwise the final
   W6 status must retain a provisional live-Gemini qualifier.
 
-**Exact next task:** S11-W6-001 only — Canonical AI + credential contracts.
+W6-001 proof:
+- AIProviderPort + CredentialPort are application-layer, provider-agnostic ports;
+- raw credential is represented by a transient masked CredentialSecret wrapper;
+- logical slot references reject outside 1..100;
+- EditPlan is revision-bound and can express only typed L1 effect proposals;
+- L1 proposal shape has no lock/title/timeline/shell mutation fields;
+- W6 L1 allowlist is locked to the render-qualified W4 effects;
+- provider request DTO deliberately has no credential/api_key/secret field;
+- typed credential/provider/plan errors and provider-agnostic job states are locked;
+- targeted W6-001 tests 10/10 PASS;
+- full pytest PASS;
+- Ruff/mypy/import-contract/architecture/source-of-truth/security/UI-reference gates PASS;
+- W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the accepted HEAD;
+- S10 packaged-smoke required attempt 2 only because Chocolatey returned HTTP 504
+  while fetching FFmpeg; no product-code change was required.
+
+**Exact next task:** S11-W6-002 only — Secure credential slots 1–100.

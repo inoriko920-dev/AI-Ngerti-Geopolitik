@@ -33,6 +33,7 @@
     - `docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`
     - `docs/evidence/features/S11_W5_009_COMBINED_PREVIEW_EXPORT.md`
     - `docs/evidence/features/S11_W5_010_CLOSURE_REGRESSION.md`
+    - `docs/evidence/features/S11_W6_001_AI_CREDENTIAL_CONTRACTS.md`
 12. current wave contract:
     - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
@@ -75,9 +76,11 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - SF-STEP 11 W6 scope: **Gemini Credential + L1 AI Animation Planning — CONTRACT LOCKED**.
 - W6 is derived from Master Blueprint TECH-WAVE STEP 09.
 - W6 planning TXT/DOCX and contract MD are source-of-truth.
-- S11-W6-001 canonical AI + credential contracts: **READY**.
-- S11-W6-002..010: **BLOCKED_BY_PREVIOUS_TASKS**.
-- W6 implementation has not started.
-- exact next task: **S11-W6-001 only**.
+- S11-W6-001 canonical AI + credential contracts: **PASS**.
+- S11-W6-002 secure credential slots 1–100: **READY**.
+- S11-W6-003..010: **BLOCKED_BY_PREVIOUS_TASKS**.
+- W6 implementation started only through canonical application contracts;
+  no secure-store production adapter or Gemini network call exists yet.
+- exact next task: **S11-W6-002 only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

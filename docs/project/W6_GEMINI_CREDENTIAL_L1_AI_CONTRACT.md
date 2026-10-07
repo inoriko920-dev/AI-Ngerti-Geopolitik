@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 READY / W6-002..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 READY / W6-003..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -400,10 +400,48 @@ Before W6-001:
 - no provider beyond Gemini added;
 - owner says **lanjutkan**.
 
+## 17. Implementation progress
+
+### S11-W6-001 — PASS
+
+Accepted implementation HEAD:
+`160a320768e4d4b788bc9e2bc9e4174569a32f31`
+
+Accepted workflow:
+`37591531616` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_001_AI_CREDENTIAL_CONTRACTS.md`.
+
+Implemented contract surface:
+- AIProviderPort;
+- CredentialPort;
+- CredentialSecret;
+- CredentialSlotRef 1..100;
+- AIProviderRequest / ProviderPlanResponse;
+- EditPlan / EffectEditProposal;
+- typed credential/provider/plan errors;
+- provider-agnostic job lifecycle.
+
+W6-001 intentionally does not include:
+- WinVault/keyring backend;
+- credential metadata CRUD service;
+- credential health/failover;
+- Gemini SDK/network;
+- ContextBuilder;
+- PlanVerifier;
+- approval/apply;
+- W6 UI.
+
+Quality:
+- targeted tests 10/10 PASS;
+- full pytest PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W5 through S08 regression matrix green on the same implementation HEAD.
+
 ## Exact next action
 
-After this contract/planning lock is complete, STOP.
+On the next owner **lanjutkan**, execute **S11-W6-002 only — Secure credential slots 1–100**.
 
-On the next owner **lanjutkan**, execute **S11-W6-001 only — Canonical AI + credential contracts**.
-
-Do not create WinVault adapter, make a Gemini network call, implement W6 UI or apply an AI EditPlan in the same W6-001 turn.
+Do not create the production Windows secure-store adapter, make a Gemini network
+call, implement failover, W6 UI or apply an AI EditPlan in W6-002.
