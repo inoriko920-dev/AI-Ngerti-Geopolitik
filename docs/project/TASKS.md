@@ -516,8 +516,8 @@ Serial contract:
 - [x] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
 - [x] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — PASS**
 - [x] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
-- [ ] **S11-W7-005 — Pacing qualification: duration + speed — READY**
-- [ ] **S11-W7-006 — Transform qualification — BLOCKED_BY_W7_005**
+- [x] **S11-W7-005 — Pacing qualification: duration + speed — PASS**
+- [ ] **S11-W7-006 — Transform qualification — READY**
 - [ ] **S11-W7-007 — Transition + mixed-plan qualification — BLOCKED_BY_W7_006**
 - [ ] **S11-W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007**
 - [ ] **S11-W7-009 — Approval/apply/UI diff integration — BLOCKED_BY_W7_008**
@@ -633,4 +633,32 @@ W7-004 proof:
 - evidence verifier 23/23 PASS;
 - 26/26 triggered workflows SUCCESS, all attempt 1.
 
-**Exact next task:** S11-W7-005 only — Pacing qualification: duration + speed.
+Accepted W7-005 implementation HEAD:
+`e00ad734833ceac4f32f42e5363f5b8b5c203212`
+
+W7-005 workflow:
+`37653613643` — SUCCESS
+
+W7-005 evidence:
+`docs/evidence/features/S11_W7_005_PACING_QUALIFICATION.md`
+
+W7-005 artifact:
+`ANG-S11-W7-005-L2-Pacing` / ID `11498316525`
+
+W7-005 proof:
+- existing W7 verifier/manual duration+speed command path reused;
+- application-owned ripple=true;
+- real duration qualification 60→90 frames, timeline 210 frames;
+- real speed 200% timeline 150 frames;
+- real speed 50% timeline 240 frames;
+- speed-aware preview source mapping 15→30 / 7;
+- baseline/fast/slow real previews distinct;
+- all real exports retain audio;
+- source media unchanged;
+- canonical state/revision/CommandBus history unchanged;
+- targeted tests 6/6 PASS;
+- full pytest PASS;
+- evidence verifier 11/11 files PASS;
+- 26/26 regression workflows SUCCESS on the same HEAD, all attempt 1.
+
+**Exact next task:** S11-W7-006 only — Transform qualification.

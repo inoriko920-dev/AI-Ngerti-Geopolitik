@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..004 PASS / W7-005 READY / W7-006..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..005 PASS / W7-006 READY / W7-007..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..004 PASS  
+**Runtime implementation:** ACTIVE — W7-001..005 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -361,8 +361,8 @@ and a real network smoke succeeds.
 - **W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
 - **W7-003 — strict AutoEditPlan v2 parser/schema — PASS**
 - **W7-004 — L2 semantic verifier + sequential dry-run translator — PASS**
-- W7-005 — pacing qualification: duration + speed — READY
-- W7-006 — transform qualification — BLOCKED_BY_W7_005
+- **W7-005 — pacing qualification: duration + speed — PASS**
+- W7-006 — transform qualification — READY
 - W7-007 — transition + mixed-plan qualification — BLOCKED_BY_W7_006
 - W7-008 — Gemini L2 request profile + lifecycle reuse — BLOCKED_BY_W7_007
 - W7-009 — approval/apply/UI diff integration — BLOCKED_BY_W7_008
@@ -498,10 +498,45 @@ Gates:
 W7-004 did not start real pacing/render qualification, provider request-profile
 changes, runtime UI changes, or canonical L2 apply.
 
+## W7-005 implementation closure
+
+Accepted implementation HEAD:
+`e00ad734833ceac4f32f42e5363f5b8b5c203212`
+
+Accepted workflow:
+`37653613643` — SUCCESS.
+
+Implemented/qualified:
+- W7-004 verifier translation reused without a new pacing owner;
+- duration through canonical SetClipDurationCommand;
+- speed through canonical SetClipSpeedCommand;
+- application-owned ripple=true;
+- real duration output: baseline 180 frames → qualified timeline 210 frames;
+- real speed output: 200% → 150 frames; 50% → 240 frames;
+- speed-aware preview source mapping proven;
+- baseline/fast/slow preview hashes are distinct;
+- all exports retain audio;
+- candidate hash/revision proof retained;
+- source media and canonical state/history unchanged.
+
+Evidence:
+`docs/evidence/features/S11_W7_005_PACING_QUALIFICATION.md`.
+
+Gates:
+- targeted tests 6/6 PASS;
+- full pytest PASS;
+- mypy 68 source files PASS;
+- evidence verifier 11/11 files PASS;
+- 26/26 triggered workflows SUCCESS, all attempt 1;
+- S08/S09/S10/W0 heavy gates PASS.
+
+W7-005 did not start transform qualification, transition/mixed-plan work,
+provider request-profile changes, runtime UI changes, or canonical L2 apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-005 only — Pacing qualification: duration + speed**.
+After owner says `lanjutkan`, execute **S11-W7-006 only — Transform qualification**.
 
-W7-005 must not start W7-006 transform qualification in the same turn.
+W7-006 must not start W7-007 transition + mixed-plan qualification in the same turn.
 
-After W7-005, report gate PASS/FAIL and stop.
+After W7-006, report gate PASS/FAIL and stop.
