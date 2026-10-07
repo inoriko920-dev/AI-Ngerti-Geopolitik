@@ -186,13 +186,9 @@ def _drawtext(
         alpha_value = _dynamic_alpha(cue, animation)
 
     dynamic_fontsize = (
-        sample_frame is None
-        and animation.preset == "Pop"
-        and animation.enter_frames > 0
+        sample_frame is None and animation.preset == "Pop" and animation.enter_frames > 0
     )
-    fontsize_option = (
-        f"fontsize='{fontsize}'" if dynamic_fontsize else f"fontsize={fontsize}"
-    )
+    fontsize_option = f"fontsize='{fontsize}'" if dynamic_fontsize else f"fontsize={fontsize}"
 
     parts = [
         f"drawtext=fontfile='{_fontfile(style)}'",
