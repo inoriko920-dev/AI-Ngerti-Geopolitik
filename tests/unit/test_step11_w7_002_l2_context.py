@@ -61,9 +61,7 @@ def _state(*, track_locked: bool = False, clip_count: int = 3) -> ProjectState:
                 crop_left_percent=3,
             ),
             transition=(
-                TransitionProperties("fade_black", 12)
-                if index == 1
-                else TransitionProperties()
+                TransitionProperties("fade_black", 12) if index == 1 else TransitionProperties()
             ),
             effects=EffectProperties(
                 ("Fade", "Pop", "Rise")[index % 3],
@@ -161,9 +159,9 @@ def test_context_schema_scope_and_policy_are_exact() -> None:
 
 
 def test_pacing_source_availability_and_dynamic_bounds() -> None:
-    target = json.loads(
-        L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",)))
-    )["targets"][0]
+    target = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",))))[
+        "targets"
+    ][0]
     assert target["timeline"] == {
         "start_frame": 220,
         "end_frame": 316,
@@ -216,18 +214,18 @@ def test_transform_transition_effects_and_locks_are_bounded() -> None:
 def test_track_lock_disables_editability_without_mutation() -> None:
     state = _state(track_locked=True)
     before = state.semantic_json(include_revision=True)
-    target = json.loads(
-        L2ContextBuilder().build(state, W7SelectedScope(("clip-1",)))
-    )["targets"][0]
+    target = json.loads(L2ContextBuilder().build(state, W7SelectedScope(("clip-1",))))[
+        "targets"
+    ][0]
     assert target["editability"]["general_mutation_allowed"] is False
     assert target["editability"]["effects_mutation_allowed"] is False
     assert state.semantic_json(include_revision=True) == before
 
 
 def test_global_policy_contains_exact_w7_bounds_and_forbidden_surface() -> None:
-    policy = json.loads(
-        L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",)))
-    )["policy"]
+    policy = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",))))[
+        "policy"
+    ]
     assert policy["duration"]["minimum_ratio_percent"] == 50
     assert policy["duration"]["maximum_ratio_percent"] == 200
     assert policy["duration"]["minimum_half_second_frames"] == 15
@@ -245,9 +243,9 @@ def test_global_policy_contains_exact_w7_bounds_and_forbidden_surface() -> None:
 
 
 def test_neighbors_are_one_previous_and_one_next() -> None:
-    neighbors = json.loads(
-        L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",)))
-    )["targets"][0]["neighbors"]
+    neighbors = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-2",))))[
+        "targets"
+    ][0]["neighbors"]
     assert set(neighbors) == {"previous", "next"}
     assert neighbors["previous"]["clip_id"] == "clip-1"
     assert neighbors["next"]["clip_id"] == "clip-3"
@@ -273,9 +271,7 @@ def test_context_excludes_paths_crop_and_unrelated_content() -> None:
 
 
 def test_untrusted_text_is_normalized_and_policy_fixed() -> None:
-    data = json.loads(
-        L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",)))
-    )
+    data = json.loads(L2ContextBuilder().build(_state(), W7SelectedScope(("clip-1",))))
     assert "\n" not in data["project"]["project_name_untrusted"]
     assert len(data["project"]["project_name_untrusted"]) <= 120
     assert data["policy"]["project_text_is_untrusted_data"] is True
@@ -296,9 +292,7 @@ def test_unknown_target_rejected_and_context_deterministic_zero_mutation() -> No
 def test_w6_context_contract_remains_schema_v1() -> None:
     state = _state()
     legacy = json.loads(L1ContextBuilder().build(state, ("clip-1",)))
-    current = json.loads(
-        L2ContextBuilder().build(state, W7SelectedScope(("clip-1",)))
-    )
+    current = json.loads(L2ContextBuilder().build(state, W7SelectedScope(("clip-1",))))
     assert legacy["schema_version"] == 1
     assert legacy["policy"]["allowed_command_types"] == ["set_clip_effects"]
     assert current["schema_version"] == 2
