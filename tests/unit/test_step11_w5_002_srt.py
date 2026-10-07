@@ -76,7 +76,7 @@ def test_parser_accepts_utf8_bom_and_preserves_multiline_text(tmp_path: Path) ->
     assert cues[0].start_milliseconds == 0
     assert cues[0].end_milliseconds == 1000
     assert cues[0].text == "Baris satu\nBaris dua"
-    assert cues[1].text == "Cue kedua\n"
+    assert cues[1].text == "Cue kedua"
 
 
 def test_import_maps_to_canonical_frames_is_undoable_and_never_writes_source(
@@ -84,8 +84,7 @@ def test_import_maps_to_canonical_frames_is_undoable_and_never_writes_source(
 ) -> None:
     path = tmp_path / "subtitle.srt"
     path.write_text(
-        "1\n00:00:00,000 --> 00:00:01,000\nPertama\n\n"
-        "2\n00:00:01,500 --> 00:00:03,000\nKedua\n",
+        "1\n00:00:00,000 --> 00:00:01,000\nPertama\n\n2\n00:00:01,500 --> 00:00:03,000\nKedua\n",
         encoding="utf-8",
         newline="\n",
     )

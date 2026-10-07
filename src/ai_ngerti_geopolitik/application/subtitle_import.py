@@ -23,8 +23,8 @@ from ai_ngerti_geopolitik.domain import (
     DomainValidationError,
     FrameTime,
     ProjectState,
-    SubtitleTrack,
     SubtitleCue,
+    SubtitleTrack,
 )
 
 
@@ -69,8 +69,7 @@ def build_subtitle_track(
             )
         if start_frame < previous_end:
             raise SubtitleImportError(
-                f"SRT cue index {item.index} overlaps after conversion to "
-                f"{state.fps} fps"
+                f"SRT cue index {item.index} overlaps after conversion to {state.fps} fps"
             )
         if end_frame > state.timeline_end_frame:
             raise SubtitleImportError(

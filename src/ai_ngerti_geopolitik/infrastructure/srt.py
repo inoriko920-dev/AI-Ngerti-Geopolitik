@@ -63,7 +63,7 @@ class Utf8SrtParser:
         previous_end = 0
 
         for block_number, block in enumerate(blocks, start=1):
-            lines = block.split("\n")
+            lines = block.rstrip("\n").split("\n")
             if len(lines) < 3:
                 raise SubtitleParseError(
                     f"SRT block {block_number} must contain index, timing, and text"
@@ -75,9 +75,7 @@ class Utf8SrtParser:
                     f"SRT block {block_number} has a non-numeric cue index"
                 ) from exc
             if index <= 0:
-                raise SubtitleParseError(
-                    f"SRT block {block_number} cue index must be positive"
-                )
+                raise SubtitleParseError(f"SRT block {block_number} cue index must be positive")
             if index in seen_indexes:
                 raise SubtitleParseError(f"SRT cue index is duplicated: {index}")
             seen_indexes.add(index)
@@ -91,21 +89,15 @@ class Utf8SrtParser:
             start_ms = _timestamp_milliseconds(start_text, cue_index=index)
             end_ms = _timestamp_milliseconds(end_text, cue_index=index)
             if end_ms <= start_ms:
-                raise SubtitleParseError(
-                    f"SRT cue index {index} end timestamp must be after start"
-                )
+                raise SubtitleParseError(f"SRT cue index {index} end timestamp must be after start")
 
             subtitle_text = "\n".join(lines[2:])
             if not subtitle_text.strip():
                 raise SubtitleParseError(f"SRT cue index {index} text cannot be empty")
             if start_ms < previous_start:
-                raise SubtitleParseError(
-                    f"SRT cue index {index} is out of chronological order"
-                )
+                raise SubtitleParseError(f"SRT cue index {index} is out of chronological order")
             if start_ms < previous_end:
-                raise SubtitleParseError(
-                    f"SRT cue index {index} overlaps the previous cue"
-                )
+                raise SubtitleParseError(f"SRT cue index {index} overlaps the previous cue")
 
             cues.append(
                 ParsedSubtitleCue(
