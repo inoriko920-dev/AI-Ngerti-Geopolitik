@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 PASS / W5-010 READY  
+**Status:** CLOSED / W5-001..006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008..010 PASS / FINAL PASS_WITH_PROVISIONAL_MIC_HARDWARE  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -296,6 +296,26 @@ semantics are accepted.
   - all four enabled animations preview/export qualified in the combined project;
   - narration preview/export frame synchronization proven;
   - subtitle + narration coexist in one valid export.
-- S11-W5-010 — **READY**.
+- S11-W5-010 — **PASS**
+  - accepted implementation HEAD:
+    `cb54b544dd8c6977d117bb71e137117830feb061`;
+  - accepted run: `37583174352` — SUCCESS;
+  - evidence:
+    `docs/evidence/features/S11_W5_010_CLOSURE_REGRESSION.md`;
+  - artifact:
+    `ANG-S11-W5-010-Closure` / `11466065855`;
+  - targeted closure tests: 6/6 PASS;
+  - full pytest: PASS;
+  - evidence verifier: 9/9 PASS;
+  - W4/W3/W2/W1/W0/S10/S09/S08 same-HEAD regression lock: SUCCESS.
 
-On the next owner `lanjutkan`, execute **S11-W5-010 only**.
+Final W5 status:
+**PASS_WITH_PROVISIONAL_MIC_HARDWARE**.
+
+The only remaining W5 qualifier is physical microphone capture. Hosted Windows
+CI exposed zero DirectShow input devices, so full physical-device PASS cannot
+be claimed.
+
+The repository currently contains no W6 contract. On the next owner
+`lanjutkan`, derive and lock the actual next SF-STEP 11 wave from the frozen
+Product/Master Blueprint before implementation.

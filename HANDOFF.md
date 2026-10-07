@@ -1,95 +1,91 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
 **Current phase:** SF-STEP 11  
-**Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-009 — PASS  
-**Accepted W5-009 HEAD:** `afcdd20c74f3870aee589ad83bf20cdae3861fea`  
-**Accepted W5-009 run:** `37581393310` — SUCCESS  
-**Next exact task:** S11-W5-010 — Failure paths + evidence + regression lock
+**Last completed wave:** W5 — Subtitle + Narration  
+**W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE  
+**Accepted implementation HEAD:** `cb54b544dd8c6977d117bb71e137117830feb061`  
+**W5-010 run:** `37583174352` — SUCCESS
 
 ## Read first
 
 Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 Read:
+- frozen Product / Master Blueprint;
 - W0–W4 evidence;
 - W5 contract;
-- W5-001 through W5-009 evidence;
+- W5-001 through W5-010 evidence;
 - current PLAN/TASKS/PROJECT_STATUS.
 
-## W5-009 real combined qualification
+## W5 is closed
 
-Owned fixture:
-- 1920×1080 / 30 fps;
-- base 880 Hz video audio;
-- 440 Hz narration;
-- owned source SRT;
-- canonical 180-frame timeline.
+Implemented and qualified:
+- canonical SRT subtitle model/import/edit/save-copy;
+- subtitle style;
+- Fade, Pop, Slide Up, Clean Documentary;
+- explicit NOT-speech-alignment per-word boundary;
+- narration import/binding/offset/gain/mute/fades;
+- microphone software/staging path;
+- frozen subtitle/narration UI;
+- combined subtitle+narration real preview/export;
+- history, compatibility and failure safety.
 
-Canonical flow:
-1. import video;
-2. import source SRT;
-3. edit subtitle text/timing in SubtitleWorkingCopy;
-4. Save Copy to a new SRT and commit;
-5. apply qualified subtitle style;
-6. bind narration at frame 60;
-7. qualify static subtitle+narration;
-8. qualify Fade/Pop/Slide Up/Clean Documentary;
-9. commit final Slide Up;
-10. save/reopen project;
-11. verify source SRT and narration media unchanged.
+W5-010 additionally proves:
+- malformed SRT cannot mutate project state;
+- dirty working copy cannot be silently discarded;
+- missing/corrupt narration cannot fake success;
+- missing bound narration source cannot create fake preview output;
+- failed recording cannot clobber existing narration;
+- pre-W5 W4 project loads with safe W5 defaults.
 
-## Proven evidence
+## Final regression lock
 
-Subtitle:
-- source SRT unchanged;
-- edited copy = 1500..4500 ms;
-- edited text survives;
-- frame 30 no subtitle;
-- frame 51 subtitle visible;
-- style visible;
-- style survives reopen.
+Same accepted HEAD all SUCCESS:
+- W5-010 `37583174352`
+- W5-009 `37583174359`
+- W5-008 `37583174310`
+- W5-007 `37583174255` attempt 2
+- W5-006 `37583174384` attempt 2
+- W5-005 `37583174296`
+- W5-004 `37583174275`
+- W4 `37583174301`
+- W3 `37583174280`
+- W2 `37583174363` attempt 2
+- W1 `37583174318`
+- W0 `37583174261`
+- S10 `37583174258` attempt 2
+- S09 `37583174265`
+- S08 `37583174297`
 
-Animations:
-- all four UI-enabled presets differ from static preview;
-- all four differ from static export frame;
-- all four exported files retain audio and duration tolerance.
+Attempt 2 was used only after external Chocolatey 504 failures.
 
-Narration:
-- preview WAV audible;
-- frame-60 offset measurable through 440 Hz spectral evidence;
-- same combined export contains subtitle image evidence + narration audio
-  evidence.
+## Hardware qualifier
 
-Persistence/output:
-- save/reopen semantic hash match;
-- subtitle and narration both present;
-- final output 1920×1080 / 30 fps / audio;
-- duration within ±3 frames.
+The software microphone path is PASS.
 
-Artifact:
-`ANG-S11-W5-009-Combined-Qualification`
-ID: `11464149053`
-Size: 49,935,397 bytes.
+Physical microphone capture remains **PROVISIONAL** because GitHub hosted
+Windows runners exposed zero DirectShow audio input devices.
 
-Verifier:
-**26/26 PASS**.
+Never upgrade that claim without real-device evidence.
 
-## Critical boundaries for W5-010
+## Boundaries carried forward
 
-- W5-010 is closure/regression only; do not add new product scope.
-- Test malformed SRT and dirty-working-copy guards.
-- Test missing/corrupt narration without fake success.
-- Test failed recording preserves existing narration.
-- Prove subtitle/narration Undo/Redo.
-- Prove old W4 project loads with safe W5 defaults.
-- Re-run quality, architecture, UI, security and full pytest.
-- Build deterministic W5 closure evidence/verifier.
-- Lock W4/W3/W2/W1/W0/S10/S09/S08 regressions.
-- Carry microphone hardware qualifier forward honestly if no physical device is
-  available.
-- Do not start later waves or SF-STEP 12.
+- ProjectState / CommandBus remain canonical.
+- MLT remains primary production-engine candidate.
+- FFmpeg remains qualification adapter.
+- no ASR/transcription/speech alignment.
+- unsupported subtitle animations remain disabled.
+- unsupported W4 effects/crossfade remain disabled.
+- Reverse remains disabled.
+- no Gemini/provider work unless the next frozen wave explicitly requires it.
+- SF-STEP 12 remains blocked.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-010 only**.
+There is currently **no W6 contract in repository source-of-truth**.
+
+After owner says `lanjutkan`:
+1. read frozen Product/Master Blueprint;
+2. identify the actual next SF-STEP 11 feature wave;
+3. lock its contract/planning first;
+4. do not implement until that next wave is explicitly defined.

@@ -110,118 +110,24 @@ Locked boundaries carried forward:
 - Gemini/AI implementation, SF-STEP 12 and release packaging remain blocked
   until their proper wave/STEP.
 
-### W5 — ACTIVE / CONTRACT LOCKED
+### W5 — DONE / PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
 **Subtitle + Narration**
 
 Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
-Implementation status:
-**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 PASS / W5-010 READY**
+Accepted implementation HEAD:
+`cb54b544dd8c6977d117bb71e137117830feb061`
 
-W5-009 accepted implementation HEAD:
-`afcdd20c74f3870aee589ad83bf20cdae3861fea`
+W5-010 closure workflow:
+`37583174352` — SUCCESS
 
-W5-009 workflow:
-`37581393310` — SUCCESS
+W5-010 evidence:
+`docs/evidence/features/S11_W5_010_CLOSURE_REGRESSION.md`
 
-W5-009 evidence:
-`docs/evidence/features/S11_W5_009_COMBINED_PREVIEW_EXPORT.md`
-
-W5-009 artifact:
-`ANG-S11-W5-009-Combined-Qualification` / ID `11464149053`
-
-W5-008 accepted implementation HEAD:
-`b65bf585510ee442584a7ebbe8db8c3d40ac1533`
-
-W5-008 workflow:
-`37579815809` — SUCCESS
-
-W5-008 evidence:
-`docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`
-
-W5-008 artifact:
-`ANG-S11-W5-008-Frozen-UI` / ID `11463699327`
-
-W5-007 accepted implementation HEAD:
-`be4daa667bf5030ba3810460cc6841a2e8be4fee`
-
-W5-007 workflow:
-`37578572691` — SUCCESS
-
-W5-007 evidence:
-`docs/evidence/features/S11_W5_007_MICROPHONE_RECORDING.md`
-
-W5-007 artifact:
-`ANG-S11-W5-007-Microphone` / ID `11463438121`
-
-Hardware gate:
-GitHub Windows runner exposed **0 DirectShow audio input devices**. Deterministic
-recording path is PASS, but physical microphone capture remains provisional.
-
-W5-006 accepted implementation HEAD:
-`77770cd98210dbed18cbe1715111a935f2135b77`
-
-W5-006 workflow:
-`37577639655` — SUCCESS
-
-W5-006 evidence:
-`docs/evidence/features/S11_W5_006_NARRATION_IMPORT_BINDING.md`
-
-W5-006 artifact:
-`ANG-S11-W5-006-Narration` / ID `11462194359`
-
-W5-005 accepted implementation HEAD:
-`293b369e74771d16dc90956bc6a7be4c71e01d1c`
-
-W5-005 workflow:
-`37575611940` — SUCCESS
-
-W5-005 evidence:
-`docs/evidence/features/S11_W5_005_SUBTITLE_ANIMATION_WORD_TIMING.md`
-
-W5-005 artifact:
-`ANG-S11-W5-005-Subtitle-Animation` / ID `11462966698`
-
-W5-004 accepted implementation HEAD:
-`687d31585d476541711978d5f69e5e7eafe72245`
-
-W5-004 workflow:
-`37574406573` — SUCCESS
-
-W5-004 evidence:
-`docs/evidence/features/S11_W5_004_SUBTITLE_STYLE.md`
-
-W5-004 artifact:
-`ANG-S11-W5-004-Subtitle-Style` / ID `11461154582`
-
-W5-003 accepted implementation HEAD:
-`d8db4d18cb42b71d91a9b727868b25340961702f`
-
-W5-003 workflow:
-`37573388357` — SUCCESS
-
-W5-003 evidence:
-`docs/evidence/features/S11_W5_003_SUBTITLE_WORKING_COPY.md`
-
-W5-002 accepted implementation HEAD:
-`d4349c925cc0f475cfa94b0db55347320954e1cf`
-
-W5-002 workflow:
-`37572463564` — SUCCESS
-
-W5-002 evidence:
-`docs/evidence/features/S11_W5_002_SRT_IMPORT_VALIDATION.md`
-
-W5-001 accepted implementation HEAD:
-`b5bf8543554bcf38d22a65510fe0376195676d46`
-
-W5-001 workflow:
-`37571740654` — SUCCESS
-
-W5-001 evidence:
-`docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`
+W5-010 artifact:
+`ANG-S11-W5-010-Closure` / ID `11466065855`
 
 Serial contract:
 - [x] **S11-W5-001 — Canonical subtitle/narration model — PASS**
@@ -233,15 +139,57 @@ Serial contract:
 - [x] **S11-W5-007 — Microphone recording — PASS_WITH_PROVISIONAL_MIC_HARDWARE**
 - [x] **S11-W5-008 — Frozen UI parity — PASS**
 - [x] **S11-W5-009 — Real subtitle/narration preview/export qualification — PASS**
-- [ ] **S11-W5-010 — Failure paths + evidence + regression lock**
+- [x] **S11-W5-010 — Failure paths + evidence + regression lock — PASS**
 
-Hard boundaries:
-- W4 title overlay is not the subtitle model;
-- source SRT is never silently overwritten;
-- no ASR/speech-alignment claim;
-- only render-proven subtitle animations may be enabled;
-- failed recording cannot clobber existing narration;
-- no Gemini/provider/AI Auto Edit work;
-- no SF-STEP 12 or final release work.
+W5-010 closure proof:
+- subtitle + narration cross-feature Undo/Redo PASS;
+- pre-W5 W4 project loads with `subtitle=None` and `narration=None` while
+  preserving W4 creative state;
+- malformed SRT is rejected without canonical mutation;
+- dirty subtitle working-copy reload guard is enforced;
+- missing/corrupt narration is rejected without fake success;
+- bound narration source missing at runtime cannot create a fake preview;
+- failed microphone capture cannot clobber existing narration;
+- source SRT and narration media stay byte-identical;
+- targeted W5-010 tests 6/6 PASS;
+- full pytest PASS;
+- W5-010 evidence verifier 9/9 PASS.
 
-**Exact next task:** S11-W5-010 — Failure paths + evidence + regression lock only.
+Final regression lock on accepted W5 HEAD:
+- W5-010 `37583174352` — SUCCESS;
+- W5-009 `37583174359` — SUCCESS;
+- W5-008 `37583174310` — SUCCESS;
+- W5-007 `37583174255` — SUCCESS, attempt 2;
+- W5-006 `37583174384` — SUCCESS, attempt 2;
+- W5-005 `37583174296` — SUCCESS;
+- W5-004 `37583174275` — SUCCESS;
+- W4 `37583174301` — SUCCESS;
+- W3 `37583174280` — SUCCESS;
+- W2 `37583174363` — SUCCESS, attempt 2;
+- W1 `37583174318` — SUCCESS;
+- W0 `37583174261` — SUCCESS;
+- S10 `37583174258` — SUCCESS, attempt 2;
+- S09 `37583174265` — SUCCESS;
+- S08 `37583174297` — SUCCESS.
+
+The second attempts above were required only because the Chocolatey community
+feed returned HTTP 504 while installing FFmpeg. No product-code change was made
+for that external outage.
+
+Final W5 status is **PASS_WITH_PROVISIONAL_MIC_HARDWARE**, not full PASS,
+because the GitHub Windows runner exposes 0 DirectShow audio input devices.
+The software recording path and its safety/failure behavior are PASS; physical
+microphone capture remains unproven and is not faked.
+
+Hard boundaries remain:
+- no ASR/transcription/speech-alignment claim;
+- only render-proven subtitle animations are enabled;
+- W4 unsupported effects/crossfade stay unavailable;
+- Reverse stays disabled;
+- FFmpeg remains qualification adapter; MLT remains production-engine candidate;
+- Gemini/provider/AI work and SF-STEP 12 remain blocked until their proper
+  contracted wave/STEP.
+
+**Next:** the repository currently defines no W6 contract. Do not invent one.
+On the next owner `lanjutkan`, derive and lock the next SF-STEP 11 wave from
+the frozen Product/Master Blueprint before implementation.
