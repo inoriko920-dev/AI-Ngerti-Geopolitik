@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 import os
 import re
 from pathlib import Path
@@ -177,8 +178,6 @@ class Utf8SrtWriter:
             ) from exc
         except OSError as exc:
             if created and destination.exists():
-                try:
+                with suppress(OSError):
                     destination.unlink()
-                except OSError:
-                    pass
             raise SubtitleWriteError(f"cannot write subtitle copy: {destination}") from exc
