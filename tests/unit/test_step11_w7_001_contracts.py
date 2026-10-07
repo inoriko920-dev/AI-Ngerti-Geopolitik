@@ -49,8 +49,14 @@ def test_w7_registry_is_exact_and_points_to_existing_manual_owners() -> None:
         "set_clip_transform",
         "set_clip_transition",
     )
-    assert capability_for("set_clip_effects").manual_command_owner == "SetClipPropertiesCommand"
-    assert capability_for("set_clip_duration").manual_command_owner == "SetClipDurationCommand"
+    assert (
+        capability_for("set_clip_effects").manual_command_owner
+        == "SetClipPropertiesCommand"
+    )
+    assert (
+        capability_for("set_clip_duration").manual_command_owner
+        == "SetClipDurationCommand"
+    )
     assert capability_for("set_clip_speed").manual_command_owner == "SetClipSpeedCommand"
     assert capability_for("set_clip_transform").property_owner == "VideoProperties"
     assert capability_for("set_clip_transition").property_owner == "TransitionProperties"
