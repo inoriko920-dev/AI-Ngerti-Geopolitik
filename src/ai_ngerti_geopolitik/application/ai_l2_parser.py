@@ -20,13 +20,13 @@ from ai_ngerti_geopolitik.application.ai_contracts import (
 from ai_ngerti_geopolitik.application.ai_l2_contracts import (
     AUTO_EDIT_PLAN_SCHEMA_VERSION,
     MAX_W7_COMMANDS,
+    W7_TRANSITION_PRESETS,
     AutoEditCommandProposal,
     AutoEditPlan,
     DurationEditProposal,
     SpeedEditProposal,
     TransformEditProposal,
     TransitionEditProposal,
-    W7_TRANSITION_PRESETS,
 )
 
 _ROOT_FIELDS: Final = frozenset(
