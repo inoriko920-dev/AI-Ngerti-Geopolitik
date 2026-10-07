@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001..006 PASS — W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE — NEXT W5-008**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001..006 PASS — W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE — W5-008 PASS — NEXT W5-009**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -15,34 +15,33 @@ Completed:
 - W5-004 subtitle style = PASS
 - W5-005 render-backed animation + per-word boundary = PASS
 - W5-006 narration import + binding = PASS
-- W5-007 microphone recording software path = PASS
-- W5-007 physical microphone hardware gate =
-  **PASS_WITH_PROVISIONAL_MIC_HARDWARE**
+- W5-007 microphone software path = PASS
+- W5-007 physical microphone = PASS_WITH_PROVISIONAL_MIC_HARDWARE
+- W5-008 frozen subtitle/narration UI parity = PASS
 
-W5-007 accepted implementation:
-`be4daa667bf5030ba3810460cc6841a2e8be4fee`
+W5-008 accepted implementation:
+`b65bf585510ee442584a7ebbe8db8c3d40ac1533`
 
 Workflow:
-`37578572691` — SUCCESS
+`37579815809` — SUCCESS
 
-Microphone flow now has:
-- real device enumeration boundary;
-- staging WAV;
-- cancellation;
-- validation before canonical mutation;
-- collision-safe finalization;
-- canonical narration bind through W5-006;
-- failure safety preserving existing narration.
+W5-008 now provides real PySide6 controls for subtitle cue editing, style,
+animation, manual/per-word timing boundary, narration controls and device-gated
+recording.
 
-The GitHub Windows runner exposed **0 DirectShow audio input devices**, so no
-physical microphone recording is falsely claimed. A real Windows hardware
-smoke is still required to remove the provisional qualifier.
+Only qualified features are enabled.
 
-Targeted W5-007 tests: **6/6 PASS**.  
-Full pytest: **PASS**.
+Frozen UI reference integrity:
+**42/42 PASS**.
 
-All accepted regressions through S08 remain green.
+W5-008 Qt tests:
+**6/6 PASS**.
+
+Evidence:
+**14/14 PASS**.
+
+All accepted regressions through S08 are green on the same implementation HEAD.
 
 ## Next
 
-**S11-W5-008 — Frozen UI parity only.**
+**S11-W5-009 — Real subtitle/narration preview/export qualification only.**

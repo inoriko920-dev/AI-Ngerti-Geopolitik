@@ -1,62 +1,52 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001..006 PASS. W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE.**
+**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001..006 PASS. W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE. W5-008 PASS.**
 
-## Accepted W5-007
+## Accepted W5-008
 
 - implementation HEAD:
-  `be4daa667bf5030ba3810460cc6841a2e8be4fee`;
+  `b65bf585510ee442584a7ebbe8db8c3d40ac1533`;
 - workflow:
-  `37578572691` — SUCCESS;
-- dedicated RecorderPort boundary added;
-- staging-first recording flow implemented;
-- stage validation before finalization/import;
-- collision-safe no-overwrite finalization;
-- W5-006 canonical narration import/bind reused;
-- failed/cancelled/empty/invalid capture preserves current narration;
-- successful import/bind remains Undo/Redo-safe;
-- Windows FFmpeg DirectShow recorder added;
-- cancellation can terminate live capture;
-- targeted deterministic tests 6/6 PASS;
+  `37579815809` — SUCCESS;
+- real frozen subtitle/narration PySide6 widgets implemented;
+- subtitle Teks/Gaya/Animasi surfaces emit semantic intents;
+- only render-qualified fonts/presets exposed;
+- per-word deterministic fallback requires explicit NOT-speech-alignment
+  acknowledgement;
+- narration import/control/preview/recording surfaces implemented;
+- microphone recording dialog is device-gated and retains provisional hardware
+  wording;
+- targeted Qt tests 6/6 PASS;
 - full pytest PASS;
-- all W5-006/W5-005/W5-004/W4/W3/W2/W1/W0/S10/S09/S08 regressions
-  SUCCESS.
-
-Hardware result:
-- GitHub Windows runner DirectShow audio device count = 0;
-- no real physical recording could be attempted;
-- status therefore remains
-  **PASS_WITH_PROVISIONAL_MIC_HARDWARE**.
+- frozen UI references 42/42 PASS;
+- actual/reference visual evidence captured;
+- evidence verifier 14/14 PASS;
+- W5-007/W5-006/W5-005/W5-004/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS.
 
 Evidence:
-`docs/evidence/features/S11_W5_007_MICROPHONE_RECORDING.md`.
+`docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`.
 
 ## Active next task
 
-**S11-W5-008 — Frozen UI parity**
+**S11-W5-009 — Real subtitle/narration preview/export qualification**
 
-Implement only frozen W5 surfaces:
-- SCR-008 Subtitle Workspace;
-- UI-017 cue/text editor;
-- UI-033 subtitle style;
-- UI-034 subtitle animation;
-- UI-035/UI-036 timing/highlight states only where supported;
-- SCR-009 / UI-018 narration workspace;
-- WIN-001 narration recording;
-- WIN-003 subtitle edit/timing tools.
+W5-009 scope:
+- deterministic owned video/audio/SRT fixture;
+- imported subtitle at correct canonical frame;
+- edited cue text/timing survives save/reopen;
+- style visible in real output;
+- enabled subtitle animation present in real output;
+- narration audible and frame-offset;
+- subtitle + narration coexist in one real export;
+- output valid, has audio and duration stays within tolerance;
+- source SRT remains byte-identical.
 
-UI constraints:
-- exact frozen AAVC parity; no redesign;
-- semantic intents/controllers only;
-- no direct engine/domain JSON mutation from widgets;
-- hidden/disabled unsupported animation labels;
-- explicit **NOT speech alignment** wording for deterministic per-word fallback;
-- device-unavailable and provisional microphone state must be honest.
+W5-009 must not:
+- add new UI;
+- enable unsupported animation names;
+- add ASR/transcription/alignment;
+- remove provisional microphone hardware qualifier;
+- start W5-010 closure;
+- start Gemini/provider work or SF-STEP 12.
 
-W5-008 must not start:
-- W5-009 combined real-media qualification;
-- W5-010 closure;
-- Gemini/provider work;
-- final release work.
-
-Do not begin W5-008 until owner says `lanjutkan`.
+Do not begin W5-009 until owner says `lanjutkan`.

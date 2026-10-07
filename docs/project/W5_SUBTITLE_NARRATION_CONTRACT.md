@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -272,7 +272,18 @@ semantics are accepted.
   - Windows runner DirectShow audio input device count: 0;
   - real physical microphone capture therefore remains provisional and was not
     faked.
-- S11-W5-008 — **READY**.
-- S11-W5-009..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-008 — **PASS**
+  - accepted implementation HEAD:
+    `b65bf585510ee442584a7ebbe8db8c3d40ac1533`;
+  - accepted run: `37579815809`;
+  - evidence:
+    `docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`;
+  - artifact:
+    `ANG-S11-W5-008-Frozen-UI` / `11463699327`;
+  - targeted Qt tests: 6/6 PASS;
+  - frozen reference integrity: 42/42 PASS;
+  - W5 UI evidence verifier: 14/14 PASS.
+- S11-W5-009 — **READY**.
+- S11-W5-010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-008 only**.
+On the next owner `lanjutkan`, execute **S11-W5-009 only**.

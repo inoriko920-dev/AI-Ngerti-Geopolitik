@@ -2,129 +2,127 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W5 — Subtitle + Narration**  
-**W5 progress:** **S11-W5-001..006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE**  
-**Accepted W5-007 implementation HEAD:** `be4daa667bf5030ba3810460cc6841a2e8be4fee`  
-**Accepted W5-007 workflow:** `37578572691` — SUCCESS  
-**Next exact task:** **S11-W5-008 — Frozen UI parity**
+**W5 progress:** **S11-W5-001..006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS**  
+**Accepted W5-008 implementation HEAD:** `b65bf585510ee442584a7ebbe8db8c3d40ac1533`  
+**Accepted W5-008 workflow:** `37579815809` — SUCCESS  
+**Next exact task:** **S11-W5-009 — Real subtitle/narration preview/export qualification**
 
-## W5-007 software path proven
+## W5-008 proven
 
-Application boundary:
-- added dedicated `RecorderPort`;
-- added `RecordingDevice` and `RecordingResult`;
-- presentation/domain do not depend on DirectShow or FFmpeg details.
+Frozen W5 surfaces are now real PySide6 widgets, not screenshot-as-runtime UI.
 
-Recording orchestration:
-- active canonical project timeline is required;
-- requested microphone must exist in the recorder device list;
-- recording duration must be positive and is bounded to 3600 seconds;
-- pre-cancel is rejected without starting capture;
-- capture writes only to a unique staging WAV under `.staging`;
-- recorder-returned path must exactly match the expected staging path;
-- staging file must be non-empty;
-- staging is probed and must be real audio;
-- duration must exceed the empty/near-empty threshold;
-- sample rate must be valid.
+Subtitle workspace:
+- Teks / Gaya / Animasi tabs retained;
+- cue list, cue edit text, IN/OUT, split, merge, delete, reload and save-copy controls;
+- semantic subtitle intents only; no direct project/engine mutation;
+- source SRT no-overwrite policy is visible in the UI.
 
-Safe finalization:
-- final output name is collision-safe:
-  `narration-recording.wav`, then `-2`, `-3`, etc.;
-- existing files are never silently overwritten;
-- target is reserved exclusively before atomic replacement;
-- only after staging validation/finalization does the app call the accepted
-  W5-006 `NarrationImportService`;
-- failed canonical binding removes the newly finalized file;
-- current narration is not mutated before successful canonical import/bind.
+Style:
+- visible controls match the already-qualified canonical style surface;
+- font UI exposes only render-qualified Arial and Segoe UI;
+- size/fill/outline/shadow/background/alignment/margin controls emit one semantic
+  style intent.
 
-Failure safety proven:
-- no device preserves existing narration;
-- unknown device preserves existing narration;
-- cancelled capture preserves existing narration;
-- recorder exception preserves existing narration;
-- empty capture preserves existing narration;
-- invalid staged media preserves existing narration;
-- pre-cancel preserves existing narration;
-- staging cleanup is guaranteed.
+Animation:
+- UI exposes only:
+  none, Fade, Pop, Slide Up, Clean Documentary;
+- unqualified legacy labels remain visible only as unavailable information, not
+  selectable controls;
+- animation timing/intensity emits semantic intent.
 
-Successful path:
-- successful recording becomes a normal canonical audio Asset + NarrationTrack
-  through W5-006;
-- import/bind remains one semantic CommandBatch;
-- Undo removes the new recorded asset/binding;
-- Redo restores it.
+Per-word boundary:
+- manual timing table is interactive;
+- deterministic even distribution is gated behind an explicit
+  **NOT speech alignment** acknowledgement;
+- the UI explicitly states no ASR/transcription;
+- karaoke/highlight remains unavailable because it is not render-qualified.
 
-Windows adapter:
-- added FFmpeg DirectShow recorder adapter;
-- enumerates only actual DirectShow audio input devices;
-- real capture target is mono PCM WAV at 48 kHz;
-- CancellationToken can terminate a running FFmpeg capture;
-- partial cancelled capture is removed.
+Narration workspace:
+- real narration import control;
+- timeline offset, gain, mute, fade-in and fade-out controls;
+- real narration preview intent;
+- real recording entry point;
+- provisional physical-microphone qualification is stated honestly.
 
-## Physical hardware gate
+Recording dialog:
+- device list is empty/disabled until actual devices are supplied;
+- refresh, duration, timeline start, start and cancel controls are real widgets;
+- Start remains disabled with no device;
+- semantic microphone intents are emitted;
+- the dialog does not fake a hardware-qualified microphone.
 
-Workflow runner enumeration result:
-- DirectShow audio input device count: **0**;
-- real physical capture attempted: **NO**;
-- fake hardware claim: **NO**.
+## Frozen-reference evidence
 
-Therefore W5-007 status is:
-**PASS_WITH_PROVISIONAL_MIC_HARDWARE**.
+UI reference integrity:
+- **42/42 SHA-256 PASS**.
 
-This is intentional. The software path is qualified, but physical microphone
-evidence cannot be claimed from a runner that exposes no input hardware.
+Captured W5 actual surfaces at 1920×1080:
+- UI-017 — Subtitle cue/text;
+- UI-018 — Narration;
+- UI-033 — Subtitle style;
+- UI-034 — Subtitle animation;
+- UI-035 — word-timing boundary;
+- UI-036 — explicit NOT-speech-alignment acknowledgement;
+- WIN-001 — narration recording dialog.
 
-Full W5 closure must retain the provisional microphone qualification until a
-real Windows machine with an available microphone passes the same hardware
-smoke.
+For UI-017/018/033/034/035/036 the artifact also contains
+REFERENCE_VS_ACTUAL comparison images against the frozen repository references.
 
-Evidence:
-`docs/evidence/features/S11_W5_007_MICROPHONE_RECORDING.md`.
+Evidence verifier:
+- **14/14 files PASS**.
 
 Artifact:
-- `ANG-S11-W5-007-Microphone`;
-- ID `11463438121`;
-- size 541 bytes;
-- contains the hardware report and DirectShow device enumeration report.
+- `ANG-S11-W5-008-Frozen-UI`;
+- ID `11463699327`;
+- size 4,396,724 bytes.
 
-## W5-007 gates
+## W5-008 gates
 
-Workflow `37578572691`:
+Workflow `37579815809`:
 - Ruff format PASS;
 - Ruff check PASS;
-- mypy PASS — 51 source files;
+- mypy PASS — 52 source files;
 - import contracts PASS;
 - architecture PASS;
-- source-of-truth PASS;
+- source-of-truth 70/70 PASS;
 - secret scan PASS;
-- targeted W5-007 tests: **6/6 PASS**;
+- frozen UI references 42/42 SHA-256 PASS;
+- targeted W5-008 Qt tests: **6/6 PASS**;
 - full pytest PASS;
-- Windows DirectShow hardware gate:
-  **PASS_WITH_PROVISIONAL_MIC_HARDWARE**;
-- evidence verifier PASS.
+- UI evidence capture PASS;
+- evidence verifier 14/14 PASS.
 
-## Regression lock on accepted W5-007 HEAD
+## Regression lock on accepted W5-008 HEAD
 
 All SUCCESS:
-- W5-007: `37578572691`;
-- W5-006: `37578572686`;
-- W5-005: `37578572661`;
-- W5-004: `37578572726`;
-- W4: `37578572750`;
-- W3: `37578572725`;
-- W2: `37578572751`;
-- W1: `37578572684`;
-- W0: `37578572742`;
-- S10: `37578572702`;
-- S09: `37578572748`;
-- S08: `37578572764`.
+- W5-008: `37579815809`;
+- W5-007: `37579815674`;
+- W5-006: `37579815770`;
+- W5-005: `37579815678`;
+- W5-004: `37579815803`;
+- W4: `37579815689`;
+- W3: `37579815801`;
+- W2: `37579815721`;
+- W1: `37579815778`;
+- W0: `37579815762`;
+- S10: `37579815716`;
+- S09: `37579815683`;
+- S08: `37579815729`.
 
-This retains MLT qualification, real-media output, packaged smoke, portable UI
-and Windows foundation regressions.
+This includes MLT qualification, real-media output, packaged real-media smoke,
+portable UI regression and Windows foundation regression.
+
+## Hardware qualifier carried forward
+
+W5-007 remains **PASS_WITH_PROVISIONAL_MIC_HARDWARE** because the accepted
+GitHub Windows runner exposed 0 DirectShow audio-input devices.
+
+W5-008 does not weaken or hide that qualifier.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, execute **S11-W5-008 — Frozen UI parity only**.
+On owner **"lanjutkan"**, execute **S11-W5-009 only**.
 
-W5-008 must wire only capabilities already proven by W5-001..007 into the
-frozen AAVC UI surfaces. Do not start W5-009 combined qualification, W5-010
-closure, Gemini/provider work, or final release work in the same turn.
+W5-009 must combine real subtitle + narration behavior in deterministic
+preview/export evidence. Do not start W5-010 closure, Gemini/provider work,
+SF-STEP 12, or final release work in the same turn.

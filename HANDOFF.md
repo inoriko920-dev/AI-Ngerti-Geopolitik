@@ -2,10 +2,10 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W5 — Subtitle + Narration  
-**Last completed task:** S11-W5-007 — PASS_WITH_PROVISIONAL_MIC_HARDWARE  
-**Accepted W5-007 HEAD:** `be4daa667bf5030ba3810460cc6841a2e8be4fee`  
-**Accepted W5-007 run:** `37578572691` — SUCCESS  
-**Next exact task:** S11-W5-008 — Frozen UI parity
+**Last completed task:** S11-W5-008 — PASS  
+**Accepted W5-008 HEAD:** `b65bf585510ee442584a7ebbe8db8c3d40ac1533`  
+**Accepted W5-008 run:** `37579815809` — SUCCESS  
+**Next exact task:** S11-W5-009 — Real subtitle/narration preview/export qualification
 
 ## Read first
 
@@ -14,103 +14,103 @@ Follow `AGENTS.md` and `docs/SOURCE_OF_TRUTH_INDEX.md`.
 Read:
 - W0–W4 evidence;
 - W5 contract;
-- W5-001 through W5-007 evidence;
+- W5-001 through W5-008 evidence;
 - current PLAN/TASKS/PROJECT_STATUS;
-- frozen AAVC UI manifest and raw UI-001..UI-042 references.
+- frozen AAVC UI manifest and references.
 
-## W5-007 implementation now available
+## W5-008 implementation now available
 
-Application:
-- `RecorderPort`;
-- `RecordingDevice`;
-- `RecordingResult`;
-- `MicrophoneRecordingService`.
+Presentation module:
+`presentation/w5_workspace.py`.
 
-Safety flow:
-1. require active project timeline;
-2. verify real selected input device exists;
-3. record only to unique staging WAV;
-4. validate staging existence, size, media type, duration and sample rate;
-5. choose a collision-safe new final recording path;
-6. reserve final destination without overwriting existing files;
-7. atomically move validated staging to final;
-8. use W5-006 NarrationImportService for canonical import/bind;
-9. remove new final file if canonical bind fails.
+Subtitle surface:
+- real Teks/Gaya/Animasi widgets;
+- semantic cue editing/import/save-copy intents;
+- only qualified style fonts exposed;
+- only qualified subtitle animation presets selectable;
+- unsupported presets not selectable;
+- manual WordTiming surface;
+- explicit NOT-speech-alignment gate for deterministic even distribution;
+- unqualified word-highlight/karaoke remains disabled.
 
-Failure/cancel behavior:
-- existing narration remains unchanged;
-- no partial canonical asset/binding is created;
-- staging is cleaned;
-- existing destination files are never overwritten.
+Narration surface:
+- import;
+- offset/gain/mute/fades;
+- preview;
+- recording entry point;
+- provisional microphone qualification label.
 
-Windows adapter:
-- `WindowsFfmpegRecorder`;
-- DirectShow audio device enumeration;
-- PCM s16le / mono / 48 kHz capture;
-- CancellationToken termination support.
+WIN-001 recording dialog:
+- device-gated start button;
+- refresh/start/cancel intents;
+- real device list can be projected through `apply_microphone_devices(...)`;
+- no-device state is honest and disabled.
 
-## Hardware status
-
-GitHub Windows runner exposed:
-- DirectShow audio devices: **0**.
-
-Therefore:
-**PASS_WITH_PROVISIONAL_MIC_HARDWARE**.
-
-No real microphone recording was attempted because there was no physical/input
-device to select. This is not a failure of the deterministic recording path,
-and hardware support is not falsely claimed.
-
-A later real-Windows hardware smoke can remove the provisional qualifier if it
-enumerates a device, captures valid WAV audio and binds it canonically.
+Architecture:
+- presentation emits UiIntent only;
+- no direct ProjectState/engine mutation;
+- no presentation import of concrete infrastructure.
 
 ## Evidence
 
 Workflow:
-`37578572691` — SUCCESS
+`37579815809` — SUCCESS
 
 Artifact:
-`ANG-S11-W5-007-Microphone`
-ID: `11463438121`
+`ANG-S11-W5-008-Frozen-UI`
+ID: `11463699327`
+Size: 4,396,724 bytes.
 
-Targeted deterministic tests:
-**6/6 PASS**.
+Qt target:
+**6/6 PASS**
 
 Full pytest:
 PASS.
 
+Frozen reference integrity:
+**42/42 SHA-256 PASS**.
+
+Evidence verifier:
+**14/14 PASS**.
+
 ## Regression lock
 
 All SUCCESS:
-- W5-007 `37578572691`
-- W5-006 `37578572686`
-- W5-005 `37578572661`
-- W5-004 `37578572726`
-- W4 `37578572750`
-- W3 `37578572725`
-- W2 `37578572751`
-- W1 `37578572684`
-- W0 `37578572742`
-- S10 `37578572702`
-- S09 `37578572748`
-- S08 `37578572764`
+- W5-008 `37579815809`
+- W5-007 `37579815674`
+- W5-006 `37579815770`
+- W5-005 `37579815678`
+- W5-004 `37579815803`
+- W4 `37579815689`
+- W3 `37579815801`
+- W2 `37579815721`
+- W1 `37579815778`
+- W0 `37579815762`
+- S10 `37579815716`
+- S09 `37579815683`
+- S08 `37579815729`
 
-## Critical boundaries for W5-008
+## Critical boundaries for W5-009
 
-- Do not redesign the frozen AAVC UI.
-- UI may expose only proven W5 capabilities.
-- Unsupported subtitle animation labels remain hidden/disabled.
-- Per-word fallback must still say **NOT speech alignment**.
-- Microphone controls must surface device-unavailable/capture errors.
-- UI must not claim microphone hardware qualification when hardware evidence is
-  still provisional.
-- Presentation emits semantic intents only; no direct ProjectState/engine JSON
-  mutation.
-- Do not start W5-009 or later work.
+- Do not redesign or expand UI in W5-009.
+- Use canonical W5 state built in W5-001..007.
+- FFmpeg remains qualification adapter only.
+- Source SRT must remain unchanged.
+- Enabled subtitle animations are only the four already qualified presets.
+- No ASR/transcription/speech alignment claim.
+- Microphone hardware remains provisional.
+- W5-009 must prove subtitle + narration can coexist in one real export.
+- Do not start W5-010 or later work.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W5-008 only**:
-wire the real subtitle + narration + microphone workflows into the frozen
-SCR-008/SCR-009/UI-017/UI-018/UI-033/UI-034/UI-035/UI-036/WIN-001/WIN-003
-surfaces, with disabled/hidden state for unqualified capabilities.
+After owner says `lanjutkan`, execute **S11-W5-009 only**:
+- deterministic owned video/audio/SRT fixture;
+- import SRT;
+- edit text/timing and save/reopen;
+- visible style;
+- real enabled animation evidence;
+- real narration offset/audio evidence;
+- combined subtitle + narration export;
+- output validity/duration/audio checks;
+- source SRT unchanged.

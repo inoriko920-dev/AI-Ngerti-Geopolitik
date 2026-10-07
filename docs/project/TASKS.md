@@ -118,7 +118,19 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 READY**
+**W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 READY**
+
+W5-008 accepted implementation HEAD:
+`b65bf585510ee442584a7ebbe8db8c3d40ac1533`
+
+W5-008 workflow:
+`37579815809` — SUCCESS
+
+W5-008 evidence:
+`docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`
+
+W5-008 artifact:
+`ANG-S11-W5-008-Frozen-UI` / ID `11463699327`
 
 W5-007 accepted implementation HEAD:
 `be4daa667bf5030ba3810460cc6841a2e8be4fee`
@@ -207,7 +219,7 @@ Serial contract:
 - [x] **S11-W5-005 — Render-backed subtitle animation + per-word boundary — PASS**
 - [x] **S11-W5-006 — Narration import + binding — PASS**
 - [x] **S11-W5-007 — Microphone recording — PASS_WITH_PROVISIONAL_MIC_HARDWARE**
-- [ ] **S11-W5-008 — Frozen UI parity**
+- [x] **S11-W5-008 — Frozen UI parity — PASS**
 - [ ] **S11-W5-009 — Real subtitle/narration preview/export qualification**
 - [ ] **S11-W5-010 — Failure paths + evidence + regression lock**
 
@@ -220,4 +232,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-008 — Frozen UI parity only.
+**Exact next task:** S11-W5-009 — Real subtitle/narration preview/export qualification only.
