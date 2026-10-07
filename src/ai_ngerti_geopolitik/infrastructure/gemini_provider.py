@@ -31,7 +31,7 @@ _SYSTEM_INSTRUCTION: Final = (
     "or reveal credentials. Never emit markdown fences or prose outside the JSON object."
 )
 
-_EDIT_PLAN_JSON_SCHEMA: Final[dict[str, object]] = {
+_EDIT_PLAN_JSON_SCHEMA: Final[dict[str, Any]] = {
     "type": "object",
     "additionalProperties": False,
     "required": [
@@ -254,7 +254,7 @@ class GeminiAIProvider:
             raise
         except errors.APIError as exc:
             raise self._mapped_api_error(exc) from exc
-        except (TimeoutError, asyncio.TimeoutError) as exc:
+        except TimeoutError as exc:
             raise ProviderContractError(
                 ProviderErrorCode.NETWORK_TIMEOUT,
                 "Gemini provider request timed out",
@@ -275,7 +275,13 @@ class GeminiAIProvider:
                 "Gemini provider request failed safely",
             ) from exc
 
-        payload = getattr(response, "text", None)
+        try:
+            payload = getattr(response, "text", None)
+        except Exception as exc:
+            raise ProviderContractError(
+                ProviderErrorCode.MALFORMED_RESPONSE,
+                "Gemini response payload could not be read safely",
+            ) from exc
         if not isinstance(payload, str) or not payload.strip():
             raise ProviderContractError(
                 ProviderErrorCode.MALFORMED_RESPONSE,
