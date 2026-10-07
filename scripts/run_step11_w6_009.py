@@ -130,9 +130,9 @@ def main() -> int:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     reference = root / "docs" / "ui_reference" / "raw"
-    _reference_contact_sheet(reference, output / "00_FROZEN_REFERENCE_CONTACT_SHEET.png")
 
     app = QApplication.instance() or QApplication(["ANG-W6-009"])
+    _reference_contact_sheet(reference, output / "00_FROZEN_REFERENCE_CONTACT_SHEET.png")
     window = create_main_window("UI-010", fixture_mode=True)
     window.resize(1920, 1080)
     window.show()
