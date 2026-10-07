@@ -1,36 +1,33 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5 CONTRACT LOCKED**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001 PASS — NEXT W5-002**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
 Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
-## Current verified baseline
+## Current W5 status
 
-W4 accepted implementation:
-- HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`;
-- W4 workflow `37570612799` — SUCCESS;
-- evidence artifact `11460641864`.
+W5 is **Subtitle + Narration**.
 
-All S08/S09/S10/W0/W1/W2/W3/W4 regressions are green on the accepted W4
+**S11-W5-001 — Canonical subtitle/narration model = PASS.**
+
+Accepted implementation:
+`b5bf8543554bcf38d22a65510fe0376195676d46`
+
+Accepted workflow:
+`37571740654` — SUCCESS
+
+W5-001 adds canonical subtitle/narration entities, frame-aware validation,
+CommandBus mutation, .angproj persistence and backward-compatible defaults.
+No parser/UI/recorder/AI work was started.
+
+All W4/W3/W2/W1/W0/S10/S09/S08 regressions are green on the same accepted
 implementation HEAD.
-
-## Current W5
-
-W5 has been derived and locked as **Subtitle + Narration**.
-
-Contract:
-`docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`.
-
-Implementation has **not** started yet.
-
-W5 will cover canonical subtitle/narration state, safe SRT workflow, subtitle
-style/render-backed animation, narration import/sync, microphone recording,
-frozen UI parity, real preview/export evidence and regression closure.
-
-No Gemini/provider/AI Auto Edit work belongs in W5.
 
 ## Next
 
-**S11-W5-001 — Canonical subtitle/narration model only.**
+**S11-W5-002 — SRT import + validation only.**
+
+It must parse/validate SRT into the W5-001 canonical model without rewriting
+the source file. Cue editing UI belongs to W5-003, not W5-002.

@@ -118,10 +118,19 @@ Contract:
 `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 
 Implementation status:
-**NOT STARTED**
+**W5-001 PASS / W5-002 READY**
+
+W5-001 accepted implementation HEAD:
+`b5bf8543554bcf38d22a65510fe0376195676d46`
+
+W5-001 workflow:
+`37571740654` — SUCCESS
+
+W5-001 evidence:
+`docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`
 
 Serial contract:
-- [ ] **S11-W5-001 — Canonical subtitle/narration model**
+- [x] **S11-W5-001 — Canonical subtitle/narration model — PASS**
 - [ ] **S11-W5-002 — SRT import + validation**
 - [ ] **S11-W5-003 — Cue editing + safe working-copy flow**
 - [ ] **S11-W5-004 — Subtitle style**
@@ -141,4 +150,4 @@ Hard boundaries:
 - no Gemini/provider/AI Auto Edit work;
 - no SF-STEP 12 or final release work.
 
-**Exact next task:** S11-W5-001 only.
+**Exact next task:** S11-W5-002 — SRT import + validation only.

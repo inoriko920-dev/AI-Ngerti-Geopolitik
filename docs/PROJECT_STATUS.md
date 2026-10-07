@@ -2,68 +2,88 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Last completed wave:** **W4 — PASS**  
-**Accepted W4 implementation HEAD:** `3e3cd376189e9f183e70ca537ad25f037e25bcd7`  
-**Accepted W4 run:** `37570612799` — SUCCESS  
 **Current wave:** **W5 — Subtitle + Narration**  
-**W5 state:** **CONTRACT_LOCKED / IMPLEMENTATION_NOT_STARTED**  
-**Next exact task:** **S11-W5-001 — Canonical subtitle/narration model**
+**W5 progress:** **S11-W5-001 — PASS**  
+**Accepted W5-001 implementation HEAD:** `b5bf8543554bcf38d22a65510fe0376195676d46`  
+**Accepted W5-001 workflow:** `37571740654` — SUCCESS  
+**Next exact task:** **S11-W5-002 — SRT import + validation**
 
-## W5 scope decision
+## W5-001 proven
 
-W5 is definitively Subtitle + Narration.
+Canonical domain now owns:
+- `SubtitleTrack`;
+- `SubtitleCue`;
+- `SubtitleStyle`;
+- `SubtitleAnimation`;
+- optional `WordTiming`;
+- `NarrationTrack`.
 
-Source-of-truth basis:
-- Master Blueprint Subtitle System + Narration/Audio chapters;
-- recommended TECH-WAVE 08 = Subtitle + Narration;
-- product F-010/F-011/F-012 and FR-011/FR-012 = MUST parity;
-- frozen UI SCR-008, SCR-009, UI-017, UI-018, UI-033..UI-036,
-  WIN-001 and WIN-003;
-- architecture requires ProjectState ownership and dependency adapters.
+ProjectState now stores subtitle/narration as first-class optional state without
+reusing W4 title overlay or generic video-track state.
 
-Full locked contract:
-`docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`.
+Validation proven:
+- cue IDs/indexes are unique;
+- cue timing is frame-aware and ordered;
+- overlapping canonical subtitle cues are rejected;
+- empty/invalid timing ranges are rejected;
+- word timings must stay inside their cue and share project FPS;
+- subtitle cues must stay inside the canonical video timeline;
+- narration must reference a canonical audio Asset;
+- narration timing/FPS/fades are bounded;
+- narration may not start outside the project timeline.
 
-## W5 closure boundary
+Mutation/persistence:
+- `SetSubtitleTrackCommand` and `SetNarrationTrackCommand` use the existing
+  CommandBus/CommandBatch path;
+- Undo/Redo restores semantic state;
+- .angproj round-trip preserves W5-001 state;
+- legacy W4/schema-v1 files without `subtitle` or `narration` load with
+  safe `None` defaults;
+- schema version remains 1 because the new fields are backward-compatible
+  optional extensions.
 
-W5 must prove:
-- canonical/persisted subtitle and narration state;
-- SRT import/edit/timing safety;
-- render-backed style/animation only;
-- narration audible and synchronized;
-- microphone recording cannot destroy an existing narration on failure;
-- preview/export evidence;
-- full regression lock.
+No capability overclaim:
+- subtitle animation remains canonical `none` only at W5-001;
+- render-backed animation names remain blocked until W5-005;
+- no SRT parser, subtitle UI, narration runtime, recorder or Gemini work was
+  started.
 
-A real microphone smoke is required for a full W5 PASS when a Windows capture
-device is available. If only deterministic port/adapter tests are possible, W5
-must be labeled `PASS_WITH_PROVISIONAL_MIC_HARDWARE`.
+Evidence:
+`docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`.
 
-## Carried W4 baseline
+## W5-001 quality gate
 
-W4 evidence remains accepted:
-- implementation HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`;
-- W4 `37570612799` SUCCESS;
-- W3 `37570612705` SUCCESS;
-- W2 `37570612673` SUCCESS;
-- W1 `37570612719` SUCCESS;
-- W0 `37570612737` SUCCESS;
-- S10 `37570612830` SUCCESS;
-- S09 `37570612683` SUCCESS;
-- S08 `37570612789` SUCCESS.
+Workflow `37571740654`:
+- uv lock/sync PASS;
+- Ruff format PASS;
+- Ruff check PASS;
+- mypy PASS;
+- import contracts PASS;
+- architecture PASS;
+- source-of-truth 70/70 PASS;
+- secret scan PASS;
+- W5-001 targeted tests: 7/7 PASS;
+- full pytest PASS.
 
-## Locked non-scope
+## Regression lock on accepted W5-001 HEAD
 
-Do not start:
-- Gemini credential/provider work;
-- AI Auto Edit;
-- ASR/transcription/speech alignment;
-- final export matrix/release packaging;
-- unsupported subtitle animations;
-- Reverse enablement;
-- W4 unsupported effects/crossfade.
+All SUCCESS:
+- W5-001: `37571740654`;
+- W4: `37571740680`;
+- W3: `37571740678`;
+- W2: `37571740732`;
+- W1: `37571741010`;
+- W0: `37571740664`;
+- S10: `37571740757`;
+- S09: `37571740743`;
+- S08: `37571740660`.
+
+S10 real-media, packaged real-media and portable UI regression remain green.
+MLT W0/W2 qualification also remains green.
 
 ## Exact next action
 
-On owner **"lanjutkan"**, implement **S11-W5-001 only**.
+On owner **"lanjutkan"**, execute **S11-W5-002 — SRT import + validation only**.
 
-Do not start W5-002 until W5-001 has its own tests/gate and status report.
+Do not start cue UI/editing, style, animations, narration binding/recording,
+Gemini, or later W5 tasks in the same turn.

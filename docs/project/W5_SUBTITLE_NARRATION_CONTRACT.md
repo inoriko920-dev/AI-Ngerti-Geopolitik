@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / IMPLEMENTATION_NOT_STARTED  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -208,9 +208,15 @@ Implementation must remain serial:
 Do not skip directly to UI or recording before canonical model and parser
 semantics are accepted.
 
-## 6. Gate for the next owner command
+## 6. Implementation progress
 
-This document locks W5 scope only. No W5 product code has been implemented by
-this contract commit.
+- S11-W5-001 — **PASS**
+  - accepted implementation HEAD:
+    `b5bf8543554bcf38d22a65510fe0376195676d46`;
+  - accepted run: `37571740654`;
+  - evidence:
+    `docs/evidence/features/S11_W5_001_CANONICAL_SUBTITLE_NARRATION.md`.
+- S11-W5-002 — **READY**.
+- S11-W5-003..010 — **BLOCKED_BY_PREVIOUS_TASKS**.
 
-On the next owner `lanjutkan`, execute **S11-W5-001 only**.
+On the next owner `lanjutkan`, execute **S11-W5-002 only**.
