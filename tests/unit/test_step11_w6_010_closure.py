@@ -197,6 +197,7 @@ def test_w6_010_valid_chain_is_atomic_and_exact_undo_redo() -> None:
         applied = approvals.apply(staged.approval_id)
 
     assert applied.state is AIApprovalState.APPLIED
+    assert provider.calls == 1
     assert bus.state.revision == before_revision + 1
     assert bus.state.clip("clip-closure").properties.effects.enter_effect == "Rise"
     applied_hash = bus.state.semantic_hash()
