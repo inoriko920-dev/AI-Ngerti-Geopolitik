@@ -307,50 +307,114 @@ def create_ai_agent_workspace(
     success = QWidget()
     success.setObjectName("w6_ai_success_page")
     success_layout = QVBoxLayout(success)
-    success_layout.addWidget(section_title("Perubahan Diterapkan"))
+    success_layout.setContentsMargins(0, 4, 0, 0)
+    success_card = QFrame()
+    success_card.setObjectName("frame_w6_success_card")
+    success_card.setProperty("panel", True)
+    success_card_layout = QVBoxLayout(success_card)
+    success_card_layout.addWidget(section_title("Rencana berhasil diterapkan"))
     success_badge = QLabel("✓ SUCCESS")
     success_badge.setObjectName("label_w6_success_badge")
     _badge(success_badge, "✓ SUCCESS", "ready")
-    success_layout.addWidget(success_badge)
+    success_card_layout.addWidget(success_badge)
     success_message = QLabel("Rencana AI diterapkan sebagai satu transaksi.")
     success_message.setObjectName("label_w6_success_message")
     success_message.setWordWrap(True)
-    success_layout.addWidget(success_message)
+    success_card_layout.addWidget(success_message)
+    success_layout.addWidget(success_card)
+
+    metrics = QHBoxLayout()
+    changed = QFrame()
+    changed.setProperty("panel", True)
+    changed_layout = QVBoxLayout(changed)
+    changed_layout.addWidget(QLabel("Perubahan"))
+    changed_value = QLabel("0 command diterapkan")
+    changed_value.setObjectName("label_w6_success_changed")
+    changed_value.setStyleSheet("font-weight:700; color:#2563EB;")
+    changed_layout.addWidget(changed_value)
+    metrics.addWidget(changed)
+    locked = QFrame()
+    locked.setProperty("panel", True)
+    locked_layout = QVBoxLayout(locked)
+    locked_layout.addWidget(QLabel("Lock"))
+    locked_value = QLabel("Lock target dipertahankan")
+    locked_value.setObjectName("label_w6_success_locked")
+    locked_value.setStyleSheet("font-weight:700; color:#2563EB;")
+    locked_layout.addWidget(locked_value)
+    metrics.addWidget(locked)
+    success_layout.addLayout(metrics)
+
+    success_layout.addWidget(QLabel("Rincian Perubahan"))
+    success_commands = QListWidget()
+    success_commands.setObjectName("list_w6_success_commands")
+    success_layout.addWidget(success_commands, 1)
     success_layout.addWidget(
         muted_label("Undo akan membatalkan seluruh perubahan AI pada transaksi ini.")
     )
     undo = QPushButton("Undo Perubahan AI")
     undo.setObjectName("btn_w6_ai_undo")
     success_layout.addWidget(undo)
-    success_layout.addStretch(1)
+    followup_row = QHBoxLayout()
+    followup = QLineEdit()
+    followup.setObjectName("edit_w6_ai_followup")
+    followup.setPlaceholderText("Ketik perintah selanjutnya, misalnya buat animasi lebih cepat...")
+    followup_row.addWidget(followup, 1)
+    followup_send = QPushButton("Kirim")
+    followup_send.setObjectName("btn_w6_ai_followup_send")
+    followup_row.addWidget(followup_send)
+    success_layout.addLayout(followup_row)
     state_stack.addWidget(success)
 
     error = QWidget()
     error.setObjectName("w6_ai_error_page")
     error_layout = QVBoxLayout(error)
-    error_layout.addWidget(section_title("AI Agent"))
+    error_layout.setContentsMargins(0, 4, 0, 0)
+    error_card = QFrame()
+    error_card.setObjectName("frame_w6_provider_error")
+    error_card.setProperty("panel", True)
+    error_card_layout = QVBoxLayout(error_card)
+    error_card_layout.addWidget(section_title("Provider tidak tersedia"))
     error_badge = QLabel("PROVIDER_ERROR")
     error_badge.setObjectName("label_w6_error_badge")
     _badge(error_badge, "PROVIDER_ERROR", "error")
-    error_layout.addWidget(error_badge)
+    error_card_layout.addWidget(error_badge)
     error_code = QLabel("")
     error_code.setObjectName("label_w6_error_code")
     error_code.setStyleSheet("font-weight:600;")
-    error_layout.addWidget(error_code)
+    error_card_layout.addWidget(error_code)
     error_message = QLabel("Provider tidak tersedia.")
     error_message.setObjectName("label_w6_error_message")
     error_message.setWordWrap(True)
-    error_layout.addWidget(error_message)
+    error_card_layout.addWidget(error_message)
+    error_layout.addWidget(error_card)
+
+    provider_row = QFrame()
+    provider_row.setProperty("panel", True)
+    provider_row_layout = QHBoxLayout(provider_row)
+    provider_row_layout.addWidget(QLabel("Gemini"))
+    provider_row_layout.addStretch(1)
+    provider_error_status = QLabel("Tidak tersedia")
+    provider_error_status.setObjectName("label_w6_provider_error_status")
+    _badge(provider_error_status, "Tidak tersedia", "error")
+    provider_row_layout.addWidget(provider_error_status)
+    error_layout.addWidget(provider_row)
+
+    fallback_card = QFrame()
+    fallback_card.setProperty("panel", True)
+    fallback_layout = QVBoxLayout(fallback_card)
+    fallback_layout.addWidget(QLabel("Mode manual tetap tersedia"))
     fallback = muted_label(
         "Editor manual tetap aktif. Tidak ada perubahan project yang diterapkan."
     )
     fallback.setObjectName("label_w6_manual_fallback")
     fallback.setWordWrap(True)
-    error_layout.addWidget(fallback)
+    fallback_layout.addWidget(fallback)
+    error_layout.addWidget(fallback_card)
+
     retry = QPushButton("Coba Lagi")
     retry.setObjectName("btn_w6_ai_retry")
     error_layout.addWidget(retry)
-    error_manage = QPushButton("Kelola Provider & API Key")
+    error_manage = make_primary_button("Buka Pengaturan Provider")
     error_manage.setObjectName("btn_w6_error_manage_credentials")
     error_layout.addWidget(error_manage)
     error_layout.addStretch(1)
@@ -409,6 +473,12 @@ def create_ai_agent_workspace(
         )
     )
     undo.clicked.connect(lambda: _emit(intent_sink, UiIntentType.UNDO))
+    followup_send.clicked.connect(
+        lambda: _submit_instruction(root, followup, scope_label, intent_sink)
+    )
+    followup.returnPressed.connect(
+        lambda: _submit_instruction(root, followup, scope_label, intent_sink)
+    )
     retry.clicked.connect(
         lambda: _emit(
             intent_sink,
@@ -560,8 +630,15 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
     if projection.state is AIAgentUiState.SUCCESS:
         stack.setCurrentWidget(page("w6_ai_success_page"))
         message = workspace.findChild(QLabel, "label_w6_success_message")
-        if message is not None:
-            message.setText(projection.message or "Rencana AI diterapkan sebagai satu transaksi.")
+        changed = workspace.findChild(QLabel, "label_w6_success_changed")
+        details = workspace.findChild(QListWidget, "list_w6_success_commands")
+        if message is None or changed is None or details is None:
+            raise RuntimeError("W6 success widgets are missing")
+        message.setText(projection.message or "Rencana AI diterapkan sebagai satu transaksi.")
+        changed.setText(f"{len(projection.commands)} command diterapkan")
+        details.clear()
+        for index, command in enumerate(projection.commands, start=1):
+            details.addItem(f"{index:02d}. {command}   ✓ Diterapkan")
         return
 
     stack.setCurrentWidget(page("w6_ai_error_page"))
@@ -611,7 +688,41 @@ def create_provider_credentials_dialog(
     layout = QVBoxLayout(dialog)
     layout.setContentsMargins(14, 14, 14, 14)
     layout.setSpacing(10)
-    layout.addWidget(section_title("Provider & API Key Manager"))
+    layout.addWidget(section_title("Pengaturan"))
+
+    body = QHBoxLayout()
+    nav = QFrame()
+    nav.setObjectName("w6_settings_sidebar")
+    nav.setProperty("panel", True)
+    nav.setFixedWidth(170)
+    nav_layout = QVBoxLayout(nav)
+    nav_layout.addWidget(QLabel("Pengaturan Aplikasi"))
+    for nav_text in (
+        "Umum",
+        "Tampilan",
+        "Performa",
+        "Proyek",
+        "Plugin",
+        "Informasi",
+    ):
+        nav_label = QLabel(nav_text)
+        nav_label.setStyleSheet("color:#64748B; padding:6px;")
+        nav_layout.addWidget(nav_label)
+    selected_nav = QLabel("Provider & API Key")
+    selected_nav.setObjectName("label_w6_settings_selected")
+    selected_nav.setStyleSheet(
+        "color:#2563EB; background:#EFF6FF; font-weight:700; padding:8px;"
+    )
+    nav_layout.insertWidget(3, selected_nav)
+    nav_layout.addStretch(1)
+    body.addWidget(nav)
+
+    content = QWidget()
+    content_layout = QVBoxLayout(content)
+    content_layout.setContentsMargins(6, 0, 0, 0)
+    content_layout.addWidget(section_title("Provider & API Key"))
+    body.addWidget(content, 1)
+    layout.addLayout(body, 1)
 
     provider_card = QFrame()
     provider_card.setProperty("panel", True)
@@ -623,11 +734,11 @@ def create_provider_credentials_dialog(
             "menghindari rate limit atau kuota provider."
         )
     )
-    layout.addWidget(provider_card)
+    content_layout.addWidget(provider_card)
 
     count = QLabel("0 slot terkonfigurasi")
     count.setObjectName("label_w6_credential_count")
-    layout.addWidget(count)
+    content_layout.addWidget(count)
 
     scroll = QScrollArea()
     scroll.setObjectName("scroll_w6_credential_slots")
@@ -639,7 +750,7 @@ def create_provider_credentials_dialog(
     slot_layout.setContentsMargins(0, 0, 0, 0)
     slot_layout.setSpacing(6)
     scroll.setWidget(slot_host)
-    layout.addWidget(scroll, 1)
+    content_layout.addWidget(scroll, 1)
 
     form = QFrame()
     form.setProperty("panel", True)
@@ -667,7 +778,7 @@ def create_provider_credentials_dialog(
     status = muted_label("Key tersimpan tidak pernah ditampilkan kembali.")
     status.setObjectName("label_w6_credential_form_status")
     form_layout.addWidget(status)
-    layout.addWidget(form)
+    content_layout.addWidget(form)
 
     footer = QHBoxLayout()
     import_txt = QPushButton("Impor TXT")
@@ -678,7 +789,7 @@ def create_provider_credentials_dialog(
     close.setObjectName("btn_w6_credential_close")
     close.clicked.connect(dialog.close)
     footer.addWidget(close)
-    layout.addLayout(footer)
+    content_layout.addLayout(footer)
 
     def submit() -> None:
         raw_value = key.text().strip()
