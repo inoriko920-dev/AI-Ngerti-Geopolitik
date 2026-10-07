@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ai_ngerti_geopolitik.domain import NarrationTrack, ProjectState
+from ai_ngerti_geopolitik.domain import ProjectState
 
 
 def _number(value: float) -> str:
