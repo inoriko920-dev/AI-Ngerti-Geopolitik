@@ -606,7 +606,7 @@ def create_provider_credentials_dialog(
     dialog.setObjectName("w6_credential_dialog")
     dialog.setWindowTitle("Provider & API Key Manager")
     dialog.resize(880, 620)
-    setattr(dialog, "_w6_intent_sink", intent_sink)
+    dialog.__dict__["_w6_intent_sink"] = intent_sink
 
     layout = QVBoxLayout(dialog)
     layout.setContentsMargins(14, 14, 14, 14)
