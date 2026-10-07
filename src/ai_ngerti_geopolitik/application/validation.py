@@ -297,8 +297,9 @@ class RealMediaIntegrityRule:
                             ValidationScope.MEDIA,
                             f"Media {asset.asset_id} tidak ditemukan",
                             (
-                                f"{asset.asset_id} tidak ada pada lokasi sumber saat validasi real-media. "
-                                "Relink media sebelum operasi yang memerlukannya."
+                                f"{asset.asset_id} tidak ada pada lokasi sumber "
+                                "saat validasi real-media. Relink media sebelum "
+                                "operasi yang memerlukannya."
                             ),
                             targets,
                             ValidationAction.RELINK_MEDIA,
@@ -356,8 +357,9 @@ class RealMediaIntegrityRule:
                         ValidationScope.MEDIA,
                         f"Tipe media {asset.asset_id} berubah",
                         (
-                            f"{asset.asset_id} tercatat sebagai {asset.media_type} tetapi file saat ini "
-                            f"terbaca sebagai {observation.media_type}. Verifikasi atau relink media."
+                            f"{asset.asset_id} tercatat sebagai {asset.media_type} "
+                            "tetapi file saat ini terbaca sebagai "
+                            f"{observation.media_type}. Verifikasi atau relink media."
                         ),
                         targets,
                         ValidationAction.RELINK_MEDIA,
@@ -381,7 +383,7 @@ class RealMediaIntegrityRule:
                     )
                 )
 
-        for fingerprint, asset_ids in sorted(fingerprints.items()):
+        for _fingerprint, asset_ids in sorted(fingerprints.items()):
             if len(asset_ids) < 2:
                 continue
             targets = tuple(sorted(asset_ids))
