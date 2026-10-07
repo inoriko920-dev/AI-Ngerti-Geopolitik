@@ -152,6 +152,7 @@ def test_pacing_qualification_dry_run_does_not_create_commandbus_history() -> No
     )
     candidate = verified.translated_commands[0].apply(state)
 
+    assert verified.candidate_revision == state.revision
     assert candidate.revision == state.revision
     assert candidate.semantic_hash() == verified.candidate_semantic_hash
     assert state.semantic_json(include_revision=True) == before
