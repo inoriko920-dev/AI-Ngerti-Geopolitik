@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import ctypes
 import sys
-from typing import Any, Protocol
-
 from ctypes import wintypes
+from typing import Any, Protocol
 
 from ai_ngerti_geopolitik.application.ai_contracts import (
     CredentialContractError,
