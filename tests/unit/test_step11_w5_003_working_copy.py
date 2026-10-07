@@ -179,8 +179,8 @@ def test_sort_and_index_normalization_are_explicit(tmp_path: Path) -> None:
 
     working.select("SRT-000001")
     inserted = working.insert_after_selected(
-        start_frame=105,
-        end_frame=120,
+        start_frame=151,
+        end_frame=165,
         text="Posisi list sengaja belum kronologis",
         index=9,
     )
