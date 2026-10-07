@@ -285,16 +285,9 @@ def test_gemini_adapter_preflight_cancellation_makes_no_sdk_call() -> None:
 def test_gemini_adapter_timeout_is_typed_and_safe() -> None:
     models = _FakeModels(text=_payload(), delay=0.2)
     adapter = GeminiAIProvider(
-        GeminiProviderConfig(timeout_seconds=1.0, cancellation_poll_seconds=0.01),
+        GeminiProviderConfig(timeout_seconds=0.02, cancellation_poll_seconds=0.01),
         client_factory=_Factory(models),
     )
-    adapter._config = GeminiProviderConfig(  # type: ignore[misc]
-        timeout_seconds=1.0,
-        cancellation_poll_seconds=0.01,
-    )
-
-    original = adapter._config  # type: ignore[attr-defined]
-    object.__setattr__(original, "timeout_seconds", 0.02)
     with pytest.raises(ProviderContractError) as caught:
         adapter.request_plan(_request(), CredentialSecret("runtime-timeout-value"))
     assert caught.value.code is ProviderErrorCode.NETWORK_TIMEOUT
