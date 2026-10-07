@@ -121,8 +121,8 @@ class GeminiProviderConfig:
     def __post_init__(self) -> None:
         if not self.model.strip():
             raise ValueError("Gemini model is required")
-        if not 1.0 <= self.timeout_seconds <= 180.0:
-            raise ValueError("Gemini timeout must be between 1 and 180 seconds")
+        if not 0.01 <= self.timeout_seconds <= 180.0:
+            raise ValueError("Gemini timeout must be between 0.01 and 180 seconds")
         if not 0.01 <= self.cancellation_poll_seconds <= 1.0:
             raise ValueError("Gemini cancellation poll must be between 0.01 and 1 second")
         if not 256 <= self.max_output_tokens <= 8192:
