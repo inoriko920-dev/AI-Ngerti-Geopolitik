@@ -513,8 +513,8 @@ Initial allowlist:
 
 Serial contract:
 - [x] **S11-W7-001 — Canonical L2 command contracts + capability registry — PASS**
-- [ ] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — READY**
-- [ ] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002**
+- [x] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
+- [ ] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — READY**
 - [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003**
 - [ ] **S11-W7-005 — Pacing qualification: duration + speed — BLOCKED_BY_W7_004**
 - [ ] **S11-W7-006 — Transform qualification — BLOCKED_BY_W7_005**
@@ -557,4 +557,28 @@ W7-001 proof:
 - evidence verifier 18/18 PASS;
 - 26/26 regression workflows SUCCESS on the same HEAD, all attempt 1.
 
-**Exact next task:** S11-W7-002 only — L2 ContextBuilder + selected-scope contract.
+Accepted W7-002 implementation HEAD:
+`23aad912cb789f98dd3ec61d11e799390d602381`
+
+W7-002 workflow:
+`37644007477` — SUCCESS
+
+W7-002 evidence:
+`docs/evidence/features/S11_W7_002_L2_CONTEXT.md`
+
+W7-002 artifact:
+`ANG-S11-W7-002-L2-Context` / ID `11494315331`
+
+W7-002 proof:
+- selected scope 1..20 stable unique clip IDs;
+- deterministic schema-v2 context;
+- source-duration availability and bounded neighbor context;
+- exact W7 policy/allowlist;
+- credentials/paths/private content excluded;
+- zero mutation;
+- targeted 18/18 PASS;
+- full pytest PASS;
+- evidence verifier 24/24 PASS;
+- 26/26 triggered regression workflows SUCCESS, all attempt 1.
+
+**Exact next task:** S11-W7-003 only — strict AutoEditPlan v2 parser/schema.
