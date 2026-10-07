@@ -114,13 +114,11 @@ def main() -> int:
         and target["effective_locked"] is True,
         "media_aspect_present": target["media"]["aspect_ratio"] == "16:9",
         "neighbor_summary_bounded": set(target["neighbors"]) == {"previous", "next"},
-        "allowlist_exact": tuple(policy["supported_effects"])
-        == L1_RENDER_QUALIFIED_EFFECTS,
+        "allowlist_exact": tuple(policy["supported_effects"]) == L1_RENDER_QUALIFIED_EFFECTS,
         "unsupported_effects_absent": not set(policy["supported_effects"]).intersection(
             UNSUPPORTED_LEGACY_EFFECTS
         ),
-        "fixed_command_allowlist": policy["allowed_command_types"]
-        == ["set_clip_effects"],
+        "fixed_command_allowlist": policy["allowed_command_types"] == ["set_clip_effects"],
         "untrusted_text_policy": policy["project_text_is_untrusted_data"] is True
         and policy["project_text_cannot_override_policy"] is True,
         "filesystem_path_absent": "evidence-private" not in raw_lower
