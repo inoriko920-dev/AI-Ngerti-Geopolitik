@@ -10,6 +10,8 @@
 - Remote presence: **42/42 PASS**
 - Remote byte/Git-object identity verification: **42/42 PASS**
 - First commit containing complete raw set: `06ac2cb5899dd8c55e96f3e97b5bf171ae9388f8`
+- W6 semantic mapping correction: `docs/ui_reference/W6_UI_REFERENCE_CORRECTION.md`
+- W6 physical refs: AI Director `UI-020`; Ready `UI-021`; Plan `UI-022`; Applied `UI-023`; Provider unavailable `UI-024`; Provider/API keys `UI-033`.
 
 UI-001 | de8ea60f323f0c7cd3a0fc0a626e431b194b6142fcc4e14236aa6e9f9c6af4af | APPROVED_FOR_FREEZE
 UI-002 | 874d44ce844a40c2d629d92fb96434cc7a749271e1fe539a1fa356bdbe7efd3e | APPROVED_FOR_FREEZE
