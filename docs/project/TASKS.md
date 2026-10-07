@@ -820,8 +820,8 @@ Master Blueprint mapping: **TECH-WAVE STEP 11**.
 
 Serial contract:
 - [x] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
-- [ ] **S11-W8-002 — Real Media Integrity + Validation Center Projection — READY**
-- [ ] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — BLOCKED_BY_W8_002**
+- [x] **S11-W8-002 — Real Media Integrity + Validation Center Projection — PASS**
+- [ ] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — READY**
 - [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003**
 - [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
 - [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005**
@@ -870,4 +870,30 @@ W8-001 proof:
 - regression 27/27 workflow families SUCCESS, all attempt 1;
 - S08/S09/S10/W0 and W1–W7 remain green.
 
-**Exact next task:** S11-W8-002 only — Real Media Integrity + Validation Center Projection.
+Accepted W8-002 implementation HEAD:
+`c73a38d8fd6d3796f988769ca43354185eb66a6d`
+
+W8-002 workflow:
+`37684517658` — SUCCESS
+
+W8-002 evidence:
+`docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`
+
+W8-002 artifact:
+`ANG-S11-W8-002-Real-Media-Validation` / ID `11510448492`
+
+W8-002 proof:
+- real ffprobe-backed integrity inspection;
+- physical missing / zero-byte / probe-failure typed issues;
+- type/fingerprint mismatch typed;
+- duplicate fingerprint INFO projection;
+- zero ProjectState mutation;
+- frozen UI-041 real projection without redesign;
+- stale projection disables issue action and keeps Validasi Ulang enabled;
+- targeted 7/7 PASS;
+- full pytest 402/402 PASS;
+- mypy 71 source files PASS;
+- evidence 18/18 PASS;
+- regression 27/27 SUCCESS, all attempt 1.
+
+**Exact next task:** S11-W8-003 only — Single Asset Relink Command + Exact Identity Preservation.

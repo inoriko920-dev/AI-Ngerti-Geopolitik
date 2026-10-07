@@ -2,51 +2,39 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-001 — PASS  
-**Accepted W8-001 HEAD:** `fd319947ea8ce2579de4918b5c4b49c046851609`  
-**Accepted W8-001 workflow:** `37681708473` — SUCCESS  
-**Next exact task:** S11-W8-002 — Real Media Integrity + Validation Center Projection
+**Last completed task:** S11-W8-002 — PASS  
+**Accepted W8-002 HEAD:** `c73a38d8fd6d3796f988769ca43354185eb66a6d`  
+**Accepted W8-002 workflow:** `37684517658` — SUCCESS  
+**Next exact task:** S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation
 
-## W8-001 canonical implementation
+## W8 validation architecture
 
-New application owner:
-`src/ai_ngerti_geopolitik/application/validation.py`
+Application:
+- ValidationService owns deterministic non-mutating validation;
+- RealMediaIntegrityRule owns derived integrity issues.
 
-It owns only typed, deterministic, non-mutating validation projection.
+Infrastructure:
+- LocalMediaIntegrityInspector owns local file + ffprobe observation.
 
-It does not own:
-- filesystem probing;
-- relink mutation;
-- recovery;
-- diagnostics bundle;
-- UI layout.
+Presentation:
+- ValidationCenterProjection is pure projection;
+- existing UI-041 dialog renders live validation state;
+- presentation does not probe filesystem.
 
-Contracts:
-- severity BLOCKER/ERROR/WARNING/INFO;
-- typed scopes/actions/codes;
-- exact target IDs;
-- revision + semantic stale guard;
-- ProjectState.validate() structural reuse;
-- media availability baseline projection.
+## W8-002 gates
 
-## W8-001 gates
-
-Workflow `37681708473`:
-- targeted 9/9 PASS;
-- full pytest 395/395 PASS;
-- mypy 69 source files PASS;
-- import contracts 4/4 PASS;
-- architecture/source-of-truth/no-secret PASS;
-- UI references 42/42 PASS;
-- evidence verifier 22/22 PASS;
-- artifact `ANG-S11-W8-001-Validation-Contracts` ID `11509960710`.
-
-Regression:
-**27/27 workflow families SUCCESS, all attempt 1**.
+- targeted 7/7 PASS;
+- full pytest 402/402 PASS;
+- mypy 71 source files PASS;
+- UI refs 42/42 PASS;
+- evidence 18/18 PASS;
+- regression 27/27 SUCCESS, all attempt 1;
+- artifact `ANG-S11-W8-002-Real-Media-Validation` ID `11510448492`.
 
 ## Next exact action
 
-On next owner `lanjutkan`, execute **SOL S11-W8-002 only**.
+On next owner `lanjutkan`, execute **SOL S11-W8-003 only**.
 
-W8-002 must add real media integrity evidence and project the results onto the
-existing frozen UI-041 Validation Center without redesign. Do not implement W8-003.
+W8-003 must add verified single-asset relink through canonical CommandBus history,
+preserve stable Asset ID/clip references, prove one Undo/Redo and save/reopen exactness,
+and must not implement W8-004 batch directory scanning.

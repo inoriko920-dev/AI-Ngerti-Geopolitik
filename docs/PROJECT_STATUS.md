@@ -2,52 +2,43 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001 PASS / W8-002 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..002 PASS / W8-003 READY**  
 **W8 runtime:** **ACTIVE**  
-**Accepted W8-001 implementation HEAD:** `fd319947ea8ce2579de4918b5c4b49c046851609`  
-**Accepted W8-001 workflow:** `37681708473` — SUCCESS  
-**Next exact task:** **S11-W8-002 — Real Media Integrity + Validation Center Projection**  
+**Accepted W8-002 implementation HEAD:** `c73a38d8fd6d3796f988769ca43354185eb66a6d`  
+**Accepted W8-002 workflow:** `37684517658` — SUCCESS  
+**Next exact task:** **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
-## W8-001 proven
+## W8-002 proven
 
-- ValidationIssue and ValidationResult are typed/frozen application DTOs.
-- ProjectState remains canonical truth.
-- ValidationService is deterministic and non-mutating.
-- ProjectState.validate() remains structural validator for project/timeline/subtitle/narration.
-- Referenced missing media => BLOCKER.
-- Referenced offline media => ERROR.
-- Unreferenced missing media => WARNING.
-- Unreferenced offline media => INFO.
-- Issues carry exact stable target IDs.
-- Validation result is bound to project ID + revision + semantic hash.
-- revision/project/same-revision semantic replacement becomes stale.
-- no filesystem probe/relink/recovery/diagnostics/UI implementation entered W8-001.
+- real ffprobe-backed media integrity;
+- clean media => zero issue;
+- referenced physical missing => BLOCKER;
+- zero-byte and probe-failed media => typed issues;
+- type/fingerprint mismatch => typed issues;
+- duplicate fingerprint => INFO health projection;
+- zero ProjectState mutation;
+- frozen UI-041 real projection;
+- stale projection disables issue remediation;
+- Validasi Ulang remains enabled;
+- no UI redesign and no relink implementation.
 
 ## Gates
 
-- targeted tests **9/9 PASS**;
-- full pytest **395/395 PASS**;
-- mypy **69 source files PASS**;
+- targeted **7/7 PASS**;
+- full pytest **402/402 PASS**;
+- mypy **71 source files PASS**;
 - import contracts **4/4 PASS**;
-- architecture PASS;
-- source-of-truth **70/70 PASS**;
-- no-secret PASS;
+- architecture/source-of-truth/no-secret PASS;
 - UI references **42/42 PASS**;
-- evidence **22/22 PASS**;
-- artifact ID `11509960710`.
+- evidence **18/18 PASS**;
+- artifact ID `11510448492`;
+- regression **27/27 workflow families SUCCESS, all attempt 1**.
 
-Regression: **27/27 workflow families SUCCESS, all attempt 1**.
-
-S08 portable PASS.  
-S09 UI PASS.  
-S10 packaged E2E PASS.  
-W0 and W1–W7 PASS.
-
-W7 remains CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI.
+S08/S09/S10/W0 and all prior waves remain green.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.
+After owner says **lanjutkan**, execute **SOL S11-W8-003 only**.
 
-Do not start W8-003 in the same turn.
+Do not start W8-004 in the same turn.

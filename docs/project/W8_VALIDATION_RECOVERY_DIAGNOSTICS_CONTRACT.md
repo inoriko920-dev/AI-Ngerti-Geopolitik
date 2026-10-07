@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001 PASS / W8-002 READY / W8-003..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..002 PASS / W8-003 READY / W8-004..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -51,7 +51,7 @@ Result is bound to project ID + revision + semantic SHA-256.
 Different project, changed revision or same-revision semantic replacement is STALE.
 
 Canonical `Asset.availability` remains `online/offline/missing`.
-CORRUPT/DUPLICATE remain derived validation/media-health projections for W8-002.
+CORRUPT/DUPLICATE remain derived validation/media-health projections; W8-002 real-media integrity is qualified.
 
 Baseline:
 - ProjectState.validate() remains structural authority;
@@ -103,8 +103,8 @@ No new UI image-generation gate:
 ## Serial implementation contract
 
 - **W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
-- **W8-002 — Real Media Integrity + Validation Center Projection — READY**
-- W8-003 — Single Asset Relink Command + Exact Identity Preservation — BLOCKED_BY_W8_002
+- **W8-002 — Real Media Integrity + Validation Center Projection — PASS**
+- **W8-003 — Single Asset Relink Command + Exact Identity Preservation — READY**
 - W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003
 - W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004
 - W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005
@@ -115,6 +115,20 @@ No new UI image-generation gate:
 
 ## Exact next action
 
-After owner says `lanjutkan`, execute **SOL S11-W8-002 only — Real Media Integrity + Validation Center Projection**.
+Accepted W8-002:
+- HEAD `c73a38d8fd6d3796f988769ca43354185eb66a6d`;
+- workflow `37684517658` SUCCESS;
+- targeted 7/7 PASS;
+- full pytest 402/402 PASS;
+- real ffprobe missing/zero/probe-failure/duplicate evidence PASS;
+- frozen UI-041 projection + stale gating PASS;
+- evidence 18/18 PASS;
+- regression 27/27 SUCCESS, all attempt 1;
+- artifact `ANG-S11-W8-002-Real-Media-Validation` / ID `11510448492`.
 
-Do not start W8-003 in the same turn.
+Evidence:
+`docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`.
+
+After owner says `lanjutkan`, execute **SOL S11-W8-003 only — Single Asset Relink Command + Exact Identity Preservation**.
+
+Do not start W8-004 in the same turn.
