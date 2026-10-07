@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001..002 PASS / W7-003 READY / W7-004..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..003 PASS / W7-004 READY / W7-005..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001..002 PASS  
+**Runtime implementation:** ACTIVE — W7-001..003 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -359,8 +359,8 @@ and a real network smoke succeeds.
 
 - **W7-001 — Canonical L2 command contracts + capability registry — PASS**
 - **W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
-- W7-003 — strict AutoEditPlan v2 parser/schema — READY
-- W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003
+- **W7-003 — strict AutoEditPlan v2 parser/schema — PASS**
+- W7-004 — L2 semantic verifier + sequential dry-run translator — READY
 - W7-005 — pacing qualification: duration + speed — BLOCKED_BY_W7_004
 - W7-006 — transform qualification — BLOCKED_BY_W7_005
 - W7-007 — transition + mixed-plan qualification — BLOCKED_BY_W7_006
@@ -431,15 +431,43 @@ Gates:
 
 W7-002 did not start parsing, semantic verification, provider changes, UI, or canonical apply.
 
+## W7-003 implementation closure
+
+Accepted implementation HEAD:
+`a57c8acd96cdcff8b20f659171229ad0bff913d0`
+
+Accepted workflow:
+`37647150710` — SUCCESS.
+
+Implemented:
+- `ai_l2_parser.py`;
+- canonical closed `AUTO_EDIT_PLAN_V2_JSON_SCHEMA`;
+- exact root + five command-family decoders;
+- strict integer/no-bool typing;
+- unknown/missing field hard rejection;
+- 1..40 command bound;
+- W7-001 DTO construction;
+- forbidden provider-owned ripple/crop/unlock/crossfade field rejection.
+
+Evidence:
+`docs/evidence/features/S11_W7_003_L2_PARSER.md`.
+
+Gates:
+- targeted tests 41/41 PASS;
+- full pytest PASS;
+- mypy 67 source files PASS;
+- evidence verifier 24/24 PASS;
+- 26/26 triggered regression workflows SUCCESS, all attempt 1;
+- S08/S10/W0 heavy gates PASS.
+
+W7-003 did not start ProjectState semantic verification, selected-scope/lock/stale
+checks, dynamic state-dependent ranges, sequential dry-run translation, provider
+profile changes, runtime UI or canonical apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-003 only — strict AutoEditPlan v2 parser/schema**.
+After owner says `lanjutkan`, execute **S11-W7-004 only — L2 semantic verifier + sequential dry-run translator**.
 
-W7-003 must not start:
-- semantic verifier/range/lock/selected-scope validation owned by W7-004;
-- sequential dry-run translation;
-- Gemini request-profile changes;
-- runtime UI changes;
-- canonical L2 apply.
+W7-004 must not start W7-005 real pacing qualification in the same turn.
 
-After W7-003, report gate PASS/FAIL and stop.
+After W7-004, report gate PASS/FAIL and stop.

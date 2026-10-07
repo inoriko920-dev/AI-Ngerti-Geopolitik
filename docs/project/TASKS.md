@@ -514,8 +514,8 @@ Initial allowlist:
 Serial contract:
 - [x] **S11-W7-001 — Canonical L2 command contracts + capability registry — PASS**
 - [x] **S11-W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
-- [ ] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — READY**
-- [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003**
+- [x] **S11-W7-003 — Strict AutoEditPlan v2 parser/schema — PASS**
+- [ ] **S11-W7-004 — L2 semantic verifier + sequential dry-run translator — READY**
 - [ ] **S11-W7-005 — Pacing qualification: duration + speed — BLOCKED_BY_W7_004**
 - [ ] **S11-W7-006 — Transform qualification — BLOCKED_BY_W7_005**
 - [ ] **S11-W7-007 — Transition + mixed-plan qualification — BLOCKED_BY_W7_006**
@@ -581,4 +581,31 @@ W7-002 proof:
 - evidence verifier 24/24 PASS;
 - 26/26 triggered regression workflows SUCCESS, all attempt 1.
 
-**Exact next task:** S11-W7-003 only — strict AutoEditPlan v2 parser/schema.
+Accepted W7-003 implementation HEAD:
+`a57c8acd96cdcff8b20f659171229ad0bff913d0`
+
+W7-003 workflow:
+`37647150710` — SUCCESS
+
+W7-003 evidence:
+`docs/evidence/features/S11_W7_003_L2_PARSER.md`
+
+W7-003 artifact:
+`ANG-S11-W7-003-L2-Parser` / ID `11494393982`
+
+W7-003 proof:
+- closed canonical JSON Schema v2;
+- strict exact root fields;
+- five exact command shapes;
+- 1..40 commands;
+- bool-as-int rejection;
+- unknown root/command/field rejection;
+- ripple/crop/unlock/crossfade extra fields rejected;
+- W7-001 typed DTO construction;
+- no ProjectState/CommandBus/provider/UI/apply work;
+- targeted tests 41/41 PASS;
+- full pytest PASS;
+- evidence verifier 24/24 PASS;
+- 26/26 triggered regression workflows SUCCESS, all attempt 1.
+
+**Exact next task:** S11-W7-004 only — L2 semantic verifier + sequential dry-run translator.
