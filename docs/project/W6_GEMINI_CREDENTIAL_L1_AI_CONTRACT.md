@@ -327,7 +327,8 @@ Never fake full live-provider PASS.
    - exact Undo/Redo.
 
 9. **S11-W6-009 — Frozen UI parity**
-   - UI-010/011/012/013/014/023;
+   - historical planning aliases UI-010/011/012/013/014/023 are superseded for visual evidence by the audited physical raster mapping in `docs/ui_reference/W6_UI_REFERENCE_CORRECTION.md`;
+   - physical frozen refs: UI-020/021/022/023/024/033;
    - semantic intents;
    - only L1 claims;
    - credential masking;
@@ -372,7 +373,7 @@ Must include:
 - cancel request/plan = zero mutation;
 - one approved plan = one Undo entry, exact Undo/Redo;
 - render proof that an L1-selected qualified effect actually appears;
-- UI-010..014/UI-023 actual-vs-frozen evidence;
+- W6 semantic actual-vs-frozen evidence against physical refs UI-020..024 + UI-033;
 - GUI responsiveness/background network job;
 - full quality/architecture/security/source-of-truth/UI regressions;
 - W5/W4/W3/W2/W1/W0/S10/S09/S08 remain green.
