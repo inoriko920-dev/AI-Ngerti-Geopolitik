@@ -133,12 +133,8 @@ def main() -> int:
         "candidate_changed": valid.candidate_semantic_hash != state.semantic_hash(),
         "candidate_revision_preserved": valid.candidate_revision == state.revision,
         "canonical_state_unchanged": state.semantic_json(include_revision=True) == before,
-        "unknown_root_code": _error_code(
-            lambda: verifier.parse(json.dumps(unknown_root))
-        ),
-        "unknown_command_code": _error_code(
-            lambda: verifier.parse(json.dumps(unknown_command))
-        ),
+        "unknown_root_code": _error_code(lambda: verifier.parse(json.dumps(unknown_root))),
+        "unknown_command_code": _error_code(lambda: verifier.parse(json.dumps(unknown_command))),
         "unknown_target_code": _error_code(
             lambda: verifier.verify_payload(
                 _payload(target="clip-missing"),
@@ -146,12 +142,8 @@ def main() -> int:
                 ("clip-missing",),
             )
         ),
-        "unsupported_effect_code": _error_code(
-            lambda: verifier.parse(_payload(effect="Wipe"))
-        ),
-        "range_code": _error_code(
-            lambda: verifier.parse(_payload(intensity=201))
-        ),
+        "unsupported_effect_code": _error_code(lambda: verifier.parse(_payload(effect="Wipe"))),
+        "range_code": _error_code(lambda: verifier.parse(_payload(intensity=201))),
         "lock_code": _error_code(
             lambda: verifier.verify_payload(
                 _payload(target="clip-locked"),
