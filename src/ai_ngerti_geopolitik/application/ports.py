@@ -187,7 +187,7 @@ class CredentialMetadataPort(Protocol):
 
 @runtime_checkable
 class AIProviderPort(Protocol):
-    """Provider-agnostic L1 plan generation boundary."""
+    """Provider-agnostic plan generation boundary shared by L1 and L2."""
 
     def request_plan(
         self,

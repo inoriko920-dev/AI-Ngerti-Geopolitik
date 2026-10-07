@@ -57,6 +57,13 @@ class AIJobState(StrEnum):
     CANCELLED = "CANCELLED"
 
 
+class AIRequestProfile(StrEnum):
+    """Provider request profile; L1 remains the backward-compatible default."""
+
+    L1_EFFECTS = "L1_EFFECTS"
+    L2_AUTO_EDIT = "L2_AUTO_EDIT"
+
+
 class CredentialContractError(RuntimeError):
     def __init__(self, code: CredentialErrorCode, safe_message: str) -> None:
         self.code = code
@@ -242,6 +249,7 @@ class AIProviderRequest:
     base_project_revision: int
     instruction: str
     context_json: str
+    profile: AIRequestProfile = AIRequestProfile.L1_EFFECTS
 
     def __post_init__(self) -> None:
         if not self.request_id.strip():
@@ -263,6 +271,11 @@ class AIProviderRequest:
             raise PlanContractError(
                 PlanErrorCode.SCHEMA_INVALID,
                 "provider context is required",
+            )
+        if not isinstance(self.profile, AIRequestProfile):
+            raise PlanContractError(
+                PlanErrorCode.SCHEMA_INVALID,
+                "provider request profile is unsupported",
             )
 
 

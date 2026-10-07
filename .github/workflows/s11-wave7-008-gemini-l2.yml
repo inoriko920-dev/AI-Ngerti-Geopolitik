@@ -1,0 +1,66 @@
+name: S11 W7-008 Gemini L2 Profile Lifecycle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/ai_contracts.py"
+      - "src/ai_ngerti_geopolitik/application/ai_jobs.py"
+      - "src/ai_ngerti_geopolitik/application/ports.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/gemini_provider.py"
+      - "src/ai_ngerti_geopolitik/application/ai_l2_parser.py"
+      - "src/ai_ngerti_geopolitik/application/ai_l2_verifier.py"
+      - "tests/unit/test_step11_w7_008_gemini_l2_lifecycle.py"
+      - "scripts/run_step11_w7_008.py"
+      - "scripts/verify/verify_step11_w7_008_evidence.py"
+      - "scripts/verify/verify_step11_w6_007_google_genai_runtime.py"
+      - ".github/workflows/s11-wave7-008-gemini-l2.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w7-008:
+    name: Gemini L2 request profile and shared async lifecycle
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - name: Verify official google-genai runtime
+        run: uv run python scripts/verify/verify_step11_w6_007_google_genai_runtime.py
+      - run: uv run pytest -q tests/unit/test_step11_w7_008_gemini_l2_lifecycle.py
+      - run: uv run pytest -q
+      - name: Run W7-008 deterministic lifecycle evidence
+        run: uv run python scripts/run_step11_w7_008.py
+      - name: Verify W7-008 evidence
+        run: uv run python scripts/verify/verify_step11_w7_008_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W7-008-Gemini-L2-Lifecycle
+          path: artifacts/step11/w7-008/evidence/**
+          if-no-files-found: error
+          retention-days: 14

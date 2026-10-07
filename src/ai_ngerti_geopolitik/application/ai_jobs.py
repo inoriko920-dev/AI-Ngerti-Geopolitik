@@ -9,12 +9,19 @@ from threading import Event, Lock
 from ai_ngerti_geopolitik.application.ai_contracts import (
     AIJobState,
     AIProviderRequest,
+    AIRequestProfile,
     CredentialContractError,
     CredentialErrorCode,
     PlanContractError,
     PlanErrorCode,
     ProviderContractError,
     ProviderErrorCode,
+)
+from ai_ngerti_geopolitik.application.ai_context import ContextBuildError
+from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
+from ai_ngerti_geopolitik.application.ai_l2_verifier import (
+    AutoEditPlanVerifier,
+    VerifiedAutoEditPlan,
 )
 from ai_ngerti_geopolitik.application.ai_plan_verifier import PlanVerifier, VerifiedEditPlan
 from ai_ngerti_geopolitik.application.credential_pool import CredentialPoolService
@@ -74,6 +81,9 @@ class AIPlanJobSnapshot:
     result_consumed: bool = False
 
 
+VerifiedPlanResult = VerifiedEditPlan | VerifiedAutoEditPlan
+
+
 @dataclass(slots=True)
 class _JobRecord:
     job_id: str
@@ -85,7 +95,7 @@ class _JobRecord:
     plan_error: PlanErrorCode | None = None
     credential_error: CredentialErrorCode | None = None
     safe_message: str | None = None
-    verified: VerifiedEditPlan | None = None
+    verified: VerifiedPlanResult | None = None
     result_consumed: bool = False
     future: Future[None] | None = None
 
@@ -96,6 +106,7 @@ class AIPlanJobService:
     __slots__ = (
         "_executor",
         "_jobs",
+        "_l2_verifier",
         "_lock",
         "_owns_executor",
         "_pool",
@@ -108,6 +119,7 @@ class AIPlanJobService:
         provider: AIProviderPort,
         pool: CredentialPoolService,
         verifier: PlanVerifier | None = None,
+        l2_verifier: AutoEditPlanVerifier | None = None,
         *,
         executor: ThreadPoolExecutor | None = None,
         max_workers: int = 1,
@@ -117,6 +129,7 @@ class AIPlanJobService:
         self._provider = provider
         self._pool = pool
         self._verifier = verifier or PlanVerifier()
+        self._l2_verifier = l2_verifier or AutoEditPlanVerifier()
         self._executor = executor or ThreadPoolExecutor(
             max_workers=max_workers,
             thread_name_prefix="ang-ai-provider",
@@ -247,7 +260,7 @@ class AIPlanJobService:
             record.safe_message = error.safe_message
             record.verified = None
 
-    def _mark_success(self, record: _JobRecord, verified: VerifiedEditPlan) -> None:
+    def _mark_success(self, record: _JobRecord, verified: VerifiedPlanResult) -> None:
         with self._lock:
             if record.cancellation.cancelled:
                 record.state = AIJobState.CANCELLED
@@ -257,6 +270,44 @@ class AIPlanJobService:
             record.state = AIJobState.SUCCESS
             record.safe_message = None
             record.verified = verified
+
+    def _verify_response(
+        self,
+        record: _JobRecord,
+        response: object,
+        state: ProjectState,
+        allowed_target_ids: tuple[str, ...],
+    ) -> VerifiedPlanResult:
+        from ai_ngerti_geopolitik.application.ai_contracts import ProviderPlanResponse
+
+        if not isinstance(response, ProviderPlanResponse):
+            raise PlanContractError(
+                PlanErrorCode.SCHEMA_INVALID,
+                "provider response type is invalid",
+            )
+        if record.request.profile is AIRequestProfile.L1_EFFECTS:
+            return self._verifier.verify_response(
+                response,
+                state,
+                allowed_target_ids,
+            )
+        if record.request.profile is AIRequestProfile.L2_AUTO_EDIT:
+            try:
+                scope = W7SelectedScope(allowed_target_ids)
+            except ContextBuildError as exc:
+                raise PlanContractError(
+                    PlanErrorCode.SEMANTIC_INVALID,
+                    exc.safe_message,
+                ) from exc
+            return self._l2_verifier.verify_response(
+                response,
+                state,
+                scope,
+            )
+        raise PlanContractError(
+            PlanErrorCode.SCHEMA_INVALID,
+            "AI plan job request profile is unsupported",
+        )
 
     def _run_job(
         self,
@@ -323,7 +374,8 @@ class AIPlanJobService:
 
             session.report_success()
             try:
-                verified = self._verifier.verify_response(
+                verified = self._verify_response(
+                    record,
                     response,
                     state,
                     allowed_target_ids,
@@ -373,6 +425,51 @@ class AIPlanJobService:
                 raise PlanContractError(
                     PlanErrorCode.STALE_PLAN,
                     "AI plan result is stale for the current project session",
+                )
+            if (
+                record.request.profile is not AIRequestProfile.L1_EFFECTS
+                or not isinstance(record.verified, VerifiedEditPlan)
+            ):
+                raise AIPlanJobAccessError(
+                    "AI plan job result is not an L1 verified plan"
+                )
+            record.result_consumed = True
+            return record.verified
+
+    def take_verified_l2(
+        self,
+        job_id: str,
+        current_state: ProjectState,
+        *,
+        session_id: str,
+    ) -> VerifiedAutoEditPlan:
+        current_state.validate()
+        with self._lock:
+            record = self._record(job_id)
+            if record.state is not AIJobState.SUCCESS or record.verified is None:
+                raise AIPlanJobAccessError(
+                    "AI plan job has no successful verified result"
+                )
+            if record.result_consumed:
+                raise AIPlanJobAccessError(
+                    "verified AI plan result was already consumed"
+                )
+            token = record.token
+            if (
+                current_state.project_id != token.project_id
+                or current_state.revision != token.base_project_revision
+                or session_id != token.session_id
+            ):
+                raise PlanContractError(
+                    PlanErrorCode.STALE_PLAN,
+                    "AI plan result is stale for the current project session",
+                )
+            if (
+                record.request.profile is not AIRequestProfile.L2_AUTO_EDIT
+                or not isinstance(record.verified, VerifiedAutoEditPlan)
+            ):
+                raise AIPlanJobAccessError(
+                    "AI plan job result is not an L2 verified plan"
                 )
             record.result_consumed = True
             return record.verified
