@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001..006 PASS — W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE — W5-008 PASS — NEXT W5-009**
+> **STATUS: SF-STEP 11 ACTIVE — W0/W1/W2/W3/W4 PASS — W5-001..006 PASS — W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE — W5-008 PASS — W5-009 PASS — NEXT W5-010**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -17,31 +17,32 @@ Completed:
 - W5-006 narration import + binding = PASS
 - W5-007 microphone software path = PASS
 - W5-007 physical microphone = PASS_WITH_PROVISIONAL_MIC_HARDWARE
-- W5-008 frozen subtitle/narration UI parity = PASS
+- W5-008 frozen UI parity = PASS
+- W5-009 combined real subtitle/narration preview/export = PASS
 
-W5-008 accepted implementation:
-`b65bf585510ee442584a7ebbe8db8c3d40ac1533`
+W5-009 accepted implementation:
+`afcdd20c74f3870aee589ad83bf20cdae3861fea`
 
 Workflow:
-`37579815809` — SUCCESS
+`37581393310` — SUCCESS
 
-W5-008 now provides real PySide6 controls for subtitle cue editing, style,
-animation, manual/per-word timing boundary, narration controls and device-gated
-recording.
+Combined evidence proves:
+- source SRT unchanged;
+- edited text/timing persist;
+- style visible;
+- all four enabled subtitle animations render in preview/export;
+- narration preview audible and frame-synchronized;
+- subtitle + narration coexist in the same MP4;
+- output is 1920×1080 / 30 fps with audio and valid duration;
+- save/reopen preserves final state.
 
-Only qualified features are enabled.
+W5-009 targeted tests: **3/3 PASS**.  
+Full pytest: **PASS**.  
+Evidence verifier: **26/26 PASS**.
 
-Frozen UI reference integrity:
-**42/42 PASS**.
-
-W5-008 Qt tests:
-**6/6 PASS**.
-
-Evidence:
-**14/14 PASS**.
-
-All accepted regressions through S08 are green on the same implementation HEAD.
+Artifact:
+`ANG-S11-W5-009-Combined-Qualification` / `11464149053`.
 
 ## Next
 
-**S11-W5-009 — Real subtitle/narration preview/export qualification only.**
+**S11-W5-010 — Failure paths + evidence + regression lock only.**

@@ -1,52 +1,52 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001..006 PASS. W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE. W5-008 PASS.**
+**SF-STEP 11 is active. W0/W1/W2/W3/W4 PASS. W5-001..006 PASS. W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE. W5-008 PASS. W5-009 PASS.**
 
-## Accepted W5-008
+## Accepted W5-009
 
 - implementation HEAD:
-  `b65bf585510ee442584a7ebbe8db8c3d40ac1533`;
+  `afcdd20c74f3870aee589ad83bf20cdae3861fea`;
 - workflow:
-  `37579815809` — SUCCESS;
-- real frozen subtitle/narration PySide6 widgets implemented;
-- subtitle Teks/Gaya/Animasi surfaces emit semantic intents;
-- only render-qualified fonts/presets exposed;
-- per-word deterministic fallback requires explicit NOT-speech-alignment
-  acknowledgement;
-- narration import/control/preview/recording surfaces implemented;
-- microphone recording dialog is device-gated and retains provisional hardware
-  wording;
-- targeted Qt tests 6/6 PASS;
+  `37581393310` — SUCCESS;
+- targeted combined tests 3/3 PASS;
 - full pytest PASS;
-- frozen UI references 42/42 PASS;
-- actual/reference visual evidence captured;
-- evidence verifier 14/14 PASS;
-- W5-007/W5-006/W5-005/W5-004/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS.
+- source SRT byte-identical;
+- edited subtitle text/timing survives Save Copy + project reopen;
+- style visible in real preview;
+- Fade/Pop/Slide Up/Clean Documentary all have preview + export evidence;
+- 440 Hz narration preview audible;
+- frame-60 narration offset measurable;
+- subtitle + narration coexist in the same exported MP4;
+- final output 1920×1080 / 30 fps with audio;
+- duration within ±3 frames;
+- evidence verifier 26/26 PASS.
 
 Evidence:
-`docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`.
+`docs/evidence/features/S11_W5_009_COMBINED_PREVIEW_EXPORT.md`.
 
 ## Active next task
 
-**S11-W5-009 — Real subtitle/narration preview/export qualification**
+**S11-W5-010 — Failure paths + evidence + regression lock**
 
-W5-009 scope:
-- deterministic owned video/audio/SRT fixture;
-- imported subtitle at correct canonical frame;
-- edited cue text/timing survives save/reopen;
-- style visible in real output;
-- enabled subtitle animation present in real output;
-- narration audible and frame-offset;
-- subtitle + narration coexist in one real export;
-- output valid, has audio and duration stays within tolerance;
-- source SRT remains byte-identical.
+W5-010 scope:
+- subtitle/narration Undo/Redo closure;
+- old W4 project -> safe W5 defaults;
+- malformed SRT;
+- dirty working-copy leave/reload guard;
+- missing/corrupt narration;
+- failed/cancelled recording preserving old narration;
+- deterministic W5 closure report/verifier;
+- Ruff/mypy/import-contract/architecture/source-of-truth/UI/security/full pytest;
+- full W4/W3/W2/W1/W0/S10/S09/S08 regression lock;
+- final W5 status carrying the provisional physical-microphone qualifier if
+  hardware remains unavailable.
 
-W5-009 must not:
-- add new UI;
-- enable unsupported animation names;
+W5-010 must not:
+- add new product features;
+- enable unsupported subtitle animations;
 - add ASR/transcription/alignment;
-- remove provisional microphone hardware qualifier;
-- start W5-010 closure;
-- start Gemini/provider work or SF-STEP 12.
+- add Gemini/provider work;
+- start SF-STEP 12;
+- begin final release work.
 
-Do not begin W5-009 until owner says `lanjutkan`.
+Do not begin W5-010 until owner says `lanjutkan`.

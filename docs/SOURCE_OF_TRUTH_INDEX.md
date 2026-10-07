@@ -31,6 +31,7 @@
     - `docs/evidence/features/S11_W5_006_NARRATION_IMPORT_BINDING.md`
     - `docs/evidence/features/S11_W5_007_MICROPHONE_RECORDING.md`
     - `docs/evidence/features/S11_W5_008_FROZEN_UI_PARITY.md`
+    - `docs/evidence/features/S11_W5_009_COMBINED_PREVIEW_EXPORT.md`
 12. current wave contract:
     - `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
 13. HANDOFF / PROJECT_STATUS / DECISIONS / REPOSITORY_RULES
@@ -64,6 +65,8 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - physical hardware evidence remains pending because CI exposed 0 DirectShow
   audio input devices.
 - SF-STEP 11 W5-008 frozen UI parity: **PASS**.
-- exact next task: **S11-W5-009 real subtitle/narration preview/export qualification**.
+- SF-STEP 11 W5-009 combined real subtitle/narration preview/export:
+  **PASS**.
+- exact next task: **S11-W5-010 failure paths + evidence + regression lock**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

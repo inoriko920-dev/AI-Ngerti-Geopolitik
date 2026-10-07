@@ -1,6 +1,6 @@
 # SF-STEP 11 W5 CONTRACT — Subtitle + Narration
 
-**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 READY  
+**Status:** CONTRACT_LOCKED / W5-001 PASS / W5-002 PASS / W5-003 PASS / W5-004 PASS / W5-005 PASS / W5-006 PASS / W5-007 PASS_WITH_PROVISIONAL_MIC_HARDWARE / W5-008 PASS / W5-009 PASS / W5-010 READY  
 **Derived from:** frozen Product, UI, Architecture and Master Blueprint  
 **Previous accepted implementation:** W4 HEAD `3e3cd376189e9f183e70ca537ad25f037e25bcd7`
 
@@ -283,7 +283,19 @@ semantics are accepted.
   - targeted Qt tests: 6/6 PASS;
   - frozen reference integrity: 42/42 PASS;
   - W5 UI evidence verifier: 14/14 PASS.
-- S11-W5-009 — **READY**.
-- S11-W5-010 — **BLOCKED_BY_PREVIOUS_TASKS**.
+- S11-W5-009 — **PASS**
+  - accepted implementation HEAD:
+    `afcdd20c74f3870aee589ad83bf20cdae3861fea`;
+  - accepted run: `37581393310`;
+  - evidence:
+    `docs/evidence/features/S11_W5_009_COMBINED_PREVIEW_EXPORT.md`;
+  - artifact:
+    `ANG-S11-W5-009-Combined-Qualification` / `11464149053`;
+  - combined real-media evidence verifier: 26/26 PASS;
+  - source SRT unchanged;
+  - all four enabled animations preview/export qualified in the combined project;
+  - narration preview/export frame synchronization proven;
+  - subtitle + narration coexist in one valid export.
+- S11-W5-010 — **READY**.
 
-On the next owner `lanjutkan`, execute **S11-W5-009 only**.
+On the next owner `lanjutkan`, execute **S11-W5-010 only**.
