@@ -269,10 +269,13 @@ def create_ai_agent_workspace(
     reject.setObjectName("btn_w6_plan_reject")
     approve = QPushButton("Setujui Rencana")
     approve.setObjectName("btn_w6_plan_approve")
+    cancel_plan = QPushButton("Batal")
+    cancel_plan.setObjectName("btn_w6_plan_cancel")
     apply_button = make_primary_button("Terapkan")
     apply_button.setObjectName("btn_w6_plan_apply")
     plan_buttons.addWidget(reject)
     plan_buttons.addWidget(approve)
+    plan_buttons.addWidget(cancel_plan)
     plan_buttons.addWidget(apply_button)
     plan_layout.addLayout(plan_buttons)
     state_stack.addWidget(plan)
@@ -377,6 +380,13 @@ def create_ai_agent_workspace(
         lambda: _emit(
             intent_sink,
             UiIntentType.AI_REJECT_PLAN,
+            request_id=_request_id(root),
+        )
+    )
+    cancel_plan.clicked.connect(
+        lambda: _emit(
+            intent_sink,
+            UiIntentType.AI_CANCEL_PLAN,
             request_id=_request_id(root),
         )
     )
@@ -509,8 +519,18 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
         state_label = workspace.findChild(QLabel, "label_w6_plan_state")
         commands = workspace.findChild(QListWidget, "list_w6_plan_commands")
         approve = workspace.findChild(QPushButton, "btn_w6_plan_approve")
+        reject = workspace.findChild(QPushButton, "btn_w6_plan_reject")
+        cancel_plan = workspace.findChild(QPushButton, "btn_w6_plan_cancel")
         apply_button = workspace.findChild(QPushButton, "btn_w6_plan_apply")
-        if any(item is None for item in (summary, state_label, commands, approve, apply_button)):
+        if (
+            summary is None
+            or state_label is None
+            or commands is None
+            or approve is None
+            or reject is None
+            or cancel_plan is None
+            or apply_button is None
+        ):
             raise RuntimeError("W6 plan widgets are missing")
         summary.setText(projection.summary or "Rencana AI siap ditinjau.")
         commands.clear()
@@ -523,6 +543,8 @@ def project_ai_agent_state(workspace: Any, projection: AIAgentProjection) -> Non
             else "Rencana siap ditinjau"
         )
         approve.setVisible(not is_approval)
+        reject.setVisible(not is_approval)
+        cancel_plan.setVisible(is_approval)
         apply_button.setVisible(is_approval)
         return
 
