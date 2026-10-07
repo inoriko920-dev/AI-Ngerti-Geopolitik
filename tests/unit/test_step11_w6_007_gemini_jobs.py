@@ -451,9 +451,7 @@ def test_job_service_stale_revision_or_session_never_releases_result() -> None:
 def test_job_service_invalid_provider_payload_is_failed_not_applied() -> None:
     pool, slots = _pool()
     _add(slots, 1, "runtime-bad-payload")
-    provider = _SequencedProvider(
-        [ProviderPlanResponse("REQ-007", '{"schema_version":1}')]
-    )
+    provider = _SequencedProvider([ProviderPlanResponse("REQ-007", '{"schema_version":1}')])
     state = _state()
     before = state.semantic_json(include_revision=True)
 
