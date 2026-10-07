@@ -155,9 +155,7 @@ def main() -> int:
         "candidate_ranking_started",
         "ui_redesign_started",
     )
-    failed_checks = [
-        key for key in required_true if report[key] is not True
-    ] + [
+    failed_checks = [key for key in required_true if report[key] is not True] + [
         key for key in required_false if report[key] is not False
     ]
     if failed_checks:
