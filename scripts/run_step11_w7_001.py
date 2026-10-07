@@ -71,12 +71,9 @@ def main() -> int:
         "max_selected_targets": MAX_W7_SELECTED_TARGETS,
         "max_commands": MAX_W7_COMMANDS,
         "w6_effect_allowlist": list(L1_RENDER_QUALIFIED_EFFECTS),
-        "duration_bounds_30fps_120frames": list(
-            W7_POLICY_BOUNDS.duration_bounds(30, 120)
-        ),
+        "duration_bounds_30fps_120frames": list(W7_POLICY_BOUNDS.duration_bounds(30, 120)),
         "position_bounds_1920x1080": [
-            list(item)
-            for item in W7_POLICY_BOUNDS.transform_position_bounds(1920, 1080)
+            list(item) for item in W7_POLICY_BOUNDS.transform_position_bounds(1920, 1080)
         ],
         "transition_max_30fps_300frames": W7_POLICY_BOUNDS.transition_max_frames(
             30,
