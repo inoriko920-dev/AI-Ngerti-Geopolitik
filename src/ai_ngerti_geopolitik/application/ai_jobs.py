@@ -6,6 +6,7 @@ from concurrent.futures import CancelledError, Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from threading import Event, Lock
 
+from ai_ngerti_geopolitik.application.ai_context import ContextBuildError
 from ai_ngerti_geopolitik.application.ai_contracts import (
     AIJobState,
     AIProviderRequest,
@@ -17,7 +18,6 @@ from ai_ngerti_geopolitik.application.ai_contracts import (
     ProviderContractError,
     ProviderErrorCode,
 )
-from ai_ngerti_geopolitik.application.ai_context import ContextBuildError
 from ai_ngerti_geopolitik.application.ai_l2_scope import W7SelectedScope
 from ai_ngerti_geopolitik.application.ai_l2_verifier import (
     AutoEditPlanVerifier,
