@@ -71,7 +71,9 @@ class ValidationIssue:
             raise ValueError("validation issue message cannot contain control whitespace")
         if self.project_revision < 0:
             raise ValueError("validation issue revision must be non-negative")
-        normalized_targets = tuple(\n            dict.fromkeys(item.strip() for item in self.target_ids if item.strip())\n        )
+        normalized_targets = tuple(
+            dict.fromkeys(item.strip() for item in self.target_ids if item.strip())
+        )
         if normalized_targets != self.target_ids:
             raise ValueError("validation issue targets must be non-empty, unique and normalized")
         object.__setattr__(self, "safe_title", title)
