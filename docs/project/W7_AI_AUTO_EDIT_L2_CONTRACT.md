@@ -1,9 +1,9 @@
 # W7 — AI AUTO EDIT L2 CONTRACT
 
-**Status:** CONTRACT_LOCKED / W7-001 PASS / W7-002 READY / W7-003..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W7-001..002 PASS / W7-003 READY / W7-004..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Role that produced this contract:** ASTRA  
 **Master Blueprint mapping:** TECH-WAVE STEP 10  
-**Runtime implementation:** ACTIVE — W7-001 PASS  
+**Runtime implementation:** ACTIVE — W7-001..002 PASS  
 **Planning date:** 2026-10-07
 
 Planning sources:
@@ -358,8 +358,8 @@ and a real network smoke succeeds.
 ## 14. Serial implementation contract
 
 - **W7-001 — Canonical L2 command contracts + capability registry — PASS**
-- **W7-002 — L2 ContextBuilder + selected-scope contract — READY**
-- W7-003 — strict AutoEditPlan v2 parser/schema — BLOCKED_BY_W7_002
+- **W7-002 — L2 ContextBuilder + selected-scope contract — PASS**
+- W7-003 — strict AutoEditPlan v2 parser/schema — READY
 - W7-004 — L2 semantic verifier + sequential dry-run translator — BLOCKED_BY_W7_003
 - W7-005 — pacing qualification: duration + speed — BLOCKED_BY_W7_004
 - W7-006 — transform qualification — BLOCKED_BY_W7_005
@@ -398,15 +398,48 @@ Gates:
 
 W7-001 did not start ContextBuilder, parser/verifier, provider changes, UI or apply.
 
+## W7-002 implementation closure
+
+Accepted implementation HEAD:
+`23aad912cb789f98dd3ec61d11e799390d602381`
+
+Accepted workflow:
+`37644007477` — SUCCESS.
+
+Implemented:
+- `ai_l2_scope.py` selected-scope contract;
+- `ai_l2_context.py` deterministic schema-v2 L2 context;
+- max 20 stable unique selected clip IDs;
+- source-duration availability for pacing planning;
+- current bounded speed/transform/transition/effect state;
+- lock/editability flags;
+- bounded previous/next neighbor summaries;
+- exact W7 allowlist/policy bounds;
+- bounded untrusted project text;
+- explicit exclusion of credentials, local paths, private content, bytes, logs and engine objects.
+
+Evidence:
+`docs/evidence/features/S11_W7_002_L2_CONTEXT.md`.
+
+Gates:
+- targeted tests 18/18 PASS;
+- full pytest PASS;
+- mypy 66 source files PASS;
+- evidence verifier 24/24 PASS;
+- 26/26 triggered regression workflows SUCCESS, all attempt 1;
+- S08/S10/W0 heavy gates PASS.
+
+W7-002 did not start parsing, semantic verification, provider changes, UI, or canonical apply.
+
 ## 15. Exact next action
 
-After owner says `lanjutkan`, execute **S11-W7-002 only — L2 ContextBuilder + selected-scope contract**.
+After owner says `lanjutkan`, execute **S11-W7-003 only — strict AutoEditPlan v2 parser/schema**.
 
-W7-002 must not start:
-- strict AutoEditPlan v2 provider JSON parser;
-- semantic dry-run translator;
+W7-003 must not start:
+- semantic verifier/range/lock/selected-scope validation owned by W7-004;
+- sequential dry-run translation;
 - Gemini request-profile changes;
 - runtime UI changes;
 - canonical L2 apply.
 
-After W7-002, report gate PASS/FAIL and stop.
+After W7-003, report gate PASS/FAIL and stop.
