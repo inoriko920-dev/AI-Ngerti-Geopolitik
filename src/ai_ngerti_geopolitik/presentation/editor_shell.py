@@ -14,6 +14,7 @@ from ai_ngerti_geopolitik.presentation.w5_workspace import (
     create_narration_workspace,
     create_subtitle_workspace,
 )
+from ai_ngerti_geopolitik.presentation.w6_ai_workspace import create_ai_agent_workspace
 
 
 @dataclass(slots=True)
@@ -533,6 +534,7 @@ def create_editor_shell(
     intent_sink: Any | None = None,
     *,
     narration_record_callback: Callable[[], None] | None = None,
+    ai_credentials_callback: Callable[[], None] | None = None,
 ) -> EditorShellParts:
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QLineEdit, QSplitter, QTabWidget, QVBoxLayout, QWidget
@@ -571,18 +573,36 @@ def create_editor_shell(
             _narration_inspector(intent_sink, narration_record_callback),
             "Narasi",
         )
-        right.addTab(_ai_placeholder(), "AI Agent")
+        right.addTab(
+            create_ai_agent_workspace(
+                intent_sink,
+                open_credentials_callback=ai_credentials_callback,
+            ),
+            "AI Agent",
+        )
     elif mode == "overview":
         right.addTab(_overview_inspector(), "Layout")
         right.addTab(create_creative_inspector(intent_sink, clip_id="C001"), "Animasi")
-        right.addTab(_ai_placeholder(), "AI Agent")
+        right.addTab(
+            create_ai_agent_workspace(
+                intent_sink,
+                open_credentials_callback=ai_credentials_callback,
+            ),
+            "AI Agent",
+        )
     else:
         right.addTab(
             create_property_inspector(mode, intent_sink, clip_id="C001"),
             "Layout",
         )
         right.addTab(create_creative_inspector(intent_sink, clip_id="C001"), "Animasi")
-        right.addTab(_ai_placeholder(), "AI Agent")
+        right.addTab(
+            create_ai_agent_workspace(
+                intent_sink,
+                open_credentials_callback=ai_credentials_callback,
+            ),
+            "AI Agent",
+        )
 
     upper.addWidget(left)
     upper.addWidget(preview)
@@ -601,6 +621,7 @@ def create_editor_shell(
         "✓ Project siap   ·   Auto-saved 10:24:18   ·   ● Provider: Gemini (Online)   ·   "
         "Scene 01/05   ·   1920 × 1080   ·   30 fps   ·   00:00:12:08 / 00:01:28:00"
     )
+    status.setObjectName("editor_status_label")
     status.setMinimumHeight(METRICS.status_h)
     vertical.addWidget(status)
     return EditorShellParts(root, left, frame, preview_label, right, timeline, status)

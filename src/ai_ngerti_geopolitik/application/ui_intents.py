@@ -76,6 +76,19 @@ class UiIntentType(StrEnum):
     MICROPHONE_REFRESH_DEVICES = "microphone_refresh_devices"
     MICROPHONE_START_RECORDING = "microphone_start_recording"
     MICROPHONE_CANCEL_RECORDING = "microphone_cancel_recording"
+    AI_OPEN_AGENT = "ai_open_agent"
+    AI_SUBMIT_PROMPT = "ai_submit_prompt"
+    AI_CANCEL_JOB = "ai_cancel_job"
+    AI_APPROVE_PLAN = "ai_approve_plan"
+    AI_REJECT_PLAN = "ai_reject_plan"
+    AI_APPLY_PLAN = "ai_apply_plan"
+    AI_RETRY = "ai_retry"
+    OPEN_AI_CREDENTIALS = "open_ai_credentials"
+    CREDENTIAL_SAVE_SLOT = "credential_save_slot"
+    CREDENTIAL_TEST_SLOT = "credential_test_slot"
+    CREDENTIAL_DELETE_SLOT = "credential_delete_slot"
+    CREDENTIAL_SET_ENABLED = "credential_set_enabled"
+    CREDENTIAL_IMPORT_TXT = "credential_import_txt"
 
 
 @dataclass(frozen=True, slots=True)

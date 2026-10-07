@@ -23,6 +23,7 @@ class MainWindow:
         fixture_mode: bool = False,
         intent_sink: UiIntentSink | None = None,
         media_path_provider: Callable[[], str | None] | None = None,
+        credential_secret_sink: Callable[[int, str, Any], None] | None = None,
     ) -> None:
         from PySide6.QtGui import QAction
         from PySide6.QtWidgets import QMainWindow, QStackedWidget, QToolBar
@@ -31,6 +32,7 @@ class MainWindow:
         self.intent_recorder = RecordingIntentSink()
         self.intent_sink = intent_sink or self.intent_recorder
         self.media_path_provider = media_path_provider
+        self.credential_secret_sink = credential_secret_sink
         self.window = QMainWindow()
         self.window.setObjectName("ANGMainWindow")
         self.window.setWindowTitle("AI Ngerti Geopolitik")
@@ -86,6 +88,20 @@ class MainWindow:
                 redo.triggered.connect(lambda: self._emit(UiIntentType.REDO))
                 menu.addAction(undo)
                 menu.addAction(redo)
+            elif name == "AI":
+                director = action_type("AI Director / AI Otomatis", self.window)
+                director.setObjectName("action_open_ai_director")
+                director.triggered.connect(lambda: self._show_ai_surface("director"))
+                menu.addAction(director)
+                agent = action_type("AI Agent", self.window)
+                agent.setObjectName("action_open_ai_agent")
+                agent.triggered.connect(lambda: self._show_ai_surface("agent"))
+                menu.addAction(agent)
+                menu.addSeparator()
+                credentials = action_type("Provider & API Key", self.window)
+                credentials.setObjectName("action_open_ai_credentials")
+                credentials.triggered.connect(self._open_ai_credentials_dialog)
+                menu.addAction(credentials)
             elif name == "Ekspor":
                 export = action_type("Ekspor Video", self.window)
                 export.triggered.connect(lambda: self.show_route(UiRoute.EXPORT_SETTINGS))
@@ -136,6 +152,9 @@ class MainWindow:
         animation.setObjectName("combo_animation_mode")
         animation.addItems(["Auto (AI)", "Random App", "Manual"])
         animation.setMaximumWidth(130)
+        animation.currentTextChanged.connect(
+            lambda value: self._show_ai_surface("director") if value == "Auto (AI)" else None
+        )
         toolbar.addWidget(animation)
 
         validation = QPushButton("✓ Validasi OK")
@@ -200,26 +219,113 @@ class MainWindow:
             lambda: self.show_route(UiRoute.HOME),
             continue_new_project,
         )
-        self._route_widgets[UiRoute.EDITOR] = create_editor_shell("overview", self.intent_sink).root
+        self._route_widgets[UiRoute.EDITOR] = create_editor_shell(
+            "overview",
+            self.intent_sink,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
+        ).root
         self._route_widgets[UiRoute.SCENE_SINGLE] = create_editor_shell(
-            "single", self.intent_sink
+            "single",
+            self.intent_sink,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
         ).root
         self._route_widgets[UiRoute.SCENE_DOUBLE] = create_editor_shell(
-            "double", self.intent_sink
+            "double",
+            self.intent_sink,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
         ).root
         self._route_widgets[UiRoute.SUBTITLE_EDITOR] = create_editor_shell(
             "subtitle",
             self.intent_sink,
             narration_record_callback=self._open_narration_recording_dialog,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
         ).root
         self._route_widgets[UiRoute.EXPORT_SETTINGS] = create_editor_shell(
-            "subtitle", self.intent_sink
+            "subtitle",
+            self.intent_sink,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
         ).root
         self._route_widgets[UiRoute.VALIDATION_CENTER] = create_editor_shell(
-            "overview", self.intent_sink
+            "overview",
+            self.intent_sink,
+            ai_credentials_callback=self._open_ai_credentials_dialog,
         ).root
         for widget in self._route_widgets.values():
             self.stack.addWidget(widget)
+
+    def _show_ai_surface(self, view: str = "agent") -> None:
+        from PySide6.QtWidgets import QTabWidget, QWidget
+
+        editor_routes = {
+            self._route_widgets[UiRoute.EDITOR],
+            self._route_widgets[UiRoute.SCENE_SINGLE],
+            self._route_widgets[UiRoute.SCENE_DOUBLE],
+            self._route_widgets[UiRoute.SUBTITLE_EDITOR],
+        }
+        if self.stack.currentWidget() not in editor_routes:
+            self.show_route(UiRoute.EDITOR)
+        current = self.stack.currentWidget()
+        right = current.findChild(QTabWidget, "editor_right_tabs")
+        if right is None:
+            raise RuntimeError("AI Agent requires editor right tabs")
+        index = next(
+            (i for i in range(right.count()) if right.tabText(i) == "AI Agent"),
+            -1,
+        )
+        if index < 0:
+            raise RuntimeError("AI Agent tab is missing")
+        right.setCurrentIndex(index)
+        workspace = current.findChild(QWidget, "w6_ai_workspace")
+        if workspace is None:
+            raise RuntimeError("W6 AI workspace is missing")
+        from ai_ngerti_geopolitik.presentation.w6_ai_workspace import set_ai_agent_subview
+
+        set_ai_agent_subview(workspace, view)
+        self._emit(UiIntentType.AI_OPEN_AGENT, view=view)
+
+    def _open_ai_credentials_dialog(self) -> None:
+        from ai_ngerti_geopolitik.presentation.w6_ai_workspace import (
+            create_provider_credentials_dialog,
+        )
+
+        self._close_active_dialog()
+        self._emit(UiIntentType.OPEN_AI_CREDENTIALS)
+        dialog = create_provider_credentials_dialog(
+            self.window,
+            self.intent_sink,
+            secret_submit_sink=self.credential_secret_sink,
+        )
+        dialog.setModal(False)
+        dialog.show()
+        self._active_dialog = dialog
+
+    def apply_w6_ai_projection(self, projection: Any) -> None:
+        from PySide6.QtWidgets import QLabel, QWidget
+
+        current = self.stack.currentWidget()
+        workspace = current.findChild(QWidget, "w6_ai_workspace")
+        if workspace is None:
+            raise RuntimeError("W6 AI workspace is missing on current route")
+        from ai_ngerti_geopolitik.presentation.w6_ai_workspace import project_ai_agent_state
+
+        project_ai_agent_state(workspace, projection)
+        status = current.findChild(QLabel, "editor_status_label")
+        if status is not None:
+            status.setText(
+                "✓ Project siap   ·   Provider: "
+                f"{projection.provider_label} ({projection.provider_status})   ·   "
+                f"AI: {projection.state.value}   ·   Manual editor tetap aktif"
+            )
+
+    def apply_w6_credential_slots(self, slots: tuple[Any, ...]) -> None:
+        dialog = self._active_dialog
+        if dialog is None or dialog.objectName() != "w6_credential_dialog":
+            return
+        from ai_ngerti_geopolitik.presentation.w6_ai_workspace import (
+            project_credential_slots,
+        )
+
+        project_credential_slots(dialog, slots)
 
     def _open_narration_recording_dialog(self) -> None:
         from ai_ngerti_geopolitik.presentation.w5_workspace import (
@@ -393,10 +499,12 @@ def create_main_window(
     fixture_mode: bool = False,
     intent_sink: UiIntentSink | None = None,
     media_path_provider: Callable[[], str | None] | None = None,
+    credential_secret_sink: Callable[[int, str, Any], None] | None = None,
 ) -> MainWindow:
     return MainWindow(
         initial_state,
         fixture_mode=fixture_mode,
         intent_sink=intent_sink,
         media_path_provider=media_path_provider,
+        credential_secret_sink=credential_secret_sink,
     )
