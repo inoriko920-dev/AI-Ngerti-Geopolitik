@@ -1,0 +1,56 @@
+name: S11 W7-004 L2 Semantic Verifier
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/ai_l2_verifier.py"
+      - "tests/unit/test_step11_w7_004_l2_verifier.py"
+      - "scripts/run_step11_w7_004.py"
+      - "scripts/verify/verify_step11_w7_004_evidence.py"
+      - ".github/workflows/s11-wave7-004-l2-verifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+
+jobs:
+  w7-004:
+    name: L2 semantic verifier and sequential dry-run translator
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w7_004_l2_verifier.py
+      - run: uv run pytest -q
+      - name: Run W7-004 deterministic evidence
+        run: uv run python scripts/run_step11_w7_004.py
+      - name: Verify W7-004 evidence
+        run: uv run python scripts/verify/verify_step11_w7_004_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W7-004-L2-Verifier
+          path: artifacts/step11/w7-004/evidence/**
+          if-no-files-found: error
+          retention-days: 14
