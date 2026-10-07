@@ -131,9 +131,7 @@ def main() -> int:
         return 0
 
     namespace_suffix = os.environ.get("GITHUB_RUN_ID", "local").strip() or "local"
-    secure_store = WindowsCredentialStore(
-        f"AI-Ngerti-Geopolitik/Gemini/W6-010/{namespace_suffix}"
-    )
+    secure_store = WindowsCredentialStore(f"AI-Ngerti-Geopolitik/Gemini/W6-010/{namespace_suffix}")
     metadata = InMemoryCredentialStore()
     slots = CredentialSlotService(secure_store, metadata)
     slot_ref = CredentialSlotRef(1)
