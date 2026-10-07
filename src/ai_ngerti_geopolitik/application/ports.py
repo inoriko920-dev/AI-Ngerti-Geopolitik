@@ -74,6 +74,31 @@ class CancellationToken(Protocol):
     def cancelled(self) -> bool: ...
 
 
+@dataclass(frozen=True, slots=True)
+class RecordingDevice:
+    device_id: str
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class RecordingResult:
+    path: Path
+    cancelled: bool = False
+
+
+class RecorderPort(Protocol):
+    def devices(self) -> tuple[RecordingDevice, ...]: ...
+
+    def capture(
+        self,
+        device_id: str,
+        staging_path: Path,
+        *,
+        max_duration_seconds: float,
+        cancellation: CancellationToken | None = None,
+    ) -> RecordingResult: ...
+
+
 class MediaProbePort(Protocol):
     def probe(self, path: Path) -> ProbeResult: ...
 
