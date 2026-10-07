@@ -14,7 +14,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ai_ngerti_geopolitik.application.ai_contracts import MASKED_CREDENTIAL_VALUE
+from ai_ngerti_geopolitik.application.ai_contracts import (
+    MASKED_CREDENTIAL_VALUE,
+    CredentialSecret,
+)
 from ai_ngerti_geopolitik.application.ui_intents import RecordingIntentSink, UiIntentType
 from ai_ngerti_geopolitik.presentation.editor_shell import create_editor_shell
 from ai_ngerti_geopolitik.presentation.main_window import create_main_window
@@ -29,6 +32,14 @@ from ai_ngerti_geopolitik.presentation.w6_ai_workspace import (
 
 
 def _workspace(shell) -> QWidget:
+    right = shell.root.findChild(QTabWidget, "editor_right_tabs")
+    assert right is not None
+    ai_index = next(
+        (index for index in range(right.count()) if right.tabText(index) == "AI Agent"),
+        -1,
+    )
+    assert ai_index >= 0
+    right.setCurrentIndex(ai_index)
     widget = shell.root.findChild(QWidget, "w6_ai_workspace")
     assert widget is not None
     return widget
@@ -116,8 +127,8 @@ def test_w6_plan_approval_and_apply_buttons_are_state_gated(qtbot) -> None:
     apply_button = workspace.findChild(QPushButton, "btn_w6_plan_apply")
     reject = workspace.findChild(QPushButton, "btn_w6_plan_reject")
     assert items is not None and items.count() == 2
-    assert approve is not None and approve.isVisibleTo(workspace)
-    assert apply_button is not None and not apply_button.isVisibleTo(workspace)
+    assert approve is not None and not approve.isHidden()
+    assert apply_button is not None and apply_button.isHidden()
     assert reject is not None
 
     qtbot.mouseClick(approve, Qt.MouseButton.LeftButton)
@@ -133,8 +144,8 @@ def test_w6_plan_approval_and_apply_buttons_are_state_gated(qtbot) -> None:
             request_id="REQ-PLAN",
         ),
     )
-    assert not approve.isVisibleTo(workspace)
-    assert apply_button.isVisibleTo(workspace)
+    assert approve.isHidden()
+    assert not apply_button.isHidden()
     qtbot.mouseClick(apply_button, Qt.MouseButton.LeftButton)
     assert sink.intents[-1].kind is UiIntentType.AI_APPLY_PLAN
 
@@ -185,7 +196,10 @@ def test_w6_error_states_are_distinct_and_keep_manual_fallback_visible(qtbot) ->
     assert fallback is not None and message is not None
 
     cases = (
-        (AIAgentUiState.PROVIDER_ERROR, "NO_CREDENTIAL", "credential"),
+        (AIAgentUiState.PROVIDER_ERROR, "NO_CREDENTIAL", "belum ada credential"),
+        (AIAgentUiState.PROVIDER_ERROR, "INVALID_AUTH", "ditolak"),
+        (AIAgentUiState.PROVIDER_ERROR, "RATE_LIMIT_OR_QUOTA", "kuota"),
+        (AIAgentUiState.PROVIDER_ERROR, "NETWORK_TIMEOUT", "jaringan"),
         (AIAgentUiState.LOCK_CONFLICT, "", "terkunci"),
         (AIAgentUiState.STALE, "", "berubah"),
     )
@@ -223,9 +237,9 @@ def test_w6_main_window_ai_menu_opens_real_workspace_and_credentials(qtbot) -> N
 
 def test_w6_credential_manager_masks_projection_and_never_puts_raw_in_ui_intent(qtbot) -> None:
     sink = RecordingIntentSink()
-    submitted: list[object] = []
+    submitted: list[tuple[int, str, CredentialSecret]] = []
 
-    def submit(slot_id: int, label: str, wrapped) -> None:
+    def submit(slot_id: int, label: str, wrapped: CredentialSecret) -> None:
         submitted.append((slot_id, label, wrapped))
 
     dialog = create_provider_credentials_dialog(None, sink, secret_submit_sink=submit)
