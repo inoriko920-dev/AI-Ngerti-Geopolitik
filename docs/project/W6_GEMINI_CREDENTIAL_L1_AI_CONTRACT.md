@@ -653,9 +653,52 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W6-007/W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green, all attempt 1.
 
+### S11-W6-009 — PASS
+
+Accepted implementation HEAD:
+`7a2d79115e376205571bf529624993ed5fcc5f9f`
+
+Accepted workflow:
+`37620520208` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`.
+
+Implemented:
+- real PySide6 AI Director / AI Agent / Provider & API Key surfaces;
+- semantic-intent-only presentation boundary;
+- READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
+  LOCK_CONFLICT / STALE state projection;
+- Gemini-only provider presentation and L1-only capability claims;
+- masked saved credential slots 1..100;
+- manual-editor fallback on provider failure;
+- actual-vs-frozen evidence against audited physical raster IDs
+  UI-020/021/022/023/024/033.
+
+Reference correction:
+- historical W6 aliases UI-010/011/012/013/014/023 did not match physical
+  raster content;
+- the 42 frozen PNG binaries and SHA-256 values were not changed;
+- authoritative correction is
+  `docs/ui_reference/W6_UI_REFERENCE_CORRECTION.md`.
+
+Quality:
+- targeted W6-009 Qt tests 8/8 PASS;
+- full pytest PASS;
+- evidence verifier 15/15 PASS;
+- Ruff/mypy/import-contract/architecture/source-of-truth/security/UI gates PASS;
+- all 24 regression workflow families through S08 SUCCESS on the same HEAD;
+- S10 packaged smoke needed attempt 2 only because Chocolatey returned HTTP 504
+  while fetching FFmpeg; no product-code change was required.
+
+Artifact:
+- `ANG-S11-W6-009-Frozen-UI`;
+- ID `11481533239`;
+- SHA-256 `874615de8ff572c3ee33df858882721f7286e8bfae9c162468fc512d7615ea5e`.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-009 only — Frozen UI parity**.
+On the next owner **lanjutkan**, execute **S11-W6-010 only — Live Gemini + failure + regression closure**.
 
-Use the existing frozen AAVC UI references. Do not regenerate the void 42-prompt UI set,
-and do not perform live-provider closure in W6-009.
+Do not start AI L2, non-Gemini providers, validation/recovery hardening,
+export-matrix work or SF-STEP 12.

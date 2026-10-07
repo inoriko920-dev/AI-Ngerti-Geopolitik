@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..008 PASS — NEXT W6-009**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..009 PASS — NEXT W6-010**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -17,32 +17,34 @@ Completed:
 - W6-006 strict EditPlan schema + PlanVerifier = PASS
 - W6-007 official Gemini adapter + async lifecycle = PASS
 - W6-008 approval → atomic CommandBatch → Undo/Redo = PASS
+- W6-009 frozen AI / credential UI parity = PASS
 
-W6-008 accepted implementation:
-`544bbde03a55c673e26b5e933b04c23b5336ba42`
+W6-009 accepted implementation:
+`7a2d79115e376205571bf529624993ed5fcc5f9f`
 
 Workflow:
-`37613133911` — SUCCESS.
+`37620520208` — SUCCESS.
 
-Now available:
-- one-consume verified-job → approval boundary;
-- explicit approve/reject/cancel lifecycle;
-- zero mutation before approval;
-- project/revision/semantic stale re-check immediately before apply;
-- W6-006 re-verification at apply time;
-- sequential translation to existing manual W4 commands;
-- one approved plan = one atomic CommandBatch/history entry;
-- exact semantic Undo/Redo;
-- duplicate stage/apply protection.
+W6-009 provides:
+- real PySide6 AI Director / AI Agent / Provider & API Key surfaces;
+- READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR / LOCK_CONFLICT / STALE;
+- semantic-intent-only presentation boundary;
+- masked credential slots 1..100;
+- Gemini-only V1 provider surface;
+- L1-only capability claims;
+- actual-vs-frozen evidence against audited physical refs
+  UI-020/021/022/023/024/033.
 
-Targeted W6-008 tests: **9/9 PASS**.  
+Targeted W6-009 tests: **8/8 PASS**.  
 Full pytest: **PASS**.  
 Evidence verifier: **15/15 PASS**.
 
-All W6-007 through S08 regression workflows are green on the same implementation HEAD, all attempt 1.
+All 24 regression workflows through S08 are green on the same accepted implementation
+HEAD. S10 packaged smoke required a retry only because Chocolatey returned HTTP 504
+while fetching FFmpeg; no product-code change was needed.
 
-Real Gemini network qualification remains W6-010.
+Real Gemini network qualification remains **W6-010**.
 
 ## Next
 
-**S11-W6-009 — Frozen UI parity only.**
+**S11-W6-010 — Live Gemini + failure + regression closure only.**

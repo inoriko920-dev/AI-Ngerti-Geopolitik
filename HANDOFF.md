@@ -2,104 +2,119 @@
 
 **Current phase:** SF-STEP 11  
 **Current wave:** W6 — Gemini Credential + L1 AI Animation Planning  
-**Last completed task:** S11-W6-008 — PASS  
-**Accepted W6-008 implementation HEAD:** `544bbde03a55c673e26b5e933b04c23b5336ba42`  
-**Accepted W6-008 workflow:** `37613133911` — SUCCESS  
-**Next exact task:** S11-W6-009 — Frozen UI parity  
+**Last completed task:** S11-W6-009 — PASS  
+**Accepted W6-009 implementation HEAD:** `7a2d79115e376205571bf529624993ed5fcc5f9f`  
+**Accepted W6-009 workflow:** `37620520208` — SUCCESS  
+**Next exact task:** S11-W6-010 — Live Gemini + failure + regression closure  
 **Previous W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W6-008 implementation now available
+## W6-009 implementation now available
 
-Application:
-- `application/ai_approval.py` is the single approval/apply owner;
-- only a successful W6-007 job result already verified by W6-006 may be staged;
-- staging consumes the verified job result once and creates a non-mutating approval record;
-- states: PENDING / APPROVED / REJECTED / CANCELLED / APPLIED.
+Presentation:
+- old AI placeholder is removed from the live editor shell;
+- real PySide6 AI Director / AI Agent / Provider & API Key surfaces are wired into the existing editor;
+- UI emits semantic intents only and never mutates ProjectState/provider/CommandBus directly;
+- UI states are READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
+  LOCK_CONFLICT / STALE;
+- AI claims remain limited to render-qualified W6 L1 effects;
+- manual editing remains available when provider state fails.
 
-Approval boundary:
-- staging = zero canonical mutation;
-- approve = zero canonical mutation;
-- reject = terminal zero mutation;
-- cancel before apply = terminal zero mutation;
-- apply is impossible until explicit APPROVED state;
-- duplicate staging and duplicate apply fail safely.
+Credential presentation:
+- Gemini remains the only W6 provider;
+- logical credential slots remain 1..100;
+- saved credentials are displayed only as the fixed masked marker;
+- raw saved key material is never projected back into UI;
+- new key input is transient and crosses only the explicit credential application boundary;
+- UI intent metadata contains no raw key material;
+- quota/rate-limit resilience is not presented as quota evasion.
 
-Pre-apply safety:
-- current project ID must still match;
-- base revision must still match;
-- base semantic hash must still match;
-- PlanVerifier runs again immediately before apply;
-- verified candidate semantic hash must still match;
-- commands are translated sequentially through the existing manual
-  `SetClipPropertiesCommand` path.
+## Frozen UI reference correction
 
-Atomic history:
-- one approved EditPlan becomes exactly one `CommandBatch`;
-- batch actor is `ai`;
-- CommandBus increments revision once for the whole plan;
-- a two-command AI plan is reverted by one Undo;
-- Redo restores the exact applied semantic state;
-- failed/stale/rejected/cancelled plans add no AI history transaction.
+A 42/42 visual audit found that historical W6 planning aliases did not match the
+physical content of the frozen PNG set. The binaries and SHA-256 identities were
+not changed.
 
-Still not implemented:
-- W6 frozen UI widgets;
-- live Gemini qualification/closure;
-- AI L2.
+Authoritative W6 semantic-to-raster mapping:
+- AI Director / AI Otomatis → `UI-020.png`
+- AI Agent Ready / Chat → `UI-021.png`
+- AI Agent Rencana Aksi → `UI-022.png`
+- AI Agent Perubahan Diterapkan → `UI-023.png`
+- AI Agent Provider Tidak Tersedia → `UI-024.png`
+- Provider & API Key Manager → `UI-033.png`
+
+Correction source:
+`docs/ui_reference/W6_UI_REFERENCE_CORRECTION.md`
 
 ## Tests/evidence
 
-Targeted W6-008 tests: **9/9 PASS**.  
-Full pytest: **PASS**.  
-Evidence verifier: **15/15 PASS**.  
-Workflow: `37613133911` — **SUCCESS**.
+Workflow `37620520208` — **SUCCESS**:
+- Ruff format/check PASS;
+- mypy PASS — 63 source files;
+- import contracts PASS;
+- architecture PASS;
+- source-of-truth PASS;
+- no-secret verifier PASS;
+- frozen UI references 42/42 SHA-256 PASS;
+- targeted W6-009 Qt tests **8/8 PASS**;
+- full pytest PASS;
+- actual-vs-frozen capture PASS;
+- evidence verifier **15/15 PASS**;
+- artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W6-008-Approval-CommandBatch`;
-- ID `11479655608`;
-- size 412 bytes;
-- SHA-256 `34d85ae83a39b97d94bee06d758643f51e5793ec4ddca68f001299d05f9668ea`.
+- `ANG-S11-W6-009-Frozen-UI`;
+- ID `11481533239`;
+- size 7,634,355 bytes;
+- SHA-256 `874615de8ff572c3ee33df858882721f7286e8bfae9c162468fc512d7615ea5e`.
 
-## Regression lock on accepted W6-008 implementation HEAD
+Evidence:
+`docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
 
-All SUCCESS, attempt 1:
-- W6-008 `37613133911`
-- W6-007 `37613134080`
-- W6-006 `37613134062`
-- W6-005 `37613133875`
-- W6-004 `37613133710`
-- W6-003 `37613133646`
-- W6-002 `37613134017`
-- W6-001 `37613133838`
-- W5-010 `37613133722`
-- W5-009 `37613133835`
-- W5-008 `37613133712`
-- W5-007 `37613133955`
-- W5-006 `37613133725`
-- W5-005 `37613133778`
-- W5-004 `37613133817`
-- W4 `37613133949`
-- W3 `37613133651`
-- W2 `37613133793`
-- W1 `37613133971`
-- W0 `37613133751`
-- S10 `37613133927`
-- S09 `37613134030`
-- S08 `37613133893`
+## Regression lock on accepted W6-009 implementation HEAD
 
-S08 portable build/smoke and S10 packaged real-media smoke both PASS.
+All workflows are SUCCESS on `7a2d79115e376205571bf529624993ed5fcc5f9f`:
+- W6-009 `37620520208`
+- W6-008 `37620520190`
+- W6-007 `37620520185`
+- W6-006 `37620520096`
+- W6-005 `37620520081`
+- W6-004 `37620520090`
+- W6-003 `37620520106`
+- W6-002 `37620520119`
+- W6-001 `37620520141`
+- W5-010 `37620520083`
+- W5-009 `37620520144`
+- W5-008 `37620520146`
+- W5-007 `37620520077`
+- W5-006 `37620520087`
+- W5-005 `37620520192`
+- W5-004 `37620520203`
+- W4 `37620520147`
+- W3 `37620520102`
+- W2 `37620520073`
+- W1 `37620520224`
+- W0 `37620520175`
+- S10 `37620520070` — SUCCESS on attempt 2
+- S09 `37620520129`
+- S08 `37620520042`
 
-## Critical boundaries for W6-009
+S10 attempt 1 failed only because the Chocolatey community feed returned HTTP 504
+while installing FFmpeg. The failed packaged-smoke job was rerun without a product-code
+change and passed completely.
 
-- use frozen AAVC UI references UI-010/011/012/013/014/023;
-- AAVC remains read-only;
-- existing 42-prompt UI regeneration is VOID / DO NOT USE;
-- semantic UI intents only; no direct ProjectState/provider mutation from presentation;
-- expose READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
-  LOCK_CONFLICT / STALE states truthfully;
-- only W6 L1 capabilities may be claimed;
-- credential display remains masked; never reveal raw keys;
-- no live Gemini closure yet.
+## Critical boundaries for W6-010
+
+- W6-010 is **not started**;
+- full W6 PASS requires at least one real Gemini request through the official adapter
+  using a Windows secure-store credential;
+- a real returned L1 plan must be validated and applied through the existing
+  W6-006/W6-008 boundaries;
+- raw credential material must remain absent from logs/evidence/UI;
+- provider failure/invalid/stale/lock cases must retain zero unsafe mutation;
+- if no live Gemini credential is available, W6 may close only as
+  **PASS_WITH_PROVISIONAL_LIVE_GEMINI**;
+- do not add AI L2, non-Gemini providers, export-matrix work or SF-STEP 12.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W6-009 only — Frozen UI parity**.
+After owner says `lanjutkan`, execute **S11-W6-010 only — Live Gemini + failure + regression closure**.

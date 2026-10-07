@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..008 PASS / S11-W6-009 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001..009 PASS / S11-W6-010 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -225,8 +225,8 @@ Serial contract:
 - [x] **S11-W6-006 — EditPlan schema + PlanVerifier — PASS**
 - [x] **S11-W6-007 — Gemini adapter + async lifecycle — PASS**
 - [x] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — PASS**
-- [ ] **S11-W6-009 — Frozen UI parity — READY**
-- [ ] **S11-W6-010 — Live Gemini + failure + regression closure — BLOCKED_BY_W6_009**
+- [x] **S11-W6-009 — Frozen UI parity — PASS**
+- [ ] **S11-W6-010 — Live Gemini + failure + regression closure — READY**
 
 Locked boundaries:
 - Gemini is the only W6 provider;
@@ -443,3 +443,34 @@ W6-008 proof:
 - W6-007/W6-006/W6-005/W6-004/W6-003/W6-002/W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the same HEAD, all attempt 1.
 
 **Exact next task:** S11-W6-009 only — Frozen UI parity.
+
+
+#### W6-009 closure
+
+Accepted W6-009 implementation HEAD:
+`7a2d79115e376205571bf529624993ed5fcc5f9f`
+
+Accepted workflow:
+`37620520208` — SUCCESS
+
+Evidence:
+`docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
+
+Artifact:
+`ANG-S11-W6-009-Frozen-UI` / ID `11481533239`
+
+Proof:
+- real AI Director / AI Agent / Provider & API Key PySide6 widgets;
+- semantic UI intents only;
+- READY/PLAN/APPROVAL/APPLYING/SUCCESS/PROVIDER_ERROR/LOCK_CONFLICT/STALE;
+- L1-only capability claims;
+- saved credential masking;
+- physical frozen mapping UI-020/021/022/023/024/033 audited and recorded;
+- targeted Qt tests 8/8 PASS;
+- full pytest PASS;
+- evidence verifier 15/15 PASS;
+- 24/24 regression workflows SUCCESS on accepted HEAD;
+- S10 packaged smoke succeeded on retry after external Chocolatey HTTP 504;
+- S08 security/dependency + portable foundation PASS.
+
+**Next:** S11-W6-010 only after owner says `lanjutkan`.
