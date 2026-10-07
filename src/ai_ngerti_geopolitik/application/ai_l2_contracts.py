@@ -156,12 +156,8 @@ class W7PolicyBounds:
         if fps <= 0 or current_duration_frames <= 0:
             raise ValueError("duration policy requires positive fps/current duration")
         minimum_half_second = (fps + 1) // 2
-        minimum_ratio = (
-            current_duration_frames * self.duration_min_ratio_percent + 99
-        ) // 100
-        maximum_ratio = (
-            current_duration_frames * self.duration_max_ratio_percent
-        ) // 100
+        minimum_ratio = (current_duration_frames * self.duration_min_ratio_percent + 99) // 100
+        maximum_ratio = (current_duration_frames * self.duration_max_ratio_percent) // 100
         return max(minimum_half_second, minimum_ratio), maximum_ratio
 
     def transform_position_bounds(
@@ -219,11 +215,7 @@ class SpeedEditProposal:
             )
         object.__setattr__(self, "target_clip_id", _stable_target(self.target_clip_id))
         rate = _strict_int("rate_percent", self.rate_percent)
-        if not (
-            W7_POLICY_BOUNDS.speed_min_percent
-            <= rate
-            <= W7_POLICY_BOUNDS.speed_max_percent
-        ):
+        if not (W7_POLICY_BOUNDS.speed_min_percent <= rate <= W7_POLICY_BOUNDS.speed_max_percent):
             raise PlanContractError(
                 PlanErrorCode.SEMANTIC_INVALID,
                 "W7 AI speed must be between 50 and 200 percent",
