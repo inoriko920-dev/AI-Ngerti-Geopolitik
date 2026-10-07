@@ -143,7 +143,10 @@ class CanonicalStateRule:
                     ValidationSeverity.BLOCKER,
                     ValidationScope.PROJECT,
                     "Project tidak valid",
-                    f"Project gagal validasi canonical: {exc}. Perbaiki project lalu validasi ulang.",
+                    (
+                        f"Project gagal validasi canonical: {exc}. "
+                        "Perbaiki project lalu validasi ulang."
+                    ),
                     (state.project_id,),
                     ValidationAction.REVALIDATE,
                     state.revision,
