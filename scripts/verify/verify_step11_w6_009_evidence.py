@@ -10,21 +10,23 @@ def main() -> int:
     args = parser.parse_args()
     root = args.evidence.resolve()
 
-    ids = ("010", "011", "012", "013", "014", "023")
-    actual = {
-        "010": "UI-010_ACTUAL_AI_DIRECTOR.png",
-        "011": "UI-011_ACTUAL_AI_READY.png",
-        "012": "UI-012_ACTUAL_AI_PLAN.png",
-        "013": "UI-013_ACTUAL_AI_APPLIED.png",
-        "014": "UI-014_ACTUAL_PROVIDER_UNAVAILABLE.png",
-        "023": "UI-023_ACTUAL_PROVIDER_KEYS.png",
+    pairs = {
+        "AI_DIRECTOR": ("UI-020", "AI_DIRECTOR_ACTUAL.png"),
+        "AI_READY": ("UI-021", "AI_READY_ACTUAL.png"),
+        "AI_PLAN": ("UI-022", "AI_PLAN_ACTUAL.png"),
+        "AI_APPLIED": ("UI-023", "AI_APPLIED_ACTUAL.png"),
+        "AI_PROVIDER_UNAVAILABLE": ("UI-024", "AI_PROVIDER_UNAVAILABLE_ACTUAL.png"),
+        "PROVIDER_API_KEYS": ("UI-033", "PROVIDER_API_KEYS_ACTUAL.png"),
     }
     required = [
         "00_w6_009_ui_report.txt",
         "00_w6_009_security_report.txt",
         "00_FROZEN_REFERENCE_CONTACT_SHEET.png",
-        *actual.values(),
-        *(f"UI-{ui_id}_REFERENCE_VS_ACTUAL.png" for ui_id in ids),
+        *(actual_name for _reference_id, actual_name in pairs.values()),
+        *(
+            f"{semantic_name}__{reference_id}_REFERENCE_VS_ACTUAL.png"
+            for semantic_name, (reference_id, _actual_name) in pairs.items()
+        ),
     ]
     missing = [name for name in required if not (root / name).is_file()]
     if missing:
@@ -37,12 +39,14 @@ def main() -> int:
     security = (root / "00_w6_009_security_report.txt").read_text(encoding="utf-8")
     for token in (
         "status=PASS",
-        "ui_010=ai_director_real_widgets",
-        "ui_011=ready_chat_real_widgets",
-        "ui_012=plan_approval_real_widgets",
-        "ui_013=applied_success_real_widgets",
-        "ui_014=provider_unavailable_manual_fallback",
-        "ui_023=provider_api_key_manager_real_widgets",
+        "ai_director=real_widgets",
+        "ai_ready=real_widgets",
+        "ai_plan=real_widgets",
+        "ai_applied=real_widgets",
+        "ai_provider_unavailable=real_widgets",
+        "provider_api_keys=real_widgets",
+        "reference_mapping=AI_DIRECTOR:UI-020,AI_READY:UI-021,AI_PLAN:UI-022,AI_APPLIED:UI-023,AI_PROVIDER_UNAVAILABLE:UI-024,PROVIDER_API_KEYS:UI-033",
+        "historical_w6_reference_numbers_corrected=true",
         "l1_only=true",
         "manual_fallback=true",
     ):
