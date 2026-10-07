@@ -177,7 +177,7 @@ def test_each_qualified_animation_compiles_distinct_render_behavior() -> None:
         assert preview != baseline
         rendered[preset] = preview
 
-    assert "fontsize='48'" in rendered["Pop"]
+    assert "fontsize=48" in rendered["Pop"]
     assert "+64" in rendered["Slide Up"]
     assert "+17.28" in rendered["Clean Documentary"]
     assert len(set(rendered.values())) == 4

@@ -185,11 +185,20 @@ def _drawtext(
         y = _dynamic_y(base_y, cue, animation)
         alpha_value = _dynamic_alpha(cue, animation)
 
+    dynamic_fontsize = (
+        sample_frame is None
+        and animation.preset == "Pop"
+        and animation.enter_frames > 0
+    )
+    fontsize_option = (
+        f"fontsize='{fontsize}'" if dynamic_fontsize else f"fontsize={fontsize}"
+    )
+
     parts = [
         f"drawtext=fontfile='{_fontfile(style)}'",
         f"text='{_escape_text(cue.text)}'",
         "expansion=none",
-        f"fontsize='{fontsize}'",
+        fontsize_option,
         f"fontcolor=0x{style.fill_color.lstrip('#')}",
         f"bordercolor=0x{style.outline_color.lstrip('#')}",
         f"borderw={border}",
