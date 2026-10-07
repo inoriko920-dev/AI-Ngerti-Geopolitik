@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001 PASS — NEXT W6-002**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001 PASS — W6-002 PASS — NEXT W6-003**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -8,36 +8,36 @@ Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
 ## W6 — Gemini Credential + L1 AI Animation Planning
 
-Contract:
-`docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
-
-Planning:
-- TXT: `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt`
-- DOCX: `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx`
-
 ### W6-001 — PASS
+Canonical AI/credential contracts.
+
+### W6-002 — PASS
 
 Accepted implementation:
-`160a320768e4d4b788bc9e2bc9e4174569a32f31`
+`7a3f3551b9080347c64ab53cca0be4ee646c41ed`
 
 Workflow:
-`37591531616` — SUCCESS.
+`37593139064` — SUCCESS.
 
 Now available:
-- provider-agnostic AIProviderPort;
-- secure-storage CredentialPort boundary;
-- masked transient CredentialSecret;
-- validated logical slot refs 1..100;
-- structured EditPlan + L1 effect proposal DTOs;
-- typed credential/provider/plan errors;
-- provider-agnostic job states.
+- logical credential slots 1..100;
+- non-secret slot metadata;
+- fixed masked credential display;
+- add/update/delete/enable/disable/mask service;
+- deterministic in-memory secure-store fake;
+- raw secret separation from ProjectState/.angproj/diagnostics.
 
-W6 L1 is structurally limited to already-render-qualified W4 effects.
-No Gemini network call, WinVault adapter, AI apply pipeline or W6 UI exists yet.
+Targeted tests:
+**9/9 PASS**.
 
-Security gates, full pytest and W5→S08 regressions are green on the accepted
-W6-001 implementation HEAD.
+Evidence verifier:
+**5/5 PASS**.
+
+All regressions through W5/W4/W3/W2/W1/W0/S10/S09/S08 are green on the
+accepted W6-002 implementation HEAD.
+
+No production Windows secure-store adapter and no Gemini request exists yet.
 
 ## Next
 
-**S11-W6-002 — Secure credential slots 1–100 only.**
+**S11-W6-003 — Windows secure-store qualification only.**

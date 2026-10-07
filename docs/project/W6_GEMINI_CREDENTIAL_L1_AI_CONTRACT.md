@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 READY / W6-003..010 BLOCKED_BY_PREVIOUS_TASKS  
+**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 READY / W6-004..010 BLOCKED_BY_PREVIOUS_TASKS  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -439,9 +439,37 @@ Quality:
 - architecture/security/source-of-truth/UI gates PASS;
 - W5 through S08 regression matrix green on the same implementation HEAD.
 
+### S11-W6-002 — PASS
+
+Accepted implementation HEAD:
+`7a3f3551b9080347c64ab53cca0be4ee646c41ed`
+
+Accepted workflow:
+`37593139064` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_002_CREDENTIAL_SLOTS.md`.
+
+Implemented:
+- non-secret CredentialSlotMetadata;
+- CredentialMetadataPort;
+- CredentialSlotService;
+- deterministic InMemoryCredentialStore fake;
+- slot 1/100 qualification and 0/101 rejection;
+- add/update/delete/enable/disable/fixed-mask behavior;
+- raw-secret separation from ProjectState, .angproj and diagnostics;
+- consistent secret+metadata delete and rollback boundaries.
+
+Quality:
+- targeted tests 9/9 PASS;
+- full pytest PASS;
+- evidence verifier 5/5 PASS;
+- architecture/security/source-of-truth/UI gates PASS;
+- W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 regressions green.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-002 only — Secure credential slots 1–100**.
+On the next owner **lanjutkan**, execute **S11-W6-003 only — Windows secure-store qualification**.
 
-Do not create the production Windows secure-store adapter, make a Gemini network
-call, implement failover, W6 UI or apply an AI EditPlan in W6-002.
+Do not implement health/failover, bulk TXT, Gemini network, W6 UI, ContextBuilder,
+PlanVerifier or AI-plan application in W6-003.

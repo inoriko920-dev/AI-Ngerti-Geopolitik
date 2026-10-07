@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 READY
+### W6 — CONTRACT_LOCKED / S11-W6-001 PASS / S11-W6-002 PASS / S11-W6-003 READY
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -218,8 +218,8 @@ W6-001 evidence:
 
 Serial contract:
 - [x] **S11-W6-001 — Canonical AI + credential contracts — PASS**
-- [ ] **S11-W6-002 — Secure credential slots 1–100 — READY**
-- [ ] **S11-W6-003 — Windows secure-store qualification — BLOCKED_BY_W6_002**
+- [x] **S11-W6-002 — Secure credential slots 1–100 — PASS**
+- [ ] **S11-W6-003 — Windows secure-store qualification — READY**
 - [ ] **S11-W6-004 — Credential health + safe failover — BLOCKED_BY_W6_003**
 - [ ] **S11-W6-005 — L1 ContextBuilder + allowlist — BLOCKED_BY_W6_004**
 - [ ] **S11-W6-006 — EditPlan schema + PlanVerifier — BLOCKED_BY_W6_005**
@@ -255,4 +255,29 @@ W6-001 proof:
 - S10 packaged-smoke required attempt 2 only because Chocolatey returned HTTP 504
   while fetching FFmpeg; no product-code change was required.
 
-**Exact next task:** S11-W6-002 only — Secure credential slots 1–100.
+Accepted W6-002 implementation HEAD:
+`7a3f3551b9080347c64ab53cca0be4ee646c41ed`
+
+W6-002 workflow:
+`37593139064` — SUCCESS
+
+W6-002 evidence:
+`docs/evidence/features/S11_W6_002_CREDENTIAL_SLOTS.md`
+
+W6-002 artifact:
+`ANG-S11-W6-002-Credential-Slots` / ID `11469631614`
+
+W6-002 proof:
+- slot 1 and 100 supported; 0/101 rejected;
+- non-secret metadata uses slot/label/enabled + fixed masked marker;
+- add/update/delete/enable/disable/mask service PASS;
+- deterministic in-memory secret+metadata backend PASS;
+- raw secret absent from ProjectState, .angproj and safe diagnostics;
+- metadata label may not contain the credential value;
+- delete removes secret + metadata consistently;
+- targeted tests 9/9 PASS;
+- full pytest PASS;
+- evidence verifier 5/5 PASS;
+- W6-001/W5/W4/W3/W2/W1/W0/S10/S09/S08 all SUCCESS on the accepted HEAD.
+
+**Exact next task:** S11-W6-003 only — Windows secure-store qualification.

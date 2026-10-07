@@ -1,60 +1,55 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001 PASS.**
-
-## W6
-
-**Gemini Credential + L1 AI Animation Planning**
-
-Planning:
-- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.txt`
-- `docs/planning/09_S11_W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT_PLAN_2026-10-07.docx`
-
-Contract:
-`docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
+**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001 PASS. W6-002 PASS.**
 
 ## Completed
 
-**S11-W6-001 — Canonical AI + credential contracts — PASS**
+### S11-W6-001 — PASS
+Canonical AI + credential contracts.
+
+### S11-W6-002 — PASS
 
 Accepted implementation:
-`160a320768e4d4b788bc9e2bc9e4174569a32f31`
+`7a3f3551b9080347c64ab53cca0be4ee646c41ed`
 
 Workflow:
-`37591531616` — SUCCESS.
+`37593139064` — SUCCESS.
 
 Implemented:
-- AIProviderPort;
-- CredentialPort;
-- masked transient CredentialSecret;
-- validated slot references 1..100;
-- provider request/response DTOs;
-- EditPlan + effect-only L1 proposal DTO;
-- typed error taxonomy;
-- provider-agnostic job lifecycle;
-- W4 render-qualified L1 allowlist.
+- non-secret CredentialSlotMetadata;
+- CredentialMetadataPort;
+- fixed safe mask;
+- CredentialSlotService add/update/delete/enable/disable/list/mask;
+- deterministic in-memory credential+metadata fake;
+- consistency rollback behavior;
+- no-secret project/persistence/diagnostic proof.
 
-No secure-store backend, Gemini network, plan verifier/apply or W6 UI was started.
+Gates:
+- targeted tests 9/9 PASS;
+- full pytest PASS;
+- evidence 5/5 PASS;
+- no-secret/architecture/UI/source-of-truth PASS;
+- W6-001 and W5→S08 regressions all SUCCESS.
 
 ## Active next task
 
-**S11-W6-002 — Secure credential slots 1–100**
+**S11-W6-003 — Windows secure-store qualification**
 
 Scope:
-- logical slot metadata only;
-- add/update/delete/enable/disable/mask;
-- deterministic in-memory fake secure store;
-- metadata must remain non-secret;
-- raw secret may exist only through CredentialPort/CredentialSecret;
-- prove raw secret is absent from ProjectState/project persistence/log-safe outputs.
+- production Windows secure-store adapter behind CredentialPort;
+- real Windows secure-store smoke;
+- slot 1 + 100;
+- store/load/has/delete;
+- reopen qualification;
+- safe error behavior;
+- no raw secret in output/evidence.
 
-W6-002 must not:
-- implement WinVault/keyring production adapter;
-- implement health/failover;
-- parse bulk TXT unless the serial contract reaches that later boundary;
+W6-003 must not:
+- implement credential health/failover;
+- implement bulk TXT;
 - call Gemini;
 - implement ContextBuilder/PlanVerifier;
-- apply plans;
+- apply AI plans;
 - implement W6 UI.
 
-Do not begin W6-002 until owner says `lanjutkan`.
+Do not begin W6-003 until owner says `lanjutkan`.

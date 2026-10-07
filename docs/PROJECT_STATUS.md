@@ -2,92 +2,105 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W6 — Gemini Credential + L1 AI Animation Planning**  
-**W6 status:** **CONTRACT_LOCKED / W6-001 PASS / W6-002 READY**  
+**W6 status:** **CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 READY**  
 **Previous wave:** W5 — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE  
-**Accepted W6-001 implementation HEAD:** `160a320768e4d4b788bc9e2bc9e4174569a32f31`  
-**Accepted W6-001 workflow:** `37591531616` — SUCCESS  
-**Next exact task:** **S11-W6-002 — Secure credential slots 1–100**
+**Accepted W6-002 implementation HEAD:** `7a3f3551b9080347c64ab53cca0be4ee646c41ed`  
+**Accepted W6-002 workflow:** `37593139064` — SUCCESS  
+**Next exact task:** **S11-W6-003 — Windows secure-store qualification**
 
-## W6-001 proven
+## W6-002 proven
 
-Canonical application contracts:
-- `CredentialPort`;
-- `AIProviderPort`;
-- `CredentialSlotRef`;
-- transient `CredentialSecret`;
-- `AIProviderRequest`;
-- `ProviderPlanResponse`;
-- `EditPlan`;
-- `EffectEditProposal`;
-- typed credential/provider/plan error categories;
-- provider-agnostic AI job lifecycle states.
+Logical credential-slot surface:
+- slots are still bounded by the W6-001 contract to 1..100;
+- slot 1 and slot 100 are qualified;
+- slot 0/101/negative are rejected before storage;
+- non-secret metadata contains only slot reference, label and enabled state;
+- presentation-safe masking uses one fixed marker `••••••••`;
+- metadata repr/diagnostics expose only slot/label/enabled/mask, never raw secret.
 
-Security-by-shape:
-- credential slots are bounded to 1..100;
-- raw secret is never part of ProjectState;
-- `CredentialSecret.__str__` and `__repr__` are masked;
-- raw secret access requires explicit `reveal()`;
-- AIProviderRequest contains no credential/api_key/secret field;
-- provider credential is passed separately from sanitized request/context;
-- W6-001 contains no Gemini client, keyring/WinVault adapter, Qt UI or project apply path.
+Application service:
+- `CredentialSlotService.add_or_update(...)`;
+- `get(...)`;
+- `list_slots()`;
+- `masked_value(...)`;
+- `set_enabled(...)`;
+- `delete(...)`.
 
-L1 boundary:
-- proposal type is only `set_clip_effects`;
-- target is a stable clip ID;
-- proposal may change only enter effect, exit effect and bounded intensity;
-- proposal cannot express lock changes, title changes, timeline changes or shell/code;
-- allowlist is exactly the render-qualified W4 effects:
-  None, Fade, Pop, Breathe, Stomp, Tumble, Tectonic, Rise, Pan, Drift;
-- unsupported effects such as Wipe remain rejected.
+Consistency:
+- add/update validates metadata before secure-store mutation;
+- update preserves enabled state unless explicitly changed through metadata operation;
+- delete removes secret + metadata together;
+- rollback logic restores previous state if coordinated storage fails;
+- enable/disable changes metadata only.
 
-EditPlan:
-- schema version is locked to 1;
-- base project revision is mandatory and non-negative;
-- request ID + human summary are mandatory;
-- ordered typed effect proposals are carried as application DTO state;
-- no canonical project mutation is implemented in W6-001.
+Boundaries:
+- `CredentialMetadataPort` is a non-secret application port;
+- `InMemoryCredentialStore` is deterministic W6-002 qualification/test infrastructure only;
+- production WinVault/keyring adapter is NOT implemented yet;
+- no credential health/failover;
+- no bulk TXT import;
+- no Gemini SDK/network;
+- no W6 UI;
+- no AI plan apply.
 
-## W6-001 gates
+Secret-safety evidence:
+- raw credential is absent from ProjectState semantic JSON;
+- raw credential is absent from saved `.angproj`;
+- raw credential is absent from safe diagnostic output;
+- label containing the raw credential value is rejected;
+- service/backend repr does not reveal secret;
+- credential work does not mutate ProjectState.
 
-Workflow `37591531616`:
+## W6-002 gates
+
+Workflow `37593139064`:
 - Ruff format PASS;
 - Ruff check PASS;
-- mypy PASS — 53 source files;
+- mypy PASS — 55 source files;
 - import contracts PASS;
 - architecture PASS;
 - source-of-truth 70/70 PASS;
 - no-secret scan PASS;
-- frozen UI references 42/42 SHA-256 PASS;
-- targeted W6-001 contract tests: **10/10 PASS**;
-- full pytest PASS.
+- frozen UI references 42/42 PASS;
+- targeted W6-002 tests: **9/9 PASS**;
+- full pytest PASS;
+- credential-separation evidence PASS;
+- evidence verifier **5/5 PASS**.
 
-Regression lock on accepted W6-001 HEAD:
-- W5-010 `37591531601` — SUCCESS;
-- W5-009 `37591531521` — SUCCESS;
-- W5-008 `37591531560` — SUCCESS;
-- W5-007 `37591531572` — SUCCESS;
-- W5-006 `37591531512` — SUCCESS;
-- W5-005 `37591531539` — SUCCESS;
-- W5-004 `37591531600` — SUCCESS;
-- W4 `37591531556` — SUCCESS;
-- W3 `37591531593` — SUCCESS;
-- W2 `37591531584` — SUCCESS;
-- W1 `37591531540` — SUCCESS;
-- W0 `37591531542` — SUCCESS;
-- S10 `37591531550` — SUCCESS on attempt 2;
-- S09 `37591531497` — SUCCESS;
-- S08 `37591531604` — SUCCESS.
+Artifact:
+- `ANG-S11-W6-002-Credential-Slots`;
+- ID `11469631614`;
+- size 1,677 bytes.
 
-S10 attempt 1 failed only because the Chocolatey community feed returned HTTP
-504 while resolving FFmpeg. The failed job was retried unchanged and passed.
+## Regression lock on accepted W6-002 HEAD
+
+All SUCCESS:
+- W6-002: `37593139064`;
+- W6-001: `37593138955`;
+- W5-010: `37593138805`;
+- W5-009: `37593138857`;
+- W5-008: `37593139330`;
+- W5-007: `37593139227`;
+- W5-006: `37593139195`;
+- W5-005: `37593138944`;
+- W5-004: `37593139165`;
+- W4: `37593138895`;
+- W3: `37593138967`;
+- W2: `37593139072`;
+- W1: `37593139158`;
+- W0: `37593139078`;
+- S10: `37593138946`;
+- S09: `37593139140`;
+- S08: `37593139151`.
 
 ## Exact next action
 
-After owner says **lanjutkan**, execute **S11-W6-002 only**:
-- logical credential-slot metadata;
-- add/update/delete/enable/disable/mask service;
-- deterministic in-memory secure-store fake;
-- no raw secret in ProjectState/persistence/logs.
+After owner says **lanjutkan**, execute **S11-W6-003 only**:
+- production Windows secure-store adapter behind CredentialPort;
+- qualify slot 1 and slot 100 on Windows;
+- delete/reopen behavior;
+- secure-store failure behavior;
+- real Windows secure-store smoke.
 
-Do not create WinVault/keyring production adapter, make a Gemini network call,
-implement W6 UI, implement failover or apply an EditPlan in W6-002.
+Do not add health/failover, bulk TXT, Gemini calls, W6 UI, ContextBuilder,
+PlanVerifier or AI apply in W6-003.
