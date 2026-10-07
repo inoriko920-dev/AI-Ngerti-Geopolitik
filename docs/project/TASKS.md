@@ -193,7 +193,7 @@ Hard boundaries remain:
 **Next:** W6 is now contract-locked below. Continue only by its serial task order.
 
 
-### W6 — CONTRACT_LOCKED / S11-W6-001..009 PASS / S11-W6-010 READY
+### W6 — CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI
 
 **Gemini Credential + L1 AI Animation Planning**
 
@@ -226,7 +226,7 @@ Serial contract:
 - [x] **S11-W6-007 — Gemini adapter + async lifecycle — PASS**
 - [x] **S11-W6-008 — Approval → CommandBatch → Undo/Redo — PASS**
 - [x] **S11-W6-009 — Frozen UI parity — PASS**
-- [ ] **S11-W6-010 — Live Gemini + failure + regression closure — READY**
+- [x] **S11-W6-010 — Live Gemini + failure + regression closure — PASS_WITH_PROVISIONAL_LIVE_GEMINI**
 
 Locked boundaries:
 - Gemini is the only W6 provider;
@@ -473,4 +473,33 @@ Proof:
 - S10 packaged smoke succeeded on retry after external Chocolatey HTTP 504;
 - S08 security/dependency + portable foundation PASS.
 
-**Next:** S11-W6-010 only after owner says `lanjutkan`.
+#### W6-010 closure
+
+Accepted implementation HEAD:
+`0915a7045014e5ea1209f933dd703d6601ff26e9`
+
+Accepted workflow:
+`37628909459` — SUCCESS
+
+Evidence:
+`docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
+
+Artifact:
+`ANG-S11-W6-010-Closure` / ID `11485567340`
+
+Proof:
+- targeted closure tests 6/6 PASS;
+- full pytest PASS;
+- AI-selected Rise/intensity 120 produces a different rendered preview;
+- invalid auth / quota / malformed / lock / stale paths remain safe;
+- exact one-transaction Undo/Redo;
+- regression matrix 25/25 SUCCESS, all attempt 1;
+- live credential unavailable, so live network request was not attempted;
+- final W6 status is PASS_WITH_PROVISIONAL_LIVE_GEMINI.
+
+### W7 — AI Auto Edit L2
+
+Status: **NOT STARTED / PLANNING REQUIRED**
+
+**Next:** after owner says `lanjutkan`, ASTRA creates the detailed W7 contract/planning
+and required DOCX. No W7 implementation before planning approval.

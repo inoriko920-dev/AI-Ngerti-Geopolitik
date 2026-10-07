@@ -1,50 +1,47 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED — W6 CONTRACT_LOCKED — W6-001..009 PASS — NEXT W6-010**
+> **STATUS: SF-STEP 11 ACTIVE — W5 CLOSED PROVISIONAL MIC — W6 CLOSED PROVISIONAL LIVE GEMINI — NEXT W7 PLANNING**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
 Baca `AGENTS.md` lalu `docs/SOURCE_OF_TRUTH_INDEX.md`.
 
-## W6 progress
+## W6 final
 
-Completed:
-- W6-001 canonical AI + credential contracts = PASS
-- W6-002 secure logical credential slots 1–100 = PASS
-- W6-003 Windows secure-store qualification = PASS
-- W6-004 credential health + safe failover = PASS
-- W6-005 L1 ContextBuilder + allowlist = PASS
-- W6-006 strict EditPlan schema + PlanVerifier = PASS
-- W6-007 official Gemini adapter + async lifecycle = PASS
-- W6-008 approval → atomic CommandBatch → Undo/Redo = PASS
-- W6-009 frozen AI / credential UI parity = PASS
+**W6 — Gemini Credential + L1 AI Animation Planning** is closed as:
 
-W6-009 accepted implementation:
-`7a2d79115e376205571bf529624993ed5fcc5f9f`
+**PASS_WITH_PROVISIONAL_LIVE_GEMINI**
+
+Accepted W6-010 implementation:
+`0915a7045014e5ea1209f933dd703d6601ff26e9`
 
 Workflow:
-`37620520208` — SUCCESS.
+`37628909459` — SUCCESS.
 
-W6-009 provides:
-- real PySide6 AI Director / AI Agent / Provider & API Key surfaces;
-- READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR / LOCK_CONFLICT / STALE;
-- semantic-intent-only presentation boundary;
-- masked credential slots 1..100;
-- Gemini-only V1 provider surface;
-- L1-only capability claims;
-- actual-vs-frozen evidence against audited physical refs
-  UI-020/021/022/023/024/033.
+What is proven:
+- secure Windows credential storage and masked slots 1..100;
+- bounded credential health/failover without quota circumvention;
+- secret-free L1 context;
+- strict EditPlan schema + PlanVerifier;
+- official `google-genai` adapter behind AIProviderPort;
+- background async lifecycle;
+- explicit approval → one atomic CommandBatch → exact Undo/Redo;
+- real PySide6 AI/credential UI;
+- AI-selected `Rise` render proof through the existing W4 engine;
+- invalid auth / quota / malformed / lock / stale safety paths;
+- full regression matrix **25/25 SUCCESS**, all attempt 1.
 
-Targeted W6-009 tests: **8/8 PASS**.  
-Full pytest: **PASS**.  
-Evidence verifier: **15/15 PASS**.
+What remains provisional:
+- no repository live Gemini credential was available;
+- no real Gemini network request was attempted;
+- full live-provider PASS is therefore not claimed.
 
-All 24 regression workflows through S08 are green on the same accepted implementation
-HEAD. S10 packaged smoke required a retry only because Chocolatey returned HTTP 504
-while fetching FFmpeg; no product-code change was needed.
-
-Real Gemini network qualification remains **W6-010**.
+Artifact:
+`ANG-S11-W6-010-Closure` / ID `11485567340`.
 
 ## Next
 
-**S11-W6-010 — Live Gemini + failure + regression closure only.**
+**W7 — AI Auto Edit L2 — NOT STARTED / PLANNING REQUIRED.**
+
+The next owner `lanjutkan` starts ASTRA planning/contract work only. No W7 coding
+should begin before its detailed planning DOCX and capability gates are complete.

@@ -1,6 +1,6 @@
 # S11-W6 — GEMINI CREDENTIAL + L1 AI ANIMATION PLANNING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W6-001 PASS / W6-002 PASS / W6-003 PASS / W6-004 PASS / W6-005 PASS / W6-006 PASS / W6-007 PASS / W6-008 PASS / W6-009 READY / W6-010 BLOCKED_BY_W6_009  
+**Status:** CLOSED / W6-001..009 PASS / W6-010 PASS_WITH_PROVISIONAL_LIVE_GEMINI  
 **Phase:** SF-STEP 11 — Feature Implementation Waves  
 **Derived from:** Master Blueprint TECH-WAVE STEP 09 — Gemini credential + L1 AI  
 **Previous wave:** W5 Subtitle + Narration — CLOSED / PASS_WITH_PROVISIONAL_MIC_HARDWARE
@@ -696,9 +696,40 @@ Artifact:
 - ID `11481533239`;
 - SHA-256 `874615de8ff572c3ee33df858882721f7286e8bfae9c162468fc512d7615ea5e`.
 
+### S11-W6-010 — PASS_WITH_PROVISIONAL_LIVE_GEMINI
+
+Accepted implementation HEAD:
+`0915a7045014e5ea1209f933dd703d6601ff26e9`
+
+Accepted workflow:
+`37628909459` — SUCCESS.
+
+Evidence:
+`docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`.
+
+Closure proof:
+- targeted W6-010 tests 6/6 PASS;
+- full pytest PASS;
+- deterministic valid/failure/stale/lock matrix PASS;
+- AI-selected Rise at intensity 120 reaches W4 render-backed output;
+- one atomic apply + exact Undo/Redo PASS;
+- no-secret/security/source-of-truth/UI-reference gates PASS;
+- final regression lock 25/25 workflow families SUCCESS, all attempt 1.
+
+Live-provider result:
+- no live CI Gemini credential was available;
+- no real Gemini network request was attempted;
+- live report = PROVISIONAL_NO_CREDENTIAL;
+- full live-provider PASS is not claimed.
+
+Final W6 status:
+**PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+
 ## Exact next action
 
-On the next owner **lanjutkan**, execute **S11-W6-010 only — Live Gemini + failure + regression closure**.
+W6 is closed. Do not add more W6 implementation.
 
-Do not start AI L2, non-Gemini providers, validation/recovery hardening,
-export-matrix work or SF-STEP 12.
+After the owner says **lanjutkan**, ASTRA must create the detailed contract/planning
+for **W7 — AI Auto Edit L2** (Master Blueprint TECH-WAVE STEP 10), including the
+required planning DOCX. SOL implementation remains blocked until that planning is
+complete and approved.

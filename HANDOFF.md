@@ -1,120 +1,118 @@
 # HANDOFF — AI NGERTI GEOPOLITIK
 
-**Current phase:** SF-STEP 11  
-**Current wave:** W6 — Gemini Credential + L1 AI Animation Planning  
-**Last completed task:** S11-W6-009 — PASS  
-**Accepted W6-009 implementation HEAD:** `7a2d79115e376205571bf529624993ed5fcc5f9f`  
-**Accepted W6-009 workflow:** `37620520208` — SUCCESS  
-**Next exact task:** S11-W6-010 — Live Gemini + failure + regression closure  
+**Current phase:** SF-STEP 11 — Feature Implementation Waves  
+**Last completed wave:** W6 — Gemini Credential + L1 AI Animation Planning  
+**W6 final status:** **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**  
+**Accepted W6-010 implementation HEAD:** `0915a7045014e5ea1209f933dd703d6601ff26e9`  
+**Accepted W6-010 workflow:** `37628909459` — SUCCESS  
+**Next wave:** W7 — AI Auto Edit L2 — **NOT STARTED / PLANNING REQUIRED**  
 **Previous W5 status:** PASS_WITH_PROVISIONAL_MIC_HARDWARE
 
-## W6-009 implementation now available
+## W6-010 closure
 
-Presentation:
-- old AI placeholder is removed from the live editor shell;
-- real PySide6 AI Director / AI Agent / Provider & API Key surfaces are wired into the existing editor;
-- UI emits semantic intents only and never mutates ProjectState/provider/CommandBus directly;
-- UI states are READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
-  LOCK_CONFLICT / STALE;
-- AI claims remain limited to render-qualified W6 L1 effects;
-- manual editing remains available when provider state fails.
+W6-010 completed the contracted failure, render and regression closure.
 
-Credential presentation:
-- Gemini remains the only W6 provider;
-- logical credential slots remain 1..100;
-- saved credentials are displayed only as the fixed masked marker;
-- raw saved key material is never projected back into UI;
-- new key input is transient and crosses only the explicit credential application boundary;
-- UI intent metadata contains no raw key material;
-- quota/rate-limit resilience is not presented as quota evasion.
+Proven:
+- valid L1 plan follows AIProviderPort → PlanVerifier → explicit approval →
+  one atomic CommandBatch;
+- targeted invalid-auth, quota/rate-limit, malformed-response, lock-conflict
+  and stale-result paths produce zero unsafe canonical mutation;
+- AI-selected `Rise` at intensity `120` reaches the existing W4 render-backed
+  engine and produces a preview different from baseline;
+- one approved AI plan increments revision once and has exact Undo/Redo;
+- raw credentials remain absent from evidence/log-safe outputs;
+- full regression matrix is green.
 
-## Frozen UI reference correction
+Live-provider result:
+- repository/CI did **not** provide `ANG_GEMINI_LIVE_KEY`;
+- therefore no real Gemini network request was attempted;
+- the workflow explicitly reported `PROVISIONAL_NO_CREDENTIAL`;
+- full live-provider PASS is **not claimed**;
+- final W6 status is therefore **PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 
-A 42/42 visual audit found that historical W6 planning aliases did not match the
-physical content of the frozen PNG set. The binaries and SHA-256 identities were
-not changed.
+A future real credential may promote the live-provider qualification only after the
+same Windows secure-store → official Gemini adapter → PlanVerifier → approval →
+CommandBatch smoke succeeds. Nothing in this closure fakes that evidence.
 
-Authoritative W6 semantic-to-raster mapping:
-- AI Director / AI Otomatis → `UI-020.png`
-- AI Agent Ready / Chat → `UI-021.png`
-- AI Agent Rencana Aksi → `UI-022.png`
-- AI Agent Perubahan Diterapkan → `UI-023.png`
-- AI Agent Provider Tidak Tersedia → `UI-024.png`
-- Provider & API Key Manager → `UI-033.png`
+## W6-010 gates
 
-Correction source:
-`docs/ui_reference/W6_UI_REFERENCE_CORRECTION.md`
-
-## Tests/evidence
-
-Workflow `37620520208` — **SUCCESS**:
+Workflow `37628909459` — SUCCESS:
+- FFmpeg qualification toolchain PASS;
 - Ruff format/check PASS;
 - mypy PASS — 63 source files;
 - import contracts PASS;
 - architecture PASS;
-- source-of-truth PASS;
+- source-of-truth 70/70 PASS;
 - no-secret verifier PASS;
 - frozen UI references 42/42 SHA-256 PASS;
-- targeted W6-009 Qt tests **8/8 PASS**;
+- targeted W6-010 tests **6/6 PASS**;
 - full pytest PASS;
-- actual-vs-frozen capture PASS;
-- evidence verifier **15/15 PASS**;
+- deterministic AI → render closure PASS;
+- optional live step completed honestly as `PROVISIONAL_NO_CREDENTIAL`;
+- evidence verifier PASS with
+  `PASS_WITH_PROVISIONAL_LIVE_GEMINI`;
 - artifact upload PASS.
 
 Artifact:
-- `ANG-S11-W6-009-Frozen-UI`;
-- ID `11481533239`;
-- size 7,634,355 bytes;
-- SHA-256 `874615de8ff572c3ee33df858882721f7286e8bfae9c162468fc512d7615ea5e`.
+- `ANG-S11-W6-010-Closure`;
+- ID `11485567340`;
+- size 572,559 bytes;
+- SHA-256 `7ee54212f333b685ffa986f81a6b58810fb07a4969ebe61bf767888a00f113ba`.
 
 Evidence:
-`docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
+`docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
 
-## Regression lock on accepted W6-009 implementation HEAD
+## Final W6 regression lock
 
-All workflows are SUCCESS on `7a2d79115e376205571bf529624993ed5fcc5f9f`:
-- W6-009 `37620520208`
-- W6-008 `37620520190`
-- W6-007 `37620520185`
-- W6-006 `37620520096`
-- W6-005 `37620520081`
-- W6-004 `37620520090`
-- W6-003 `37620520106`
-- W6-002 `37620520119`
-- W6-001 `37620520141`
-- W5-010 `37620520083`
-- W5-009 `37620520144`
-- W5-008 `37620520146`
-- W5-007 `37620520077`
-- W5-006 `37620520087`
-- W5-005 `37620520192`
-- W5-004 `37620520203`
-- W4 `37620520147`
-- W3 `37620520102`
-- W2 `37620520073`
-- W1 `37620520224`
-- W0 `37620520175`
-- S10 `37620520070` — SUCCESS on attempt 2
-- S09 `37620520129`
-- S08 `37620520042`
+All **25/25 workflow families** are SUCCESS on `0915a7045014e5ea1209f933dd703d6601ff26e9`, all attempt 1:
 
-S10 attempt 1 failed only because the Chocolatey community feed returned HTTP 504
-while installing FFmpeg. The failed packaged-smoke job was rerun without a product-code
-change and passed completely.
+- S08 `37628909435` — SUCCESS, attempt 1
+- S09 `37628909324` — SUCCESS, attempt 1
+- S10 `37628909385` — SUCCESS, attempt 1
+- W0 `37628909327` — SUCCESS, attempt 1
+- W1 `37628909561` — SUCCESS, attempt 1
+- W2 `37628909475` — SUCCESS, attempt 1
+- W3 `37628909545` — SUCCESS, attempt 1
+- W4 `37628909381` — SUCCESS, attempt 1
+- W5-004 `37628909273` — SUCCESS, attempt 1
+- W5-005 `37628909461` — SUCCESS, attempt 1
+- W5-006 `37628909408` — SUCCESS, attempt 1
+- W5-007 `37628909315` — SUCCESS, attempt 1
+- W5-008 `37628909292` — SUCCESS, attempt 1
+- W5-009 `37628909521` — SUCCESS, attempt 1
+- W5-010 `37628909748` — SUCCESS, attempt 1
+- W6-001 `37628909300` — SUCCESS, attempt 1
+- W6-002 `37628909577` — SUCCESS, attempt 1
+- W6-003 `37628909598` — SUCCESS, attempt 1
+- W6-004 `37628909335` — SUCCESS, attempt 1
+- W6-005 `37628909445` — SUCCESS, attempt 1
+- W6-006 `37628909506` — SUCCESS, attempt 1
+- W6-007 `37628909456` — SUCCESS, attempt 1
+- W6-008 `37628909610` — SUCCESS, attempt 1
+- W6-009 `37628909407` — SUCCESS, attempt 1
+- W6-010 `37628909459` — SUCCESS, attempt 1
 
-## Critical boundaries for W6-010
+S08 includes security/dependency audit, tests, Qt smoke, UI-reference integrity and
+portable foundation. S10 real-media vertical slice also passes.
 
-- W6-010 is **not started**;
-- full W6 PASS requires at least one real Gemini request through the official adapter
-  using a Windows secure-store credential;
-- a real returned L1 plan must be validated and applied through the existing
-  W6-006/W6-008 boundaries;
-- raw credential material must remain absent from logs/evidence/UI;
-- provider failure/invalid/stale/lock cases must retain zero unsafe mutation;
-- if no live Gemini credential is available, W6 may close only as
-  **PASS_WITH_PROVISIONAL_LIVE_GEMINI**;
-- do not add AI L2, non-Gemini providers, export-matrix work or SF-STEP 12.
+## Boundaries carried forward
+
+- Gemini remains the only V1 provider.
+- W6 L1 remains limited to render-qualified W4 effects.
+- No direct AI mutation path exists.
+- Credential slots remain outside ProjectState in secure OS storage.
+- No quota/rate-limit circumvention.
+- The corrected frozen W6 visual mapping remains authoritative:
+  UI-020/021/022/023/024/033.
+- W5 physical microphone qualification remains provisional.
+- W6 real Gemini network qualification remains provisional until a real credential
+  is supplied and actually exercised.
 
 ## Next exact action
 
-After owner says `lanjutkan`, execute **S11-W6-010 only — Live Gemini + failure + regression closure**.
+Do **not** start W7 implementation yet.
+
+After the owner says `lanjutkan`, ASTRA must create the detailed W7 contract/planning
+for **AI Auto Edit L2** (Master Blueprint TECH-WAVE STEP 10), including the required
+planning DOCX and command/support qualification. SOL implementation remains blocked
+until that planning is complete and approved.

@@ -42,6 +42,7 @@
     - `docs/evidence/features/S11_W6_007_GEMINI_ASYNC_LIFECYCLE.md`
     - `docs/evidence/features/S11_W6_008_APPROVAL_COMMANDBATCH_UNDO_REDO.md`
     - `docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
+    - `docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
 12. current wave contract:
     - `docs/project/W6_GEMINI_CREDENTIAL_L1_AI_CONTRACT.md`
     - historical closed W5 contract: `docs/project/W5_SUBTITLE_NARRATION_CONTRACT.md`
@@ -93,7 +94,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - S11-W6-007 Gemini adapter + async lifecycle: **PASS**.
 - S11-W6-008 Approval → CommandBatch → Undo/Redo: **PASS**.
 - S11-W6-009 Frozen UI parity: **PASS**.
-- S11-W6-010 Live Gemini + failure + regression closure: **READY**.
+- S11-W6-010 Live Gemini + failure + regression closure: **PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
 - production Windows Credential Manager secure-store path is qualified;
 - credential health/failover/bulk TXT boundary is qualified;
 - bounded secret-free L1 provider context is qualified;
@@ -101,7 +102,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - official google-genai adapter + background lifecycle is qualified;
 - approval → atomic CommandBatch → exact Undo/Redo is qualified;
 - W6 frozen AI/credential presentation parity is qualified with masked credentials and corrected physical raster mapping.
-- real Gemini network qualification is still pending W6-010.
-- exact next task: **S11-W6-010 only**.
+- W6 final status: **CLOSED / PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+- real Gemini network smoke remains provisional because no live CI credential was available.
+- final W6 regression lock: **25/25 workflow families SUCCESS, all attempt 1**.
+- next wave: **W7 AI Auto Edit L2 — NOT STARTED / PLANNING REQUIRED**.
+- exact next action: **ASTRA W7 contract/planning + detailed DOCX only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

@@ -1,62 +1,44 @@
 # PLAN — CURRENT IMPLEMENTATION PHASE
 
-**SF-STEP 11 remains active. W5 is closed. W6 is CONTRACT_LOCKED. W6-001..009 PASS.**
+**SF-STEP 11 remains active. W6 is closed as PASS_WITH_PROVISIONAL_LIVE_GEMINI.**
 
-## Accepted W6-009
+## Closed W6
 
-Implementation:
-`7a2d79115e376205571bf529624993ed5fcc5f9f`
+Accepted implementation:
+`0915a7045014e5ea1209f933dd703d6601ff26e9`
 
-Workflow:
-`37620520208` — SUCCESS.
+Accepted W6-010 workflow:
+`37628909459` — SUCCESS.
 
-Implemented:
-- real PySide6 AI Director / AI Agent / credential-manager surfaces;
-- semantic-intent-only presentation boundary;
-- READY / PLAN / APPROVAL / APPLYING / SUCCESS / PROVIDER_ERROR /
-  LOCK_CONFLICT / STALE projections;
-- masked 1..100 credential slots;
-- Gemini-only V1 provider presentation;
-- L1-only effect claims;
-- actual-vs-frozen screenshot evidence;
-- physical frozen-raster correction:
-  UI-020 Director, UI-021 Ready, UI-022 Plan, UI-023 Applied,
-  UI-024 Provider unavailable, UI-033 Provider/API keys.
+Closure:
+- W6-001..010 implementation chain complete;
+- deterministic failure matrix complete;
+- AI-selected L1 render proof complete;
+- final regression matrix 25/25 SUCCESS;
+- live Gemini network smoke remains provisional because no live credential was
+  available to CI.
 
-Gates:
-- targeted Qt tests 8/8 PASS;
-- full pytest PASS;
-- evidence verifier 15/15 PASS;
-- quality/architecture/security/source-of-truth/UI-reference PASS;
-- regression matrix 24/24 workflow families SUCCESS;
-- S08 portable foundation PASS;
-- S10 packaged real-media smoke PASS on retry after external Chocolatey 504.
+W6 may only be promoted from provisional live status after a real credential is
+exercised through Windows secure store → official Gemini adapter → PlanVerifier →
+explicit approval → atomic CommandBatch.
 
 Evidence:
-`docs/evidence/features/S11_W6_009_FROZEN_UI_PARITY.md`
+`docs/evidence/features/S11_W6_010_LIVE_FAILURE_REGRESSION_CLOSURE.md`
 
-## Active next task
+## Next planning target
 
-**S11-W6-010 — Live Gemini + failure + regression closure**
+**W7 — AI Auto Edit L2**  
+Master Blueprint mapping: **TECH-WAVE STEP 10**.
 
-Required closure work:
-- attempt a real Gemini request through the official W6-007 adapter using a
-  Windows secure-store credential when available;
-- prove returned valid L1 plan → W6-006 verification → W6-008 explicit approval/apply;
-- prove invalid/stale/provider failure paths remain safe and non-partial;
-- prove no raw credential leakage in logs/evidence/UI;
-- run final full regression closure.
+Status: **NOT STARTED / PLANNING REQUIRED**.
 
-Final status rule:
-- with real live-Gemini evidence: W6 may close PASS if every gate is green;
-- without an available live credential: W6 may close only
-  **PASS_WITH_PROVISIONAL_LIVE_GEMINI**.
+The next action belongs to ASTRA, not SOL:
+- define W7 contract and serial tasks;
+- audit which pacing/duration/transform/transition commands are already legal,
+  render-backed and undoable;
+- forbid unsupported L2 capabilities rather than exposing placeholders;
+- define ContextBuilder/plan schema extensions without breaking W6 L1 ownership;
+- define safety, stale, lock, approval and Undo/Redo behavior;
+- produce the detailed planning DOCX required for AI handoff.
 
-W6-010 must not:
-- add AI L2;
-- add providers other than Gemini;
-- implement validation/recovery hardening;
-- implement the export matrix;
-- begin SF-STEP 12.
-
-Do not begin W6-010 until owner says `lanjutkan`.
+No W7 coding is authorized until planning is complete and approved.
