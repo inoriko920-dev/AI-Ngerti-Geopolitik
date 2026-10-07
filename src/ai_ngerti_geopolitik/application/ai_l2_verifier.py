@@ -46,9 +46,7 @@ from ai_ngerti_geopolitik.domain import (
     VideoProperties,
 )
 
-TranslatedAutoEditCommand = (
-    SetClipPropertiesCommand | SetClipDurationCommand | SetClipSpeedCommand
-)
+TranslatedAutoEditCommand = SetClipPropertiesCommand | SetClipDurationCommand | SetClipSpeedCommand
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,9 +94,7 @@ class AutoEditPlanVerifier:
             try:
                 self._clip_location(state, clip_id)
             except PlanContractError as exc:
-                raise self._semantic_error(
-                    "W7 selected scope contains an unknown clip"
-                ) from exc
+                raise self._semantic_error("W7 selected scope contains an unknown clip") from exc
         return frozenset(scope.clip_ids)
 
     def _validate_family_constraints(self, plan: AutoEditPlan) -> None:
