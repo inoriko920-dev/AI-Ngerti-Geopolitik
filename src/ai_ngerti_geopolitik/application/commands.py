@@ -116,6 +116,47 @@ class SetAssetAvailabilityCommand:
 
 
 @dataclass(frozen=True, slots=True)
+class RelinkAssetCommand:
+    replacement: Asset
+
+    def apply(self, state: ProjectState) -> ProjectState:
+        try:
+            current = state.asset(self.replacement.asset_id)
+        except DomainValidationError as exc:
+            raise CommandError(f"unknown asset: {self.replacement.asset_id}") from exc
+        if self.replacement.availability != "online":
+            raise CommandError("relinked asset must be online")
+        if self.replacement.media_type != current.media_type:
+            raise CommandError("relink media type must match canonical asset")
+        if self.replacement.fingerprint_sha256 != current.fingerprint_sha256:
+            raise CommandError("relink fingerprint must match canonical asset")
+        if (
+            self.replacement.duration != current.duration
+            or self.replacement.width != current.width
+            or self.replacement.height != current.height
+            or self.replacement.has_audio != current.has_audio
+            or (
+                current.sample_rate > 0
+                and self.replacement.sample_rate > 0
+                and self.replacement.sample_rate != current.sample_rate
+            )
+        ):
+            raise CommandError("relink media metadata is incompatible")
+        if any(
+            item.asset_id != current.asset_id and item.path_ref == self.replacement.path_ref
+            for item in state.assets
+        ):
+            raise CommandError("relink path is already bound to another asset")
+        assets = tuple(
+            self.replacement if item.asset_id == current.asset_id else item
+            for item in state.assets
+        )
+        candidate = replace(state, assets=assets)
+        candidate.validate()
+        return candidate
+
+
+@dataclass(frozen=True, slots=True)
 class UpdateProjectSettingsCommand:
     width: int
     height: int
