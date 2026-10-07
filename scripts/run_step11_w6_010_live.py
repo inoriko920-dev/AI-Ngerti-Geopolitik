@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import time
+from contextlib import suppress
 from dataclasses import replace
 from pathlib import Path
 
@@ -242,10 +243,8 @@ def main() -> int:
         print("W6-010 live qualification: PASS")
         return 0
     finally:
-        try:
+        with suppress(Exception):
             secure_store.delete_secret(slot_ref)
-        except Exception:
-            pass
 
 
 if __name__ == "__main__":
