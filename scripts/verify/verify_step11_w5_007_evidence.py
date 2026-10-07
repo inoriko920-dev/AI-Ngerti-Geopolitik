@@ -19,12 +19,8 @@ def main() -> int:
     if missing:
         raise SystemExit(f"missing W5-007 evidence: {missing}")
 
-    report = json.loads(
-        (root / "00_w5_007_hardware_report.json").read_text(encoding="utf-8")
-    )
-    devices = json.loads(
-        (root / "01_microphone_devices.json").read_text(encoding="utf-8")
-    )
+    report = json.loads((root / "00_w5_007_hardware_report.json").read_text(encoding="utf-8"))
+    devices = json.loads((root / "01_microphone_devices.json").read_text(encoding="utf-8"))
     status = report.get("status")
     if status not in {"PASS", "PASS_WITH_PROVISIONAL_MIC_HARDWARE"}:
         raise SystemExit(f"invalid W5-007 hardware status: {status}")

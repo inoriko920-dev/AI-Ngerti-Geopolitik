@@ -118,16 +118,12 @@ class MicrophoneRecordingService:
             except MicrophoneRecordingCancelled:
                 raise
             except Exception as exc:
-                raise MicrophoneRecordingError(
-                    f"microphone capture failed: {exc}"
-                ) from exc
+                raise MicrophoneRecordingError(f"microphone capture failed: {exc}") from exc
 
             if result.cancelled or (cancellation is not None and cancellation.cancelled):
                 raise MicrophoneRecordingCancelled("microphone recording was cancelled")
             if result.path.resolve() != staging.resolve():
-                raise MicrophoneRecordingError(
-                    "recorder returned an unexpected staging path"
-                )
+                raise MicrophoneRecordingError("recorder returned an unexpected staging path")
             if not staging.is_file() or staging.stat().st_size <= 44:
                 raise MicrophoneRecordingError("microphone recording is empty")
 
@@ -138,17 +134,11 @@ class MicrophoneRecordingService:
                     f"recorded staging audio could not be validated: {exc}"
                 ) from exc
             if probed.media_type != "audio" or not probed.has_audio:
-                raise MicrophoneRecordingError(
-                    "recorded staging media is not valid audio"
-                )
+                raise MicrophoneRecordingError("recorded staging media is not valid audio")
             if probed.duration_seconds <= 0.05:
-                raise MicrophoneRecordingError(
-                    "recorded staging audio is too short"
-                )
+                raise MicrophoneRecordingError("recorded staging audio is too short")
             if probed.sample_rate <= 0:
-                raise MicrophoneRecordingError(
-                    "recorded staging audio has no valid sample rate"
-                )
+                raise MicrophoneRecordingError("recorded staging audio has no valid sample rate")
 
             final_path = _next_recording_path(recordings_dir)
             _reserve_and_replace(staging, final_path)

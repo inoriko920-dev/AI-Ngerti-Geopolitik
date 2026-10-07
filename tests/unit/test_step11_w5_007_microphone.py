@@ -67,9 +67,7 @@ class Recorder:
     def __init__(
         self,
         *,
-        devices: tuple[RecordingDevice, ...] = (
-            RecordingDevice("MIC1", "Test Microphone"),
-        ),
+        devices: tuple[RecordingDevice, ...] = (RecordingDevice("MIC1", "Test Microphone"),),
         mode: str = "success",
     ) -> None:
         self._devices = devices

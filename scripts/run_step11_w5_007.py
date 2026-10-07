@@ -35,10 +35,7 @@ def main() -> int:
     devices = recorder.devices()
     device_report = {
         "device_count": len(devices),
-        "devices": [
-            {"device_id": device.device_id, "name": device.name}
-            for device in devices
-        ],
+        "devices": [{"device_id": device.device_id, "name": device.name} for device in devices],
     }
     _write_json(evidence / "01_microphone_devices.json", device_report)
 

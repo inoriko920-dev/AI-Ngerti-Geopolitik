@@ -126,9 +126,7 @@ class WindowsFfmpegRecorder:
             if staging_path.exists():
                 staging_path.unlink()
             detail = stderr[-1200:] if stderr else stdout[-1200:]
-            raise RecorderToolError(
-                f"microphone capture failed ({process.returncode}): {detail}"
-            )
+            raise RecorderToolError(f"microphone capture failed ({process.returncode}): {detail}")
         if not staging_path.is_file() or staging_path.stat().st_size <= 44:
             if staging_path.exists():
                 staging_path.unlink()
