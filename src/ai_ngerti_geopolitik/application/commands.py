@@ -1,4 +1,4 @@
-"""Semantic CommandBus and reversible canonical edit commands."""
+"""Canonical semantic CommandBus and reversible edit commands."""
 
 from __future__ import annotations
 
