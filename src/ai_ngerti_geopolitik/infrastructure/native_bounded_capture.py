@@ -47,6 +47,8 @@ class NativeBoundedCapture:
         "_seen_stderr",
         "_overflowed",
         "_sealed",
+        "_stdout_finished",
+        "_stderr_finished",
     )
 
     def __init__(self, policy: NativeProcessPolicy) -> None:
@@ -61,15 +63,21 @@ class NativeBoundedCapture:
         self._seen_stderr = 0
         self._overflowed = False
         self._sealed = False
+        self._stdout_finished = False
+        self._stderr_finished = False
 
     def append(self, stream: NativeStream, chunk: bytes) -> None:
         """Accept one chunk; reject excess WITHOUT copying unbounded input."""
-        if stream not in ("stdout", "stderr") or type(stream) is not str:
+        if type(stream) is not str or stream not in ("stdout", "stderr"):
             raise NativeProcessContractError("INVALID_NATIVE_STREAM")
         if type(chunk) is not bytes:
             raise NativeProcessContractError("INVALID_NATIVE_STREAM_CHUNK")
         with self._lock:
             self._assert_writable()
+            if (stream == "stdout" and self._stdout_finished) or (
+                stream == "stderr" and self._stderr_finished
+            ):
+                raise NativeProcessContractError("NATIVE_STREAM_CLOSED")
             if stream == "stdout":
                 self._seen_stdout += len(chunk)
                 if self._seen_stdout > self._max_stdout:
@@ -80,6 +88,21 @@ class NativeBoundedCapture:
                 if self._seen_stderr > self._max_stderr:
                     self._overflow()
                 self._stderr.extend(chunk)
+
+    def finish_stream(self, stream: NativeStream) -> None:
+        """Mark reader EOF; reject subsequent writes to that stream."""
+        if type(stream) is not str or stream not in ("stdout", "stderr"):
+            raise NativeProcessContractError("INVALID_NATIVE_STREAM")
+        with self._lock:
+            self._assert_writable()
+            if stream == "stdout":
+                if self._stdout_finished:
+                    raise NativeProcessContractError("NATIVE_STREAM_CLOSED")
+                self._stdout_finished = True
+            else:
+                if self._stderr_finished:
+                    raise NativeProcessContractError("NATIVE_STREAM_CLOSED")
+                self._stderr_finished = True
 
     def metrics(self) -> NativeCaptureMetrics:
         """Return redacted counters safe to expose to the application layer."""
@@ -92,13 +115,15 @@ class NativeBoundedCapture:
             )
 
     def take_private_buffers(self) -> tuple[bytes, bytes]:
-        """Internal-only parser handoff, once, after both readers have finished.
+        """Internal-only parser handoff, once, only when both readers mark EOF.
 
         Never hand these raw bytes to GUI/logs: they may contain full file paths,
         environment values, or other untrusted tool output.
         """
         with self._lock:
             self._assert_writable()
+            if not (self._stdout_finished and self._stderr_finished):
+                raise NativeProcessContractError("NATIVE_STREAM_INCOMPLETE")
             self._sealed = True
             output = bytes(self._stdout), bytes(self._stderr)
             self._stdout.clear()

@@ -30,3 +30,12 @@ As a safe preparatory step, this PR adds only `src/ai_ngerti_geopolitik/infrastr
 - **Next serial task only after owner approval:** SOL INT-01B/B2 native process runner combining safe OS-pipe parallel draining, monotonic timeout and cancellation with this collector. Later B3 Windows child-tree verification, B4 bounded FFprobe, B5 FFmpeg adapter and B6 real-media Windows gate remain separate tasks.
 
 **Conclusion:** `B2_PREP_PASS` does not equal `B2_PASS`, `Pilot_A_Approved`, or `Product_Release_Allowed`.
+
+ 
+## B2-prep handoff race hardening — 8 October 2026 WIB
+
+- **Risk removed:** a parser previously could call `take_private_buffers()` before both concurrent readers reached EOF, sealing early and returning incomplete stdout/stderr.
+- `finish_stream("stdout")` and `finish_stream("stderr")` now explicitly record the two reader completions. The private one-shot handoff is blocked with the redacted, fixed `NATIVE_STREAM_INCOMPLETE` code until **both** complete, without clearing data on an early attempt.
+- Appending to an already finished stream or marking a stream finished twice is rejected as `NATIVE_STREAM_CLOSED`. Invalid stream types are rejected without echoing sensitive values. Discard and overflow still fail closed.
+- New tests cover premature handoff, no lost bytes after a failed attempt, one-sided reader finish, duplicate finish, invalid stream type, discard and overflow.
+- This is **collector-only** code: it launches no subprocess and does not wire FFmpeg/FFprobe, GUI, native packaging, or production export. D1 Pilot A remains pending. Windows CI must verify the new commit before this specific hardening is labeled PASS.

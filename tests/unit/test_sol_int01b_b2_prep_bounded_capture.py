@@ -27,6 +27,8 @@ def test_separate_stream_caps_and_private_one_time_handoff() -> None:
     metrics = capture.metrics()
     assert (metrics.bytes_seen_stdout, metrics.bytes_seen_stderr) == (8, 8)
     assert not metrics.overflowed and not metrics.sealed
+    capture.finish_stream("stdout")
+    capture.finish_stream("stderr")
     assert capture.take_private_buffers() == (b"12345678", b"ABCDEFGH")
     assert capture.metrics().sealed
     with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_CLOSED$"):
@@ -89,6 +91,8 @@ def test_zero_length_chunk_does_not_change_accounting() -> None:
     capture.append("stdout", b"")
     capture.append("stderr", b"")
     assert capture.metrics().bytes_seen_stdout == 0
+    capture.finish_stream("stdout")
+    capture.finish_stream("stderr")
     assert capture.take_private_buffers() == (b"", b"")
 
 
@@ -120,6 +124,8 @@ def test_parallel_reader_threads_keep_stream_counts_and_exact_data() -> None:
 
     assert capture.metrics().bytes_seen_stdout == 4096
     assert capture.metrics().bytes_seen_stderr == 4096
+    capture.finish_stream("stdout")
+    capture.finish_stream("stderr")
     assert capture.take_private_buffers() == (b"a" * 4096, b"z" * 4096)
 
 
@@ -135,3 +141,43 @@ def test_metrics_are_immutable_public_safe_values() -> None:
 def test_wrong_policy_type_rejected() -> None:
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_PROCESS_POLICY$"):
         NativeBoundedCapture(None)  # type: ignore[arg-type]
+
+def test_handoff_requires_both_readers_finished_without_losing_partial_data() -> None:
+    capture = _capture()
+    capture.append("stdout", b"A")
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_INCOMPLETE$"):
+        capture.take_private_buffers()
+    assert not capture.metrics().sealed
+    capture.finish_stream("stdout")
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_INCOMPLETE$"):
+        capture.take_private_buffers()
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_CLOSED$"):
+        capture.append("stdout", b"late")
+    capture.append("stderr", b"B")
+    capture.finish_stream("stderr")
+    assert capture.take_private_buffers() == (b"A", b"B")
+
+
+def test_finished_stream_cannot_finish_twice_and_rejects_invalid_stream() -> None:
+    capture = _capture()
+    for wrong in (None, 0, [], "stdin", False):
+        with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_STREAM$"):
+            capture.finish_stream(wrong)  # type: ignore[arg-type]
+    capture.finish_stream("stderr")
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_CLOSED$"):
+        capture.finish_stream("stderr")
+    capture.finish_stream("stdout")
+    assert capture.take_private_buffers() == (b"", b"")
+
+
+def test_discard_and_overflow_prohibit_stream_finalization() -> None:
+    discarded = _capture()
+    discarded.discard()
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_STREAM_CLOSED$"):
+        discarded.finish_stream("stdout")
+
+    overflowed = _capture(stdout=1)
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_OUTPUT_TOO_LARGE$"):
+        overflowed.append("stdout", b"too big")
+    with pytest.raises(NativeProcessContractError, match="^NATIVE_OUTPUT_TOO_LARGE$"):
+        overflowed.finish_stream("stdout")
