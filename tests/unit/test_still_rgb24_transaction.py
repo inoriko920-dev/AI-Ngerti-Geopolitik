@@ -172,9 +172,7 @@ def test_deadline_expiring_only_after_receipt_blocks_publish(tmp_path: Path) -> 
         baseline_calls[0] += 1
         return 0.0
 
-    transfer_staged_rgb24(
-        plan, InMemoryStage(), timeout_seconds=1.0, monotonic=baseline_clock
-    )
+    transfer_staged_rgb24(plan, InMemoryStage(), timeout_seconds=1.0, monotonic=baseline_clock)
     assert baseline_calls[0] > 1
     attempts = [0]
 
@@ -184,9 +182,7 @@ def test_deadline_expiring_only_after_receipt_blocks_publish(tmp_path: Path) -> 
 
     stage = InMemoryStage()
     with pytest.raises(RGB24TransferTimeout):
-        transfer_staged_rgb24(
-            plan, stage, timeout_seconds=1.0, monotonic=expired_clock
-        )
+        transfer_staged_rgb24(plan, stage, timeout_seconds=1.0, monotonic=expired_clock)
     assert stage.published is None
     assert stage.discard_calls == 1
     assert not stage.staged
