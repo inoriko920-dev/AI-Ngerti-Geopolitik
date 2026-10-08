@@ -170,25 +170,50 @@ class W8RuntimeController:
         if self.offer is None:
             self._notify("Pilihan pemulihan tidak tersedia.")
             return
-        if choice is not RecoveryChoice.IGNORE:
-            # Previous project remains intact if inspect fails or recovery is
-            # ignored. Only after a verified offer + explicit choice may its
-            # clean session be retired. RecoveryManager still revalidates the
-            # offer before applying any replacement.
-            if not self._finish_current_session():
-                return
-            self._cancel_project_jobs()
-        try:
-            decision = self.recovery.decide(
-                self.offer, choice, self.session, selected_path=selected
-            )
-        except (OSError, RuntimeError, ValueError):
-            self._notify("Pemulihan gagal atau sudah usang. Buka project kembali.")
-            return
         if choice is RecoveryChoice.IGNORE:
             self.offer = None
             self.window._close_active_dialog()
             return
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project belum disimpan. Simpan sebelum membuka project lain.")
+            return
+
+        # Stage on a temporary session: RecoveryManager verifies the latest
+        # source/snapshot and starts its marker BEFORE the active editor changes.
+        # This is not a second live project store; it becomes the sole session
+        # only after the previous session has been closed successfully.
+        candidate_session = ProjectSession(
+            self.session.repository, autosave_catalog=self.session.autosave_catalog
+        )
+        offer = self.offer
+        try:
+            decision = self.recovery.decide(
+                offer, choice, candidate_session, selected_path=selected
+            )
+        except (OSError, RuntimeError, ValueError):
+            self._notify("Pemulihan gagal atau sudah usang. Buka project kembali.")
+            return
+
+        try:
+            finished = self._finish_current_session()
+        except (OSError, RuntimeError, ValueError):
+            finished = False
+        if not finished:
+            # Candidate never becomes the active project. Make a best-effort
+            # clean marker for a stage that was never accepted into the editor.
+            if decision.active_marker is not None:
+                with suppress(OSError, RuntimeError, ValueError):
+                    self.recovery.close_clean(
+                        candidate_session,
+                        offer.source,
+                        decision.active_marker,
+                        discard_unsaved=True,
+                    )
+            self._notify("Tidak dapat menutup project sebelumnya. Project baru belum dibuka.")
+            return
+
+        self._cancel_project_jobs()
+        self.session = candidate_session
         self.active_marker = decision.active_marker
         self.offer = None
         self.session_id = uuid4().hex

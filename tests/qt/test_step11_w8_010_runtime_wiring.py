@@ -12,6 +12,7 @@ from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBat
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import ProjectSession
+from ai_ngerti_geopolitik.application.recovery import RecoveryChoice
 from ai_ngerti_geopolitik.application.relink_scan import RelinkScanJobService, ScanState
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentType
 from ai_ngerti_geopolitik.application.validation import (
@@ -22,7 +23,7 @@ from ai_ngerti_geopolitik.bootstrap.w8_controller import (
     W8IntentRouter,
     W8RuntimeController,
 )
-from ai_ngerti_geopolitik.domain import Clip, FrameTime
+from ai_ngerti_geopolitik.domain import Clip, FrameTime, ProjectState
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
@@ -341,5 +342,110 @@ def test_reopening_current_file_does_not_invalidate_active_session(qtbot, tmp_pa
     assert controller.session.session_id == before_id
     assert controller.session.current_path == opened
     assert controller.active_marker == before_marker
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_stale_recovery_offer_does_not_close_active_project(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    old_bytes = opened.read_bytes()
+    new_path = tmp_path / "candidate.angproj"
+    repo.save(ProjectState.create("P-CANDIDATE", "Candidate", 30), new_path)
+    controller.offer = controller.recovery.inspect(new_path)
+    new_path.write_text("{corrupted after inspection", encoding="utf-8")
+
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == old_id
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert opened.read_bytes() == old_bytes
+    assert "Pemulihan gagal" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_failed_candidate_marker_write_preserves_active_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    next_path = tmp_path / "next.angproj"
+    repo.save(ProjectState.create("P-NEXT", "Next", 30), next_path)
+    controller.offer = controller.recovery.inspect(next_path)
+    marker_store = controller.recovery.markers
+    original_write = marker_store.write
+
+    def reject_next_marker(source: Path, marker) -> None:
+        if source == next_path:
+            raise PermissionError("marker write denied")
+        original_write(source, marker)
+
+    monkeypatch.setattr(marker_store, "write", reject_next_marker)
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == old_id
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert "Pemulihan gagal" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_valid_switch_opens_staged_session_and_cleans_old_marker(
+    qtbot, tmp_path: Path
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_marker = controller.active_marker
+    old_id = controller.session.session_id
+    old_bytes = opened.read_bytes()
+    next_path = tmp_path / "valid-next.angproj"
+    repo.save(ProjectState.create("P-NEXT", "Next", 30), next_path)
+    next_bytes = next_path.read_bytes()
+    controller.offer = controller.recovery.inspect(next_path)
+
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == next_path
+    assert controller.session.session_id != old_id
+    assert controller.active_marker is not None
+    assert controller.session.state.project_id == "P-NEXT"
+    assert opened.read_bytes() == old_bytes
+    assert next_path.read_bytes() == next_bytes
+    if old_marker is not None:
+        assert controller.recovery.markers.read(
+            opened, old_marker.project_id
+        ).status == "clean"
     controller.shutdown()
     controller.window.close()

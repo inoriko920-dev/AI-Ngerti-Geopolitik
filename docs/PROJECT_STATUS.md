@@ -194,3 +194,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## Post-W8 GUI open preinspection regression (2026-10-08 WIB)
 
 - Existing saved editor project no longer closes before asynchronous recovery inspection of another chosen `.angproj`. Malformed/missing targets leave the active session/marker intact; duplicate open of same path ignored. Qt targeted+full Windows tests added on PR #20; status **PENDING latest-head CI**. No visual UI change; Pilot A D1 pending, no main merge or portable.
+## PR #20 — Qt staged project replacement (2026-10-08 WIB)
+
+- Cross-project switch now stages final RecoveryManager source/snapshot decision and crash marker on a temporary candidate session BEFORE retiring the current live project. Stale offers and failed marker write cannot remove the active editor state; successful candidate promotion closes the prior session and marker. New Qt tests: staleness, marker denial, successful switch. **Current-head Windows CI PENDING**; no UI structural change, Pilot A D1 still pending, no main merge/release.

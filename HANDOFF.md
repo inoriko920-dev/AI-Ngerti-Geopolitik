@@ -205,3 +205,6 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 UI open preinspection gate (2026-10-08 WIB)
 
 - Verify Qt regressions for invalid target keeping current project alive and same-path open being a no-op; check same-head full Windows CI. Stale candidate after valid inspection remains a separate guarded decision risk, so do not claim fully transactional cross-project switching. No owner Pilot A permission/merge.
+## PR #20 staged recovery acceptance (2026-10-08 WIB)
+
+- Audit exact-head Windows CI of the staged `W8RuntimeController._decide` replacement, including Qt stale/marker-failure/valid-switch regressions, before PASS. `main` must remain unchanged; owner D1 Pilot A remains pending. Do not claim complete rollback if prior close_clean fails after session.close.
