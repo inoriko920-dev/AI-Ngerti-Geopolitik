@@ -38,11 +38,13 @@ from ai_ngerti_geopolitik.application.scene_asset_bindings import (
     SceneAssetScanError,
 )
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
+from ai_ngerti_geopolitik.application.scene_import_review import SceneImportReviewError
 from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntent,
     UiIntentSink,
     UiIntentType,
 )
+from ai_ngerti_geopolitik.bootstrap.scene_cli import create_scene_project_from_wizard
 from ai_ngerti_geopolitik.application.validation import (
     RealMediaIntegrityRule,
     ValidationResult,
@@ -56,6 +58,7 @@ from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepositor
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
+from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
     StillFramePreviewError,
     render_still_frame,
@@ -128,6 +131,11 @@ class W8RuntimeController:
         self.scene_docx_plan: SceneDocxPlan | None = None
         self.scene_asset_future: Future[SceneAssetInventory] | None = None
         self.scene_asset_inventory: SceneAssetInventory | None = None
+        self.scene_docx_path: Path | None = None
+        self.scene_asset_root: Path | None = None
+        self.scene_save_future: Future[ProjectState] | None = None
+        self.scene_save_target: Path | None = None
+        self.scene_save_token: str | None = None
         self.still_preview_worker = ThreadPoolExecutor(
             max_workers=1, thread_name_prefix="ang-still"
         )
@@ -454,6 +462,64 @@ class W8RuntimeController:
         self._notify(f"Media terverifikasi diterapkan pada revisi {updated.revision}.")
         self.request_validation()
 
+    def _request_scene_save(self) -> None:
+        """Existing Continue button: native file dialogs, then worker-only safe Save."""
+        from PySide6.QtWidgets import QFileDialog
+
+        if self.session.is_open and self.session.dirty:
+            self._notify("Simpan perubahan project lama sebelum membuat project baru.")
+            return
+        if self.recovery_future is not None or self.offer is not None:
+            self._notify("Selesaikan pemeriksaan project sebelumnya dahulu.")
+            return
+        plan = self.scene_docx_plan
+        source = self.scene_docx_path
+        folder = self.scene_asset_root
+        if (
+            plan is None
+            or source is None
+            or folder is None
+            or self.scene_asset_inventory is None
+            or not self.scene_asset_inventory.all_ready
+        ):
+            self._notify("Periksa DOCX dan folder aset terlebih dahulu.")
+            return
+        timing, _ = QFileDialog.getOpenFileName(
+            self.window.window, "Pilih TXT Durasi Scene", "", "TXT Durasi (*.txt)"
+        )
+        if not timing:
+            self._notify("TXT durasi belum dipilih. Project tidak dibuat.")
+            return
+        target, _ = QFileDialog.getSaveFileName(
+            self.window.window,
+            "Simpan Project Baru",
+            str(source.with_suffix(".angproj")),
+            "Project (*.angproj)",
+        )
+        if not target:
+            self._notify("Penyimpanan dibatalkan. Project tidak dibuat.")
+            return
+        destination = Path(target).resolve()
+        if destination.suffix.lower() != ".angproj":
+            self._notify("Nama project wajib berakhiran .angproj.")
+            return
+        if self._closed or self.window.window.property("ui_state") != "UI-003":
+            return
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project lama berubah. Simpan project lama terlebih dahulu.")
+            return
+        self.scene_save_target = destination
+        self.scene_save_token = self.session_id
+        self.scene_save_future = self.recovery_worker.submit(
+            create_scene_project_from_wizard,
+            plan,
+            source,
+            folder,
+            Path(timing),
+            destination,
+        )
+        self._notify("Memvalidasi durasi, memeriksa ulang gambar, lalu menyimpan project...")
+
     def handle(self, intent: UiIntent) -> None:
         if self._closed:
             return
@@ -470,14 +536,26 @@ class W8RuntimeController:
                     self._notify("Pemeriksaan Scene DOCX masih berjalan.")
                 elif self.scene_asset_future is not None:
                     self._notify("Pemeriksaan folder aset masih berjalan.")
+                elif self.scene_save_future is not None:
+                    self._notify("Penyimpanan project sedang berjalan.")
+                elif (
+                    self.scene_docx_plan is not None
+                    and self.scene_docx_path == Path(scene_docx).resolve()
+                    and self.scene_asset_root is not None
+                    and self.scene_asset_inventory is not None
+                    and self.scene_asset_inventory.all_ready
+                ):
+                    self._request_scene_save()
                 else:
                     # Bounded ZIP/XML parsing runs off the GUI thread. The
                     # validated DTO is only an import plan: binding assets,
                     # saving .angproj and editor transition require later gates.
                     self.scene_docx_plan = None
                     self.scene_asset_inventory = None
+                    self.scene_asset_root = None
+                    self.scene_docx_path = Path(scene_docx).resolve()
                     self.scene_docx_future = self.recovery_worker.submit(
-                        read_scene_docx, Path(scene_docx).resolve()
+                        read_scene_docx, self.scene_docx_path
                     )
                     self._notify("Memeriksa struktur Scene DOCX...")
         elif kind is UiIntentType.OPEN_PROJECT:
@@ -568,6 +646,7 @@ class W8RuntimeController:
             except (SceneDocxFormatError, OSError, RuntimeError, ValueError):
                 self.scene_docx_plan = None
                 self.scene_asset_inventory = None
+                self.scene_asset_root = None
                 self._notify("Scene DOCX tidak sesuai format atau tidak dapat dibaca.")
             else:
                 if self.window.window.property("ui_state") == "UI-003":
@@ -587,8 +666,9 @@ class W8RuntimeController:
                         and self.window.window.property("ui_state") == "UI-003"
                     ):
                         self.scene_asset_inventory = None
+                        self.scene_asset_root = Path(folder).resolve()
                         self.scene_asset_future = self.recovery_worker.submit(
-                            scan_scene_asset_folder, parsed, Path(folder)
+                            scan_scene_asset_folder, parsed, self.scene_asset_root
                         )
                         self._notify("Memeriksa file A001–Axxx di folder aset...")
                     elif not self._closed:
@@ -604,6 +684,7 @@ class W8RuntimeController:
                 inventory = asset_future.result()
             except (SceneAssetScanError, OSError, RuntimeError, ValueError):
                 self.scene_asset_inventory = None
+                self.scene_asset_root = None
                 self._notify("Scan folder aset gagal. Pilih folder lain.")
             else:
                 if self.window.window.property("ui_state") == "UI-003":
@@ -611,7 +692,10 @@ class W8RuntimeController:
                     ready = inventory.ready_count
                     total = len(inventory.bindings)
                     if inventory.all_ready:
-                        self._notify(f"Folder aset: {ready}/{total} READY. Project belum dibuat.")
+                        self._notify(
+                            f"Folder aset: {ready}/{total} READY. "
+                            "Siapkan TXT durasi, lalu klik Lanjut lagi."
+                        )
                     else:
                         issues = ", ".join(
                             f"{item.asset_id}:{item.status.value}"
@@ -621,6 +705,29 @@ class W8RuntimeController:
                             f"Folder aset: {ready}/{total} READY. "
                             f"Perbaiki {issues}. Project belum dibuat."
                         )
+        if self.scene_save_future is not None and self.scene_save_future.done():
+            pending = self.scene_save_future
+            saved_target = self.scene_save_target
+            saved_token = self.scene_save_token
+            self.scene_save_future = None
+            self.scene_save_target = None
+            self.scene_save_token = None
+            try:
+                created = pending.result()
+            except (SceneImportReviewError, SceneAssetScanError, OSError, RuntimeError, ValueError):
+                self._notify("Project gagal dibuat. Periksa TXT durasi dan keutuhan DOCX/aset.")
+            else:
+                if (
+                    saved_target is not None
+                    and created.timeline_end_frame > 0
+                    and saved_token == self.session_id
+                    and self.window.window.property("ui_state") == "UI-003"
+                    and self.recovery_future is None
+                    and not (self.session.is_open and self.session.dirty)
+                ):
+                    self.request_open(saved_target)
+                else:
+                    self._notify("Project tersimpan, tetapi sesi berubah. Buka file secara manual.")
         self._tick_still_playback()
         self._poll_still_preview()
         if self.validation_job_id is not None:

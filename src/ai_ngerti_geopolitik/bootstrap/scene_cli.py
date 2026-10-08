@@ -3,18 +3,20 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from uuid import uuid4
 
 from ai_ngerti_geopolitik.application.scene_asset_bindings import SceneAssetScanError
-from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError
+from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.scene_import_review import (
     SceneImportReviewError,
     build_scene_timeline_review,
     parse_scene_duration_manifest,
     save_reviewed_scene_image_project,
 )
+from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
     scan_scene_asset_folder,
@@ -30,6 +32,48 @@ from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import (
     export_complete_still_sequence,
     export_still_frame_sequence,
 )
+
+
+
+def create_scene_project_from_wizard(
+    docx: SceneDocxPlan,
+    source: Path,
+    folder: Path,
+    timing: Path,
+    destination: Path,
+) -> ProjectState:
+    """Worker-only finalized import; UI must not guess durations or modify active session."""
+    if timing.suffix.lower() != ".txt" or timing.is_symlink():
+        raise SceneImportReviewError("pilih TXT durasi yang valid")
+    if not 0 < timing.stat().st_size <= 256_000:
+        raise SceneImportReviewError("TXT durasi terlalu besar atau kosong")
+    text = timing.read_text(encoding="utf-8-sig")
+    fps_labels = [
+        match.group(1)
+        for line in text.splitlines()
+        if (match := re.fullmatch(r"#\s*FPS\s+project:\s*(30|60)\s*", line.strip(), re.I))
+    ]
+    if len(fps_labels) != 1:
+        raise SceneImportReviewError("TXT durasi wajib memiliki satu '# FPS project: 30' atau 60")
+    fps = int(fps_labels[0])
+    frames = parse_scene_duration_manifest(text, scene_count=len(docx.scenes))
+    inventory = scan_scene_asset_folder(docx, folder)
+    review = build_scene_timeline_review(docx, inventory, frames, fps=fps)
+    fingerprints = verify_scene_image_media(inventory)
+    return save_reviewed_scene_image_project(
+        docx,
+        source,
+        folder,
+        review,
+        fingerprints,
+        destination,
+        project_id=f"SCENE-{uuid4().hex}",
+        project_name=destination.stem,
+        repository=JsonProjectRepository(),
+        read_docx=read_scene_docx,
+        scan=scan_scene_asset_folder,
+        verify=verify_scene_image_media,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
