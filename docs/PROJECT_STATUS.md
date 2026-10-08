@@ -297,3 +297,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Final source re-verification at all scene clip start frames detects previously exported images that changed mid-process. The CLI adds `frames-all --project film.angproj --output frames --batch-size 300`. It never invokes external native engines.
 - New Windows tests cover real SINGLE/DOUBLE pixel boundaries, master-batch checksum coverage, output preservation, failure rollback, hard range limit and CLI. Same-head CI pending.
 - This is still a silent image sequence, **NOT** encoded MP4, soundtrack/subtitle/effects parity, or native FFmpeg approval. PR #20 Draft, `main` untouched, UI frozen, portable last.
+
+
+## GUI-003 import through existing Continue (2026-10-08 WIB)
+
+- Added a two-stage **existing UI-003 Continue button** flow without editing frozen screen layouts: DOCX + native folder picker first; when Axxx inventory is all READY, Continue again opens Windows-native TXT timing picker and Save As `.angproj` destination chooser.
+- Reuses the worker-only `create_scene_project_from_wizard` bootstrap coordinator; duration TXT requires an explicit `# FPS project: 30` or `60` header and exactly one positive `Scene N: X frames` row per scene. No guessing or false default duration is introduced.
+- Worker invokes canonical save_reviewed_scene_image_project including fresh DOCX read, repeated Axxx folder scan, file hashing and persisted-project identity check. On success existing request_open/recovery mechanism adopts saved project and routes to UI-010. Dirty old sessions, invalid timing, changed inputs, cancelled dialogs and stale route/session are guarded.
+- Real Windows Qt tests cover create/save/open of genuine image HOLD scene project, invalid timing leaves no file, and unsaved existing project cannot be replaced. **CI latest-head still to be verified** for this documentation commit. Rendering MP4 remains unimplemented and external FFmpeg Pilot A separately gated.
+- PR #20 remains Draft, `main` unchanged, no artwork/new widgets or portable packaging.

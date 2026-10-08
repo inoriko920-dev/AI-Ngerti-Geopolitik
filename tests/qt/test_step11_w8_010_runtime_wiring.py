@@ -1105,3 +1105,52 @@ def test_wizard_bad_duration_does_not_write_or_replace_active_session(
     assert "gagal dibuat" in controller.last_error
     controller.shutdown()
     controller.window.close()
+
+
+def test_dirty_session_stays_open_before_timing_dialog_for_new_scene_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    docx = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Red</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(docx, "w") as archive:
+        archive.writestr("word/document.xml", xml)
+    folder = tmp_path / "assets"
+    folder.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_RGB32)
+    image.fill(0x00112233)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(folder))
+
+    def no_dialog(*_args, **_kwargs):
+        raise AssertionError("dirty project must block another file dialog")
+
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", no_dialog)
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", no_dialog)
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    controller.session.new_project("UNSAVED", "Existing unfinished project", 30)
+    identity = controller.session.session_id
+    current = controller.session.state.semantic_hash()
+    assert controller.session.dirty
+    intent = UiIntent(UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(docx))))
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: controller.scene_docx_future is None
+        and controller.scene_asset_future is None
+        and controller.scene_asset_inventory is not None,
+        controller,
+    )
+    controller.handle(intent)
+    assert controller.scene_save_future is None
+    assert controller.session.session_id == identity
+    assert controller.session.state.semantic_hash() == current
+    assert controller.session.dirty
+    assert "Simpan perubahan" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
