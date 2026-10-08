@@ -813,9 +813,7 @@ def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_pat
     controller.window.close()
 
 
-def test_w8_rapid_still_seeks_only_display_newest_frame(
-    qtbot, tmp_path: Path, monkeypatch
-) -> None:
+def test_w8_rapid_still_seeks_only_display_newest_frame(qtbot, tmp_path: Path, monkeypatch) -> None:
     from threading import Event
 
     from ai_ngerti_geopolitik.bootstrap import w8_controller as controller_module
@@ -890,4 +888,3 @@ def test_w8_old_still_job_cannot_update_new_project(qtbot, tmp_path: Path, monke
     assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
     controller.shutdown()
     controller.window.close()
-
