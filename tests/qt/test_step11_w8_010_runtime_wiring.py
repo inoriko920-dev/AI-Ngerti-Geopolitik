@@ -48,9 +48,7 @@ class OwnedProbe:
         )
 
 
-def setup(
-    qtbot, repo: JsonProjectRepository | None = None, *, initial_route: str = "UI-010"
-):
+def setup(qtbot, repo: JsonProjectRepository | None = None, *, initial_route: str = "UI-010"):
     router = W8IntentRouter()
     window = create_main_window(initial_route, fixture_mode=True, intent_sink=router)
     qtbot.addWidget(window.window)
