@@ -222,3 +222,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## UI-003 folder-asset preflight integrated (8 Oct 2026 WIB)
 
 - After valid Scene DOCX parse, native folder selection triggers background exact Axxx image discovery, with inventory/status and blocked asset ID feedback. No canonical project generated, no UI artwork modified. Qt tests added; **latest-head CI pending**. Main/FFmpeg/portable unchanged.
+## Scene DOCX-to-timeline deterministic review (2026-10-08 WIB)
+
+- Added immutable frame-exact SceneTimelineReview with explicit per-scene duration requirement and SINGLE(FULL)/DOUBLE(LEFT+RIGHT concurrent) lane plan. All-READY exact Axxx inventory required; missing/duplicate/invalid media blocks creation. This is NOT yet canonical ProjectState: existing model rejects image-backed timeline Clips. Windows latest-head CI pending. No UI/MLT/FFmpeg native alterations, merge or portable.

@@ -148,3 +148,13 @@ timeline, effect locks, audio mute state or captions when reopened.
 - Selecting a directory submits bounded `scan_scene_asset_folder` on the existing worker (never QImageReader on the UI thread). Qt poll receives an immutable `SceneAssetInventory` and reports READY versus MISSING/DUPLICATE/CORRUPT/UNSUPPORTED ID blockers without copying files, guessing a candidate, or constructing canonical ProjectState.
 - On an all-READY preflight, the UI still explicitly says **Project belum dibuat**. Next requires review, per-scene SINGLE/DOUBLE timeline projection, durable/atomic save and true editor session activation.
 - Qt regressions: valid DOCX+folder with one decoded image, and duplicate+missing IDs that block creation; previous DOCX-only dialog cancellation regression retained. Windows full CI exact updated head required.
+
+## Deterministic Scene timeline review before canonical image support (2026-10-08 WIB)
+
+**Source-of-truth limitation:** Current ProjectState validates that every canonical video-track Clip references a video asset, and MLT projection/export similarly require video media. Saving the DOCX images as fake video assets would violate canonical media truth, so this stage does not create a misleading .angproj.
+
+**Delivered:** Typed, immutable, non-canonical `SceneTimelineReview` derived strictly from a qualified `SceneDocxPlan` and all-READY exact-Axxx `SceneAssetInventory`. The calling workflow must provide one **explicit frame duration per scene** at a supported project 30/60 FPS; the parser NEVER guesses from descriptions or assigns a fake default. SINGLE projects one FULL visual on lane V1. DOUBLE projects both LEFT/RIGHT visuals in parallel at the **same** start/end interval on V1/V2 (rather than doubling the scene duration). Global asset IDs, source/context quotes and deterministic ordered scene boundaries survive. Mismatched, duplicate, missing media, out-of-order scenes, and invalid/overflowing durations fail before returning a review.
+
+**Not yet done:** A true canonical image-backed clip/layer owner shared by playback and final export, verified transform geometry, actual user timing input/review widgets, source-media re-probe/fingerprinting at save, atomic .angproj persistence, and live editor activation. Do not claim video render parity or playable exported assets until qualified under later Pilot A gates.
+
+**Windows CI:** Run targeted scene review tests, full project regression and frozen UI reference checks on the exact latest commit. Main stays unchanged and PR #20 remains Draft.

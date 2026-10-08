@@ -233,3 +233,6 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## UI-003 folder selection and Axxx scan (8 Oct 2026 WIB)
 
 - Verify Windows CI for real DOCX → native folder selection → read-only Axxx matching, and duplicate/missing blocker reporting, including full Qt regression. Accepted scan inventory is transient; no automatic ProjectState, timeline, or .angproj has been implemented. D1 Pilot A still pending; PR #20 remains Draft.
+## Scene image timeline review — canonical adapter prerequisite (2026-10-08 WIB)
+
+- Source `application/scene_import_review.py`, tests `tests/unit/test_scene_import_review.py`. Verify latest-head Windows CI before marking PASS. Next implement a **qualified shared canonical image clip/layer model** for preview/export, explicit scene duration UX and end-to-end atomic save only after real image support; do not store images as video assets or falsely claim output playable. D1 Pilot A FFmpeg runner permission not implied.
