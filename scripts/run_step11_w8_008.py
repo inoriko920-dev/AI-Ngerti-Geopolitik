@@ -84,7 +84,6 @@ def main() -> int:
     session.new_project("P-W8-008","Stale job gate")
     source=root/"canonical.angproj"
     session.save(source)
-    source_hash=hashlib.sha256(source.read_bytes()).hexdigest()
     sid=session.session_id
     assert sid is not None
     state=session.state
@@ -114,6 +113,7 @@ def main() -> int:
     session.save()
     saved_state=session.state
     previous_sid=session.session_id
+    saved_source_hash=hashlib.sha256(source.read_bytes()).hexdigest()
     session.close()
     closed_id=session.session_id is None
     session.open_project(source)
@@ -181,7 +181,7 @@ def main() -> int:
         "relink_different_project_stale":stale_other,
         "recovery_cancelled":recovered_cancelled,
         "recovery_cancel_rejects_result":cancelled_blocked,
-        "source_project_unchanged":hashlib.sha256(source.read_bytes()).hexdigest()!=source_hash
+        "source_project_unchanged":hashlib.sha256(source.read_bytes()).hexdigest()==saved_source_hash
         and repo.load(source).project_id=="P-W8-008",
         "foreign_session_no_auto_mutation":session.state.project_id=="P-OTHER",
         "no_w8_009_started":True,
