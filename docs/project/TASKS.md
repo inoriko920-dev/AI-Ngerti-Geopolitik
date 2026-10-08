@@ -1177,3 +1177,9 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [x] Capture decision table D1–D4 and fail-closed approval boundary in planning audit.
 - [ ] **Owner explicit Pilot A acceptance** — pending, do not treat generic continuation as native/legal consent.
 - [ ] **After owner approval:** accept pilot-only ADR, then INT-01 one task per turn. Bundled codec, license and production engine remain blocked.
+
+## ASTRA INT-01 planning handoff (not implementation) — 2026-10-08 WIB
+- [x] Inspect current FFmpeg detection, native process runner and FFprobe, list concrete fail-closed risks.
+- [x] Draft identity/capability/probe contract, 16 Windows acceptance cases and SOL subtask split 01A–F.
+- [ ] Obtain explicit owner consent for external-FFmpeg Pilot A; generic 'lanjutkan' alone not approval.
+- [ ] After approval, SOL INT-01A typed contract then serial steps; user-facing render stays disabled.
