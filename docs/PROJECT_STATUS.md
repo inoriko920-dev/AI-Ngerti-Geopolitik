@@ -205,3 +205,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## W8 project opening from Home navigates into existing editor (2026-10-08 WIB)
 
 - PR #20 corrects the successful `.angproj` open/recovery flow to enter existing Editor Overview `UI-010`. Failed opens remain on `UI-002`. Two Qt regression tests cover success/failure without changing any frozen UI art/layout. **New-head CI PENDING**; `main` untouched and no Pilot A FFmpeg production work.
+
+## PR #20 — Prevent phantom project creation through UI-003 wizard (2026-10-08 WIB)
+
+- UI-003 Continue previously navigated to editor while runtime ignored the `NEW_PROJECT` intent. It now passes a selected DOCX path to runtime and refuses to open a fictitious editor session until a true DOCX scene/asset importer is built. Status is explicit and file-project state remains intact. Two Qt regressions added. **Current-HEAD Windows CI pending**; no design/engine/main changes.

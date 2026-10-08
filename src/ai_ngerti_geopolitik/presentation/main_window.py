@@ -212,8 +212,17 @@ class MainWindow:
         )
 
         def continue_new_project() -> None:
-            self._emit(UiIntentType.NEW_PROJECT, action="continue_wizard")
-            self.show_route(UiRoute.EDITOR)
+            from PySide6.QtWidgets import QLineEdit
+
+            wizard = self._route_widgets[UiRoute.NEW_PROJECT_DOCX]
+            selected = wizard.findChild(QLineEdit, "field_scene_docx")
+            # The runtime must own DOCX validation + actual project creation.
+            # Never navigate into a phantom editor without an open session.
+            self._emit(
+                UiIntentType.NEW_PROJECT,
+                action="continue_wizard",
+                path=selected.text().strip() if selected is not None else "",
+            )
 
         self._route_widgets[UiRoute.NEW_PROJECT_DOCX] = create_new_project_screen(
             lambda: self.show_route(UiRoute.HOME),

@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QLabel, QListWidget, QPushButton, QTableWidget
+from PySide6.QtWidgets import QDialog, QFileDialog, QLabel, QLineEdit, QListWidget, QPushButton, QTableWidget
 
 from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBatch
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
@@ -28,6 +28,7 @@ from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegr
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.presentation.main_window import create_main_window
+from ai_ngerti_geopolitik.presentation.navigation import UiRoute
 
 
 class OwnedProbe:
@@ -528,5 +529,66 @@ def test_corrupt_project_from_home_does_not_navigate_to_editor(qtbot, tmp_path: 
     assert controller.window.window.property("ui_state") == "UI-002"
     assert not controller.session.is_open
     assert "Tidak dapat memeriksa" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_continue_does_not_open_phantom_project(qtbot, tmp_path: Path, monkeypatch) -> None:
+    controller, _router = setup(qtbot, initial_route="UI-002")
+    controller.window.show_route(UiRoute.NEW_PROJECT_DOCX)
+    root = controller.window.window
+    docx = tmp_path / "scene_asset_mapping.docx"
+    docx.write_bytes(b"fixture-placeholder-docx")
+
+    monkeypatch.setattr(
+        QFileDialog,
+        "getOpenFileName",
+        lambda *args, **kwargs: (str(docx), "DOCX (*.docx)"),
+    )
+    browse = root.findChild(QPushButton, "btn_pick_docx")
+    continue_button = root.findChild(QPushButton, "btn_continue_new_project")
+    docx_field = root.findChild(QLineEdit, "field_scene_docx")
+    assert browse is not None and continue_button is not None and docx_field is not None
+    assert not continue_button.isEnabled()
+    qtbot.mouseClick(browse, Qt.MouseButton.LeftButton)
+    assert docx_field.text() == str(docx)
+    assert continue_button.isEnabled()
+
+    qtbot.mouseClick(continue_button, Qt.MouseButton.LeftButton)
+
+    assert not controller.session.is_open
+    assert root.property("ui_state") == "UI-003"
+    assert "belum terhubung" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_missing_docx_does_not_replace_active_project(qtbot, tmp_path: Path) -> None:
+    repo, project, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(project)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    active_id = controller.session.session_id
+    current_hash = controller.session.state.semantic_hash()
+    source_bytes = project.read_bytes()
+
+    missing = tmp_path / "not-found.docx"
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(missing))),
+        )
+    )
+
+    assert controller.session.is_open
+    assert controller.session.current_path == project
+    assert controller.session.session_id == active_id
+    assert controller.session.state.semantic_hash() == current_hash
+    assert project.read_bytes() == source_bytes
+    assert "tidak tersedia" in controller.last_error
     controller.shutdown()
     controller.window.close()

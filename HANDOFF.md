@@ -216,3 +216,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 — Home-to-Editor runtime navigation fix (2026-10-08 WIB)
 
 - Verify Qt: open saved project from UI-002 reaches UI-010 only on accepted session; corrupt target stays UI-002 with no opened project. Confirm W8-010 targeted and full Windows tests at current PR head. No frozen reference image/layout changes, no main merge and no Pilot A authorization.
+
+## PR #20 — UI-003 New Project fail-closed regression (2026-10-08 WIB)
+
+- Qt tests: Browse→Continue with selected .docx must not navigate to UI-010 without an actual ProjectSession, and a missing DOCX must not affect existing active project. Next feature milestone is a strictly validated Prompt-1 scene/Asset-ID DOCX importer; do not assume it exists, and do not create fake editor state. Current-head CI required, no D1 Pilot A FFmpeg work, no main merge.

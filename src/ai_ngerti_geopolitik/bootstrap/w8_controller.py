@@ -300,7 +300,21 @@ class W8RuntimeController:
             return
         kind = intent.kind
         data = dict(intent.payload)
-        if kind is UiIntentType.OPEN_PROJECT:
+        if kind is UiIntentType.NEW_PROJECT:
+            if data.get("action") == "continue_wizard":
+                scene_docx = data.get("path", "").strip()
+                if not scene_docx:
+                    self._notify("Pilih Scene DOCX sebelum melanjutkan.")
+                elif Path(scene_docx).suffix.lower() != ".docx" or not Path(scene_docx).is_file():
+                    self._notify("Scene DOCX tidak tersedia. Pilih file DOCX yang dapat dibuka.")
+                else:
+                    # DOCX Scene + Asset-ID ingestion has not been implemented
+                    # in the live W8 controller. Do not silently invent a
+                    # ProjectSession or navigate to an empty editor.
+                    self._notify(
+                        "Impor Scene DOCX belum terhubung. Project belum dibuat."
+                    )
+        elif kind is UiIntentType.OPEN_PROJECT:
             filename = data.get("path", "")
             if not filename:
                 from PySide6.QtWidgets import QFileDialog

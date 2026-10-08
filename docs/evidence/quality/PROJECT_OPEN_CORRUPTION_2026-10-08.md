@@ -112,3 +112,11 @@ timeline, effect locks, audio mute state or captions when reopened.
 **Qt regression:** Real saved project opened from `UI-002` navigates to `UI-010` and keeps canonical project session; malformed `.angproj` fails safely and remains at `UI-002`. The existing W8-010 GUI suite and entire Windows CI must pass on the latest exact commit before accepting.
 
 **Gate:** PENDING exact-head Windows CI. No merge, no native FFmpeg Pilot A execution, no portable package.
+
+## New Project wizard: reject phantom editor session (8 Oct 2026 WIB)
+
+- **Confirmed live workflow defect:** The frozen UI-003 wizard's Continue callback directly called `show_route(UiRoute.EDITOR)` after emitting `NEW_PROJECT`. But W8's intent controller ignored `NEW_PROJECT`, so a selected DOCX appeared to create a project while `ProjectSession.is_open` remained false and scene/asset mapping was never imported.
+- **Scoped integrity fix:** Pass the selected DOCX path in the semantic intent and remove automatic editor navigation. W8 reports a clear, path-free status for missing/invalid input and, for an existing selected DOCX, explicitly states that Scene DOCX ingestion is not wired. No fake project, empty editor or unintended replacement of an active project.
+- **No speculative parser:** The required Prompt-1 DOCX Scene/Asset-ID mapping contract does not yet have a production importer connected to this wizard. Merely checking the extension is not a parser and does not assert the DOCX content is valid. Actual import+asset validation+session construction remains a separate feature milestone and gate.
+- **Regression:** Qt tests check the real Browse→Continue wizard path remains at UI-003 without creating a phantom project, and a missing DOCX never discards an already open project. No frozen UI artwork/layout changes, no main merge, no native FFmpeg or portable release.
+- **Gate:** Pending exact-head Windows CI with targeted Qt/unit plus full suite.
