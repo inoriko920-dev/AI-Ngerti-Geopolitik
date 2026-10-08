@@ -48,9 +48,7 @@ def main() -> int:
         job = service.submit(session.state, candidate_dir, session_id="W8-004-SESSION")
         deadline = time.monotonic() + 120
         while True:
-            current = service.snapshot(
-                job.job_id, state=session.state, session_id="W8-004-SESSION"
-            )
+            current = service.snapshot(job.job_id, state=session.state, session_id="W8-004-SESSION")
             if current.state not in {ScanState.QUEUED, ScanState.RUNNING}:
                 break
             if time.monotonic() > deadline:
@@ -62,7 +60,9 @@ def main() -> int:
         assert all(item.fingerprint_verified for item in current.candidates)
         assert session.state.semantic_hash() == before_hash
         applied = service.apply_selected(
-            job.job_id, session, session_id="W8-004-SESSION",
+            job.job_id,
+            session,
+            session_id="W8-004-SESSION",
             selections=((asset_id, renamed),),
         )
         applied_hash = applied.semantic_hash()
@@ -84,7 +84,9 @@ def main() -> int:
             "scanned_files": current.scanned_files,
             "candidate_count": len(current.candidates),
             "ambiguous_requires_manual": current.ambiguous_assets == (asset_id,),
-            "all_candidates_verified": all(item.fingerprint_verified for item in current.candidates),
+            "all_candidates_verified": all(
+                item.fingerprint_verified for item in current.candidates
+            ),
             "no_scan_mutation": True,
             "one_batch_revision": applied.revision == job.token.revision + 1,
             "stable_asset_id": reopened.state.asset(asset_id).asset_id == asset_id,
@@ -97,8 +99,17 @@ def main() -> int:
             "w8_005_started": False,
         }
         if not all(
-            value is True for key, value in report.items()
-            if key not in {"status", "scanned_files", "candidate_count", "ui_redesign", "auto_apply", "w8_005_started"}
+            value is True
+            for key, value in report.items()
+            if key
+            not in {
+                "status",
+                "scanned_files",
+                "candidate_count",
+                "ui_redesign",
+                "auto_apply",
+                "w8_005_started",
+            }
         ):
             raise RuntimeError("W8-004 real-media evidence mismatch")
         (root / "00_w8_004_report.json").write_text(

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Iterator
 from dataclasses import replace
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 
@@ -40,8 +40,17 @@ class FakeProbe:
 
     def probe(self, path: Path) -> ProbeResult:
         return ProbeResult(
-            path.resolve(), 120, 30, 1920, 1080, True,
-            self.fingerprints[path.name], "video", 4.0, 1000, 48000,
+            path.resolve(),
+            120,
+            30,
+            1920,
+            1080,
+            True,
+            self.fingerprints[path.name],
+            "video",
+            4.0,
+            1000,
+            48000,
         )
 
 
@@ -61,22 +70,42 @@ class PauseScanner:
 
 def state(*, two: bool = False) -> ProjectState:
     first = Asset(
-        "A001", "lost/original.mp4", "video", FrameTime(120, 30),
-        1920, 1080, True, "a" * 64, "source.mp4", 1000, 48000, "missing",
+        "A001",
+        "lost/original.mp4",
+        "video",
+        FrameTime(120, 30),
+        1920,
+        1080,
+        True,
+        "a" * 64,
+        "source.mp4",
+        1000,
+        48000,
+        "missing",
     )
     second = Asset(
-        "A002", "lost/second.mp4", "video", FrameTime(120, 30),
-        1920, 1080, True, "b" * 64, "second-source.mp4", 1000, 48000, "missing",
+        "A002",
+        "lost/second.mp4",
+        "video",
+        FrameTime(120, 30),
+        1920,
+        1080,
+        True,
+        "b" * 64,
+        "second-source.mp4",
+        1000,
+        48000,
+        "missing",
     )
-    clips = (
-        Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(120, 30)),
-    )
+    clips = (Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(120, 30)),)
     if two:
-        clips += (
-            Clip("C002", "A002", FrameTime(120, 30), FrameTime(0, 30), FrameTime(120, 30)),
-        )
+        clips += (Clip("C002", "A002", FrameTime(120, 30), FrameTime(0, 30), FrameTime(120, 30)),)
     return ProjectState(
-        "P-SCAN", "W8-004", 1, 30, 7,
+        "P-SCAN",
+        "W8-004",
+        1,
+        30,
+        7,
         assets=(first, second) if two else (first,),
         tracks=(Track("V1", "video", 0, clips),),
     )
@@ -95,9 +124,17 @@ def await_finished(service: RelinkScanJobService, job_id: str, current: ProjectS
 def test_ranked_ambiguity_and_manual_exact_approval(tmp_path: Path) -> None:
     for name in ("original.mp4", "source.mp4", "renamed.mp4", "fake.mp4"):
         (tmp_path / name).write_bytes(b"fixture")
-    probe = FakeProbe({name: "a" * 64 for name in (
-        "original.mp4", "source.mp4", "renamed.mp4",
-    )} | {"fake.mp4": "f" * 64})
+    probe = FakeProbe(
+        {
+            name: "a" * 64
+            for name in (
+                "original.mp4",
+                "source.mp4",
+                "renamed.mp4",
+            )
+        }
+        | {"fake.mp4": "f" * 64}
+    )
     session = TestSession(state())
     before = session.state.semantic_hash()
     with RelinkScanJobService(LocalRelinkDirectoryScanner(), probe) as service:
@@ -106,7 +143,9 @@ def test_ranked_ambiguity_and_manual_exact_approval(tmp_path: Path) -> None:
         assert done.state is ScanState.SUCCESS
         assert done.scanned_files == 4
         assert done.ambiguous_assets == ("A001",)
-        assert [(item.path.name, item.rank, item.fingerprint_verified) for item in done.candidates] == [
+        assert [
+            (item.path.name, item.rank, item.fingerprint_verified) for item in done.candidates
+        ] == [
             ("original.mp4", 1, True),
             ("source.mp4", 2, True),
             ("renamed.mp4", 3, True),
@@ -117,21 +156,29 @@ def test_ranked_ambiguity_and_manual_exact_approval(tmp_path: Path) -> None:
             service.apply_selected(job.job_id, session, session_id="S001", selections=())
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="S001",
+                job.job_id,
+                session,
+                session_id="S001",
                 selections=(("A001", tmp_path / "fake.mp4"),),
             )
         result = service.apply_selected(
-            job.job_id, session, session_id="S001",
+            job.job_id,
+            session,
+            session_id="S001",
             selections=(("A001", tmp_path / "renamed.mp4"),),
         )
         assert result.revision == 8
         assert result.asset("A001").asset_id == "A001"
         assert result.clip("C001").asset_id == "A001"
         assert session.bus.undo().semantic_hash() == before
-        assert session.bus.redo().asset("A001").path_ref == str((tmp_path / "renamed.mp4").resolve())
+        assert session.bus.redo().asset("A001").path_ref == str(
+            (tmp_path / "renamed.mp4").resolve()
+        )
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="S001",
+                job.job_id,
+                session,
+                session_id="S001",
                 selections=(("A001", tmp_path / "original.mp4"),),
             )
 
@@ -147,9 +194,10 @@ def test_two_selections_commit_once_and_undo_once(tmp_path: Path) -> None:
         result = await_finished(service, job.job_id, session.state)
         assert len(result.candidates) == 2
         approved = service.apply_selected(
-            job.job_id, session, session_id="S001",
-            selections=(("A001", tmp_path / "renamed-a.mp4"),
-                        ("A002", tmp_path / "renamed-b.mp4")),
+            job.job_id,
+            session,
+            session_id="S001",
+            selections=(("A001", tmp_path / "renamed-a.mp4"), ("A002", tmp_path / "renamed-b.mp4")),
         )
         assert approved.revision == 8
         assert approved.clip("C001").asset_id == "A001"
@@ -166,21 +214,27 @@ def test_revision_semantic_and_session_stale_reject_before_mutation(tmp_path: Pa
     with RelinkScanJobService(LocalRelinkDirectoryScanner(), probe) as service:
         job = service.submit(session.state, tmp_path, session_id="S001")
         await_finished(service, job.job_id, session.state)
-        assert service.snapshot(
-            job.job_id, state=session.state, session_id="different"
-        ).state is ScanState.STALE
+        assert (
+            service.snapshot(job.job_id, state=session.state, session_id="different").state
+            is ScanState.STALE
+        )
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="different",
+                job.job_id,
+                session,
+                session_id="different",
                 selections=(("A001", tmp_path / "candidate.mp4"),),
             )
         session.bus.replace_loaded_state(replace(session.state, name="changed"))
-        assert service.snapshot(
-            job.job_id, state=session.state, session_id="S001"
-        ).state is ScanState.STALE
+        assert (
+            service.snapshot(job.job_id, state=session.state, session_id="S001").state
+            is ScanState.STALE
+        )
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="S001",
+                job.job_id,
+                session,
+                session_id="S001",
                 selections=(("A001", tmp_path / "candidate.mp4"),),
             )
         assert session.state.asset("A001").availability == "missing"
@@ -199,7 +253,9 @@ def test_cancel_running_scan_cannot_publish_or_apply(tmp_path: Path) -> None:
         assert done.state is ScanState.CANCELLED and done.candidates == ()
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="S001",
+                job.job_id,
+                session,
+                session_id="S001",
                 selections=(("A001", tmp_path / "candidate.mp4"),),
             )
         assert session.state.asset("A001").availability == "missing"
@@ -244,7 +300,9 @@ def test_reject_duplicate_path_and_unsupported_bounds(tmp_path: Path) -> None:
         await_finished(service, job.job_id, session.state)
         with pytest.raises(RelinkScanError):
             service.apply_selected(
-                job.job_id, session, session_id="S001",
+                job.job_id,
+                session,
+                session_id="S001",
                 selections=(
                     ("A001", tmp_path / "candidate.mp4"),
                     ("A002", tmp_path / "candidate.mp4"),

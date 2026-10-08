@@ -3,14 +3,30 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from ai_ngerti_geopolitik.application.relink_scan import ScanCancel
 
 _MEDIA_SUFFIXES = frozenset(
-    {".mp4", ".mov", ".mkv", ".avi", ".webm", ".mp3", ".wav", ".m4a", ".flac",
-     ".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
+    {
+        ".mp4",
+        ".mov",
+        ".mkv",
+        ".avi",
+        ".webm",
+        ".mp3",
+        ".wav",
+        ".m4a",
+        ".flac",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+        ".bmp",
+        ".tif",
+        ".tiff",
+    }
 )
 
 
@@ -30,7 +46,8 @@ class LocalRelinkDirectoryScanner:
             current = Path(base)
             depth = len(current.relative_to(root).parts)
             directories[:] = sorted(
-                directory for directory in directories
+                directory
+                for directory in directories
                 if depth < max_depth and not (current / directory).is_symlink()
             )
             for filename in sorted(filenames):

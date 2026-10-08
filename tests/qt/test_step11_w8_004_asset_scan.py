@@ -27,9 +27,7 @@ def _snapshot(status: ScanState) -> RelinkScanSnapshot:
 
 def test_ui040_renders_progress_cancel_as_semantic_intent(qtbot) -> None:
     sink = RecordingIntentSink()
-    dialog = create_asset_scan_dialog(
-        asset_scan_projection(_snapshot(ScanState.RUNNING)), sink
-    )
+    dialog = create_asset_scan_dialog(asset_scan_projection(_snapshot(ScanState.RUNNING)), sink)
     qtbot.addWidget(dialog)
     dialog.show()
     assert dialog.objectName() == "dlg_asset_scan"
@@ -48,9 +46,7 @@ def test_ui040_renders_progress_cancel_as_semantic_intent(qtbot) -> None:
 
 def test_ui040_success_requires_explicit_checked_exact_candidate(qtbot) -> None:
     sink = RecordingIntentSink()
-    dialog = create_asset_scan_dialog(
-        asset_scan_projection(_snapshot(ScanState.SUCCESS)), sink
-    )
+    dialog = create_asset_scan_dialog(asset_scan_projection(_snapshot(ScanState.SUCCESS)), sink)
     qtbot.addWidget(dialog)
     dialog.show()
     table = dialog.findChild(QTableWidget, "table_asset_scan_candidates")
@@ -73,9 +69,7 @@ def test_ui040_success_requires_explicit_checked_exact_candidate(qtbot) -> None:
 
 def test_ui040_stale_result_blocks_apply_and_allows_restart(qtbot) -> None:
     sink = RecordingIntentSink()
-    dialog = create_asset_scan_dialog(
-        asset_scan_projection(_snapshot(ScanState.STALE)), sink
-    )
+    dialog = create_asset_scan_dialog(asset_scan_projection(_snapshot(ScanState.STALE)), sink)
     qtbot.addWidget(dialog)
     dialog.show()
     apply = dialog.findChild(QPushButton, "btn_asset_scan_apply")

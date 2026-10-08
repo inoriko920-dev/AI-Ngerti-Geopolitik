@@ -7,12 +7,13 @@ re-probed, fingerprint-exact candidates may be committed by one CommandBatch.
 from __future__ import annotations
 
 from _thread import LockType
+from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
 from threading import Event, Lock
-from typing import Iterator, Protocol
+from typing import Protocol
 from uuid import uuid4
 
 from ai_ngerti_geopolitik.application.commands import CommandBatch, CommandError, RelinkAssetCommand
@@ -144,14 +145,23 @@ class RelinkScanJobService:
     @staticmethod
     def _snapshot(job_id: str, record: _Record, *, stale: bool = False) -> RelinkScanSnapshot:
         return RelinkScanSnapshot(
-            job_id, record.token, ScanState.STALE if stale else record.state,
-            record.scanned_files, record.candidates if not stale else (),
-            record.safe_message, record.applied,
+            job_id,
+            record.token,
+            ScanState.STALE if stale else record.state,
+            record.scanned_files,
+            record.candidates if not stale else (),
+            record.safe_message,
+            record.applied,
         )
 
     def submit(
-        self, state: ProjectState, root: Path, *, session_id: str,
-        max_files: int = 400, max_depth: int = 5,
+        self,
+        state: ProjectState,
+        root: Path,
+        *,
+        session_id: str,
+        max_files: int = 400,
+        max_depth: int = 5,
     ) -> RelinkScanSnapshot:
         state.validate()
         if not session_id.strip():
@@ -178,14 +188,10 @@ class RelinkScanJobService:
             record.future = future
             return self._snapshot(job_id, record)
 
-    def snapshot(
-        self, job_id: str, *, state: ProjectState, session_id: str
-    ) -> RelinkScanSnapshot:
+    def snapshot(self, job_id: str, *, state: ProjectState, session_id: str) -> RelinkScanSnapshot:
         with self._lock:
             record = self._record(job_id)
-            return self._snapshot(
-                job_id, record, stale=record.token.is_stale(state, session_id)
-            )
+            return self._snapshot(job_id, record, stale=record.token.is_stale(state, session_id))
 
     def cancel(self, job_id: str) -> None:
         with self._lock:
@@ -199,8 +205,13 @@ class RelinkScanJobService:
                 record.future.cancel()
 
     def _run(
-        self, job_id: str, state: ProjectState, root: Path,
-        missing: tuple[Asset, ...], max_files: int, max_depth: int,
+        self,
+        job_id: str,
+        state: ProjectState,
+        root: Path,
+        missing: tuple[Asset, ...],
+        max_files: int,
+        max_depth: int,
     ) -> None:
         with self._lock:
             record = self._record(job_id)
@@ -245,7 +256,9 @@ class RelinkScanJobService:
                         rank, evidence = 3, "exact SHA-256 fingerprint"
                     else:
                         rank, evidence = 4, "compatible metadata only — manual review"
-                    found.append(RankedRelinkCandidate(asset.asset_id, path, rank, exact_hash, evidence))
+                    found.append(
+                        RankedRelinkCandidate(asset.asset_id, path, rank, exact_hash, evidence)
+                    )
                 # Bound memory even when a folder contains many near-identical assets.
                 if len(found) >= 2000:
                     break
@@ -266,8 +279,12 @@ class RelinkScanJobService:
                 record.state = ScanState.SUCCESS
 
     def apply_selected(
-        self, job_id: str, session: CommandSession, *,
-        session_id: str, selections: tuple[tuple[str, Path], ...],
+        self,
+        job_id: str,
+        session: CommandSession,
+        *,
+        session_id: str,
+        selections: tuple[tuple[str, Path], ...],
     ) -> ProjectState:
         with self._lock:
             record = self._record(job_id)
@@ -289,7 +306,9 @@ class RelinkScanJobService:
                 item.asset_id == asset_id and item.path == path and item.fingerprint_verified
                 for item in candidates
             ):
-                raise RelinkScanError("candidate requires an exact fingerprint match and manual choice")
+                raise RelinkScanError(
+                    "candidate requires an exact fingerprint match and manual choice"
+                )
             selected.append(verifier.verify_candidate(session.state, asset_id, path).replacement)
         with self._lock:
             if record.token.is_stale(session.state, session_id) or record.cancellation.cancelled:

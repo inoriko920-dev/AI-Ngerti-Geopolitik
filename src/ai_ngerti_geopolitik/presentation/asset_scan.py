@@ -5,13 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from ai_ngerti_geopolitik.application.ui_intents import UiIntentSink
-
 from ai_ngerti_geopolitik.application.relink_scan import (
-    RankedRelinkCandidate,
     RelinkScanSnapshot,
     ScanState,
 )
+from ai_ngerti_geopolitik.application.ui_intents import UiIntentSink
 
 
 @dataclass(frozen=True, slots=True)
