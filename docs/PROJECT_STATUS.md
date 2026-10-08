@@ -216,3 +216,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## UI-003 Scene DOCX parser worker integration (2026-10-08 WIB)
 
 - Continue runs bounded Scene DOCX preflight in a worker, reports scene/asset counts without faking a canonical project. Corrupt DOCX returns a safe error; no editor navigation until folder binding + atomic project save exist. Qt regressions added. **Current-HEAD Windows CI pending.** No native FFmpeg / main merge / portable.
+## New Project asset-folder Axxx lookup (8 Oct 2026 WIB)
+
+- Added bounded read-only discovery of canonical filenames A001–Axxx, case insensitive and safely nested. READY/MISSING/DUPLICATE/CORRUPT/UNSUPPORTED status report fails on ambiguous/partial scans and never constructs ProjectState. Unit regressions added, **Windows CI current-head pending**. UI-003 picker hookup, import review and atomic .angproj save still pending. No native Pilot A, no merge or portable.

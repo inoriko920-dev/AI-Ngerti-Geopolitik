@@ -136,3 +136,9 @@ timeline, effect locks, audio mute state or captions when reopened.
 - Invalid/corrupt files return a privacy-safe error; active canonical project and crash markers are unchanged. Tests include real Browse→Continue with a deterministic valid DOCX, plus a corrupt ZIP worker outcome.
 - The DTO is transient preflight data only; it must not replace the canonical ProjectState. Asset-folder binding, missing/duplicate handling, save-review and editor transition remain a separately qualified milestone.
 - Same-head Windows CI must pass; no Pilot A FFmpeg native execution, frozen UI visual edits or portable release.
+## Canonical Scene Axxx asset-folder discovery (8 Oct 2026 WIB)
+
+- New immutable application DTO/status projection distinguishes READY, MISSING, DUPLICATE, CORRUPT and UNSUPPORTED for each expected canonical Scene DOCX Axxx. It **never auto-chooses** between multiple exact-ID file matches, never matches by text similarity, and never writes canonical ProjectState.
+- New bounded read-only folder scanner indexes exact filename stems A001 etc. (case-insensitive), including safely nested images; rejects symlinked entries/directories, enforces max-file/depth/visited-folder bounds and fails closed on truncated scans. Image decode confirmation uses QImageReader on a bounded thumbnail, checked dimensions and supported PNG/JPEG/WebP suffixes; it does not claim full media/engine qualification.
+- Unit coverage: success with multiple supported image formats, missing/corrupt/unsupported assets, nested duplicate ambiguity, zero-byte, symlink exclusion and scan-overflow fail-closed semantics. **Current-head Windows CI pending**.
+- The candidate inventory is not yet wired to a folder selection in UI-003; that live flow, asset review, canonical scene/clip persistence and atomic project creation remain separate gates. No frozen visual UI change, no native FFmpeg D1, main merge or portable.

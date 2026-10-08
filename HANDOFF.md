@@ -227,3 +227,6 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## UI-003 read-only DOCX preflight (2026-10-08 WIB)
 
 - Verified parser source: `scene_docx_contract.py` and `scene_docx_reader.py`. W8 worker now returns SceneDocxPlan to Qt only on success; broken ZIP/structure fails safely. Inspect same-head Windows CI before marking PASS. No canonical asset binding, no .angproj creation yet; avoid saying new-project workflow complete.
+## Scene Axxx folder binding engine (8 Oct 2026 WIB)
+
+- Implemented pure candidate matcher in application and bounded Qt image-aware folder scanner in infrastructure. Scan is read-only and a duplicate match must block rather than choose a random image. Next: GUI folder-picker hookup after valid DOCX preflight (no UI artwork/layout edits), then canonical scene/asset timeline mapping and atomic project save. Windows CI verification required before PASS.
