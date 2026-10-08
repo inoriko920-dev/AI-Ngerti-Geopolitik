@@ -201,3 +201,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 subsequent Save As / recovery atomicity regression (2026-10-08 WIB)
 
 - Verify same-head Windows CI for the pre-write hash guard and pre-recovery adoption validation. Tests must prove invalid repository responses cannot change the project path, project session or existing source bytes. Keep Draft; D1 Pilot A FFmpeg still pending; no portable, no main merge.
+
+## PR #20 UI open preinspection gate (2026-10-08 WIB)
+
+- Verify Qt regressions for invalid target keeping current project alive and same-path open being a no-op; check same-head full Windows CI. Stale candidate after valid inspection remains a separate guarded decision risk, so do not claim fully transactional cross-project switching. No owner Pilot A permission/merge.

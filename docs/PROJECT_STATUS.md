@@ -190,3 +190,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - `ProjectSession.save` now computes semantic identity before any repository write or path rebind; `recover_snapshot` verifies source/snapshot semantic identities before adopting a recovered session. Regression tests simulate a returning-invalid repository and a saving adapter that would write before hash validation. No project schema change, UI change, native FFmpeg execution, release or main merge.
 - Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. **Current-head Windows CI pending**; earlier PR #20 CI alone does not qualify this change.
+
+## Post-W8 GUI open preinspection regression (2026-10-08 WIB)
+
+- Existing saved editor project no longer closes before asynchronous recovery inspection of another chosen `.angproj`. Malformed/missing targets leave the active session/marker intact; duplicate open of same path ignored. Qt targeted+full Windows tests added on PR #20; status **PENDING latest-head CI**. No visual UI change; Pilot A D1 pending, no main merge or portable.

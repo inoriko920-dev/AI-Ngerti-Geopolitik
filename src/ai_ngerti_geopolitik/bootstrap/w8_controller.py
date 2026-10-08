@@ -140,11 +140,18 @@ class W8RuntimeController:
         """Asynchronous catalog inspection; never perform disk probing on GUI thread."""
         if self._closed or self.recovery_future is not None:
             return
-        if not self._finish_current_session():
+        # Do not discard a valid open project until the candidate has passed
+        # asynchronous recovery inspection. A corrupt/missing destination is
+        # not a reason to close the currently active project.
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project belum disimpan. Simpan sebelum membuka project lain.")
             return
-        self._cancel_project_jobs()
+        candidate = source.resolve()
+        if self.session.is_open and self.session.current_path == candidate:
+            self._notify("Project ini sudah terbuka.")
+            return
         self.offer = None
-        self.recovery_path = source.resolve()
+        self.recovery_path = candidate
         self.recovery_future = self.recovery_worker.submit(
             self.recovery.inspect, self.recovery_path
         )
@@ -163,6 +170,14 @@ class W8RuntimeController:
         if self.offer is None:
             self._notify("Pilihan pemulihan tidak tersedia.")
             return
+        if choice is not RecoveryChoice.IGNORE:
+            # Previous project remains intact if inspect fails or recovery is
+            # ignored. Only after a verified offer + explicit choice may its
+            # clean session be retired. RecoveryManager still revalidates the
+            # offer before applying any replacement.
+            if not self._finish_current_session():
+                return
+            self._cancel_project_jobs()
         try:
             decision = self.recovery.decide(
                 self.offer, choice, self.session, selected_path=selected

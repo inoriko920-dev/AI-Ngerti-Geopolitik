@@ -75,3 +75,13 @@ timeline, effect locks, audio mute state or captions when reopened.
 - Two synthetic, deterministic regression tests use a repository adapter returning malformed Unicode or capable of prematurely writing. They verify no accidental save target, no active-session replacement, no altered source bytes, and no false clean state.
 - Changes keep the existing project v1 schema, file format, UI, and source-of-truth permissions. Real external FFmpeg and portable release are outside this change.
 - The new exact-head Windows CI must pass targeted and full pytest, Ruff, mypy, architecture, secrets and frozen UI reference checks before this follow-up is accepted.
+
+## W8 GUI project-open inspection gate — 2026-10-08 WIB
+
+**Defect:** `W8RuntimeController.request_open` previously closed a valid, clean project and its active crash marker **before** asynchronous `RecoveryManager.inspect` checked the newly selected file. A malformed or missing target therefore discarded the existing on-screen project even when inspection failed.
+
+**Change:** Keep the existing project and its marker during asynchronous inspection; decline a dirty-project switch immediately; decline opening the exact same already-active project path. Retire the prior clean session and cancel its jobs only after a verified offer and an actual source/snapshot-open choice; `IGNORE` leaves the old session intact. `RecoveryManager.decide` still independently validates the source and selected snapshot.
+
+**Regression:** Added Qt tests for a corrupt selected `.angproj` preserving active session ID, canonical hash, project bytes and crash marker, and a same-path open leaving session untouched. Windows targeted Qt tests, targeted unit tests and full suite run in the PR #20 same-head workflow. This is not a full transaction guarantee against a file changing after inspection; stale decisions remain fail-closed under `RecoveryManager.decide`.
+
+**Gate:** PENDING latest-head Windows CI. No UI-001..UI-042 visual changes, production native FFmpeg runner, external binary bundling, merge or portable.

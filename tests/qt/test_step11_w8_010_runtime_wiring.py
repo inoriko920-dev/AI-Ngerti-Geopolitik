@@ -290,3 +290,58 @@ def test_stale_background_validation_is_never_projected(qtbot, tmp_path: Path) -
     assert controller.session.dirty
     controller.shutdown()
     controller.window.close()
+
+
+def test_invalid_new_project_inspection_keeps_existing_open_project(
+    qtbot, tmp_path: Path
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    original_session = controller.session.session_id
+    original_marker = controller.active_marker
+    original_hash = controller.session.state.semantic_hash()
+    original_bytes = opened.read_bytes()
+
+    invalid = tmp_path / "BROKEN_PROJECT.angproj"
+    invalid.write_text("{invalid-json", encoding="utf-8")
+    controller.request_open(invalid)
+    pump(qtbot, lambda: controller.recovery_future is None, controller)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == original_session
+    assert controller.active_marker == original_marker
+    assert controller.session.state.semantic_hash() == original_hash
+    assert opened.read_bytes() == original_bytes
+    assert "Tidak dapat memeriksa" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_reopening_current_file_does_not_invalidate_active_session(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    before_id = controller.session.session_id
+    before_marker = controller.active_marker
+
+    controller.request_open(opened)
+
+    assert controller.recovery_future is None
+    assert controller.session.is_open
+    assert controller.session.session_id == before_id
+    assert controller.session.current_path == opened
+    assert controller.active_marker == before_marker
+    controller.shutdown()
+    controller.window.close()
