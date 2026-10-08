@@ -1,0 +1,50 @@
+name: SOL INT01A Immutable Native Toolchain Identity Contract
+
+on:
+  push:
+    branches: [feature/sol-int01a-native-identity-contract]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  contract:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/unit/test_sol_int01a_native_identity.py -q
+      - run: uv run pytest -q
+      - name: Assert contract has no native execution nor product UI activation
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          p=Path("src/ai_ngerti_geopolitik/application/native_toolchain_identity.py")
+          s=p.read_text(encoding="utf-8")
+          for forbidden in ("import subprocess", "from subprocess", "import shutil", "from shutil", "Popen(", "subprocess.run(", "os.system(", "QPushButton"):
+              assert forbidden not in s, f"unexpected execution/UI code: {forbidden}"
+          assert "return False" in s and "def can_start_product_render" in s
+          print("PASS: typed contract has no native execution or UI render activation")
+          '@ | python
