@@ -29,12 +29,8 @@ def test_present_encoders_do_not_imply_export_dispatch() -> None:
     assert toolchain.baseline_detected
     assert toolchain.h265_encoder_found
     assert not ExportCapabilities(toolchain=toolchain).can_start_render
-    assert not ExportCapabilities(
-        toolchain=toolchain, h264_export_qualified=True
-    ).can_start_render
-    assert not ExportCapabilities(
-        toolchain=toolchain, render_handler_wired=True
-    ).can_start_render
+    assert not ExportCapabilities(toolchain=toolchain, h264_export_qualified=True).can_start_render
+    assert not ExportCapabilities(toolchain=toolchain, render_handler_wired=True).can_start_render
 
 
 def test_probe_failure_and_malformed_encoder_flags_are_safe() -> None:

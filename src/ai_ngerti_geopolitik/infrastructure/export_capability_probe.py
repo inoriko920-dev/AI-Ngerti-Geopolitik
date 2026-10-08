@@ -13,9 +13,7 @@ Runner = Callable[[tuple[str, ...]], tuple[int, str] | None]
 
 def _run(command: tuple[str, ...]) -> tuple[int, str] | None:
     try:
-        result = subprocess.run(
-            command, capture_output=True, check=False, text=True, timeout=8
-        )
+        result = subprocess.run(command, capture_output=True, check=False, text=True, timeout=8)
     except (OSError, subprocess.TimeoutExpired, UnicodeError):
         return None
     return result.returncode, result.stdout
@@ -23,10 +21,7 @@ def _run(command: tuple[str, ...]) -> tuple[int, str] | None:
 
 def _encoder_exists(output: str, flag: str, encoder: str) -> bool:
     return any(
-        len(parts) >= 2
-        and len(parts[0]) >= 6
-        and parts[0][0] == flag
-        and parts[1] == encoder
+        len(parts) >= 2 and len(parts[0]) >= 6 and parts[0][0] == flag and parts[1] == encoder
         for parts in (line.split() for line in output.splitlines())
     )
 

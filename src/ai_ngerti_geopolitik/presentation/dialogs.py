@@ -24,6 +24,7 @@ def create_export_dialog(
     """
 
     from PySide6.QtCore import Qt
+    from PySide6.QtGui import QStandardItemModel
     from PySide6.QtWidgets import (
         QComboBox,
         QDialog,
@@ -62,7 +63,10 @@ def create_export_dialog(
     format_box = QComboBox()
     format_box.setObjectName("combo_export_format")
     format_box.addItems(["MP4 (H.264)", "MP4 (H.265)"])
-    format_box.model().item(1).setEnabled(False)
+    format_model = format_box.model()
+    if not isinstance(format_model, QStandardItemModel):
+        raise RuntimeError("Export combo requires a standard Qt model")
+    format_model.item(1).setEnabled(False)
     format_box.setEnabled(capability.toolchain.baseline_detected)
     format_box.setToolTip("H.265 belum diuji pada pipeline render Windows.")
     preset = QComboBox()
