@@ -1,0 +1,49 @@
+name: SOL INT01B B2-prep Pure Bounded Output Windows
+
+on:
+  push:
+    branches: [feature/sol-int01b-b2-prep-bounded-output]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  private-output-collector:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/unit/test_sol_int01b_b2_prep_bounded_capture.py -q
+      - run: uv run pytest -q
+      - name: Assert collector has no subprocess execution or Qt button enabling
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          source=Path("src/ai_ngerti_geopolitik/infrastructure/native_bounded_capture.py").read_text(encoding="utf-8")
+          for forbidden in ("import subprocess", "from subprocess", "Popen(", "subprocess.run(", "os.system(", "QPushButton", "shutil.which", "shell=True"):
+              assert forbidden not in source, f"unapproved native execution: {forbidden}"
+          assert "NATIVE_OUTPUT_TOO_LARGE" in source and "class NativeBoundedCapture" in source
+          print("PASS: bounded private collector; no native subprocess execution or product GUI")
+          '@ | python

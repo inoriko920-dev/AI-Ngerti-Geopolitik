@@ -357,3 +357,8 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `src/ai_ngerti_geopolitik/application/native_process_contract.py` — pure frozen bounds for future process runner, strict typed safe result, no native execution.
 - `tests/unit/test_sol_int01b_b1_process_contract.py` and `.github/workflows/sol-int01b-b1-process-contract-windows.yml` — Windows negative contract/full regression, native-execution denial and frozen UI hashes.
 - `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md` — tested implementation SHA bfa20eb, Windows success 37754131337, owner Pilot A gate pending, next B2 after explicit approval.
+
+
+## SOL INT-01B/B2-prep bounded private stream capture — 2026-10-08 WIB
+- `src/ai_ngerti_geopolitik/infrastructure/native_bounded_capture.py`, `tests/unit/test_sol_int01b_b2_prep_bounded_capture.py`, `.github/workflows/sol-int01b-b2-prep-windows.yml` — independent bounded in-memory stream accounting; no OS process launch.
+- `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md` — code ef8b06a4, Windows SUCCESS 37757835429, 101 mypy files, UI42/docs70 full tests PASS. Actual native B2 still owner-blocked.
