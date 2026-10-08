@@ -190,3 +190,10 @@ The Axxx folder walk previously silently truncated directory descent at `max_dep
 
 - Real image-HOLD frames are rendered by background worker and applied on GUI thread; concurrent rapid seek results are guarded by session+state semantic hash and latest frame, keeping stale previous-project results off the canvas.
 - Test evidence includes pixel-perfect red SINGLE / green-left blue-right DOUBLE on the actual active Qt editor widget, scrubber range/position and seek coalescing. Full current-head CI still pending; no render, native process, frozen UI changes or main merge.
+
+## Frame-exact Qt still-frame sequence export (8 October 2026 WIB)
+
+- Added bounded, read-only `still_frame_sequence.py` reusing the already qualified canonical still-frame preview compositor (no duplicate render owner). Exports 1–300 exact-timestamp frame PNGs into a staged directory, SHA-256 records for every PNG and a deterministic `manifest.json` with canonical project identity, fps and half-open frame interval.
+- Publishing a new output directory happens only after every frame and manifest succeeds. Stale/corrupt media, out-of-range requests, oversized output and pre-existing targets fail closed; incomplete staging is cleaned up. No process execution or GUI-thread operation. The CLI adds `frames --project movie.angproj --start 148 --count 5 --output frames`.
+- Tests render real 13x8 red SINGLE followed by green-left/blue-right DOUBLE pixels at frame 150, verify all manifest digests, no overwrite, deterministic repeated output and rollback when media becomes corrupt mid-sequence. Windows CI same-head verification pending.
+- This is an **intermediate silent PNG sequence**, not final MP4, audio/subtitle/transition rendering or an approved FFmpeg/MLT engine integration. UI-001–UI-042 remain frozen, PR #20 Draft, `main` unchanged and portable last.

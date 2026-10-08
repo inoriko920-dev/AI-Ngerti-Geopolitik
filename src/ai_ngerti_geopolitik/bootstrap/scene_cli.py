@@ -25,6 +25,10 @@ from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
     StillFramePreviewError,
     render_still_frame,
 )
+from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import (
+    StillSequenceExportError,
+    export_still_frame_sequence,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -50,8 +54,21 @@ def main(argv: list[str] | None = None) -> int:
     preview.add_argument("--frame", type=int, required=True)
     preview.add_argument("--output", required=True)
 
+    frames = modes.add_parser("frames", help="Ekspor PNG frame sequence dan manifest, bukan MP4.")
+    frames.add_argument("--project", required=True)
+    frames.add_argument("--start", required=True, type=int)
+    frames.add_argument("--count", required=True, type=int)
+    frames.add_argument("--output", required=True)
+
     args = parser.parse_args(argv)
     try:
+        if args.action == "frames":
+            state = JsonProjectRepository().load(Path(args.project))
+            export_still_frame_sequence(
+                state, Path(args.output), start_frame=args.start, count=args.count
+            )
+            print(f"Berhasil mengekspor {args.count} frame PNG. Ini bukan video MP4.")
+            return 0
         if args.action == "preview":
             target = Path(args.output)
             if target.suffix.lower() != ".png":
@@ -115,6 +132,7 @@ def main(argv: list[str] | None = None) -> int:
         SceneImportReviewError,
         SceneAssetScanError,
         StillFramePreviewError,
+        StillSequenceExportError,
         OSError,
         ValueError,
     ) as err:
