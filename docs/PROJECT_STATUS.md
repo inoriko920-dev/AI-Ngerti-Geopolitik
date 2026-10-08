@@ -251,3 +251,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Target/full pytest, Ruff/mypy 96/import/architecture/secrets/source-of-truth70/UI refs42 PASS. Evidence `docs/evidence/features/SF12_T08_RENDER_JOB_LIFECYCLE.md`, artifact 11534776048.
 - Draft stacked PR #9 on #8/#7/#6/#5/#4/#3/#2/#1, main unchanged. Frozen MediaEnginePort/AAVC/UI unchanged; **production render NOT WIRED** until strict T09 and packaged T10.
 - **Next serial task SF12-T09 independent postflight + errors and publish gate**, after explicit user `lanjutkan` only.
+
+
+## SF12-T09 — INDEPENDENT POSTFLIGHT / PASS REAL WINDOWS (2026-10-08 WIB)
+
+- Code SHA `270fe789834354a7e2adb38fc5859023db93f547`, [Windows CI 37744843294](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37744843294) **SUCCESS**. Background worker now REQUIRES verified SHA/size/stat receipt and independent MP4/AAC stream metadata + whole decode exact frame count to enter READY, with session/state+receipt recheck and atomic hard-link no-clobber on owner acceptance.
+- Five actual decoded, externally probed, published H264/H265 MP4s: full 1080p30 15f, selection [5,10) 5f, upscaled H264 4K30 15f, 1080p60 30f, HEVC 1080p30 15f; audio AAC in all. 50% truncated MP4 rejected POSTFLIGHT_DECODE_FAILED without publication. Source remains byte-identical.
+- Fixed real T08 HEVC routing bug (codec excluded from plain H264 predicate). Target/full pytest and Qt tests, Ruff, mypy 98, imports/architecture/secrets, source-of-truth70/70 and frozen UI42/42 PASS. Evidence `docs/evidence/features/SF12_T09_STRICT_POSTFLIGHT_REAL_MEDIA.md`, artifact ID 11535670942.
+- Draft stacked PR **#10** on PR #9/#8/#7/#6/#5/#4/#3/#2/#1, **not merged to main**; frozen AAVC/UI/MediaEnginePort unchanged. GUI render still DISABLED until T10 packaged Windows E2E/native licensing engine decision. Receipt uses fast stat after full worker SHA verification; T10 to investigate residual tamper/long-media performance.
+- Next exact serial task **SF12-T10 Windows packaged and UI E2E qualification** after user's next `lanjutkan`.

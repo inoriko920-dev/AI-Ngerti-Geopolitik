@@ -310,3 +310,13 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `tests/unit/test_sf12_t08_export_jobs.py`, `tests/qt/test_sf12_t08_qt_responsiveness.py` — cancellation, timeout, stale/same-revision semantic, double click, close, frozen Qt event-loop heartbeat.
 - `scripts/qualification/sf12_t08_worker_real_media.py`, `.github/workflows/sf12-t08-windows-render-jobs.yml` — Windows real H264/AAC worker and full static/pytest/Qt checks.
 - `docs/evidence/features/SF12_T08_RENDER_JOB_LIFECYCLE.md` — code SHA 596a48d, Windows SUCCESS run 37742882153, artifact ID 11534776048. Next T09 strict postflight. No UI activation/release.
+
+
+## SF12-T09 independent postflight / corruption-denial evidence (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/export_postflight.py` — redacted `PostflightCode`, mandatory verifier port and immutable SHA256/stat identity receipt.
+- `src/ai_ngerti_geopolitik/infrastructure/export_postflight.py` — FFprobe exact stream/header/profile check then complete separate FFmpeg video+AAC decoding and decoded-frame check.
+- `src/ai_ngerti_geopolitik/application/export_jobs.py` — postflight required in background before READY, postflight phase and receipt identity before atomic accept.
+- `src/ai_ngerti_geopolitik/infrastructure/export_job_adapters.py` — T09 fix H265 1080p30 routed correctly to HEVC matrix, not H264 full baseline.
+- `tests/unit/test_sf12_t09_postflight.py`, `scripts/qualification/sf12_t09_real_postflight.py`, `.github/workflows/sf12-t09-windows-postflight.yml` — negative forged data, 50% truncated MP4 rejection, full decoded 5-cell Windows matrix and CI.
+- `docs/evidence/features/SF12_T09_STRICT_POSTFLIGHT_REAL_MEDIA.md` — code SHA 270fe78, real Windows SUCCESS 37744843294, artifact ID 11535670942. **Next SF12-T10 packaging/UI/native E2E only**, no production export enablement.
