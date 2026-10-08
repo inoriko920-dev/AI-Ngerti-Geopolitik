@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 PASS / W8-005 READY / W8-006..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 READY / W8-007..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -106,8 +106,8 @@ No new UI image-generation gate:
 - **W8-002 — Real Media Integrity + Validation Center Projection — PASS**
 - **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
 - W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS
-- W8-005 — Autosave Catalog + Retention Hardening — READY
-- W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005
+- W8-005 — Autosave Catalog + Retention Hardening — PASS
+- W8-006 — Crash Marker + Startup Recovery Decision — READY
 - W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — BLOCKED_BY_W8_007
 - W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008
@@ -155,4 +155,18 @@ rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review
 one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
 real-media validation. UI-040 projects intents; controller wiring remains W8-010.
 
-Next: **SOL S11-W8-005 only**. W8-006 remains blocked.
+## Accepted W8-005 evidence
+
+- W8-005 accepted implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
+- Windows qualification workflow: `37724812333` — SUCCESS.
+- Artifact: `ANG-S11-W8-005-Autosave-Catalog` ID `11526779061`;
+  SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
+- Targeted autosave tests **9/9 PASS**, full pytest **429/429 PASS**,
+  owned evidence verifier **12/12 PASS**, frozen UI **42/42 PASS**.
+- Ruff/mypy/imports/architecture/security/source-of-truth PASS.
+- Same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**.
+- Maximum 20 validated managed autosaves/project, legacy compatibility,
+  corrupt isolation and writer/unlink failure injection PASS.
+- Never prune source `.angproj`, `.bak`, or foreign project snapshots.
+
+Next: **SOL S11-W8-006 only**. W8-007 remains blocked.

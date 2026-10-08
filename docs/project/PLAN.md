@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..004 PASS / W8-005 READY  
+**Status:** CONTRACT_LOCKED / W8-001..005 PASS / W8-006 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -34,8 +34,8 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 2. W8-002 — **PASS**
 3. W8-003 — **PASS**
 4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **PASS**
-5. W8-005 Autosave Catalog + Retention Hardening — **READY**
-6. W8-006 Crash Marker + Startup Recovery Decision — **BLOCKED**
+5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
+6. W8-006 Crash Marker + Startup Recovery Decision — **READY**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **BLOCKED**
 8. W8-008 Stale Result Hardening — **BLOCKED**
 9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
@@ -58,4 +58,17 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 ## Exact next action
 
-On owner's `lanjutkan`, SOL W8-005 only. W8-006 still blocked.
+W8-005 accepted:
+- W8-005 accepted implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
+- Windows qualification workflow: `37724812333` — SUCCESS.
+- Artifact: `ANG-S11-W8-005-Autosave-Catalog` ID `11526779061`;
+  SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
+- Targeted autosave tests **9/9 PASS**, full pytest **429/429 PASS**,
+  owned evidence verifier **12/12 PASS**, frozen UI **42/42 PASS**.
+- Ruff/mypy/imports/architecture/security/source-of-truth PASS.
+- Same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**.
+- Maximum 20 validated managed autosaves/project, legacy compatibility,
+  corrupt isolation and writer/unlink failure injection PASS.
+- Never prune source `.angproj`, `.bak`, or foreign project snapshots.
+
+After owner's **lanjutkan**, SOL W8-006 only; do not start W8-007.
