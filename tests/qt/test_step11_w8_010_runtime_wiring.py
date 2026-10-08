@@ -7,6 +7,7 @@ import zipfile
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage
 from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
@@ -561,6 +562,7 @@ def test_wizard_continue_does_not_open_phantom_project(qtbot, tmp_path: Path, mo
         "getOpenFileName",
         lambda *args, **kwargs: (str(docx), "DOCX (*.docx)"),
     )
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
     browse = root.findChild(QPushButton, "btn_pick_docx")
     continue_button = root.findChild(QPushButton, "btn_continue_new_project")
     docx_field = root.findChild(QLineEdit, "field_scene_docx")
@@ -634,5 +636,106 @@ def test_corrupt_existing_docx_is_rejected_by_worker_without_creating_project(
     assert controller.window.window.property("ui_state") == "UI-003"
     assert "tidak sesuai format" in controller.last_error
     assert str(bad) not in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_valid_docx_then_folder_scan_reports_ready_without_fake_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scenes.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Map visual</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as out:
+        out.writestr("word/document.xml", xml)
+    folder = tmp_path / "images"
+    folder.mkdir()
+    image = QImage(4, 4, QImage.Format.Format_RGB32)
+    image.fill(0x00228844)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: str(folder))
+    controller, _router = setup(qtbot, initial_route="UI-003")
+
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(document))),
+        )
+    )
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+
+    assert controller.scene_asset_inventory is not None
+    assert controller.scene_asset_inventory.all_ready
+    assert controller.scene_asset_inventory.ready_count == 1
+    assert controller.scene_asset_inventory.bindings[0].asset_id == "A001"
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "1/1 READY" in controller.last_error
+    assert "Project belum dibuat" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_duplicate_and_missing_assets_are_reported_without_project_creation(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "double-scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 2</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: First visual</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 2: Second visual</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as out:
+        out.writestr("word/document.xml", xml)
+    folder = tmp_path / "images"
+    subfolder = folder / "duplicate"
+    subfolder.mkdir(parents=True)
+    image = QImage(4, 4, QImage.Format.Format_RGB32)
+    image.fill(0x00228844)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    assert image.save(str(subfolder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: str(folder))
+    controller, _router = setup(qtbot, initial_route="UI-003")
+
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(document))),
+        )
+    )
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+
+    assert controller.scene_asset_inventory is not None
+    assert not controller.scene_asset_inventory.all_ready
+    assert [(x.asset_id, x.status.value) for x in controller.scene_asset_inventory.blockers] == [
+        ("A001", "DUPLICATE"),
+        ("A002", "MISSING"),
+    ]
+    assert "A001:DUPLICATE" in controller.last_error
+    assert "A002:MISSING" in controller.last_error
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
     controller.shutdown()
     controller.window.close()

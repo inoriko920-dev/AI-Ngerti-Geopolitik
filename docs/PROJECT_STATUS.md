@@ -219,3 +219,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## New Project asset-folder Axxx lookup (8 Oct 2026 WIB)
 
 - Added bounded read-only discovery of canonical filenames A001–Axxx, case insensitive and safely nested. READY/MISSING/DUPLICATE/CORRUPT/UNSUPPORTED status report fails on ambiguous/partial scans and never constructs ProjectState. Unit regressions added, **Windows CI current-head pending**. UI-003 picker hookup, import review and atomic .angproj save still pending. No native Pilot A, no merge or portable.
+## UI-003 folder-asset preflight integrated (8 Oct 2026 WIB)
+
+- After valid Scene DOCX parse, native folder selection triggers background exact Axxx image discovery, with inventory/status and blocked asset ID feedback. No canonical project generated, no UI artwork modified. Qt tests added; **latest-head CI pending**. Main/FFmpeg/portable unchanged.

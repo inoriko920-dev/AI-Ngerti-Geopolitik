@@ -30,6 +30,10 @@ from ai_ngerti_geopolitik.application.relink_scan import (
     RelinkScanSnapshot,
     ScanState,
 )
+from ai_ngerti_geopolitik.application.scene_asset_bindings import (
+    SceneAssetInventory,
+    SceneAssetScanError,
+)
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntent,
@@ -47,6 +51,7 @@ from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegr
 from ai_ngerti_geopolitik.infrastructure.media_status import LocalMediaAvailability
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
+from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
@@ -114,6 +119,8 @@ class W8RuntimeController:
         self.recovery_path: Path | None = None
         self.scene_docx_future: Future[SceneDocxPlan] | None = None
         self.scene_docx_plan: SceneDocxPlan | None = None
+        self.scene_asset_future: Future[SceneAssetInventory] | None = None
+        self.scene_asset_inventory: SceneAssetInventory | None = None
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -313,11 +320,14 @@ class W8RuntimeController:
                     self._notify("Scene DOCX tidak tersedia. Pilih file DOCX yang dapat dibuka.")
                 elif self.scene_docx_future is not None:
                     self._notify("Pemeriksaan Scene DOCX masih berjalan.")
+                elif self.scene_asset_future is not None:
+                    self._notify("Pemeriksaan folder aset masih berjalan.")
                 else:
                     # Bounded ZIP/XML parsing runs off the GUI thread. The
                     # validated DTO is only an import plan: binding assets,
                     # saving .angproj and editor transition require later gates.
                     self.scene_docx_plan = None
+                    self.scene_asset_inventory = None
                     self.scene_docx_future = self.recovery_worker.submit(
                         read_scene_docx, Path(scene_docx).resolve()
                     )
@@ -389,15 +399,57 @@ class W8RuntimeController:
                 parsed = docx_future.result()
             except (SceneDocxFormatError, OSError, RuntimeError, ValueError):
                 self.scene_docx_plan = None
+                self.scene_asset_inventory = None
                 self._notify("Scene DOCX tidak sesuai format atau tidak dapat dibaca.")
             else:
                 if self.window.window.property("ui_state") == "UI-003":
+                    from PySide6.QtWidgets import QFileDialog
+
                     self.scene_docx_plan = parsed
                     self._notify(
                         f"Scene DOCX valid: {len(parsed.scenes)} scene, "
-                        f"{parsed.asset_count} aset. Folder aset belum dipilih; "
-                        "project belum dibuat."
+                        f"{parsed.asset_count} aset. Pilih folder aset."
                     )
+                    folder = QFileDialog.getExistingDirectory(
+                        self.window.window, "Pilih Folder Aset", ""
+                    )
+                    if folder and not self._closed and self.window.window.property("ui_state") == "UI-003":
+                        self.scene_asset_inventory = None
+                        self.scene_asset_future = self.recovery_worker.submit(
+                            scan_scene_asset_folder, parsed, Path(folder)
+                        )
+                        self._notify("Memeriksa file A001–Axxx di folder aset...")
+                    elif not self._closed:
+                        self._notify(
+                            f"Scene DOCX valid: {len(parsed.scenes)} scene, "
+                            f"{parsed.asset_count} aset. Folder aset belum dipilih; "
+                            "project belum dibuat."
+                        )
+        if self.scene_asset_future is not None and self.scene_asset_future.done():
+            asset_future = self.scene_asset_future
+            self.scene_asset_future = None
+            try:
+                inventory = asset_future.result()
+            except (SceneAssetScanError, OSError, RuntimeError, ValueError):
+                self.scene_asset_inventory = None
+                self._notify("Scan folder aset gagal. Pilih folder lain.")
+            else:
+                if self.window.window.property("ui_state") == "UI-003":
+                    self.scene_asset_inventory = inventory
+                    if inventory.all_ready:
+                        self._notify(
+                            f"Folder aset: {inventory.ready_count}/{len(inventory.bindings)} READY. "
+                            "Project belum dibuat."
+                        )
+                    else:
+                        issues = ", ".join(
+                            f"{item.asset_id}:{item.status.value}"
+                            for item in inventory.blockers[:4]
+                        )
+                        self._notify(
+                            f"Folder aset: {inventory.ready_count}/{len(inventory.bindings)} READY. "
+                            f"Perbaiki {issues}. Project belum dibuat."
+                        )
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
                 self.validation_job_id,

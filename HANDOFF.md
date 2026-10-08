@@ -230,3 +230,6 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## Scene Axxx folder binding engine (8 Oct 2026 WIB)
 
 - Implemented pure candidate matcher in application and bounded Qt image-aware folder scanner in infrastructure. Scan is read-only and a duplicate match must block rather than choose a random image. Next: GUI folder-picker hookup after valid DOCX preflight (no UI artwork/layout edits), then canonical scene/asset timeline mapping and atomic project save. Windows CI verification required before PASS.
+## UI-003 folder selection and Axxx scan (8 Oct 2026 WIB)
+
+- Verify Windows CI for real DOCX → native folder selection → read-only Axxx matching, and duplicate/missing blocker reporting, including full Qt regression. Accepted scan inventory is transient; no automatic ProjectState, timeline, or .angproj has been implemented. D1 Pilot A still pending; PR #20 remains Draft.
