@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 W8 CLOSED / PASS — W8-001..010 COMPLETE — SF-STEP 12 READY (NOT STARTED); W5 MICROPHONE AND W6/W7 LIVE GEMINI PROVISIONAL**
+> **STATUS ON THIS UNMERGED FEATURE STACK: SF12-T01..T09 engineering gates PASS; SF12-T10 packaged Windows qualification in progress. Main is still the W8 closure baseline. Product GUI export is DISABLED, portable editor NOT FINAL; native FFmpeg/codec distribution and libopenshot engine decision remain pending. W5 physical microphone and W6/W7 live Gemini PROVISIONAL.**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 

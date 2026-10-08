@@ -1,0 +1,136 @@
+name: SF12 T10 Windows Packaged UI and Verified Export E2E
+
+on:
+  push:
+    branches: [feature/sf12-t10-windows-packaged-e2e]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  source-gates:
+    name: Source, architecture, frozen UI and full regression
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q
+      - run: uv run pytest tests/qt/test_sf12_t01_export_dialog.py tests/qt/test_sf12_t08_qt_responsiveness.py tests/qt/test_step11_w8_010_runtime_wiring.py -q
+
+  packaged-export:
+    name: Existing onedir media ZIP, nine verified MP4s, no-bundled-FFmpeg gate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install external Windows FFmpeg and ffprobe only on runner
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - name: Capture external codec build/version and license indicators
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts/sf12-t10/evidence -Force | Out-Null
+          ffmpeg -version | Out-File artifacts/sf12-t10/evidence/external_ffmpeg_version.txt
+          ffmpeg -buildconf | Out-File artifacts/sf12-t10/evidence/external_ffmpeg_buildconf.txt
+          ffprobe -version | Out-File artifacts/sf12-t10/evidence/external_ffprobe_version.txt
+          ffmpeg -hide_banner -encoders | Select-String "libx264|libx265|aac"
+      - run: uv lock --check
+      - run: uv sync --frozen --group package
+      - name: Generate owned 1080p/30 baseline source
+        run: uv run python scripts/generate_step10_fixture.py --output artifacts/sf12-t10/owned_source.mp4
+      - name: Build existing multi-file packaged media smoke (no new model)
+        shell: pwsh
+        run: ./scripts/package/build_step10_media_smoke.ps1
+      - name: Verify existing STEP10 media smoke without regression
+        shell: pwsh
+        run: ./scripts/package/smoke_step10_media.ps1 -Fixture artifacts/sf12-t10/owned_source.mp4 -EvidenceDir artifacts/sf12-t10/evidence
+      - name: Verify new T10 packaged FFmpeg worker + postflight matrix
+        shell: pwsh
+        run: ./scripts/package/smoke_sf12_t10_packaged.ps1 -Fixture artifacts/sf12-t10/owned_source.mp4 -EvidenceDir artifacts/sf12-t10/evidence
+      - name: Independently probe H265 packaged output and package SHA-256
+        shell: pwsh
+        run: |
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate,nb_frames -show_entries format=format_name,duration -of json artifacts/sf12-t10/evidence/t10_packaged_exports/h265_1080p30.mp4
+          Get-FileHash dist-s10/AI-Ngerti-Geopolitik-S10-Media-Smoke-Windows-x64.zip -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-SF12-T10-Packaged-Media-Qualification
+          path: |
+            dist-s10/AI-Ngerti-Geopolitik-S10-Media-Smoke-Windows-x64.zip
+            artifacts/sf12-t10/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
+  packaged-ui:
+    name: Original frozen Windows UI-shell ZIP and Qt regression
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group package --group test
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/qt/test_sf12_t01_export_dialog.py tests/qt/test_step11_w8_010_runtime_wiring.py -q
+      - name: Build existing untouched 1:1 frozen UI-shell ZIP
+        shell: pwsh
+        run: ./scripts/package/build_step09_ui.ps1
+      - name: Launch packaged UI shell in offscreen smoke
+        shell: pwsh
+        run: ./scripts/package/smoke_step09_ui.ps1
+      - name: Inspect UI binary, packaging scope and checksum
+        shell: pwsh
+        run: |
+          $Dir = "artifacts/sf12-t10/ui"
+          New-Item -ItemType Directory -Path $Dir -Force | Out-Null
+          Copy-Item "dist/s09-ui-smoke.txt" "$Dir/s09-ui-smoke.txt"
+          Copy-Item "dist/AI-Ngerti-Geopolitik-UI-Shell/STEP09_SCOPE.txt" "$Dir/STEP09_SCOPE.txt"
+          Get-FileHash "dist/AI-Ngerti-Geopolitik-UI-Shell-Windows-x64.zip" -Algorithm SHA256 | Format-List | Out-File "$Dir/ui_zip_sha256.txt"
+          if ((Get-Content "$Dir/s09-ui-smoke.txt" -Raw).Trim() -ne "ANG_S09_UI_SMOKE_OK") {
+            throw "T10_UI_SHELL_SMOKE_FAILED"
+          }
+          if ((Get-Content "$Dir/STEP09_SCOPE.txt" -Raw) -notmatch "NOT the final editor") {
+            throw "T10_UI_SHELL_SCOPE_OVERCLAIM"
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-SF12-T10-Frozen-UI-Shell-Qualification
+          path: |
+            dist/AI-Ngerti-Geopolitik-UI-Shell-Windows-x64.zip
+            artifacts/sf12-t10/ui/**
+          if-no-files-found: error
+          retention-days: 14
