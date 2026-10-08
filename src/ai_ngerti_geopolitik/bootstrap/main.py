@@ -58,7 +58,22 @@ def run(argv: Sequence[str] | None = None) -> int:
 
     app = QApplication(["AI Ngerti Geopolitik"])
     app.setFont(QFont("Segoe UI", 10))
-    window = create_main_window(state, fixture_mode=fixture_mode)
+    # Keep visual/UI smoke runs deterministic; attach live W8 only in product mode.
+    live_w8 = not (fixture_mode or capture_path or smoke_path)
+    controller = None
+    if live_w8:
+        from ai_ngerti_geopolitik.bootstrap.w8_controller import (
+            W8IntentRouter,
+            W8RuntimeController,
+        )
+
+        router = W8IntentRouter()
+        window = create_main_window(state, fixture_mode=False, intent_sink=router)
+        controller = W8RuntimeController(window)
+        router.delegate = controller.handle
+        app.aboutToQuit.connect(controller.shutdown)
+    else:
+        window = create_main_window(state, fixture_mode=fixture_mode)
     if capture_path:
         window.resize(1920, 1080)
     window.show()
