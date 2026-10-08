@@ -3,6 +3,7 @@ from __future__ import annotations
 import threading
 import time
 from collections.abc import Iterator
+from contextlib import suppress
 from dataclasses import replace
 from pathlib import Path
 
@@ -272,10 +273,8 @@ def test_bounded_scanner_does_not_follow_symlinks_or_search_outside(tmp_path: Pa
     outside = tmp_path / "outside"
     outside.mkdir()
     (outside / "secret.mp4").write_bytes(b"x")
-    try:
+    with suppress(OSError, NotImplementedError):
         (root / "escape").symlink_to(outside, target_is_directory=True)
-    except (OSError, NotImplementedError):
-        pass
     scanner = LocalRelinkDirectoryScanner()
     cancel = ScanCancel()
     limited = list(scanner.paths(root, cancellation=cancel, max_files=2, max_depth=4))
