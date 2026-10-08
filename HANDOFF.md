@@ -236,3 +236,11 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## Scene image timeline review — canonical adapter prerequisite (2026-10-08 WIB)
 
 - Source `application/scene_import_review.py`, tests `tests/unit/test_scene_import_review.py`. Verify latest-head Windows CI before marking PASS. Next implement a **qualified shared canonical image clip/layer model** for preview/export, explicit scene duration UX and end-to-end atomic save only after real image support; do not store images as video assets or falsely claim output playable. D1 Pilot A FFmpeg runner permission not implied.
+
+
+## Image media evidence + schema gate (8 Oct 2026 WIB)
+
+- Added read-only per-Axxx PNG/JPEG/WebP media fingerprint verification (SHA-256, size, decoded width and height), plus recheck that rejects changed, missing, corrupt and oversized files without leaking private file paths. These are transient verification DTOs, not persisted ProjectState.
+- ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
+- No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
+- Current-head Windows CI verification pending.

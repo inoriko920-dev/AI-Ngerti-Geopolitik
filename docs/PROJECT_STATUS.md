@@ -225,3 +225,11 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## Scene DOCX-to-timeline deterministic review (2026-10-08 WIB)
 
 - Added immutable frame-exact SceneTimelineReview with explicit per-scene duration requirement and SINGLE(FULL)/DOUBLE(LEFT+RIGHT concurrent) lane plan. All-READY exact Axxx inventory required; missing/duplicate/invalid media blocks creation. This is NOT yet canonical ProjectState: existing model rejects image-backed timeline Clips. Windows latest-head CI pending. No UI/MLT/FFmpeg native alterations, merge or portable.
+
+
+## Image media evidence + schema gate (8 Oct 2026 WIB)
+
+- Added read-only per-Axxx PNG/JPEG/WebP media fingerprint verification (SHA-256, size, decoded width and height), plus recheck that rejects changed, missing, corrupt and oversized files without leaking private file paths. These are transient verification DTOs, not persisted ProjectState.
+- ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
+- No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
+- Current-head Windows CI verification pending.
