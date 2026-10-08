@@ -127,7 +127,9 @@ class W8RuntimeController:
         self.scene_docx_plan: SceneDocxPlan | None = None
         self.scene_asset_future: Future[SceneAssetInventory] | None = None
         self.scene_asset_inventory: SceneAssetInventory | None = None
-        self.still_preview_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ang-still")
+        self.still_preview_worker = ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="ang-still"
+        )
         self.still_preview_future: Future[QImage] | None = None
         self.still_preview_inflight: tuple[str, str, int] | None = None
         self.still_preview_desired: tuple[str, str, int] | None = None
@@ -312,7 +314,9 @@ class W8RuntimeController:
                 and self.window.window.property("ui_state") == "UI-010"
             ):
                 self.window.apply_still_frame_preview(
-                    image, token[2], self.session.state.revision,
+                    image,
+                    token[2],
+                    self.session.state.revision,
                     self.session.state.timeline_end_frame,
                 )
                 self.still_preview_desired = None
