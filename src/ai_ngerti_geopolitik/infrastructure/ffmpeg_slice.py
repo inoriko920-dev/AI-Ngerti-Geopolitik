@@ -12,12 +12,20 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from fractions import Fraction
 from pathlib import Path
 
+from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
+from ai_ngerti_geopolitik.application.export_preflight import (
+    ExportPreflightService,
+    OutputTargetInspectorPort,
+)
+from ai_ngerti_geopolitik.application.export_request import ExportRequest
+from ai_ngerti_geopolitik.application.validation import MediaIntegrityInspectorPort
 from ai_ngerti_geopolitik.application.ports import (
     CancellationToken,
     ExportResult,
@@ -408,6 +416,120 @@ class FfmpegSliceMediaEngine:
         if not output_path.is_file() or output_path.stat().st_size == 0:
             raise MediaToolError("narration preview audio was not created")
         return output_path
+
+    def export_h264_baseline(
+        self,
+        state: ProjectState,
+        request: ExportRequest,
+        *,
+        session_id: str | None,
+        media_inspector: MediaIntegrityInspectorPort,
+        target_inspector: OutputTargetInspectorPort,
+        toolchain: ExportToolchain,
+        project_source_path: Path | None = None,
+        cancellation: CancellationToken | None = None,
+    ) -> ExportResult:
+        """T04 additive FFmpeg H264 export; deliberately NOT the frozen MediaEnginePort.
+
+        This is a synchronous qualification entrypoint; T08 must put execution
+        in a worker before any UI dispatch. A successful return is not T09's
+        full matrix/postflight acceptance.
+        """
+        preflight = ExportPreflightService(media_inspector, target_inspector)
+        checked = preflight.check(
+            state,
+            request,
+            session_id,
+            toolchain,
+            project_source_path=project_source_path,
+        )
+        if not checked.precheck_pass:
+            safe_codes = ",".join(code.value for code in checked.failure_codes)
+            raise MediaToolError(f"EXPORT_PREFLIGHT_REJECTED:{safe_codes}")
+        if (
+            state.fps != 30
+            or (state.settings.width, state.settings.height) != (1920, 1080)
+            or state.timeline_end_frame <= 0
+        ):
+            raise MediaToolError("EXPORT_BASELINE_PROJECT_MISMATCH")
+        if cancellation is not None and cancellation.cancelled:
+            raise MediaOperationCancelled("EXPORT_CANCELLED")
+
+        # Same-volume unique workspace: legacy adapter writes its own partial
+        # *inside this workspace*, not into the user's destination directory.
+        with tempfile.TemporaryDirectory(
+            prefix=".ang-h264-", dir=request.output_path.parent
+        ) as work:
+            staged = Path(work) / "render.mp4"
+            self.export(state, staged, cancellation)
+            self._verify_h264_baseline(staged, state)
+            if cancellation is not None and cancellation.cancelled:
+                raise MediaOperationCancelled("EXPORT_CANCELLED")
+            # Revalidate after a potentially long render (stale state / source
+            # fingerprint / disk / destination checks); never trust old preflight.
+            final = preflight.check(
+                state,
+                request,
+                session_id,
+                toolchain,
+                project_source_path=project_source_path,
+            )
+            if not final.precheck_pass:
+                safe_codes = ",".join(code.value for code in final.failure_codes)
+                raise MediaToolError(f"EXPORT_POST_RENDER_REJECTED:{safe_codes}")
+            try:
+                # Atomic create-if-absent; os.replace would silently destroy an
+                # existing user's file, and check-then-rename has a race.
+                os.link(staged, request.output_path)
+            except OSError:
+                raise MediaToolError("EXPORT_OUTPUT_PUBLISH_FAILED") from None
+        return ExportResult(
+            project_revision=state.revision,
+            output_path=request.output_path,
+            duration_frames=state.timeline_end_frame,
+            width=1920,
+            height=1080,
+            fps=30,
+        )
+
+    def _verify_h264_baseline(self, staged: Path, state: ProjectState) -> None:
+        """T04 minimal real-stream gate; comprehensive postflight is SF12-T09."""
+        try:
+            if not staged.is_file() or staged.stat().st_size == 0:
+                raise ValueError("empty")
+            probed = self.probe.raw_probe(staged)
+            streams = probed.get("streams")
+            fmt = probed.get("format")
+            if not isinstance(streams, list) or not isinstance(fmt, dict):
+                raise ValueError("missing streams")
+            video = [
+                item for item in streams
+                if isinstance(item, dict) and item.get("codec_type") == "video"
+            ]
+            audio = [
+                item for item in streams
+                if isinstance(item, dict) and item.get("codec_type") == "audio"
+            ]
+            if len(video) != 1 or len(audio) < 1:
+                raise ValueError("missing video or audio")
+            stream = video[0]
+            if (
+                stream.get("codec_name") != "h264"
+                or int(stream.get("width", 0)) != 1920
+                or int(stream.get("height", 0)) != 1080
+                or _fraction(str(stream.get("avg_frame_rate", "0/1"))) != Fraction(30)
+                or not any(item.get("codec_name") == "aac" for item in audio)
+            ):
+                raise ValueError("wrong codec or video dimensions")
+            format_name = str(fmt.get("format_name", ""))
+            if "mp4" not in format_name.split(","):
+                raise ValueError("not an MP4")
+            duration = float(fmt["duration"])
+            expected = state.timeline_end_frame / state.fps
+            if duration <= 0 or abs(duration - expected) > (2 / state.fps + 0.02):
+                raise ValueError("duration outside tolerance")
+        except (ValueError, TypeError, KeyError, OSError, MediaToolError):
+            raise MediaToolError("EXPORT_BASELINE_STREAM_VERIFICATION_FAILED") from None
 
     def export(
         self,
