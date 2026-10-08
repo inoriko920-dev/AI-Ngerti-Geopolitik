@@ -8,17 +8,14 @@ from __future__ import annotations
 
 from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
-from typing import Any
 from uuid import uuid4
 
-from ai_ngerti_geopolitik.application.autosave_catalog import AutosaveCatalogService
 from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
     ReadOnlyProjectJobs,
 )
 from ai_ngerti_geopolitik.application.project_session import (
     ProjectSession,
-    UnsavedChangesError,
 )
 from ai_ngerti_geopolitik.application.recovery import (
     CrashMarker,
@@ -91,9 +88,7 @@ class W8RuntimeController:
         self.validation = validation or ValidationService(
             (RealMediaIntegrityRule(LocalMediaIntegrityInspector(probe)),)
         )
-        self.relink = relink or RelinkScanJobService(
-            LocalRelinkDirectoryScanner(), probe
-        )
+        self.relink = relink or RelinkScanJobService(LocalRelinkDirectoryScanner(), probe)
         self.validation_jobs: ReadOnlyProjectJobs[ValidationResult] = ReadOnlyProjectJobs()
         self.recovery_worker = ThreadPoolExecutor(
             max_workers=1, thread_name_prefix="ang-w8-recovery"
@@ -125,9 +120,7 @@ class W8RuntimeController:
             self._notify("Project belum disimpan. Simpan sebelum membuka project lain.")
             return False
         if self.active_marker is not None and self.session.current_path is not None:
-            self.recovery.close_clean(
-                self.session, self.session.current_path, self.active_marker
-            )
+            self.recovery.close_clean(self.session, self.session.current_path, self.active_marker)
         else:
             self.session.close()
         self.active_marker = None
@@ -187,7 +180,8 @@ class W8RuntimeController:
             self.validation_jobs.cancel(self.validation_job_id)
         snapshot = self.session.state
         self.validation_job_id = self.validation_jobs.submit(
-            snapshot, session_id=self.session_id,
+            snapshot,
+            session_id=self.session_id,
             work=lambda: self.validation.validate(snapshot),
         ).job_id
         self._notify("Memvalidasi media project di worker…")
@@ -201,8 +195,11 @@ class W8RuntimeController:
             return
         self._cancel_scan_only()
         empty = RelinkScanSnapshot(
-            "", ProjectJobToken.capture(self.session.state, self.session_id),
-            ScanState.SUCCESS, 0, (),
+            "",
+            ProjectJobToken.capture(self.session.state, self.session_id),
+            ScanState.SUCCESS,
+            0,
+            (),
         )
         self.window.present_asset_scan(asset_scan_projection(empty))
 
@@ -221,9 +218,7 @@ class W8RuntimeController:
 
         MediaStatusService(LocalMediaAvailability()).refresh(self.session)
         try:
-            scan = self.relink.submit(
-                self.session.state, folder, session_id=self.session_id
-            )
+            scan = self.relink.submit(self.session.state, folder, session_id=self.session_id)
         except (OSError, RuntimeError, ValueError):
             self._notify("Folder scan tidak tersedia atau tidak dapat diakses.")
             return
@@ -236,7 +231,9 @@ class W8RuntimeController:
             return
         try:
             updated = self.relink.apply_selected(
-                self.scan_job_id, self.session, session_id=self.session_id,
+                self.scan_job_id,
+                self.session,
+                session_id=self.session_id,
                 selections=tuple((asset_id, Path(path)) for asset_id, path in payload),
             )
         except (OSError, RuntimeError, ValueError):
@@ -277,9 +274,7 @@ class W8RuntimeController:
             if not folder:
                 from PySide6.QtWidgets import QFileDialog
 
-                folder = QFileDialog.getExistingDirectory(
-                    self.window.window, "Pilih Folder Media"
-                )
+                folder = QFileDialog.getExistingDirectory(self.window.window, "Pilih Folder Media")
             if folder:
                 self.start_scan(Path(folder))
         elif kind is UiIntentType.ASSET_SCAN_CANCEL:
@@ -332,9 +327,7 @@ class W8RuntimeController:
                 state=self.session.state if self.session.is_open else None,
                 session_id=self.session_id,
             )
-            signature = (
-                result.state, result.scanned_files, len(result.candidates), result.applied
-            )
+            signature = (result.state, result.scanned_files, len(result.candidates), result.applied)
             if signature != self.last_scan_signature:
                 self.last_scan_signature = signature
                 self.window.present_asset_scan(asset_scan_projection(result))

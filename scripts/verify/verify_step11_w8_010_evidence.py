@@ -34,8 +34,10 @@ def main() -> int:
     checks.extend(
         (root / filename).stat().st_size > 0
         for filename in (
-            "golden03.angproj", "golden03.angproj.bak",
-            "01_validation_missing.png", "02_asset_scan.png",
+            "golden03.angproj",
+            "golden03.angproj.bak",
+            "01_validation_missing.png",
+            "02_asset_scan.png",
         )
     )
     archive = root / "redacted-support.zip"

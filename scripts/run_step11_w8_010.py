@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import time
@@ -50,9 +49,7 @@ def pump(
 def make_controller(repo: JsonProjectRepository) -> tuple[W8RuntimeController, W8IntentRouter]:
     router = W8IntentRouter()
     window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
-    controller = W8RuntimeController(
-        window, session=ProjectSession(repo), timer_enabled=False
-    )
+    controller = W8RuntimeController(window, session=ProjectSession(repo), timer_enabled=False)
     router.delegate = controller.handle
     window.show()
     return controller, router
@@ -73,11 +70,21 @@ def main() -> int:
     asset_id = MediaImportService(FfprobeMediaProbe()).import_path(session, media)
     session.execute(
         CommandBatch(
-            "W8-010-CLIP", "Place media", "manual", session.state.revision,
-            (AddClipCommand(Clip(
-                "C001", asset_id, FrameTime(0, 30),
-                FrameTime(0, 30), FrameTime(90, 30),
-            )),),
+            "W8-010-CLIP",
+            "Place media",
+            "manual",
+            session.state.revision,
+            (
+                AddClipCommand(
+                    Clip(
+                        "C001",
+                        asset_id,
+                        FrameTime(0, 30),
+                        FrameTime(0, 30),
+                        FrameTime(90, 30),
+                    )
+                ),
+            ),
         )
     )
     session.save(project)
@@ -87,7 +94,8 @@ def main() -> int:
     controller, router = make_controller(repo)
     controller.request_open(project)
     pump(
-        app, controller,
+        app,
+        controller,
         lambda: controller.session.is_open and controller.validation_job_id is None,
     )
     pre_loss = controller.session.state.semantic_hash()
@@ -104,9 +112,7 @@ def main() -> int:
     assert blocker is not None and blocker.isEnabled()
     assert blocker.text() == "Relink"
     blocker_label_verified = blocker.text() == "Relink"
-    assert "BLOCKER" in dialog.findChild(
-        QLabel, "label_validation_issue_0_0"
-    ).text()
+    assert "BLOCKER" in dialog.findChild(QLabel, "label_validation_issue_0_0").text()
     controller.window.render_evidence(1920, 1080).save(
         str(root / "01_validation_missing.png"), "PNG"
     )
@@ -116,40 +122,32 @@ def main() -> int:
         __import__("PySide6.QtWidgets", fromlist=["QLineEdit"]).QLineEdit,
         "field_asset_scan_folder",
     ).setText(str(recovered_dir))
-    controller.window._active_dialog.findChild(
-        QPushButton, "btn_asset_scan_start"
-    ).click()
+    controller.window._active_dialog.findChild(QPushButton, "btn_asset_scan_start").click()
     pump(
-        app, controller,
+        app,
+        controller,
         lambda: (
             controller.scan_job_id is not None
             and controller.relink.snapshot(
                 controller.scan_job_id,
                 state=controller.session.state,
                 session_id=controller.session_id,
-            ).state is ScanState.SUCCESS
+            ).state
+            is ScanState.SUCCESS
         ),
     )
     controller.poll()
     assert controller.session.state.asset(asset_id).availability == "missing"
     assert controller.session.state.clip("C001").asset_id == asset_id
     no_auto_relink = controller.session.state.asset(asset_id).path_ref == str(media)
-    table = controller.window._active_dialog.findChild(
-        QTableWidget, "table_asset_scan_candidates"
-    )
+    table = controller.window._active_dialog.findChild(QTableWidget, "table_asset_scan_candidates")
     assert table is not None and table.rowCount() == 1
     candidate_row_verified = table.rowCount() == 1
     selectable = table.item(0, 0)
-    assert selectable is not None and bool(
-        selectable.flags() & Qt.ItemFlag.ItemIsUserCheckable
-    )
-    controller.window.render_evidence(1920, 1080).save(
-        str(root / "02_asset_scan.png"), "PNG"
-    )
+    assert selectable is not None and bool(selectable.flags() & Qt.ItemFlag.ItemIsUserCheckable)
+    controller.window.render_evidence(1920, 1080).save(str(root / "02_asset_scan.png"), "PNG")
     selectable.setCheckState(Qt.CheckState.Checked)
-    controller.window._active_dialog.findChild(
-        QPushButton, "btn_asset_scan_apply"
-    ).click()
+    controller.window._active_dialog.findChild(QPushButton, "btn_asset_scan_apply").click()
     pump(app, controller, lambda: controller.validation_job_id is None)
     clear_dialog = controller.window._active_dialog
     assert clear_dialog.objectName() == "dlg_validation_center"
@@ -177,9 +175,7 @@ def main() -> int:
         source_path=project,
     )
     prior_bytes = project.read_bytes()
-    controller.session.recover_snapshot(
-        project, valid_snapshot, discard_unsaved=True
-    )
+    controller.session.recover_snapshot(project, valid_snapshot, discard_unsaved=True)
     controller.shutdown()  # intentionally leaves unclean marker for dirty session
     controller.window.close()
 
@@ -191,9 +187,7 @@ def main() -> int:
     listed = recovery_dialog.findChild(QListWidget, "list_recovery_candidates")
     assert listed is not None and listed.count() == 1
     recovery_dialog.findChild(QPushButton, "btn_recovery_ignore").click()
-    ignored_without_mutation = (
-        not second.session.is_open and project.read_bytes() == prior_bytes
-    )
+    ignored_without_mutation = not second.session.is_open and project.read_bytes() == prior_bytes
     second.request_open(project)
     pump(app, second, lambda: second.offer is not None)
     recovery_dialog = second.window._active_dialog
@@ -203,9 +197,7 @@ def main() -> int:
     recovery_dialog.findChild(QPushButton, "btn_recovery_restore").click()
     restored_dirty = second.session.is_open and second.session.dirty
     crash_source_unchanged = project.read_bytes() == prior_bytes
-    snapshot_revision_exact = (
-        second.session.state.revision == repo.load(valid_snapshot).revision
-    )
+    snapshot_revision_exact = second.session.state.revision == repo.load(valid_snapshot).revision
     # This is a real explicit Save; not an automatic recovery write.
     sink(UiIntent(UiIntentType.SAVE_PROJECT))
     explicit_save = (
@@ -222,7 +214,8 @@ def main() -> int:
         job = jobs.submit(diagnostics, ledger)
         deadline = time.monotonic() + 15
         while jobs.snapshot(job.job_id).state not in {
-            DiagnosticJobState.SUCCESS, DiagnosticJobState.FAILED
+            DiagnosticJobState.SUCCESS,
+            DiagnosticJobState.FAILED,
         }:
             if time.monotonic() >= deadline:
                 raise RuntimeError("diagnostic export timeout")

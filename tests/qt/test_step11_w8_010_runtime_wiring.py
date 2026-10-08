@@ -12,7 +12,6 @@ from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBat
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import ProjectSession
-from ai_ngerti_geopolitik.application.recovery import RecoveryChoice
 from ai_ngerti_geopolitik.application.relink_scan import RelinkScanJobService, ScanState
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentType
 from ai_ngerti_geopolitik.application.validation import (
@@ -23,10 +22,10 @@ from ai_ngerti_geopolitik.bootstrap.w8_controller import (
     W8IntentRouter,
     W8RuntimeController,
 )
+from ai_ngerti_geopolitik.domain import Clip, FrameTime
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
-from ai_ngerti_geopolitik.domain import Clip, FrameTime
 from ai_ngerti_geopolitik.presentation.main_window import create_main_window
 
 
@@ -34,8 +33,17 @@ class OwnedProbe:
     def probe(self, path: Path) -> ProbeResult:
         data = path.read_bytes()
         return ProbeResult(
-            path.resolve(), 120, 30, 1920, 1080, True,
-            hashlib.sha256(data).hexdigest(), "video", 4.0, len(data), 48000,
+            path.resolve(),
+            120,
+            30,
+            1920,
+            1080,
+            True,
+            hashlib.sha256(data).hexdigest(),
+            "video",
+            4.0,
+            len(data),
+            48000,
         )
 
 
@@ -46,8 +54,11 @@ def setup(qtbot, repo: JsonProjectRepository | None = None):
     probe = OwnedProbe()
     session = ProjectSession(repo or JsonProjectRepository())
     controller = W8RuntimeController(
-        window, session=session,
-        validation=ValidationService((RealMediaIntegrityRule(LocalMediaIntegrityInspector(probe)),)),
+        window,
+        session=session,
+        validation=ValidationService(
+            (RealMediaIntegrityRule(LocalMediaIntegrityInspector(probe)),)
+        ),
         relink=RelinkScanJobService(LocalRelinkDirectoryScanner(), probe),
         timer_enabled=False,
     )
@@ -74,8 +85,15 @@ def saved_project(tmp_path: Path):
     asset = MediaImportService(OwnedProbe()).import_path(session, video)
     session.execute(
         CommandBatch(
-            "W8-010-ADD-CLIP", "Place asset", "manual", session.state.revision,
-            (AddClipCommand(Clip("C001", asset, FrameTime(0, 30), FrameTime(0, 30), FrameTime(120, 30))),),
+            "W8-010-ADD-CLIP",
+            "Place asset",
+            "manual",
+            session.state.revision,
+            (
+                AddClipCommand(
+                    Clip("C001", asset, FrameTime(0, 30), FrameTime(0, 30), FrameTime(120, 30))
+                ),
+            ),
         )
     )
     session.save(path)
@@ -86,7 +104,11 @@ def test_frozen_ui041_shows_real_blocker_after_file_deleted(qtbot, tmp_path: Pat
     repo, project, media, _asset = saved_project(tmp_path)
     controller, router = setup(qtbot, repo)
     controller.request_open(project)
-    pump(qtbot, lambda: controller.session.is_open and controller.validation_job_id is None, controller)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
     media.unlink()
     controller.request_validation()
     pump(qtbot, lambda: controller.validation_job_id is None, controller)
@@ -108,7 +130,11 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
     repo, project, media, asset = saved_project(tmp_path)
     controller, router = setup(qtbot, repo)
     controller.request_open(project)
-    pump(qtbot, lambda: controller.session.is_open and controller.validation_job_id is None, controller)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
     source_bytes = project.read_bytes()
     candidate_dir = tmp_path / "recovery"
     candidate_dir.mkdir()
@@ -123,9 +149,7 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
     assert blocker is not None and blocker.isEnabled()
     qtbot.mouseClick(blocker, Qt.MouseButton.LeftButton)
     assert controller.window._active_dialog.objectName() == "dlg_asset_scan"
-    controller.handle(
-        UiIntent(UiIntentType.ASSET_SCAN_START, (("root", str(candidate_dir)),))
-    )
+    controller.handle(UiIntent(UiIntentType.ASSET_SCAN_START, (("root", str(candidate_dir)),)))
     pump(
         qtbot,
         lambda: (
@@ -134,17 +158,14 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
                 controller.scan_job_id,
                 state=controller.session.state,
                 session_id=controller.session_id,
-            ).state is ScanState.SUCCESS
+            ).state
+            is ScanState.SUCCESS
         ),
         controller,
     )
     controller.poll()
-    table = controller.window._active_dialog.findChild(
-        QTableWidget, "table_asset_scan_candidates"
-    )
-    apply = controller.window._active_dialog.findChild(
-        QPushButton, "btn_asset_scan_apply"
-    )
+    table = controller.window._active_dialog.findChild(QTableWidget, "table_asset_scan_candidates")
+    apply = controller.window._active_dialog.findChild(QPushButton, "btn_asset_scan_apply")
     assert table is not None and table.rowCount() == 1
     assert apply is not None and apply.isEnabled()
     assert controller.session.state.asset(asset).availability == "missing"
@@ -155,9 +176,7 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
     item.setCheckState(Qt.CheckState.Checked)
     qtbot.mouseClick(apply, Qt.MouseButton.LeftButton)
     pump(qtbot, lambda: controller.validation_job_id is None, controller)
-    summary = controller.window._active_dialog.findChild(
-        QLabel, "label_validation_summary"
-    )
+    summary = controller.window._active_dialog.findChild(QLabel, "label_validation_summary")
     assert summary is not None and "0 Error" in summary.text()
     assert controller.session.state.asset(asset).path_ref == str(candidate.resolve())
     assert controller.session.state.asset(asset).asset_id == asset
@@ -173,9 +192,7 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
     controller.window.close()
 
 
-def test_ui039_shows_recover_ignore_and_source_is_never_overwritten(
-    qtbot, tmp_path: Path
-) -> None:
+def test_ui039_shows_recover_ignore_and_source_is_never_overwritten(qtbot, tmp_path: Path) -> None:
     repo, project, _media, _asset = saved_project(tmp_path)
     first, _router = setup(qtbot, repo)
     first.request_open(project)
@@ -195,27 +212,19 @@ def test_ui039_shows_recover_ignore_and_source_is_never_overwritten(
     second.request_open(project)
     pump(qtbot, lambda: second.offer is not None, second)
     assert second.window._active_dialog.objectName() == "dlg_recovery"
-    listbox = second.window._active_dialog.findChild(
-        QListWidget, "list_recovery_candidates"
-    )
+    listbox = second.window._active_dialog.findChild(QListWidget, "list_recovery_candidates")
     assert listbox is not None and listbox.count() == 1
-    ignore = second.window._active_dialog.findChild(
-        QPushButton, "btn_recovery_ignore"
-    )
+    ignore = second.window._active_dialog.findChild(QPushButton, "btn_recovery_ignore")
     assert ignore is not None
     qtbot.mouseClick(ignore, Qt.MouseButton.LeftButton)
     assert not second.session.is_open
     assert project.read_bytes() == original
     second.request_open(project)
     pump(qtbot, lambda: second.offer is not None, second)
-    listbox = second.window._active_dialog.findChild(
-        QListWidget, "list_recovery_candidates"
-    )
+    listbox = second.window._active_dialog.findChild(QListWidget, "list_recovery_candidates")
     assert listbox is not None
     listbox.setCurrentRow(0)
-    restore = second.window._active_dialog.findChild(
-        QPushButton, "btn_recovery_restore"
-    )
+    restore = second.window._active_dialog.findChild(QPushButton, "btn_recovery_restore")
     assert restore is not None and restore.isEnabled()
     qtbot.mouseClick(restore, Qt.MouseButton.LeftButton)
     assert second.session.is_open
@@ -230,7 +239,11 @@ def test_scan_cancel_blocks_late_manual_apply(qtbot, tmp_path: Path) -> None:
     repo, project, media, asset = saved_project(tmp_path)
     controller, router = setup(qtbot, repo)
     controller.request_open(project)
-    pump(qtbot, lambda: controller.session.is_open and controller.validation_job_id is None, controller)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
     media.rename(tmp_path / "renamed.mp4")
     controller.show_asset_scan()
     controller.start_scan(tmp_path)
@@ -250,7 +263,11 @@ def test_stale_background_validation_is_never_projected(qtbot, tmp_path: Path) -
     repo, project, _media, _asset = saved_project(tmp_path)
     controller, router = setup(qtbot, repo)
     controller.request_open(project)
-    pump(qtbot, lambda: controller.session.is_open and controller.validation_job_id is None, controller)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
     controller.request_validation()
     job_id = controller.validation_job_id
     assert job_id is not None
@@ -262,7 +279,10 @@ def test_stale_background_validation_is_never_projected(qtbot, tmp_path: Path) -
     revision = controller.session.state.revision
     controller.session.execute(
         CommandBatch(
-            "W8-010-CHANGE", "edit", "manual", revision,
+            "W8-010-CHANGE",
+            "edit",
+            "manual",
+            revision,
             (UpdateProjectSettingsCommand(1280, 720, 30, "16:9"),),
         )
     )
