@@ -20,7 +20,7 @@ from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, ProjectState, Tr
 
 
 def _state() -> ProjectState:
-    asset = Asset("A001", "source.mp4", "video", FrameTime(90, 30), 1920, 1080, True)
+    asset = Asset("A001", "source.mp4", "video", FrameTime(90, 30), 1920, 1080, True, "a" * 64)
     clip = Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(90, 30))
     return replace(
         ProjectState.create("P001", "Export contracts"),
