@@ -7,6 +7,7 @@ tests provide only in-memory fakes. Future native usage requires Pilot A.
 
 from __future__ import annotations
 
+from contextlib import suppress
 from collections.abc import Callable
 from typing import Protocol
 
@@ -69,8 +70,6 @@ def transfer_staged_rgb24(
         return receipt
     finally:
         if not published:
-            try:
+            # Preserve the original failure or cancellation.
+            with suppress(Exception):
                 stage.discard()
-            except Exception:
-                # Preserve the original failure or cancellation.
-                pass
