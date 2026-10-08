@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..005 PASS / W8-006 READY  
+**Status:** CONTRACT_LOCKED / W8-001..005 PASS / W8-006 IN_VERIFICATION  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -35,7 +35,7 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 3. W8-003 — **PASS**
 4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **PASS**
 5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
-6. W8-006 Crash Marker + Startup Recovery Decision — **READY**
+6. W8-006 Crash Marker + Startup Recovery Decision — **IN_VERIFICATION**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **BLOCKED**
 8. W8-008 Stale Result Hardening — **BLOCKED**
 9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
@@ -72,3 +72,7 @@ W8-005 accepted:
 - Never prune source `.angproj`, `.bak`, or foreign project snapshots.
 
 After owner's **lanjutkan**, SOL W8-006 only; do not start W8-007.
+
+## W8-006 execution gate
+
+Code and tests committed; Windows qualification pending. W8-007 still blocked.

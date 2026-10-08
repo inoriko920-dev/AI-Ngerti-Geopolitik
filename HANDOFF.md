@@ -6,7 +6,8 @@
 **Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
-**Next exact task:** S11-W8-006 — Crash Marker + Startup Recovery Decision — READY
+**Current task:** S11-W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION
+**Next exact action:** Finish W8-006 Windows QA and crash evidence; W8-007 remains blocked
 
 ## Read-first constraints
 
@@ -80,3 +81,11 @@ W8-007 in the same turn.
 
 W5 microphone physical hardware and W6/W7 live Gemini network tests remain
 provisional; do not claim device/provider smoke results that were not run.
+
+## W8-006 active implementation
+
+W8-006 marker, recovery manager, dirty working-state adoption and frozen UI-039
+projection are committed on main with 12 unit and 3 Qt tests, owned evidence
+runner and dedicated Windows workflow. **Gate IN_VERIFICATION, not PASS**.
+Exact next action: run and fix W8-006 CI, verify actual source bytes unchanged
+and lock same-HEAD regressions. W8-007 BLOCKED.

@@ -58,6 +58,7 @@
     - `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`
     - `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`
     - `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`
+    - `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -155,7 +156,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-003 Single Asset Relink Command + Exact Identity Preservation: **PASS**.
 - W8-004 Batch Directory Relink Scan + Candidate Ranking: **PASS**.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
-- W8-006 Crash Marker + Startup Recovery Decision: **READY**.
+- W8-006 Crash Marker + Startup Recovery Decision: **IN_VERIFICATION**, not PASS.
 - W8-007..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
@@ -178,3 +179,6 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - exact next action: **SOL S11-W8-006 Crash Marker + Startup Recovery Decision ONLY**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
+
+W8-006: implementation and 12 unit + 3 Qt tests committed; Windows/real
+crash evidence pending. W8-007 BLOCKED.

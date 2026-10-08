@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 READY / W8-007..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 IN_VERIFICATION / W8-007..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -107,7 +107,7 @@ No new UI image-generation gate:
 - **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
 - W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS
 - W8-005 — Autosave Catalog + Retention Hardening — PASS
-- W8-006 — Crash Marker + Startup Recovery Decision — READY
+- W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION
 - W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — BLOCKED_BY_W8_007
 - W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008
@@ -170,3 +170,8 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - Never prune source `.angproj`, `.bak`, or foreign project snapshots.
 
 Next: **SOL S11-W8-006 only**. W8-007 remains blocked.
+
+## W8-006 implementation underway
+
+See `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`. Startup explicit decision and clean/unclean
+marker implemented. CI acceptance pending. W8-007 BLOCKED.

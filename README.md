@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — NEXT W8-006**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 IN_VERIFICATION**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -51,3 +51,9 @@ Evidence: `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`.
 
 **Next:** S11-W8-006 — Crash Marker + Startup Recovery Decision — READY.
 W8-007 remains BLOCKED. UI-001..UI-042 frozen, AAVC read-only.
+
+## W8-006 implementation QA
+
+Crash marker, explicit source/snapshot/ignore decision and UI-039 projection
+are committed but Windows qualification is pending. See
+`docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`. W8-007 remains blocked.

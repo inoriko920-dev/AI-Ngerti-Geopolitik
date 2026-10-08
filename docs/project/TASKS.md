@@ -824,7 +824,7 @@ Serial contract:
 - [x] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
 - [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS**
 - [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — PASS**
-- [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — READY**
+- [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION**
 - [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006**
 - [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — BLOCKED_BY_W8_007**
 - [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
@@ -949,3 +949,7 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 **Exact next task:** S11-W8-006 Crash Marker + Startup Recovery Decision ONLY.
 W8-007 remains serial-blocked.
+
+**W8-006 implementation:** crash marker, startup validated newer offers, explicit
+source/snapshot/ignore, source-byte safety, frozen UI-039 projection, 12+3 tests.
+Gate IN_VERIFICATION; finish W8-006 QA; do not start W8-007.

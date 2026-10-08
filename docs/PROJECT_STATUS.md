@@ -2,11 +2,11 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..005 PASS / W8-006 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..005 PASS / W8-006 IN_VERIFICATION**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
-**Next exact task:** **S11-W8-006 — Crash Marker + Startup Recovery Decision**  
+**Current task:** **S11-W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
 ## W8-003 proven
@@ -70,3 +70,8 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 W8-007..010 remain serial-blocked. No W8-006 implementation was started in
 the W8-005 completion turn. Live Gemini and physical-microphone qualification
 retain their earlier provisional status.
+
+## W8-006 implementation QA
+
+Marker, explicit recovery decision, dirty working adoption and UI-039
+projection committed; Windows test and regression gate pending. W8-007 BLOCKED.
