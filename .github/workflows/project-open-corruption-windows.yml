@@ -47,6 +47,7 @@ jobs:
       - run: uv run pytest tests/unit/test_still_sequence_verification.py -q
       - run: uv run pytest tests/unit/test_still_h264_plan.py -q
       - run: uv run pytest tests/unit/test_still_rgb24_stream.py -q
+      - run: uv run pytest tests/unit/test_still_rgb24_sink.py -q
       - run: uv run pytest tests/unit/test_project_open_corruption_regression.py -q
       - run: uv run pytest tests/unit/test_step11_w8_006_recovery.py -q
       - run: uv run pytest tests/qt/test_step11_w8_010_runtime_wiring.py -q
