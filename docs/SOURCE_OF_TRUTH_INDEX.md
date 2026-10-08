@@ -163,7 +163,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
 - W8-008 Stale Result Hardening for W8 Background Jobs: **PASS**.
 - W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **PASS**.
-- W8-010: **READY**.
+- W8-010: **IN_VERIFICATION**, not yet PASS.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -213,3 +213,16 @@ W8-009 READY; W8-010 BLOCKED.
 W8-009 accepted PASS at `6a4ec93d445e71dc037bcc4dc6edff2008894268`:
 11/11 targeted, 482/482 full pytest, 18/18 redacted ZIP proof, 27/27
 same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
+
+## W8-010 implementation QA (pending)
+
+Bootstrap product launch now binds typed UI-039/040/041 dialogs to real
+ProjectSession, background validation and folder-scan workers, verified
+manual CommandBus relink and explicit recovery. Fixture-mode screenshots
+remain unchanged, preserving all 42 frozen reference images.
+
+Five Qt runtime-wiring tests and a real Windows FFprobe GOLDEN-03 script cover
+missing -> BLOCKER -> verified relink -> clean validation -> save/reopen,
+crash snapshot recovery without source overwrite, and redacted diagnostic ZIP.
+Dedicated workflow: `.github/workflows/s11-wave8-010-ui-golden03.yml`.
+**Gate: IN_VERIFICATION, not PASS.** No STEP 12 implementation.

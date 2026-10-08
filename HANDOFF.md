@@ -10,7 +10,7 @@
 **Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 **Last implementation:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS
 **Last implementation:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS
-**Next exact task:** S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — READY
+**Current task:** S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — IN_VERIFICATION
 
 ## Read-first constraints
 
@@ -165,3 +165,16 @@ provisional; do not claim device/provider smoke results that were not run.
 - No canonical state/schema changes or frozen UI redesign.
 
 W8-010 READY only on owner's next explicit `lanjutkan`.
+
+## W8-010 implementation QA (pending)
+
+Bootstrap product launch now binds typed UI-039/040/041 dialogs to real
+ProjectSession, background validation and folder-scan workers, verified
+manual CommandBus relink and explicit recovery. Fixture-mode screenshots
+remain unchanged, preserving all 42 frozen reference images.
+
+Five Qt runtime-wiring tests and a real Windows FFprobe GOLDEN-03 script cover
+missing -> BLOCKER -> verified relink -> clean validation -> save/reopen,
+crash snapshot recovery without source overwrite, and redacted diagnostic ZIP.
+Dedicated workflow: `.github/workflows/s11-wave8-010-ui-golden03.yml`.
+**Gate: IN_VERIFICATION, not PASS.** No STEP 12 implementation.
