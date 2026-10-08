@@ -947,9 +947,7 @@ def test_w8_still_play_uses_wall_clock_then_pause_resume_without_rewinding(
     controller.window.close()
 
 
-def test_w8_still_play_stops_at_last_frame_and_can_restart(
-    qtbot, tmp_path: Path
-) -> None:
+def test_w8_still_play_stops_at_last_frame_and_can_restart(qtbot, tmp_path: Path) -> None:
     source = _saved_still_scene_project(tmp_path)
     controller, router = setup(qtbot)
     controller.session.open_project(source)
@@ -970,9 +968,7 @@ def test_w8_still_play_stops_at_last_frame_and_can_restart(
     controller.window.close()
 
 
-def test_still_play_stops_when_project_identity_changes(
-    qtbot, tmp_path: Path
-) -> None:
+def test_still_play_stops_when_project_identity_changes(qtbot, tmp_path: Path) -> None:
     source = _saved_still_scene_project(tmp_path)
     controller, router = setup(qtbot)
     controller.session.open_project(source)
@@ -994,4 +990,3 @@ def test_still_play_stops_when_project_identity_changes(
     assert controller.still_preview_desired is None
     controller.shutdown()
     controller.window.close()
-

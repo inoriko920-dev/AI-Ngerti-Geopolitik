@@ -300,8 +300,7 @@ class W8RuntimeController:
             not self.session.is_open
             or not self._has_still_clips()
             or self.window.window.property("ui_state") != "UI-010"
-            or self.still_play_token
-            != (self.session_id, self.session.state.semantic_hash())
+            or self.still_play_token != (self.session_id, self.session.state.semantic_hash())
         ):
             self._stop_still_playback()
             return
