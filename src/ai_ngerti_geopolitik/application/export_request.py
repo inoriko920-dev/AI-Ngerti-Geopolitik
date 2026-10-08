@@ -187,7 +187,7 @@ class ExportRequest:
             or self.project_semantic_hash != state.semantic_hash()
         ):
             raise ExportContractError("STALE_EXPORT_REQUEST")
-        if self.selection is not None and self.selection.end > state.timeline_end_frame():
+        if self.selection is not None and self.selection.end > state.timeline_end_frame:
             raise ExportContractError("INVALID_SELECTION_BOUNDS")
 
 
