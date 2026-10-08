@@ -86,11 +86,25 @@ def test_real_h264_mp4_probe_decode_and_sample_pixel(tmp_path: Path) -> None:
     assert len(result.rgb24_sha256) == 64
     frame = subprocess.run(
         [
-            str(tools["ffmpeg_path"]), "-nostdin", "-v", "error", "-i", str(result.path),
-            "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+            str(tools["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(result.path),
+            "-frames:v",
+            "1",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "rgb24",
+            "-",
         ],
-        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-        timeout=20, check=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=20,
+        check=True,
     ).stdout
     assert len(frame) == 128 * 72 * 3
     assert frame[0] > 160 and frame[1] < 100 and frame[2] < 100

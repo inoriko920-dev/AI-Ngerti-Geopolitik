@@ -3,6 +3,7 @@
 Owner authorized external FFmpeg/FFprobe on a development branch only.
 No UI Export, merge, audio/subtitle support or portable distribution.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -45,7 +46,11 @@ class PilotAResult:
 
 def sha256_executable(path: Path) -> str:
     try:
-        if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size < 512 * 1024 * 1024:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or not 0 < path.stat().st_size < 512 * 1024 * 1024
+        ):
             raise ValueError("invalid binary")
         checksum = hashlib.sha256()
         with path.open("rb") as handle:
@@ -151,9 +156,19 @@ def _postflight(mp4: Path, ffmpeg: Path, ffprobe: Path, plan: SilentH264Plan) ->
     with tempfile.TemporaryFile() as metadata:
         try:
             probe = subprocess.run(
-                [str(ffprobe), "-v", "error", "-count_frames", "-show_entries",
-                 "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate",
-                 "-show_entries", "format=duration", "-of", "json", str(mp4)],
+                [
+                    str(ffprobe),
+                    "-v",
+                    "error",
+                    "-count_frames",
+                    "-show_entries",
+                    "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate",
+                    "-show_entries",
+                    "format=duration",
+                    "-of",
+                    "json",
+                    str(mp4),
+                ],
                 stdin=subprocess.DEVNULL,
                 stdout=metadata,
                 stderr=subprocess.DEVNULL,
@@ -187,8 +202,21 @@ def _postflight(mp4: Path, ffmpeg: Path, ffprobe: Path, plan: SilentH264Plan) ->
             ):
                 raise ValueError("duration mismatch")
             decoded = subprocess.run(
-                [str(ffmpeg), "-nostdin", "-v", "error", "-xerror", "-i", str(mp4),
-                 "-map", "0:v:0", "-an", "-f", "null", "-"],
+                [
+                    str(ffmpeg),
+                    "-nostdin",
+                    "-v",
+                    "error",
+                    "-xerror",
+                    "-i",
+                    str(mp4),
+                    "-map",
+                    "0:v:0",
+                    "-an",
+                    "-f",
+                    "null",
+                    "-",
+                ],
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -200,8 +228,13 @@ def _postflight(mp4: Path, ffmpeg: Path, ffprobe: Path, plan: SilentH264Plan) ->
                 raise ValueError("decoded video failed")
             return duration
         except (
-            OSError, ValueError, KeyError, TypeError, RuntimeError,
-            subprocess.TimeoutExpired, ZeroDivisionError,
+            OSError,
+            ValueError,
+            KeyError,
+            TypeError,
+            RuntimeError,
+            subprocess.TimeoutExpired,
+            ZeroDivisionError,
         ):
             raise PilotAError("native MP4 postflight failed") from None
 
@@ -260,10 +293,15 @@ def export_silent_h264_pilot_a(
         # Exclusive atomic create: os.rename could overwrite on POSIX.
         os.link(staged, output)
         return PilotAResult(
-            path=output, sha256=sha256.hexdigest(), file_bytes=size,
-            frame_count=receipt.frame_count, fps=receipt.fps,
-            width=receipt.width, height=receipt.height,
-            duration_seconds=duration, rgb24_sha256=receipt.stream_sha256,
+            path=output,
+            sha256=sha256.hexdigest(),
+            file_bytes=size,
+            frame_count=receipt.frame_count,
+            fps=receipt.fps,
+            width=receipt.width,
+            height=receipt.height,
+            duration_seconds=duration,
+            rgb24_sha256=receipt.stream_sha256,
         )
     except (OSError, ValueError, RuntimeError, TypeError, OverflowError):
         raise PilotAError("native pilot failed; no MP4 published") from None
