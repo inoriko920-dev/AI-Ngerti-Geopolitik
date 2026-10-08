@@ -308,3 +308,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## SOL INT-01B/B2 bounded output preparation — 2026-10-08 WIB
 - **B2_PREP_PASS (pure collector only)**, code ef8b06a4, Windows [37757835429](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37757835429) SUCCESS including whole pytest, mypy101, docs70/UI42, architecture/security. `NativeBoundedCapture` protects memory for synthetic stdout/stderr chunks with typed overflow/cleanup and no external/native process launch. Draft stacked PR #18; main untouched.
 - **Full B2 bounded native runner not started**: explicit external-FFmpeg Pilot A owner approval D1 pending. Production FFmpeg runner/FFprobe, Qt button, engine, media port and binary licenses/distribution unchanged. Evidence `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md`.
+
+## INT-01B/B2 preparation consolidated — 2026-10-08 WIB
+
+- The Python-only synthetic subprocess harness previously qualified in Draft PR #17 has been consolidated into the existing B2-prep Draft PR #19 with the independent private bounded-capture and Windows lexical argv guards. Dedicated Windows CI on the combined commit must verify targeted and full tests; earlier PASS per branch does not prove this combined head.
+- The actual external FFmpeg bounded runner and executable provenance, Windows child-tree, FFprobe adapter, FFmpeg adapter and GUI render integration remain **NOT IMPLEMENTED**. D1 Pilot A explicit owner permission is pending. Portable packaging and final release come last; `main` is not modified.

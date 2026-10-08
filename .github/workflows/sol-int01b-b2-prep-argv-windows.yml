@@ -1,0 +1,61 @@
+name: SOL INT01B B2-prep Pure Native Argv Windows
+
+on:
+  push:
+    branches: [feature/sol-int01b-b2-prep-argv-validation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  argv-preflight:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/unit/test_sol_int01b_b2_prep_argv_shape.py -q
+      - run: uv run pytest tests/unit/test_sol_int01b_b2_synthetic_subprocess.py -q
+      - run: uv run pytest -q
+      - name: No native execution or GUI in argv guard
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          s = Path("src/ai_ngerti_geopolitik/infrastructure/native_command_preflight.py").read_text(encoding="utf-8")
+          for bad in ("import subprocess", "from subprocess", "Popen(", "subprocess.run(", "shutil.which", "os.system(", "QPushButton", "shell=True", ".resolve(", ".exists(", ".stat("):
+              assert bad not in s, bad
+          assert "product_render_authorized" in s
+          print("PASS: pure lexical validator")
+          '@ | python
+      - name: Verify synthetic subprocess stays Python-fixture-only
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          s = Path("src/ai_ngerti_geopolitik/infrastructure/synthetic_process_qualification.py").read_text(encoding="utf-8")
+          assert "sys.executable" in s and "SyntheticFixture" in s
+          for forbidden in ("ffmpeg_slice", "FfmpegProcessRunner", "ExportJobService", "Popen([ffmpeg", "btn_export_render"):
+              assert forbidden not in s, forbidden
+          print("PASS: controlled Python-only subprocess qualification, not production FFmpeg")
+          '@ | python
