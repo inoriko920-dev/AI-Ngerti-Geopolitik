@@ -44,17 +44,23 @@ def transfer_staged_rgb24(
     """
     published = False
     try:
-        options = {}
-        if monotonic is not None:
-            options["monotonic"] = monotonic
-        receipt = feed_rgb24_to_sink(
-            plan,
-            stage,
-            should_cancel=should_cancel,
-            on_frame=on_frame,
-            timeout_seconds=timeout_seconds,
-            **options,
-        )
+        if monotonic is None:
+            receipt = feed_rgb24_to_sink(
+                plan,
+                stage,
+                should_cancel=should_cancel,
+                on_frame=on_frame,
+                timeout_seconds=timeout_seconds,
+            )
+        else:
+            receipt = feed_rgb24_to_sink(
+                plan,
+                stage,
+                should_cancel=should_cancel,
+                on_frame=on_frame,
+                timeout_seconds=timeout_seconds,
+                monotonic=monotonic,
+            )
         try:
             stage.publish(receipt)
         except (OSError, ValueError, RuntimeError, TypeError):

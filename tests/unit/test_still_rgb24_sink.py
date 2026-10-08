@@ -178,9 +178,7 @@ def test_timed_write_exceeding_budget_fails_after_write_returns(tmp_path: Path) 
 
     sink = SlowSink(max_write=7)
     with pytest.raises(RGB24TransferTimeout):
-        feed_rgb24_to_sink(
-            plan, sink, timeout_seconds=1.0, monotonic=lambda: elapsed[0]
-        )
+        feed_rgb24_to_sink(plan, sink, timeout_seconds=1.0, monotonic=lambda: elapsed[0])
     assert 0 < len(sink.data) < plan.rgb24_bytes_per_frame
     assert not (tmp_path / "future.mp4").exists()
 
@@ -196,8 +194,7 @@ def test_timeout_between_frames_and_no_false_receipt(tmp_path: Path) -> None:
 
     with pytest.raises(RGB24TransferTimeout):
         feed_rgb24_to_sink(
-            plan, sink, on_frame=progress, timeout_seconds=1.0,
-            monotonic=lambda: elapsed[0]
+            plan, sink, on_frame=progress, timeout_seconds=1.0, monotonic=lambda: elapsed[0]
         )
     assert len(sink.data) == plan.rgb24_bytes_per_frame
 
@@ -205,8 +202,6 @@ def test_timeout_between_frames_and_no_false_receipt(tmp_path: Path) -> None:
 def test_normal_budget_and_fake_clock_yield_identical_checksum(tmp_path: Path) -> None:
     plan = _plan(tmp_path)
     sink = MemorySink(max_write=5)
-    receipt = feed_rgb24_to_sink(
-        plan, sink, timeout_seconds=1.0, monotonic=lambda: 10.0
-    )
+    receipt = feed_rgb24_to_sink(plan, sink, timeout_seconds=1.0, monotonic=lambda: 10.0)
     assert receipt.frame_count == 5
     assert receipt.stream_sha256 == hashlib.sha256(sink.data).hexdigest()
