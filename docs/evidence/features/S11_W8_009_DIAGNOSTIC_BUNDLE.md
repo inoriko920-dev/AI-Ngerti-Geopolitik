@@ -31,3 +31,8 @@
 Dedicated Windows Ruff/mypy/import-linter/architecture/security/UI manifest,
 targeted/full pytest, proof verifier, and same-HEAD historical workflows must
 pass. No status PASS until complete.
+
+## Formatter gate
+
+Pinned Ruff 0.16.10 formatted W8-009 files; temporary formatter was removed.
+Dedicated Windows CI and full regression remain pending; do not mark PASS.
