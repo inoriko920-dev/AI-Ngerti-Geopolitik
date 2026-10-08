@@ -1,7 +1,7 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 PASS / W8-009 PASS / W8-010 READY  
-**Runtime:** ACTIVE  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 PASS / W8-009 PASS / W8-010 PASS / W8 CLOSED  
+**Runtime:** QUALIFIED / CLOSED  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
 **Planning baseline:** `a39c6c6d5941f69a2b5b662f26df94d82b7f94ac`  
@@ -111,7 +111,7 @@ No new UI image-generation gate:
 - W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — PASS
 - W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS
-- W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — IN_VERIFICATION
+- W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — PASS
 
 ## Exact next action
 
@@ -241,15 +241,19 @@ No raw paths, private content, credentials or media bytes.
 
 **Next:** SOL S11-W8-010 only, after owner's `lanjutkan`.
 
-## W8-010 implementation QA (pending)
+## W8-010 accepted closure — 2026-10-08 WIB
 
-Bootstrap product launch now binds typed UI-039/040/041 dialogs to real
-ProjectSession, background validation and folder-scan workers, verified
-manual CommandBus relink and explicit recovery. Fixture-mode screenshots
-remain unchanged, preserving all 42 frozen reference images.
+**W8-010 accepted implementation and same-HEAD regression:** `45c3294f5a8c93cee17369fa4b95122e3fca035b`.
 
-Five Qt runtime-wiring tests and a real Windows FFprobe GOLDEN-03 script cover
-missing -> BLOCKER -> verified relink -> clean validation -> save/reopen,
-crash snapshot recovery without source overwrite, and redacted diagnostic ZIP.
-Dedicated workflow: `.github/workflows/s11-wave8-010-ui-golden03.yml`.
-**Gate: IN_VERIFICATION, not PASS.** No STEP 12 implementation.
+- [Windows W8-010 UI/GOLDEN-03 run](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37732709194): **SUCCESS**.
+- Artifact `ANG-S11-W8-010-UI-GOLDEN03`, ID `11530068997`, size 11,387,537 bytes.
+- Artifact ZIP SHA-256: `4a24f45f3c6ef6d73924ec83d0ea2149b1490119abb766dd079d6db2a5840241`.
+- **5/5** targeted Qt controller tests, **487/487** full Python suite, **23/23** owned GOLDEN-03 evidence checks PASS.
+- Ruff, mypy **85 source files**, lint-imports, architecture and no-secret checks PASS; source-of-truth **70/70** PASS.
+- Frozen UI-001..042 manifest **42/42 SHA-256 PASS** — no raster redesign or AAVC source changes.
+- **27/27** same-code-HEAD workflow families **SUCCESS on attempt 1**, including S08 portable foundation, S09 UI shell, S10 real Windows E2E, W0-W7 and W8.
+- Demonstrated live UI-041 missing referenced media BLOCKER, UI-040 bounded worker discovery and fingerprint-verified manual relink, canonical CommandBus/Undo-Redo, revalidation, save/reopen, UI-039 explicit crash snapshot restoration without silent source overwrite, and redacted diagnostic ZIP.
+- Fixed a real compatibility regression: FFprobe is initialized lazily only during a media probe, so the Qt shell and fake-probe tests do not require an installed FFprobe.
+- W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
+
+**Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
