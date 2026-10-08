@@ -10,10 +10,10 @@ Actual FFmpeg, Windows child trees and production adapters require later gates.
 from __future__ import annotations
 
 import subprocess
-from contextlib import suppress
 import sys
 import threading
 import time
+from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import BinaryIO
