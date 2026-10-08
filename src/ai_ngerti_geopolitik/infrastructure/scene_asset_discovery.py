@@ -146,9 +146,10 @@ def verify_scene_image_media(
                 while chunk := handle.read(1024 * 1024):
                     digest.update(chunk)
             after = path.stat()
-            if (
-                (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
-                != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+            if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
             ):
                 raise SceneAssetScanError("image changed during verification")
             verified.append(
