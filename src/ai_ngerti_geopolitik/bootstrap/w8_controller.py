@@ -11,6 +11,8 @@ from contextlib import suppress
 from pathlib import Path
 from uuid import uuid4
 
+from PySide6.QtGui import QImage
+
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
@@ -53,6 +55,10 @@ from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepositor
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
+from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
+    StillFramePreviewError,
+    render_still_frame,
+)
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
 from ai_ngerti_geopolitik.presentation.navigation import UiRoute
@@ -121,6 +127,11 @@ class W8RuntimeController:
         self.scene_docx_plan: SceneDocxPlan | None = None
         self.scene_asset_future: Future[SceneAssetInventory] | None = None
         self.scene_asset_inventory: SceneAssetInventory | None = None
+        self.still_preview_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ang-still")
+        self.still_preview_future: Future[QImage] | None = None
+        self.still_preview_inflight: tuple[str, str, int] | None = None
+        self.still_preview_desired: tuple[str, str, int] | None = None
+        self.still_preview_frame = 0
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -146,6 +157,8 @@ class W8RuntimeController:
             self.session.close()
         self.active_marker = None
         self.session_id = uuid4().hex
+        self.still_preview_desired = None
+        self.still_preview_frame = 0
         return True
 
     def request_open(self, source: Path) -> None:
@@ -233,7 +246,77 @@ class W8RuntimeController:
         # route. Previously the project loaded but Home remained visible.
         self.window.show_route(UiRoute.EDITOR)
         self._notify("Project dibuka. Periksa media dan simpan perubahan secara manual.")
+        if self._has_still_clips():
+            self.request_still_preview(0)
         self.request_validation()
+
+    def _has_still_clips(self) -> bool:
+        return self.session.is_open and any(
+            clip.image_hold_frames is not None
+            for track in self.session.state.tracks
+            for clip in track.clips
+        )
+
+    def request_still_preview(self, frame: int) -> None:
+        """Coalesce exact-frame seeks; discard stale project/revision results."""
+        if self._closed or not self.session.is_open:
+            self._notify("Buka project sebelum meminta preview.")
+            return
+        if not self._has_still_clips():
+            return
+        state = self.session.state
+        if type(frame) is not int or not 0 <= frame < state.timeline_end_frame:
+            self._notify("Frame preview di luar timeline.")
+            return
+        self.still_preview_frame = frame
+        self.still_preview_desired = (self.session_id, state.semantic_hash(), frame)
+        self._launch_still_preview()
+
+    def _launch_still_preview(self) -> None:
+        token = self.still_preview_desired
+        if (
+            self._closed
+            or self.still_preview_future is not None
+            or token is None
+            or not self.session.is_open
+        ):
+            return
+        if token[0] != self.session_id or token[1] != self.session.state.semantic_hash():
+            self.still_preview_desired = None
+            return
+        self.still_preview_inflight = token
+        self.still_preview_future = self.still_preview_worker.submit(
+            render_still_frame, self.session.state, token[2]
+        )
+
+    def _poll_still_preview(self) -> None:
+        future = self.still_preview_future
+        if future is None or not future.done():
+            return
+        token = self.still_preview_inflight
+        self.still_preview_future = None
+        self.still_preview_inflight = None
+        try:
+            image = future.result()
+        except (StillFramePreviewError, OSError, RuntimeError, ValueError):
+            if token == self.still_preview_desired:
+                self.still_preview_desired = None
+                self._notify("Preview gambar gagal. Periksa media atau efek.")
+        else:
+            if (
+                token is not None
+                and token == self.still_preview_desired
+                and self.session.is_open
+                and token[0] == self.session_id
+                and token[1] == self.session.state.semantic_hash()
+                and self.window.window.property("ui_state") == "UI-010"
+            ):
+                self.window.apply_still_frame_preview(
+                    image, token[2], self.session.state.revision,
+                    self.session.state.timeline_end_frame,
+                )
+                self.still_preview_desired = None
+        self._launch_still_preview()
 
     def request_validation(self) -> None:
         if not self.session.is_open or self._closed:
@@ -367,6 +450,20 @@ class W8RuntimeController:
             self.show_asset_scan()
         elif kind is UiIntentType.ASSET_SCAN_APPLY:
             self._apply_scan(intent.payload)
+        elif kind is UiIntentType.PLAYBACK_SEEK and self._has_still_clips():
+            try:
+                frame = (
+                    int(data["frame"])
+                    if "frame" in data
+                    else self.still_preview_frame + int(data.get("delta", "0"))
+                )
+            except ValueError:
+                self._notify("Nomor frame preview tidak valid.")
+            else:
+                frame = max(0, min(frame, self.session.state.timeline_end_frame - 1))
+                self.request_still_preview(frame)
+        elif kind is UiIntentType.PLAYBACK_PLAY and self._has_still_clips():
+            self._notify("Seek gambar tersedia; playback berkelanjutan belum didukung.")
         elif kind is UiIntentType.SAVE_PROJECT and self.session.is_open:
             try:
                 self.session.save()
@@ -453,6 +550,7 @@ class W8RuntimeController:
                             f"Folder aset: {ready}/{total} READY. "
                             f"Perbaiki {issues}. Project belum dibuat."
                         )
+        self._poll_still_preview()
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
                 self.validation_job_id,
@@ -488,6 +586,8 @@ class W8RuntimeController:
         self.validation_jobs.shutdown()
         self.relink.shutdown()
         self.recovery_worker.shutdown(wait=False, cancel_futures=True)
+        self.still_preview_desired = None
+        self.still_preview_worker.shutdown(wait=False, cancel_futures=True)
         # Never pretend clean shutdown when unsaved work still exists.
         if self.session.is_open and not self.session.dirty:
             with suppress(OSError, RuntimeError, ValueError):
