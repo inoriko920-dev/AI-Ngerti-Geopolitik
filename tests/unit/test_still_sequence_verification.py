@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 from PySide6.QtGui import QImage
+from scripts.verify_still_frames import main as verify_cli
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
 from ai_ngerti_geopolitik.application.scene_import_review import (
@@ -27,7 +28,6 @@ from ai_ngerti_geopolitik.infrastructure.still_sequence_verification import (
     StillSequenceVerificationError,
     verify_complete_still_sequence,
 )
-from scripts.verify_still_frames import main as verify_cli
 
 
 def _fixture(tmp_path: Path) -> tuple[ProjectState, Path, Path]:
