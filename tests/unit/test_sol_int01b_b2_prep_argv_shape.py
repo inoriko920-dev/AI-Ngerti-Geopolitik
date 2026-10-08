@@ -35,7 +35,7 @@ def _expected_units(args: tuple[str, ...]) -> int:
         ('argument"with"quotes',),
         ("trailing space ",),
         ("double\\\\slash",),
-        ("escaped\\\\\"quote",),
+        ('escaped\\"quote',),
         ("emoji_😀_🗺",),
         ("\twith tabs",),
         ("backslashes\\\\ at end \\\\",),
@@ -78,9 +78,7 @@ def test_internal_escaping_may_exceed_unescaped_limit() -> None:
     raw = len(_exe()) + len(args[0])
     assert quoted > raw
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_ARGV_LIMIT$"):
-        inspect_native_command_shape(
-            _exe(), args, NativeProcessPolicy(max_argv_characters=raw + 1)
-        )
+        inspect_native_command_shape(_exe(), args, NativeProcessPolicy(max_argv_characters=raw + 1))
 
 
 def test_windows_os_command_line_ceiling_enforced_despite_policy_32768() -> None:
@@ -145,7 +143,9 @@ def test_wrong_argv_container_rejected(args: object) -> None:
 def test_untrusted_arg_rejected_without_echo(arg: object) -> None:
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_ARGV_ITEM$"):
         inspect_native_command_shape(
-            _exe(), (arg,), NativeProcessPolicy()  # type: ignore[arg-type]
+            _exe(),
+            (arg,),
+            NativeProcessPolicy(),  # type: ignore[arg-type]
         )
 
 
