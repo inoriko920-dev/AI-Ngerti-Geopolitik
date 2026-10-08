@@ -159,6 +159,7 @@ def test_invalid_windows_argv_is_rejected_before_synthetic_process_spawn(
         )
     assert not invoked
 
+
 def test_completed_child_with_unfinished_pipe_reader_fails_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -187,4 +188,3 @@ def test_completed_child_with_unfinished_pipe_reader_fails_closed(
         assert not result.product_render_authorized
     finally:
         release.set()
-
