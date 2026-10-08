@@ -6,7 +6,6 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
 import time
 from dataclasses import replace
 from pathlib import Path
@@ -26,7 +25,10 @@ from ai_ngerti_geopolitik.infrastructure.export_job_adapters import (
     QualifiedStagedRender,
 )
 from ai_ngerti_geopolitik.infrastructure.export_postflight import IndependentMp4Postflight
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfmpegSliceMediaEngine, FfprobeMediaProbe
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
+    FfmpegSliceMediaEngine,
+    FfprobeMediaProbe,
+)
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 
@@ -59,9 +61,7 @@ def main() -> int:
     toolchain = detect_export_toolchain()
     assert toolchain.baseline_detected and toolchain.h265_encoder_found
     check = IndependentMp4Postflight(probe, ffmpeg=engine.ffmpeg)
-    dispatcher = QualifiedStagedRender(
-        engine, LocalMediaIntegrityInspector(probe), toolchain
-    )
+    dispatcher = QualifiedStagedRender(engine, LocalMediaIntegrityInspector(probe), toolchain)
     cases = [
         ("h264_full", ExportCodec.H264, 1920, 1080, 30, None),
         ("h264_selection", ExportCodec.H264, 1920, 1080, 30, (5, 10)),
@@ -83,9 +83,7 @@ def main() -> int:
             scope=ExportScope.SELECTION if bounds else ExportScope.FULL,
             selection=ExportFrameRange(*bounds) if bounds else None,
         )
-        with ExportJobService(
-            dispatcher, AtomicExportPublisher(), postflight=check
-        ) as jobs:
+        with ExportJobService(dispatcher, AtomicExportPublisher(), postflight=check) as jobs:
             jobs.submit(
                 project.state,
                 request,
@@ -113,9 +111,9 @@ def main() -> int:
                 session_id="t09-owned-windows",
             )
             assert accepted.output_path == request.output_path
-            assert accepted.duration_frames == (
-                (bounds[1] - bounds[0]) if bounds else 15
-            ) * fps // 30
+            assert (
+                accepted.duration_frames == ((bounds[1] - bounds[0]) if bounds else 15) * fps // 30
+            )
         info = probe.raw_probe(request.output_path)
         video = next(x for x in info["streams"] if x.get("codec_type") == "video")
         audio = next(x for x in info["streams"] if x.get("codec_type") == "audio")
@@ -144,8 +142,7 @@ def main() -> int:
         output_path=damaged,
     )
     bad_result = replace(
-        accepted, output_path=damaged, duration_frames=15,
-        width=1920, height=1080, fps=30
+        accepted, output_path=damaged, duration_frames=15, width=1920, height=1080, fps=30
     )
     failures = []
     try:

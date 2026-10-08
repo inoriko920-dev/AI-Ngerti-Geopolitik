@@ -115,8 +115,11 @@ class ExportJobService:
     """Single off-UI-thread queue; only explicit accept() publishes output."""
 
     def __init__(
-        self, worker: StagedExportPort, publisher: SafeExportPublisherPort,
-        *, postflight: ExportPostflightPort
+        self,
+        worker: StagedExportPort,
+        publisher: SafeExportPublisherPort,
+        *,
+        postflight: ExportPostflightPort,
     ) -> None:
         self._worker = worker
         self._publisher = publisher
@@ -260,9 +263,7 @@ class ExportJobService:
                 if job.status is not ExportJobState.RUNNING:
                     return
                 job.phase = "POSTFLIGHT_VERIFYING"
-            receipt = self._postflight.verify(
-                staged, job.request, job.original, result, job.cancel
-            )
+            receipt = self._postflight.verify(staged, job.request, job.original, result, job.cancel)
             if not receipt.still_current(staged):
                 raise ExportPostflightError(PostflightCode.STAGING_CHANGED)
             with self._lock:

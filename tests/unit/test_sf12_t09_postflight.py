@@ -93,8 +93,14 @@ def _state(tmp_path: Path) -> tuple[ProjectState, ExportRequest, Path, ExportRes
     original = tmp_path / "source.mp4"
     original.write_bytes(b"protected input")
     asset = Asset(
-        "A001", str(original), "video", FrameTime(30, 30),
-        1920, 1080, True, "a" * 64,
+        "A001",
+        str(original),
+        "video",
+        FrameTime(30, 30),
+        1920,
+        1080,
+        True,
+        "a" * 64,
     )
     clip = Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(30, 30))
     state = replace(
@@ -210,9 +216,7 @@ def test_forged_request_codec_rejected(tmp_path: Path) -> None:
 
 def test_selection_expected_frame_count_is_half_open(tmp_path: Path) -> None:
     state, request, stage, result = _state(tmp_path)
-    request = replace(
-        request, scope=ExportScope.SELECTION, selection=ExportFrameRange(5, 15)
-    )
+    request = replace(request, scope=ExportScope.SELECTION, selection=ExportFrameRange(5, 15))
     result = replace(result, duration_frames=10)
     probe = FakeProbe(nb_frames="10", duration="0.333333")
     receipt = _verify(state, request, stage, result, probe=probe, decoder=FakeDecoder(10))
@@ -237,9 +241,7 @@ def test_job_worker_fails_closed_when_independent_postflight_rejects(tmp_path: P
     verifier = IndependentMp4Postflight(
         FakeProbe(codec_name="hevc"), ffmpeg="fake", runner=FakeDecoder()
     )
-    with ExportJobService(
-        renderer, AtomicExportPublisher(), postflight=verifier
-    ) as jobs:
+    with ExportJobService(renderer, AtomicExportPublisher(), postflight=verifier) as jobs:
         jobs.submit(state, request, session_id="t09")
         assert renderer.started.wait(3)
         cutoff = time.monotonic() + 5
@@ -261,12 +263,12 @@ def test_job_worker_fails_closed_when_independent_postflight_rejects(tmp_path: P
 def test_postflight_receipt_blocks_tampered_stage_before_accept(tmp_path: Path) -> None:
     state, request, stage, _ = _state(tmp_path)
     stage.unlink()
+
     class FakePass:
         def verify(self, file, _request, _state, result, _cancellation):
             return PostflightReceipt.capture(file, result.duration_frames)
-    with ExportJobService(
-        FakeRender(), AtomicExportPublisher(), postflight=FakePass()
-    ) as jobs:
+
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePass()) as jobs:
         jobs.submit(state, request, session_id="t09")
         end = time.monotonic() + 5
         while time.monotonic() < end:

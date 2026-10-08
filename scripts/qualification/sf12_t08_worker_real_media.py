@@ -67,7 +67,9 @@ def main() -> int:
     )
     owner_thread = threading.get_ident()
     snapshots = []
-    with ExportJobService(dispatcher, publisher, postflight=IndependentMp4Postflight(probe, ffmpeg=engine.ffmpeg)) as jobs:
+    with ExportJobService(
+        dispatcher, publisher, postflight=IndependentMp4Postflight(probe, ffmpeg=engine.ffmpeg)
+    ) as jobs:
         first = jobs.submit(
             session.state, request, session_id="T08-real-session", timeout_seconds=120
         )
