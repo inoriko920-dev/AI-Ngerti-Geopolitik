@@ -254,3 +254,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## NEXT — Scene image saved project integration gate (8 Oct 2026 WIB)
 
 Current tested functionality: create_canonical_scene_image_project() consumes an explicitly timed SceneTimelineReview and VerifiedSceneImageSet, imports all Axxx images + parallel V1/V2 image HOLD clips + source-context scene markers through a single semantic CommandBatch. Test test_scene_image_materialization.py saves and reloads a real .angproj; same-HEAD Windows CI #37791083403 PASS at f6bfd1ae8472bed6f3823a07342d09e08b2329dd. Next required implementation: re-scan source folders to detect post-preflight duplicate Axxx; verify real file signature immediately before atomic Save; approved duration/review controls on frozen wizard; project session adoption; shared MLT image producer and FULL/LEFT/RIGHT composition/seek/preview plus render parity tests. No external FFmpeg runner without separate Pilot A approval, no merge or portable.
+
+
+## Next UI-003 save integration gate (2026-10-08 WIB)
+
+- New save_reviewed_scene_image_project() in existing application.scene_import_review owner safely re-reads DOCX, double rescans source folder and rehashes Axxx images before atomic repository Save/reopen. It requires SceneTimelineReview with explicit scene durations. To connect live wizard, obtain approved duration/review UX within frozen UI first; never guess duration or auto-transition. Worker-only invocation, then adopt saved state via ProjectSession.open_project on GUI thread, retaining unsaved-change gate. Renderer qualification and Pilot A separate.

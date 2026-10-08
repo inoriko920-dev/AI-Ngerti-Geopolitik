@@ -246,3 +246,10 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - SceneTimelineReview + VerifiedSceneImageSet now yields a genuine canonical image-backed ProjectState through one CommandBatch: Axxx image assets, SINGLE (V1) and DOUBLE simultaneous (V1/V2) clips, exact frame holds and scene note/context markers.
 - JsonProjectRepository successfully saves and reloads the result as .angproj in an automated Windows end-to-end unit integration. PASS on commit f6bfd1ae8472bed6f3823a07342d09e08b2329dd, Windows CI #37791083403 (full pytest and targeted tests, Ruff/mypy/architecture/source-of-truth/42 UI checks).
 - This builder remains at the application/test level: GUI UI-003 has NO approved explicit timing/review/save integration; no Save-time re-scan/atomic activation wired; MLT/FFmpeg still does not play/render image projects. Do not imply shipping or rendered MP4. Native FFmpeg Pilot A D1 still needs separate explicit approval; main unchanged, PR #20 Draft, Windows portable last.
+
+
+## Scene pre-save rescan and .angproj finalization (2026-10-08 WIB)
+
+- Extended canonical Scene import application owner with save_reviewed_scene_image_project(): validates original DOCX again, checks exact Axxx inventory and SHA-256/dimensions against preflight baseline, constructs one canonical CommandBatch, re-scans for late duplicates, then saves and re-opens .angproj through ProjectRepositoryPort. Existing destinations rejected. No ProjectSession mutation, no GUI-thread work allowed.
+- Regression fixtures simulate changed/corrupt files, newly introduced duplicate Axxx, DOCX change, delayed duplicate during second scan, stale metadata, overwrite and real persisted/reopened project. **Current-head Windows CI pending**.
+- No per-scene duration input is approved on UI-003. This worker-only finalization cannot be triggered from the existing Continue control until a reviewed timing/review flow exists. Playback/render still gated. No FFmpeg external Pilot A/merge/portable.

@@ -174,3 +174,9 @@ timeline, effect locks, audio mute state or captions when reopened.
 - Build genuine Axxx image ProjectState from qualified SceneTimelineReview and VerifiedSceneImageSet in a single canonical CommandBatch. A saved and reopened .angproj retains exact frame timing, image media type, fingerprints, V1/V2 concurrent scene placement and source quote markers.
 - Same-HEAD Windows run #37791083403 SUCCESS, SHA f6bfd1ae8472bed6f3823a07342d09e08b2329dd; targeted domain/persistence/scene/Qt + full pytest and all quality checks passed.
 - Still image MLT/FFmpeg preview/export and GUI final-save timing are intentionally gated. No falsely enabled features, UI layout change, native production FFmpeg, merge or portable.
+
+
+## Scene finalization preflight suite (2026-10-08 WIB)
+
+- Expected fail-closed: new target only; input DOCX reread, initial asset inventory and fingerprint check, CommandBatch project creation, second scan/fingerprint check, .angproj Save and canonical reload/semantic equality. No GUI session mutated.
+- Dedicated regression cases for altered DOCX, changed/deleted images, duplicate candidates introduced after preflight or before write, no overwrite, and real saved project accepted by ProjectSession. Requires same-head Windows full pytest and 42 frozen UI checks to report PASS.
