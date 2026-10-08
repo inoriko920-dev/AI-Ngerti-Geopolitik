@@ -50,3 +50,12 @@ Regression tests verify real use of the shared collector for controlled stdout a
 **Strict limits:** This integration exercises only fixed owned `sys.executable -I -c` fixtures, **not external FFmpeg/FFprobe, production `FfmpegProcessRunner`, native executable provenance, user commands or media rendering**. B3 child-tree cleanup, B4–B6 real adapters/smoke, D1 owner approval and D2–D4 native/legal policy remain pending. No main merge, UI changes, bundled native executables or portable release.
 
 **Acceptance evidence:** Verify the newest Windows Actions run at the exact combined PR #19 commit; older passing CI does not prove this integration.
+
+## B2-prep regression — incomplete pipe-reader must fail closed (2026-10-08 WIB)
+
+- Corrected a synthetic-only race where the fixed Python child could exit with code 0 while its stdout/stderr reader thread remained alive after the bounded join. Such an incomplete capture could previously return `SUCCESS`.
+- If either reader is still alive when the join budget expires, the result now fails closed (`OUTPUT_LIMIT` conservatively); it does not publish a successful `NativeProcessOutcome`.
+- Each reader closes its own pipe when its read loop terminates; a parent must not call a potentially blocking cross-thread close on a still-running reader.
+- A deterministic regression delays the stdout reader while the owned Python child exits normally, then verifies an unsuccessful, privacy-safe outcome and releases the test reader.
+- This does **not** qualify Windows grandchild cleanup, arbitrary native executables or FFmpeg. Pilot A D1 remains pending.
+- Re-run full Windows CI at the exact updated PR #19 head before marking the change PASS.

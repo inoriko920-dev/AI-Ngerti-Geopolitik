@@ -91,6 +91,11 @@ class _PipeCounter:
         except (OSError, ValueError, NativeProcessContractError):
             # A closed or broken reader must never produce a successful result.
             self.read_failed = True
+        finally:
+            # Only the reader closes its own stream; closing it from another
+            # thread could block while a slow read holds the file lock.
+            with suppress(OSError, ValueError):
+                self.stream.close()
 
 
 def _outcome(
@@ -205,8 +210,11 @@ def run_synthetic_fixture(
             _terminate_owned(process, policy.terminate_grace_seconds)
         for reader in readers:
             reader.join(timeout=policy.terminate_grace_seconds + 2)
-        for stream in (process.stdout, process.stderr):
-            stream.close()
+        if any(reader.is_alive() for reader in readers):
+            # A child can exit while an inherited pipe remains open or a
+            # reader stalls. Never claim success before both readers finish.
+            out.read_failed = True
+            err.read_failed = True
 
     # Collect metadata only after both readers have joined. Never return or log
     # the private bytes, including the known synthetic credential in stderr.

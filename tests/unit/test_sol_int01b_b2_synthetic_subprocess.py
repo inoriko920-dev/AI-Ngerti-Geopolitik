@@ -158,3 +158,33 @@ def test_invalid_windows_argv_is_rejected_before_synthetic_process_spawn(
             NativeProcessPolicy(max_argv_items=4),
         )
     assert not invoked
+
+def test_completed_child_with_unfinished_pipe_reader_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A process exit is not proof that its stdout/stderr threads completed."""
+    from ai_ngerti_geopolitik.infrastructure import synthetic_process_qualification as harness
+
+    stalled = threading.Event()
+    release = threading.Event()
+    original = harness._PipeCounter.drain
+
+    def slow_reader(self: harness._PipeCounter) -> None:
+        if self.channel == "stdout":
+            stalled.set()
+            release.wait(timeout=8)
+        original(self)
+
+    monkeypatch.setattr(harness._PipeCounter, "drain", slow_reader)
+    try:
+        result = harness.run_synthetic_fixture(
+            harness.SyntheticFixture.SUCCESS,
+            NativeProcessPolicy(timeout_seconds=8, terminate_grace_seconds=0.1),
+        )
+        assert stalled.is_set()
+        assert result.status is NativeProcessStatus.OUTPUT_LIMIT
+        assert not result.successful
+        assert not result.product_render_authorized
+    finally:
+        release.set()
+
