@@ -34,7 +34,6 @@ from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import (
 )
 
 
-
 def create_scene_project_from_wizard(
     docx: SceneDocxPlan,
     source: Path,

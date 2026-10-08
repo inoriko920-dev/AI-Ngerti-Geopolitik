@@ -1037,8 +1037,9 @@ def test_wizard_second_continue_creates_and_opens_real_image_project(
     controller.handle(intent)
     pump(
         qtbot,
-        lambda: controller.session.is_open
-        and controller.window.window.property("ui_state") == "UI-010",
+        lambda: (
+            controller.session.is_open and controller.window.window.property("ui_state") == "UI-010"
+        ),
         controller,
     )
     assert project.exists()
@@ -1069,9 +1070,7 @@ def test_wizard_bad_duration_does_not_write_or_replace_active_session(
     image.fill(0x00114488)
     assert image.save(str(folder / "A001.png"), "PNG")
     invalid_timing = tmp_path / "bad.txt"
-    invalid_timing.write_text(
-        "# FPS project: 30\nScene 1: ____ frames\n", encoding="utf-8"
-    )
+    invalid_timing.write_text("# FPS project: 30\nScene 1: ____ frames\n", encoding="utf-8")
     target = tmp_path / "should-not-exist.angproj"
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(folder))
     monkeypatch.setattr(
@@ -1106,4 +1105,3 @@ def test_wizard_bad_duration_does_not_write_or_replace_active_session(
     assert "gagal dibuat" in controller.last_error
     controller.shutdown()
     controller.window.close()
-
