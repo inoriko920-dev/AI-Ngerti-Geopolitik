@@ -1,0 +1,61 @@
+name: S11 W8-008 Stale Result Hardening
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/project_jobs.py"
+      - "src/ai_ngerti_geopolitik/application/relink_scan.py"
+      - "src/ai_ngerti_geopolitik/application/project_session.py"
+      - "tests/unit/test_step11_w8_008_stale_jobs.py"
+      - "scripts/run_step11_w8_008.py"
+      - "scripts/verify/verify_step11_w8_008_evidence.py"
+      - ".github/workflows/s11-wave8-008-stale-jobs.yml"
+      - "docs/evidence/features/S11_W8_008_STALE_JOBS.md"
+      - "docs/project/**"
+      - "HANDOFF.md"
+      - "docs/PROJECT_STATUS.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-008:
+    runs-on: windows-latest
+    name: Validation relink recovery concurrent lifecycle
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w8_008_stale_jobs.py
+      - run: uv run pytest -q
+      - run: >
+          uv run python scripts/run_step11_w8_008.py
+          --evidence artifacts/step11/w8-008/evidence
+      - run: uv run python scripts/verify/verify_step11_w8_008_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-008-Stale-Result-Jobs
+          path: artifacts/step11/w8-008/evidence/**
+          retention-days: 14
+          if-no-files-found: error
