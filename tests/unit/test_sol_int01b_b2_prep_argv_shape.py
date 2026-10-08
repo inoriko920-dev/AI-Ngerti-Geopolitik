@@ -57,17 +57,13 @@ def test_length_cap_does_not_echo_secrets() -> None:
     ["ffmpeg.exe", "C:ffmpeg.exe", "../ffmpeg.exe", "", "\x00", "bad\npath", 0, None, True],
 )
 def test_bad_executable_path_rejected(path: object) -> None:
-    with pytest.raises(
-        NativeProcessContractError, match="^INVALID_NATIVE_EXECUTABLE_PATH$"
-    ):
+    with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_EXECUTABLE_PATH$"):
         inspect_native_command_shape(path, (), NativeProcessPolicy())  # type: ignore[arg-type]
 
 
 def test_parent_directory_traversal_rejected() -> None:
     exe = Path(_exe())
-    with pytest.raises(
-        NativeProcessContractError, match="^INVALID_NATIVE_EXECUTABLE_PATH$"
-    ):
+    with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_EXECUTABLE_PATH$"):
         inspect_native_command_shape(str(exe.parent / ".." / exe.name), (), NativeProcessPolicy())
 
 
@@ -81,14 +77,14 @@ def test_non_tuple_args_rejected(args: object) -> None:
 def test_wrong_arg_type_or_nul_rejected(arg: object) -> None:
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_ARGV_ITEM$"):
         inspect_native_command_shape(
-            _exe(), (arg,), NativeProcessPolicy()  # type: ignore[arg-type]
+            _exe(),
+            (arg,),
+            NativeProcessPolicy(),  # type: ignore[arg-type]
         )
 
 
 def test_wrong_policy_rejected_without_inspecting_command() -> None:
-    with pytest.raises(
-        NativeProcessContractError, match="^INVALID_NATIVE_PROCESS_POLICY$"
-    ):
+    with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_PROCESS_POLICY$"):
         inspect_native_command_shape("PRIVATE_PATH", (), None)  # type: ignore[arg-type]
 
 
