@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+from contextlib import suppress
 import os
 import tempfile
 import zipfile
@@ -58,8 +59,6 @@ class LocalDiagnosticZipWriter:
             raise DiagnosticError(DiagnosticErrorCode.OUTPUT_UNAVAILABLE) from exc
         finally:
             if temporary is not None:
-                try:
+                with suppress(OSError):
+                    # Only this owned temp is pruned; never the project source.
                     temporary.unlink(missing_ok=True)
-                except OSError:
-                    # Recovery source is never read or written; only this temp is ours.
-                    pass
