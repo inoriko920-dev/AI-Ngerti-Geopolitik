@@ -18,6 +18,12 @@ from pathlib import Path
 from threading import Event, Lock, get_ident
 from typing import Protocol
 
+from ai_ngerti_geopolitik.application.export_postflight import (
+    ExportPostflightError,
+    ExportPostflightPort,
+    PostflightCode,
+    PostflightReceipt,
+)
 from ai_ngerti_geopolitik.application.export_request import ExportContractError, ExportRequest
 from ai_ngerti_geopolitik.application.ports import CancellationToken, ExportResult
 from ai_ngerti_geopolitik.domain import ProjectState
@@ -102,14 +108,19 @@ class _Job:
     workspace: Path | None = None
     staged: Path | None = None
     result: ExportResult | None = None
+    receipt: PostflightReceipt | None = None
 
 
 class ExportJobService:
     """Single off-UI-thread queue; only explicit accept() publishes output."""
 
-    def __init__(self, worker: StagedExportPort, publisher: SafeExportPublisherPort) -> None:
+    def __init__(
+        self, worker: StagedExportPort, publisher: SafeExportPublisherPort,
+        *, postflight: ExportPostflightPort
+    ) -> None:
         self._worker = worker
         self._publisher = publisher
+        self._postflight = postflight
         self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ang-export")
         self._lock = Lock()
         self._jobs: dict[str, _Job] = {}
@@ -158,6 +169,7 @@ class ExportJobService:
         job.phase = status.value
         job.error = reason
         job.result = None
+        job.receipt = None
         if ready:
             self._clean_later(job)
         if self._active == job.request.request_id:
@@ -245,15 +257,31 @@ class ExportJobService:
                 raise ExportJobError("INVALID_STAGED_EXPORT")
             with self._lock:
                 self._expire(job)
+                if job.status is not ExportJobState.RUNNING:
+                    return
+                job.phase = "POSTFLIGHT_VERIFYING"
+            receipt = self._postflight.verify(
+                staged, job.request, job.original, result, job.cancel
+            )
+            if not receipt.still_current(staged):
+                raise ExportPostflightError(PostflightCode.STAGING_CHANGED)
+            with self._lock:
+                self._expire(job)
                 if job.status is ExportJobState.RUNNING:
                     if job.cancel.cancelled:
                         self._stop(job, ExportJobState.CANCELLED, "EXPORT_CANCELLED")
                     else:
                         job.result = result
+                        job.receipt = receipt
                         job.staged = staged
                         job.status = ExportJobState.READY
                         job.phase = "AWAITING_ACCEPTANCE"
                         retain = True
+        except ExportPostflightError as error:
+            with self._lock:
+                self._expire(job)
+                if job.status is ExportJobState.RUNNING:
+                    self._stop(job, ExportJobState.FAILED, error.code.value)
         except Exception:  # noqa: BLE001 — never expose stderr, paths or secrets
             with self._lock:
                 self._expire(job)
@@ -304,8 +332,16 @@ class ExportJobService:
                 if job.status is ExportJobState.READY:
                     self._stop(job, ExportJobState.STALE, "STALE_EXPORT_REQUEST")
                 raise ExportJobError("STALE_EXPORT_REQUEST")
-            if job.status is not ExportJobState.READY or job.staged is None or job.result is None:
+            if (
+                job.status is not ExportJobState.READY
+                or job.staged is None
+                or job.result is None
+                or job.receipt is None
+            ):
                 raise ExportJobError("EXPORT_NOT_READY")
+            if not job.receipt.still_current(job.staged):
+                self._stop(job, ExportJobState.FAILED, PostflightCode.STAGING_CHANGED.value)
+                raise ExportJobError(PostflightCode.STAGING_CHANGED.value)
             assert state is not None
             try:
                 self._publisher.publish(job.staged, job.request, state)
