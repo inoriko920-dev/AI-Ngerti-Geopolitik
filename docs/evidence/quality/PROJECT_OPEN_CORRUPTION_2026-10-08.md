@@ -129,3 +129,10 @@ timeline, effect locks, audio mute state or captions when reopened.
 **Not implemented by this scoped commit:** folder-asset matching/metadata/probe, SINGLE/DOUBLE canonical scene-to-clip timeline mapping, wizard step 2/3 or project save. The `NEW_PROJECT` intent remains fail-closed and does NOT claim a created session. Next integration must enforce asset folder selection, validation, review and atomic `.angproj` save before navigating to Editor. No changes to frozen UI artwork.
 
 **Verification:** New deterministic reader/parser regressions and full GitHub Windows CI at exact branch head required. No external FFmpeg Pilot A work, main merge or portable packaging.
+## UI-003 actual Scene DOCX preflight wiring (2026-10-08 WIB)
+
+- Connect `NEW_PROJECT action=continue_wizard` to the qualified read-only DOCX parser using an existing single-thread background worker; never parse bounded compressed Word XML on the GUI thread. The Qt poll loop receives immutable `SceneDocxPlan` only after successful validation.
+- Valid selection reports exact scene count and globally numbered asset count, but explicitly says folder assets and project creation are **not complete**. The UI stays at the approved DOCX wizard, never opens a phantom project.
+- Invalid/corrupt files return a privacy-safe error; active canonical project and crash markers are unchanged. Tests include real Browse→Continue with a deterministic valid DOCX, plus a corrupt ZIP worker outcome.
+- The DTO is transient preflight data only; it must not replace the canonical ProjectState. Asset-folder binding, missing/duplicate handling, save-review and editor transition remain a separately qualified milestone.
+- Same-head Windows CI must pass; no Pilot A FFmpeg native execution, frozen UI visual edits or portable release.

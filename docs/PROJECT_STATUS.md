@@ -213,3 +213,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - Implemented non-mutating DOCX WordprocessingML reader plus strict scene/asset ID parser, mapping the Master Blueprint's `Tampilan Scene N: 1/2` to `A001` global references and preserving scene quote/context. No file writes or canonical timeline claims. Targeted fixture/hostile-ZIP tests included.
 - **Latest-head Windows CI PENDING**. Folder-asset binding, project state mapping, UI wizard 2/3, atomic save and engine/render remain future milestones; Pilot A D1 not approved, `main` untouched.
+## UI-003 Scene DOCX parser worker integration (2026-10-08 WIB)
+
+- Continue runs bounded Scene DOCX preflight in a worker, reports scene/asset counts without faking a canonical project. Corrupt DOCX returns a safe error; no editor navigation until folder binding + atomic project save exist. Qt regressions added. **Current-HEAD Windows CI pending.** No native FFmpeg / main merge / portable.

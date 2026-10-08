@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import zipfile
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -546,7 +547,14 @@ def test_wizard_continue_does_not_open_phantom_project(qtbot, tmp_path: Path, mo
     controller.window.show_route(UiRoute.NEW_PROJECT_DOCX)
     root = controller.window.window
     docx = tmp_path / "scene_asset_mapping.docx"
-    docx.write_bytes(b"fixture-placeholder-docx")
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Peta sejarah</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(docx, "w", zipfile.ZIP_DEFLATED) as out:
+        out.writestr("word/document.xml", xml)
 
     monkeypatch.setattr(
         QFileDialog,
@@ -563,10 +571,15 @@ def test_wizard_continue_does_not_open_phantom_project(qtbot, tmp_path: Path, mo
     assert continue_button.isEnabled()
 
     qtbot.mouseClick(continue_button, Qt.MouseButton.LeftButton)
+    pump(qtbot, lambda: controller.scene_docx_future is None, controller)
 
     assert not controller.session.is_open
     assert root.property("ui_state") == "UI-003"
-    assert "belum terhubung" in controller.last_error
+    assert controller.scene_docx_plan is not None
+    assert controller.scene_docx_plan.asset_count == 1
+    assert controller.scene_docx_plan.scenes[0].assets[0].canonical_id == "A001"
+    assert "1 scene, 1 aset" in controller.last_error
+    assert "project belum dibuat" in controller.last_error
     controller.shutdown()
     controller.window.close()
 
@@ -598,5 +611,28 @@ def test_wizard_missing_docx_does_not_replace_active_project(qtbot, tmp_path: Pa
     assert controller.session.state.semantic_hash() == current_hash
     assert project.read_bytes() == source_bytes
     assert "tidak tersedia" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_corrupt_existing_docx_is_rejected_by_worker_without_creating_project(
+    qtbot, tmp_path: Path
+) -> None:
+    bad = tmp_path / "invalid-existing.docx"
+    bad.write_bytes(b"not a ZIP/DOCX document")
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(bad))),
+        )
+    )
+    pump(qtbot, lambda: controller.scene_docx_future is None, controller)
+
+    assert controller.scene_docx_plan is None
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "tidak sesuai format" in controller.last_error
+    assert str(bad) not in controller.last_error
     controller.shutdown()
     controller.window.close()

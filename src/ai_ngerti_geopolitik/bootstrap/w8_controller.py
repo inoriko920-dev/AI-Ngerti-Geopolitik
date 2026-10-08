@@ -12,6 +12,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from ai_ngerti_geopolitik.application.ports import ProbeResult
+from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
     ReadOnlyProjectJobs,
@@ -45,6 +46,7 @@ from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfprobeMediaProbe
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.media_status import LocalMediaAvailability
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
+from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
@@ -110,6 +112,8 @@ class W8RuntimeController:
         self.offer: RecoveryOffer | None = None
         self.recovery_future: Future[RecoveryOffer] | None = None
         self.recovery_path: Path | None = None
+        self.scene_docx_future: Future[SceneDocxPlan] | None = None
+        self.scene_docx_plan: SceneDocxPlan | None = None
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -307,11 +311,17 @@ class W8RuntimeController:
                     self._notify("Pilih Scene DOCX sebelum melanjutkan.")
                 elif Path(scene_docx).suffix.lower() != ".docx" or not Path(scene_docx).is_file():
                     self._notify("Scene DOCX tidak tersedia. Pilih file DOCX yang dapat dibuka.")
+                elif self.scene_docx_future is not None:
+                    self._notify("Pemeriksaan Scene DOCX masih berjalan.")
                 else:
-                    # DOCX Scene + Asset-ID ingestion has not been implemented
-                    # in the live W8 controller. Do not silently invent a
-                    # ProjectSession or navigate to an empty editor.
-                    self._notify("Impor Scene DOCX belum terhubung. Project belum dibuat.")
+                    # Bounded ZIP/XML parsing runs off the GUI thread. The
+                    # validated DTO is only an import plan: binding assets,
+                    # saving .angproj and editor transition require later gates.
+                    self.scene_docx_plan = None
+                    self.scene_docx_future = self.recovery_worker.submit(
+                        read_scene_docx, Path(scene_docx).resolve()
+                    )
+                    self._notify("Memeriksa struktur Scene DOCX...")
         elif kind is UiIntentType.OPEN_PROJECT:
             filename = data.get("path", "")
             if not filename:
@@ -372,6 +382,21 @@ class W8RuntimeController:
                         self.window.present_recovery(recovery_projection(offer))
                     else:
                         self._decide(RecoveryChoice.OPEN_SOURCE)
+        if self.scene_docx_future is not None and self.scene_docx_future.done():
+            future = self.scene_docx_future
+            self.scene_docx_future = None
+            try:
+                parsed = future.result()
+            except (SceneDocxFormatError, OSError, RuntimeError, ValueError):
+                self.scene_docx_plan = None
+                self._notify("Scene DOCX tidak sesuai format atau tidak dapat dibaca.")
+            else:
+                if self.window.window.property("ui_state") == "UI-003":
+                    self.scene_docx_plan = parsed
+                    self._notify(
+                        f"Scene DOCX valid: {len(parsed.scenes)} scene, "
+                        f"{parsed.asset_count} aset. Folder aset belum dipilih; project belum dibuat."
+                    )
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
                 self.validation_job_id,

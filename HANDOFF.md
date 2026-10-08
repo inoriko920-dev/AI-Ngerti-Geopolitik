@@ -224,3 +224,6 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 
 - Source: `application/scene_docx_contract.py` and `infrastructure/scene_docx_reader.py`. Test: `tests/unit/test_scene_docx_import_contract.py`. Check exact-head Windows workflow including parser and full pytest before qualifying.
 - Requirements from Master Blueprint 8.1: global asset IDs Axxx, scene headers N:1/2, source context; next phase requires folder asset scan/bind + real ProjectState creation/atomic save before enable wizard Continue. Do not bypass with a fake project, fake media metadata or opening an empty editor. Frozen UI and Pilot A boundaries remain.
+## UI-003 read-only DOCX preflight (2026-10-08 WIB)
+
+- Verified parser source: `scene_docx_contract.py` and `scene_docx_reader.py`. W8 worker now returns SceneDocxPlan to Qt only on success; broken ZIP/structure fails safely. Inspect same-head Windows CI before marking PASS. No canonical asset binding, no .angproj creation yet; avoid saying new-project workflow complete.
