@@ -1,0 +1,70 @@
+name: ASTRA INT01B Windows Bounded Runner Planning Checks
+
+on:
+  push:
+    branches: [planning/astra-int01b-bounded-runner-design-20261008]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  planning:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q
+      - run: python -m pip install --disable-pip-version-check python-docx==1.2.0
+      - name: Verify planning DOCX, MD/TXT mirror and risk matrix
+        shell: pwsh
+        run: |
+          @'
+          from docx import Document
+          from pathlib import Path
+          from zipfile import ZipFile
+          base=Path("docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08")
+          md=base.with_suffix(".md").read_text(encoding="utf-8")
+          txt=base.with_suffix(".txt").read_text(encoding="utf-8")
+          assert md==txt, "MD/TXT differ"
+          docx=base.with_suffix(".docx")
+          with ZipFile(docx) as z:
+              assert z.testzip() is None
+              assert "word/document.xml" in z.namelist()
+          d=Document(str(docx))
+          body="\n".join(p.text for p in d.paragraphs)
+          assert len(d.paragraphs)>=75
+          for need in ["FFmpeg","PILOT_A","B01","B20","B1","B6",
+                       "NATIVE_OUTPUT_TOO_LARGE","MediaEnginePort","stdout","stderr","D1"]:
+              assert need in body, need
+          assert "PILOT_A_APPROVAL_PENDING" in md
+          print(f"PASS INT01B DOCX paragraphs={len(d.paragraphs)}, bytes={docx.stat().st_size}; MD/TXT parity, 20 tests, approval guard")
+          '@ | python
+      - name: Fail if repository accidentally adds FFmpeg EXE in this planning step
+        shell: pwsh
+        run: |
+          $ff = @(git diff --name-only HEAD~1 HEAD | Where-Object { $_ -match '\.(exe|dll)$' })
+          if ($ff.Count -gt 0) { throw "INT01B_PLANNING_MUST_NOT_ADD_NATIVE_BINARY" }
+          Write-Host "PASS no newly distributed native executable"
