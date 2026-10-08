@@ -111,7 +111,7 @@ def test_modified_image_after_preflight_does_not_create_file(tmp_path: Path) -> 
     prepared = _prepare(tmp_path)
     _image(prepared[2] / "A002.png")
     (prepared[2] / "A002.png").write_bytes(b"corrupt replacement")
-    with pytest.raises(SceneImportReviewError, match="safely saved"):
+    with pytest.raises(SceneImportReviewError, match="unresolved"):
         _save(prepared)
     assert not prepared[-1].exists()
 
