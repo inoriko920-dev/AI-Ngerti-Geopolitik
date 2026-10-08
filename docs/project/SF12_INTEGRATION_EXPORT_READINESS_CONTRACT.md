@@ -81,3 +81,10 @@ Audit result: SF-STEP12 READINESS_REVIEW COMPLETE / CONTRACT_DRAFT / BUILD NOT S
 Files proposed: docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.{txt,docx}; docs/project/SF12_INTEGRATION_EXPORT_READINESS_CONTRACT.md; HANDOFF.md and project state entries.
 Source links: github repo tree at baseline c9154ee; HANDOFF.md; Software Factory 00_MASTER and guide; Master Blueprint section 20 and technical STEP 12; source application/ports.py, application/vertical_slice.py, infrastructure/ffmpeg_slice.py, presentation/dialogs.py, application/validation.py.
 Do not use this review as evidence that T01 or any codec matrix testing has already been implemented.
+## SF12-T02 additive export request boundary — 2026-10-08 WIB
+
+- Typed immutable request in `application/export_request.py`; exact format/quality/subtitle/audio/sharpen enums, resolution 1080p/1440p/4K, fps 30/60, FULL/SELECTION half-open frame range.
+- Output path must be absolute MP4, no parent traversal. No filesystem write/probe in DTO. Stable project ID, session ID, revision, semantic hash; stale session or same-revision semantic swap fail closed.
+- `ExportRequestMediaPort` is a *prospective additive protocol only*, not an adopted production MediaEnginePort change. Current frozen `MediaEnginePort.export(state, path, cancellation)` is unchanged. ASTRA/ADR review is required before replacing/breaking its signature or choosing native dependencies.
+- Valid DTO represents intent, **not qualified encoder availability, GUI enablement, render success or verified receipt**. T03 preflight and T09 postflight own those gates; T02 does not start a worker or write an MP4.
+- Selection bounds validate against current timeline; selection frame policy needs T05 real-media qualification.
