@@ -269,3 +269,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Artifacts: media packaged qualification ID 11535444050; UI-only packaged shell ID 11535718409. Both **NOT end-user combined editor**. Main unchanged, new draft stacked PR #11. Evidence `docs/evidence/packaging/SF12_T10_WINDOWS_PACKAGED_E2E.md`.
 - **Release BLOCKED:** product Qt `btn_export_render` still disabled/unwired; no single integrated portable editor, no native libopenshot strategy/FFmpeg GPL libx264/libx265 and notices/redistribution ADR, full 27-family same-HEAD workflow closure not done, long-form/hardware/live network not qualified. Don't claim complete release or enable unsupported UI.
 - **Next explicit owner continuation:** ASTRA integration/licensing packaging ADR review (blocked decision), then authorised SOL implementation and unified Windows GUI 11 E2E. Blockers `docs/project/SF12_T10_RELEASE_BLOCKERS.md`.
+
+## ASTRA post-T10 native licence/integration plan 2026-10-08 WIB
+- Proposal ADR and detailed DOCX/TXT/MD roadmap prepared, with 4 owner decisions D1–D4 pending. No production changes authorized, no merge/release. Recommended external-FFmpeg pilot subject to approval, libopenshot primary candidate preserved D-005. Product GUI render remains DISABLED and final editor BLOCKED.
+- Planning: docs/project/ASTRA_ADR_2026_10_08_RENDER_NATIVE_PACKAGING_PROPOSAL.md; docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.md. Next owner decision, then INT-00 serial.

@@ -1164,3 +1164,10 @@ T09 Windows CI `37744843294` SUCCESS on code SHA `270fe789834354a7e2adb38fc58590
 - [ ] **ASTRA ADR required NEXT:** engine, external/bundled FFmpeg libx264/libx265 redistribution, licensing/notices, packaging and frozen UI render integration plan; owner decision before SOL changes core.
 
 T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architecture/UI42/docs70 PASS. GitHub artifacts media ID11535444050, UI ID11535718409. Draft stacked PR #11, main unchanged. Product GUI render DISABLED; original media/Qt packages remain different ZIPs and are NOT the final Windows portable editor.
+
+## ASTRA post-T10 owner gate — 2026-10-08 WIB
+- [x] Audit T10 evidence, D-005 native engine and license risks, frozen UI and stack PRs.
+- [x] Write proposed ADR comparing external FFmpeg pilot, GPL bundled codec, libopenshot, MLT.
+- [x] Write detailed serial INT-00 through INT-09 plan and TXT mirror.
+- [ ] **OWNER D1–D4 explicit decisions — REQUIRED NEXT; SOL CODE BLOCKED**.
+- [ ] INT-00 through INT-09 one turn/task after accepted architecture/legal gate; production desktop+release remains blocked.
