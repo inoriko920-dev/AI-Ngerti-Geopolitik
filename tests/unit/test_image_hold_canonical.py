@@ -121,15 +121,15 @@ def test_image_clip_with_wrong_or_missing_hold_and_video_with_hold_rejected() ->
     state = _still_project()
     image = state.clip("IMG-A001")
     for bad in (None, 0, -1, True, "150", 86400 * 30 + 1):
-        candidate = replace(image, image_hold_frames=bad)
-        broken = replace(
-            state,
-            tracks=(
-                replace(state.tracks[0], clips=(candidate, *state.tracks[0].clips[1:])),
-                state.tracks[1],
-            ),
-        )
         with pytest.raises(DomainValidationError):
+            candidate = replace(image, image_hold_frames=bad)
+            broken = replace(
+                state,
+                tracks=(
+                    replace(state.tracks[0], clips=(candidate, *state.tracks[0].clips[1:])),
+                    state.tracks[1],
+                ),
+            )
             broken.validate()
     video_asset = replace(state.assets[0], media_type="video", duration=FrameTime(200, 30))
     mixed = replace(state, assets=(video_asset, *state.assets[1:]))
