@@ -159,9 +159,8 @@ def test_plan_rejects_geometry_the_rgb24_stream_cannot_decode(
     with patch(
         "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
         return_value=unsafe,
-    ):
-        with pytest.raises(SilentH264PlanError):
-            plan_silent_h264_mp4(state, root, tmp_path / "rejected.mp4")
+    ), pytest.raises(SilentH264PlanError):
+        plan_silent_h264_mp4(state, root, tmp_path / "rejected.mp4")
     assert not (tmp_path / "rejected.mp4").exists()
 
 
@@ -175,9 +174,8 @@ def test_plan_rejects_png_exceeding_rgb24_reader_limit(tmp_path: Path) -> None:
     with patch(
         "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
         return_value=oversized,
-    ):
-        with pytest.raises(SilentH264PlanError):
-            plan_silent_h264_mp4(state, root, tmp_path / "oversized.mp4")
+    ), pytest.raises(SilentH264PlanError):
+        plan_silent_h264_mp4(state, root, tmp_path / "oversized.mp4")
     assert not (tmp_path / "oversized.mp4").exists()
 
 
@@ -188,7 +186,6 @@ def test_plan_rejects_frame_digest_count_inconsistent_with_reader(tmp_path: Path
     with patch(
         "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
         return_value=invalid,
-    ):
-        with pytest.raises(SilentH264PlanError):
-            plan_silent_h264_mp4(state, root, tmp_path / "invalid.mp4")
+    ), pytest.raises(SilentH264PlanError):
+        plan_silent_h264_mp4(state, root, tmp_path / "invalid.mp4")
     assert not (tmp_path / "invalid.mp4").exists()
