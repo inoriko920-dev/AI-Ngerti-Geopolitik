@@ -7,8 +7,8 @@ tests provide only in-memory fakes. Future native usage requires Pilot A.
 
 from __future__ import annotations
 
-from contextlib import suppress
 from collections.abc import Callable
+from contextlib import suppress
 from typing import Protocol
 
 from ai_ngerti_geopolitik.infrastructure.still_h264_plan import SilentH264Plan
