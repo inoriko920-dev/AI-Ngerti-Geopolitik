@@ -59,17 +59,16 @@ def _project(tmp_path: Path):
 def test_complete_export_has_two_batches_and_no_missing_frames(tmp_path: Path) -> None:
     state, project = _project(tmp_path)
     root = tmp_path / "frames"
-    assert scene_cli(
-        [
-            "frames-all",
-            "--project",
-            str(project),
-            "--output",
-            str(root),
-            "--batch-size",
-            "120",
-        ]
-    ) == 0
+    args = [
+        "frames-all",
+        "--project",
+        str(project),
+        "--output",
+        str(root),
+        "--batch-size",
+        "120",
+    ]
+    assert scene_cli(args) == 0
     master_data = (root / "manifest.json").read_bytes()
     master = json.loads(master_data)
     assert master["format"] == "ang-still-project-v1"
@@ -106,14 +105,10 @@ def test_complete_export_has_two_batches_and_no_missing_frames(tmp_path: Path) -
         image = QImage(str(png))
         assert image.pixelColor(0, 1).name() == expected_left
         assert image.pixelColor(12, 1).name() == expected_right
-    assert scene_cli(
-        ["frames-all", "--project", str(project), "--output", str(root)]
-    ) == 1
+    assert scene_cli(["frames-all", "--project", str(project), "--output", str(root)]) == 1
 
 
-def test_second_batch_failure_removes_whole_staged_directory(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_second_batch_failure_removes_whole_staged_directory(tmp_path: Path, monkeypatch) -> None:
     state, _ = _project(tmp_path)
     original = sequence.export_still_frame_sequence
     called = 0
