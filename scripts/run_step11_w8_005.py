@@ -32,6 +32,10 @@ def main() -> int:
         f"{base.project_id}.r{base.revision:06d}.{base.semantic_hash()[:12]}.autosave.angproj"
     )
     repo.save_snapshot(base, legacy)
+    legacy_compatible = (
+        len(service.inspect(folder, base.project_id).recoverable) == 1
+        and repo.load(legacy).semantic_hash() == base.semantic_hash()
+    )
     invalid = folder / f"P-W8-005.r000100.{'f' * 12}.autosave.angproj"
     invalid.write_text("{ invalid", encoding="utf-8")
     foreign_state = ProjectState.create("P-FOREIGN", "Other", 30)
@@ -58,9 +62,8 @@ def main() -> int:
         "source_unchanged": source.read_bytes() == source_bytes,
         "backup_unchanged": backup.read_bytes() == backup_bytes,
         "newest_valid": newest in (item.path for item in catalog.recoverable),
-        "legacy_compatible": repo.load(legacy).project_id == base.project_id
-        if legacy.is_file()
-        else True,
+        "legacy_compatible": legacy_compatible,
+        "legacy_old_pruned": not legacy.exists(),
         "no_crash_recovery_started": True,
     }
     path = root / "00_w8_005_report.json"

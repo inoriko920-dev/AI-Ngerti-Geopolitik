@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import stat
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -157,7 +158,7 @@ class AutosaveCatalogService:
                 continue
             try:
                 current = record.path.stat()
-                if not current.is_file():
+                if not stat.S_ISREG(current.st_mode):
                     continue
                 if _sha256(record.path) != record.file_sha256:
                     continue

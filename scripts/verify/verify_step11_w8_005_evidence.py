@@ -16,6 +16,7 @@ def main() -> int:
         "backup_unchanged",
         "newest_valid",
         "legacy_compatible",
+        "legacy_old_pruned",
         "no_crash_recovery_started",
     )
     checks = [
