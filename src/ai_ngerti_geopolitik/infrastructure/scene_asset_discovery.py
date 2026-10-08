@@ -69,9 +69,7 @@ def scan_scene_asset_folder(
                 raise SceneAssetScanError("asset folder has too many directories")
             current = Path(base)
             depth = len(current.relative_to(root).parts)
-            if depth >= max_depth and any(
-                not (current / name).is_symlink() for name in folders
-            ):
+            if depth >= max_depth and any(not (current / name).is_symlink() for name in folders):
                 # Never report READY when deeper (possibly duplicate) Axxx
                 # filenames were silently excluded by the scan depth limit.
                 raise SceneAssetScanError("asset folder exceeds scan depth limit")

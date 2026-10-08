@@ -200,4 +200,3 @@ def test_depth_limit_rejects_unscanned_nested_duplicate_not_false_ready(
     inventory = scan_scene_asset_folder(plan(), tmp_path, max_depth=5)
     assert inventory.bindings[0].status is SceneAssetStatus.DUPLICATE
     assert not inventory.all_ready
-
