@@ -253,3 +253,10 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Extended canonical Scene import application owner with save_reviewed_scene_image_project(): validates original DOCX again, checks exact Axxx inventory and SHA-256/dimensions against preflight baseline, constructs one canonical CommandBatch, re-scans for late duplicates, then saves and re-opens .angproj through ProjectRepositoryPort. Existing destinations rejected. No ProjectSession mutation, no GUI-thread work allowed.
 - Regression fixtures simulate changed/corrupt files, newly introduced duplicate Axxx, DOCX change, delayed duplicate during second scan, stale metadata, overwrite and real persisted/reopened project. **Current-head Windows CI pending**.
 - No per-scene duration input is approved on UI-003. This worker-only finalization cannot be triggered from the existing Continue control until a reviewed timing/review flow exists. Playback/render still gated. No FFmpeg external Pilot A/merge/portable.
+
+## Explicit TXT timing to real .angproj bridge (2026-10-08 WIB)
+
+- Added strict per-scene frame timing parser in the existing scene import owner: every Scene N must have an explicit positive integer frame count. No generated default durations.
+- Added scripts/import_scene_project.py with template (generates blank TXT timing rows) and create (parses DOCX, scans real PNG/JPEG/WebP Axxx folder, validates user frame durations, verifies image SHA-256, double-rescans and saves/reopens a real canonical .angproj). No frozen UI or native rendering change.
+- New Windows regression tests cover incomplete timing, reordered/duplicate frames, missing media, no overwrite and real .angproj persistence. Current-head CI PENDING.
+- This CLI bridge is not a completed UI-003 duration/review wizard, image preview or MP4 export. No pilot A, merge, or portable release.

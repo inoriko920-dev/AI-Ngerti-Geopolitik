@@ -259,3 +259,10 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 ## Next UI-003 save integration gate (2026-10-08 WIB)
 
 - New save_reviewed_scene_image_project() in existing application.scene_import_review owner safely re-reads DOCX, double rescans source folder and rehashes Axxx images before atomic repository Save/reopen. It requires SceneTimelineReview with explicit scene durations. To connect live wizard, obtain approved duration/review UX within frozen UI first; never guess duration or auto-transition. Worker-only invocation, then adopt saved state via ProjectSession.open_project on GUI thread, retaining unsaved-change gate. Renderer qualification and Pilot A separate.
+
+## Explicit TXT timing to real .angproj bridge (2026-10-08 WIB)
+
+- Added strict per-scene frame timing parser in the existing scene import owner: every Scene N must have an explicit positive integer frame count. No generated default durations.
+- Added scripts/import_scene_project.py with template (generates blank TXT timing rows) and create (parses DOCX, scans real PNG/JPEG/WebP Axxx folder, validates user frame durations, verifies image SHA-256, double-rescans and saves/reopens a real canonical .angproj). No frozen UI or native rendering change.
+- New Windows regression tests cover incomplete timing, reordered/duplicate frames, missing media, no overwrite and real .angproj persistence. Current-head CI PENDING.
+- This CLI bridge is not a completed UI-003 duration/review wizard, image preview or MP4 export. No pilot A, merge, or portable release.
