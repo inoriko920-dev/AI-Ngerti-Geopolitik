@@ -362,3 +362,8 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 ## SOL INT-01B/B2-prep bounded private stream capture — 2026-10-08 WIB
 - `src/ai_ngerti_geopolitik/infrastructure/native_bounded_capture.py`, `tests/unit/test_sol_int01b_b2_prep_bounded_capture.py`, `.github/workflows/sol-int01b-b2-prep-windows.yml` — independent bounded in-memory stream accounting; no OS process launch.
 - `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md` — code ef8b06a4, Windows SUCCESS 37757835429, 101 mypy files, UI42/docs70 full tests PASS. Actual native B2 still owner-blocked.
+
+## INT-01B/B2 synthetic harness consolidated with pure safety components (2026-10-08 WIB)
+
+- `docs/evidence/features/SOL_INT01B_B2_SYNTHETIC_SUBPROCESS.md` — controlled Python-child-only stdout/stderr, timeout/cancellation, redacted outcome evidence from Draft PR #17, now also included in Draft PR #19's combined safety review.
+- `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md` and `SOL_INT01B_B2_PREP_ARGV_SHAPE.md` — separate pure collectors/argument guards. Do not infer real FFmpeg capability, Pilot A approval, production readiness or Windows process-tree containment from these tests.

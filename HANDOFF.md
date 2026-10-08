@@ -351,3 +351,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - New `infrastructure/native_bounded_capture.py` synchronizes synthetic writes to independent capped stdout/stderr buffers (per B1 NativeProcessPolicy); overflow fails closed/redacts, discard and one-time internal parser handoff erase buffers. Only safe counters exposed externally. Tests `tests/unit/test_sol_int01b_b2_prep_bounded_capture.py`; native subprocess/FFmpeg is **NEVER launched** here.
 - `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md`. **Gate B2_PREP_PASS / B2_ACTUAL_SUBPROCESS_BLOCKED_PENDING_D1**. Old FFmpeg runner and FFprobe remain unchanged. No GUI render, codec bundling, legal approvals or release.
 - Next after explicit owner Pilot A approval: real bounded B2 process executor. Generic `lanjutkan` is not authorization for native engine/redistribution.
+
+## INT-01B/B2 synthetic + pure safety consolidation (2026-10-08 WIB)
+
+- Integrated the approved **Python-fixture-only** B2 subprocess safety harness from Draft PR #17 into the existing Draft PR #19 branch alongside B2 bounded-capture and Windows argv-shape checks from #18/#19. The latest combined commit and same-HEAD Windows CI, not older isolated PR results, determine the integrated PASS/FAIL.
+- Source-of-truth: `docs/evidence/features/SOL_INT01B_B2_SYNTHETIC_SUBPROCESS.md`, `SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md`, `SOL_INT01B_B2_PREP_ARGV_SHAPE.md`. No production FFmpeg/FFprobe runner, UI render, executable bundling, main merge or portable release. D1 Pilot A owner approval still pending.

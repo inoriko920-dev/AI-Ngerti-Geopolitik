@@ -1221,3 +1221,9 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [ ] **B2 full native process runner** draining real child PIPEs, deadline/cancel/typed errors — NOT STARTED, requires explicit Pilot A D1 owner approval.
 - [ ] B3 Windows process-tree cleanup, B4 FFprobe bounded probing, B5 FFmpeg production adapter integration, B6 real native Windows qualification — pending individual gates.
 - [ ] D2 encoder distro, D3 LICENSE/notices and D4 final native engine choice — still pending. No UI render, main merge or release.
+
+## INT-01B/B2 prep consolidation — 2026-10-08 WIB
+
+- [x] Combine the existing Python-only synthetic process harness from PR #17 with the pure bounded collector and Windows argv guards already on PR #19, without a new PR or native FFmpeg execution.
+- [ ] Accept the combined source/targeted/full Windows CI at the **new merged commit SHA** before calling consolidation PASS.
+- [ ] Obtain explicit owner D1 Pilot A authorization before real external FFmpeg runner B2; B3–B6, final GUI integration and portable remain separate deferred gates.
