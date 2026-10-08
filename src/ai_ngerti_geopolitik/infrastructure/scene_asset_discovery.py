@@ -67,7 +67,11 @@ def scan_scene_asset_folder(
             current = Path(base)
             depth = len(current.relative_to(root).parts)
             folders[:] = sorted(
-                (name for name in folders if depth < max_depth and not (current / name).is_symlink()),
+                (
+                    name
+                    for name in folders
+                    if depth < max_depth and not (current / name).is_symlink()
+                ),
                 key=str.casefold,
             )
             for filename in sorted(filenames, key=lambda x: (x.casefold(), x)):
