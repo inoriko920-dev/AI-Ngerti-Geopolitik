@@ -135,3 +135,84 @@ def test_publish_failure_redacted_and_staging_discarded(tmp_path: Path) -> None:
     assert stage.discard_calls == 1
     assert stage.published is None
     assert not stage.staged
+
+
+def test_cancellation_after_receipt_before_publish_discards_stage(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    baseline_calls = [0]
+
+    def baseline_cancel() -> bool:
+        baseline_calls[0] += 1
+        return False
+
+    transfer_staged_rgb24(plan, InMemoryStage(), should_cancel=baseline_cancel)
+    assert baseline_calls[0] > 0
+
+    attempts = [0]
+
+    def late_cancel() -> bool:
+        attempts[0] += 1
+        return attempts[0] > baseline_calls[0] - 1
+
+    # The final call is made immediately before publish. The earlier calls
+    # all belong to the successful feed transaction.
+    stage = InMemoryStage()
+    with pytest.raises(RGB24TransferCancelled):
+        transfer_staged_rgb24(plan, stage, should_cancel=late_cancel)
+    assert stage.published is None
+    assert stage.discard_calls == 1
+    assert not stage.staged
+
+
+def test_deadline_expiring_only_after_receipt_blocks_publish(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    baseline_calls = [0]
+
+    def baseline_clock() -> float:
+        baseline_calls[0] += 1
+        return 0.0
+
+    transfer_staged_rgb24(
+        plan, InMemoryStage(), timeout_seconds=1.0, monotonic=baseline_clock
+    )
+    assert baseline_calls[0] > 1
+    attempts = [0]
+
+    def expired_clock() -> float:
+        attempts[0] += 1
+        return 2.0 if attempts[0] == baseline_calls[0] else 0.0
+
+    stage = InMemoryStage()
+    with pytest.raises(RGB24TransferTimeout):
+        transfer_staged_rgb24(
+            plan, stage, timeout_seconds=1.0, monotonic=expired_clock
+        )
+    assert stage.published is None
+    assert stage.discard_calls == 1
+    assert not stage.staged
+
+
+def test_last_cancel_probe_exception_redacted_and_discarded(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    baseline_calls = [0]
+
+    def baseline_cancel() -> bool:
+        baseline_calls[0] += 1
+        return False
+
+    transfer_staged_rgb24(plan, InMemoryStage(), should_cancel=baseline_cancel)
+    attempts = [0]
+
+    def invalid_cancel() -> bool:
+        attempts[0] += 1
+        if attempts[0] == baseline_calls[0]:
+            raise OSError("private customer file path")
+        return False
+
+    stage = InMemoryStage()
+    with pytest.raises(RGB24TransferError) as error:
+        transfer_staged_rgb24(plan, stage, should_cancel=invalid_cancel)
+    assert "private" not in str(error.value)
+    assert stage.published is None
+    assert stage.discard_calls == 1
+    assert not stage.staged
