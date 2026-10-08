@@ -1,0 +1,86 @@
+name: S11 W8-004 Batch Directory Relink Scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/relink_scan.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/relink_scan.py"
+      - "src/ai_ngerti_geopolitik/presentation/asset_scan.py"
+      - "src/ai_ngerti_geopolitik/application/ui_intents.py"
+      - "tests/unit/test_step11_w8_004_relink_scan.py"
+      - "tests/qt/test_step11_w8_004_asset_scan.py"
+      - "scripts/run_step11_w8_004.py"
+      - "scripts/verify/verify_step11_w8_004_evidence.py"
+      - ".github/workflows/s11-wave8-004-batch-scan.yml"
+      - "docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md"
+      - "docs/project/**"
+      - "docs/PROJECT_STATUS.md"
+      - "HANDOFF.md"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12.10"
+  UV_VERSION: "0.12.21"
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-004:
+    name: Bounded real directory scan and exact batch relink
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Install FFmpeg qualification toolchain
+        shell: pwsh
+        run: |
+          $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
+          if (-not $ffmpeg) {
+            $ok = $false
+            for ($attempt = 1; $attempt -le 3; $attempt++) {
+              choco install ffmpeg -y --no-progress
+              if ($LASTEXITCODE -eq 0) { $ok = $true; break }
+              Start-Sleep -Seconds 10
+            }
+            if (-not $ok) { throw "FFmpeg installation failed after retries" }
+          }
+          ffmpeg -version
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w8_004_relink_scan.py tests/qt/test_step11_w8_004_asset_scan.py
+      - run: uv run pytest -q
+      - name: Generate owned real-media fixture
+        run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w8-004/input-video.mp4
+      - name: Real directory relink qualification
+        run: >
+          uv run python scripts/run_step11_w8_004.py
+          --video artifacts/step11/w8-004/input-video.mp4
+          --evidence artifacts/step11/w8-004/evidence
+      - run: uv run python scripts/verify/verify_step11_w8_004_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-004-Batch-Directory-Relink
+          path: artifacts/step11/w8-004/evidence/**
+          retention-days: 14
+          if-no-files-found: error

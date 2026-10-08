@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
+
+from ai_ngerti_geopolitik.application.ui_intents import UiIntentSink
 
 from ai_ngerti_geopolitik.application.relink_scan import (
     RankedRelinkCandidate,
@@ -71,11 +74,12 @@ def asset_scan_projection(snapshot: RelinkScanSnapshot) -> AssetScanProjection:
 
 def create_asset_scan_dialog(
     projection: AssetScanProjection,
-    intent_sink: object = None,
+    intent_sink: UiIntentSink | None = None,
     *,
-    parent: object = None,
-) -> object:
+    parent: Any = None,
+) -> Any:
     """Frozen UI-040 action surface; a controller owns starting/polling worker jobs."""
+    from PySide6.QtCore import Qt
     from PySide6.QtWidgets import (
         QDialog,
         QHBoxLayout,
@@ -114,9 +118,8 @@ def create_asset_scan_dialog(
         rank_cell = QTableWidgetItem(row.rank_text)
         status_cell = QTableWidgetItem(row.verified_text)
         for cell in (id_cell, path_cell, rank_cell, status_cell):
-            cell.setFlags(cell.flags() & ~__import__("PySide6.QtCore", fromlist=["Qt"]).Qt.ItemFlag.ItemIsEditable)
+            cell.setFlags(cell.flags() & ~Qt.ItemFlag.ItemIsEditable)
         if row.selectable:
-            from PySide6.QtCore import Qt
             id_cell.setFlags(id_cell.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             id_cell.setCheckState(Qt.CheckState.Unchecked)
         for column, cell in enumerate((id_cell, path_cell, rank_cell, status_cell)):
@@ -136,11 +139,10 @@ def create_asset_scan_dialog(
     apply.setEnabled(projection.apply_enabled)
 
     def emit(kind: UiIntentType, payload: tuple[tuple[str, str], ...] = ()) -> None:
-        if callable(intent_sink):
+        if intent_sink is not None:
             intent_sink(UiIntent(kind, payload))
 
     def request_apply() -> None:
-        from PySide6.QtCore import Qt
 
         chosen = []
         for index, row in enumerate(projection.rows):

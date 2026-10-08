@@ -6,6 +6,7 @@ re-probed, fingerprint-exact candidates may be committed by one CommandBatch.
 
 from __future__ import annotations
 
+from _thread import LockType
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -114,7 +115,7 @@ class RelinkScanJobService:
     scanner: RelinkDirectoryPort
     probe: MediaProbePort
     _executor: ThreadPoolExecutor = field(init=False, repr=False)
-    _lock: Lock = field(init=False, repr=False)
+    _lock: LockType = field(init=False, repr=False)
     _jobs: dict[str, _Record] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
