@@ -797,7 +797,7 @@ def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_pat
     controller, router = setup(qtbot)
     controller.session.open_project(source)
     controller.request_still_preview(0)
-    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
     assert canvas is not None
     pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
     assert canvas.pixmap() is not None
@@ -848,7 +848,7 @@ def test_w8_rapid_still_seeks_only_display_newest_frame(qtbot, tmp_path: Path, m
     controller.request_still_preview(149)
     controller.request_still_preview(150)
     release.set()
-    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
     assert canvas is not None
     pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
     assert rendered == [0, 150]
@@ -889,7 +889,7 @@ def test_w8_old_still_job_cannot_update_new_project(qtbot, tmp_path: Path, monke
     controller.request_still_preview(150)
     release.set()
 
-    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
     assert canvas is not None
     pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
     assert controller.session.state.project_id == "P-QT-NEXT"
