@@ -175,3 +175,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - Branch `fix/project-open-corrupt-json-fail-closed-20261008` from unchanged `main`: non-native bugfix for `JsonProjectRepository.load`, safe handling of corrupt nested track records, fixed-path-free `ProjectFormatError`, and preservation of existing session on failed open.
 - Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md` and dedicated Windows full regression. Source commit `24af2d67` **PASS Windows** on [CI #37772403305](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37772403305): targeted/full pytest, Ruff, mypy, architecture, source-of-truth and UI manifest. Documentation update requires verification at its own HEAD. D1 Pilot A and product render unchanged; no portable or release.
+
+## Project reopen integrity follow-up — strict JSON booleans (2026-10-08 WIB)
+
+- On Draft PR #20, ensure invalid JSON strings/numbers/null cannot silently flip enabled/muted/locked/visible flags on reopen; source-of-truth v1 schema and frozen UI unchanged.
+- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. Windows CI on new HEAD pending before PASS. No native FFmpeg or portable work.

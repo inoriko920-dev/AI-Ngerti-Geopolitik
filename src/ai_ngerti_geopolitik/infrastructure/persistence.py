@@ -42,6 +42,13 @@ class ProjectFormatError(RuntimeError):
     pass
 
 
+def _strict_json_bool(value: object) -> bool:
+    """Prevent malformed JSON strings/numbers from silently toggling project flags."""
+    if type(value) is not bool:
+        raise TypeError("expected JSON boolean")
+    return value
+
+
 class JsonProjectRepository:
     def save(self, state: ProjectState, path: Path) -> None:
         self._write(state, path, backup_existing=True)
@@ -171,7 +178,7 @@ class JsonProjectRepository:
                         int(clip["source_out"]["frames"]),
                         int(clip["source_out"]["fps"]),
                     ),
-                    enabled=bool(clip.get("enabled", True)),
+                    enabled=_strict_json_bool(clip.get("enabled", True)),
                     properties=self._decode_clip_properties(clip.get("properties")),
                 )
                 for clip in item.get("clips", [])
@@ -183,9 +190,9 @@ class JsonProjectRepository:
                     order=int(item["order"]),
                     clips=clips,
                     name=str(item.get("name", "")),
-                    locked=bool(item.get("locked", False)),
-                    muted=bool(item.get("muted", False)),
-                    visible=bool(item.get("visible", True)),
+                    locked=_strict_json_bool(item.get("locked", False)),
+                    muted=_strict_json_bool(item.get("muted", False)),
+                    visible=_strict_json_bool(item.get("visible", True)),
                 )
             )
         markers = tuple(
@@ -279,7 +286,7 @@ class JsonProjectRepository:
                 outline_color=str(style_raw.get("outline_color", "#111111")),
                 outline_width_tenths=int(style_raw.get("outline_width_tenths", 30)),
                 shadow_tenths=int(style_raw.get("shadow_tenths", 10)),
-                background_box=bool(style_raw.get("background_box", False)),
+                background_box=_strict_json_bool(style_raw.get("background_box", False)),
                 background_opacity_percent=int(style_raw.get("background_opacity_percent", 0)),
                 alignment=str(style_raw.get("alignment", "bottom_center")),
                 margin_v=int(style_raw.get("margin_v", 64)),
@@ -291,7 +298,7 @@ class JsonProjectRepository:
                 intensity_percent=int(animation_raw.get("intensity_percent", 100)),
                 highlight_color=str(animation_raw.get("highlight_color", "#FFD400")),
             ),
-            enabled=bool(raw.get("enabled", True)),
+            enabled=_strict_json_bool(raw.get("enabled", True)),
         )
 
     @staticmethod
@@ -311,7 +318,7 @@ class JsonProjectRepository:
                 int(start_raw.get("fps", fps)),
             ),
             gain_percent=int(raw.get("gain_percent", 100)),
-            muted=bool(raw.get("muted", False)),
+            muted=_strict_json_bool(raw.get("muted", False)),
             fade_in_frames=int(raw.get("fade_in_frames", 0)),
             fade_out_frames=int(raw.get("fade_out_frames", 0)),
         )
@@ -371,7 +378,7 @@ class JsonProjectRepository:
                 rate_percent=int(speed_raw.get("rate_percent", 100)),
             ),
             title=TitleProperties(
-                enabled=bool(title_raw.get("enabled", False)),
+                enabled=_strict_json_bool(title_raw.get("enabled", False)),
                 text=str(title_raw.get("text", "")),
                 font_size=int(title_raw.get("font_size", 54)),
                 position=str(title_raw.get("position", "bottom")),
@@ -386,7 +393,7 @@ class JsonProjectRepository:
                 enter_effect=str(effects_raw.get("enter_effect", "None")),
                 exit_effect=str(effects_raw.get("exit_effect", "None")),
                 intensity_percent=int(effects_raw.get("intensity_percent", 100)),
-                locked=bool(effects_raw.get("locked", False)),
+                locked=_strict_json_bool(effects_raw.get("locked", False)),
             ),
         )
 
@@ -403,7 +410,7 @@ class JsonProjectRepository:
             ),
             width=int(item["width"]),
             height=int(item["height"]),
-            has_audio=bool(item["has_audio"]),
+            has_audio=_strict_json_bool(item["has_audio"]),
             fingerprint_sha256=str(item["fingerprint_sha256"]),
             source_name=str(item.get("source_name", Path(path_ref).name)),
             file_size=int(item.get("file_size", 0)),

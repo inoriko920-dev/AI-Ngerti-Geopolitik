@@ -38,3 +38,24 @@ targeted/full pytest. Targeted and full pytest passed. This documentation follow
 The external native-engine D1 Pilot A decision remains pending. This
 source-contained regression fix does not approve engine selection, FFmpeg
 distribution, UI render activation, merge or release.
+
+
+## JSON boolean data-integrity fix (8 October 2026 WIB)
+
+`JsonProjectRepository.load` formerly performed `bool(value)` coercion in ten
+canonical flag locations. For example, malformed `"muted": "false"` or
+`"enabled": "false"` would become `True`, silently changing an edited project's
+timeline, effect locks, audio mute state or captions when reopened.
+
+- Require exact JSON boolean values (`true` / `false`) for all ten canonical
+  asset, clip, track, title, effects, subtitle and narration flags. Invalid
+  strings, numeric values and JSON null now fail closed as a
+  `ProjectFormatError("invalid project file")`.
+- Keep the same v1 schema, defaults, save serialization and legitimate True/False
+  semantics: no migration, no new dependency, no UI change.
+- Add a fully populated canonical project fixture (video timeline, narration and
+  subtitles), 50 malformed-boolean regression cases and a legitimate
+  save/reopen roundtrip test. Neither the original active project nor any
+  file is modified by failing `load`.
+- Windows CI on the updated exact branch SHA must pass before acceptance.
+  Native FFmpeg Pilot A remains pending; portable is reserved for final release.

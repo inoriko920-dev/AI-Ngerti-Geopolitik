@@ -189,3 +189,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Branch `fix/project-open-corrupt-json-fail-closed-20261008`: scoped project-open malformed nested JSON regression and privacy-safe typed failure. Verify same-head Windows CI and maintain one bugfix scope; keep `main` unchanged.
 - This branch is independent of stacked INT-01B Draft PR #19 and does NOT authorize native FFmpeg process work. Owner D1 remains pending; portable remains last.
 - Source code and targeted/full Windows regression **PASS** on `24af2d67`, [CI #37772403305](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37772403305). Treat a later HEAD as fully verified only after its CI also passes.
+
+## PR #20 project-open follow-up: strict boolean flags
+
+- Load must fail closed instead of coercing malformed `"false"` strings to True in canonical project flags. New tests cover 10 fields / 50 invalid values plus valid roundtrip. Confirm Windows full CI on exact latest head before marking PASS; no `main` merge.
