@@ -23,6 +23,7 @@ from ai_ngerti_geopolitik.infrastructure.still_h264_plan import plan_silent_h264
 from ai_ngerti_geopolitik.infrastructure.still_rgb24_sink import (
     RGB24TransferCancelled,
     RGB24TransferError,
+    RGB24TransferTimeout,
     feed_rgb24_to_sink,
 )
 from ai_ngerti_geopolitik.infrastructure.still_rgb24_stream import iter_rgb24_chunks
@@ -155,3 +156,57 @@ def test_corrupt_contract_and_row_guard(tmp_path: Path) -> None:
         feed_rgb24_to_sink(replace(plan, rgb24_bytes_per_frame=1), MemorySink())
     with pytest.raises(RGB24TransferError):
         feed_rgb24_to_sink(plan, MemorySink(), chunk_rows=0)
+
+
+@pytest.mark.parametrize("budget", (0, -1, True, float("inf"), float("nan"), 90_000))
+def test_invalid_timeout_budget_rejected_without_writes(tmp_path: Path, budget) -> None:
+    plan = _plan(tmp_path)
+    sink = MemorySink()
+    with pytest.raises(RGB24TransferError, match="budget"):
+        feed_rgb24_to_sink(plan, sink, timeout_seconds=budget)
+    assert not sink.data
+
+
+def test_timed_write_exceeding_budget_fails_after_write_returns(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    elapsed = [0.0]
+
+    class SlowSink(MemorySink):
+        def write(self, data: bytes) -> int:
+            elapsed[0] += 2.0
+            return super().write(data)
+
+    sink = SlowSink(max_write=7)
+    with pytest.raises(RGB24TransferTimeout):
+        feed_rgb24_to_sink(
+            plan, sink, timeout_seconds=1.0, monotonic=lambda: elapsed[0]
+        )
+    assert 0 < len(sink.data) < plan.rgb24_bytes_per_frame
+    assert not (tmp_path / "future.mp4").exists()
+
+
+def test_timeout_between_frames_and_no_false_receipt(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    elapsed = [0.0]
+    sink = MemorySink()
+
+    def progress(done: int, total: int) -> None:
+        if done == 1:
+            elapsed[0] = 1.5
+
+    with pytest.raises(RGB24TransferTimeout):
+        feed_rgb24_to_sink(
+            plan, sink, on_frame=progress, timeout_seconds=1.0,
+            monotonic=lambda: elapsed[0]
+        )
+    assert len(sink.data) == plan.rgb24_bytes_per_frame
+
+
+def test_normal_budget_and_fake_clock_yield_identical_checksum(tmp_path: Path) -> None:
+    plan = _plan(tmp_path)
+    sink = MemorySink(max_write=5)
+    receipt = feed_rgb24_to_sink(
+        plan, sink, timeout_seconds=1.0, monotonic=lambda: 10.0
+    )
+    assert receipt.frame_count == 5
+    assert receipt.stream_sha256 == hashlib.sha256(sink.data).hexdigest()
