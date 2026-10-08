@@ -20,11 +20,9 @@ from ai_ngerti_geopolitik.application.commands import (
 from ai_ngerti_geopolitik.domain import (
     Asset,
     Clip,
-    ClipProperties,
     DomainValidationError,
     FrameTime,
     ProjectState,
-    SpeedProperties,
     Track,
 )
 from ai_ngerti_geopolitik.infrastructure.mlt_projection import (
