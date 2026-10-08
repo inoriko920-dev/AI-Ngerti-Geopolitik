@@ -1146,3 +1146,21 @@ Accepted SHA `596a48db355878537227f193c6dee33d0ae3f24a`; CI `37742882153` SUCCES
 - [ ] **SF12-T10 Windows packaged E2E, frozen UI regression, native codec/license decision and release gating — NEXT, NOT STARTED**.
 
 T09 Windows CI `37744843294` SUCCESS on code SHA `270fe789834354a7e2adb38fc5859023db93f547`. Five real MP4s, AAC, full decode; corrupted/truncated real MP4 rejected. T08 HEVC dispatch corrected. Target/full pytest, mypy 98, architecture/source-of-truth70/UI42/secrets PASS. Artifact 11535670942, draft stacked PR #10 still unmerged. **UI render stays disabled pending T10.**
+
+
+## SF12-T10 Windows package qualification and release blocker handoff — 2026-10-08 WIB
+
+- [x] SF12-T01 capability truth-in-UI — PASS / native provisional.
+- [x] SF12-T02 immutable request DTO — PASS.
+- [x] SF12-T03 safe media/output preflight — PASS.
+- [x] SF12-T04 baseline H264 AAC — PASS.
+- [x] SF12-T05 selection full/out mapping — PASS.
+- [x] SF12-T06 exact codec/resolution/FPS allowlist — PASS.
+- [x] SF12-T07 exact subtitle/sharpen/quality + narration cells — PASS.
+- [x] SF12-T08 nonblocking background render job & cancel/timeout/stale — PASS.
+- [x] SF12-T09 independent FFprobe+whole FFmpeg decode and typed failures — PASS.
+- [x] **SF12-T10 scoped existing onedir packaged media (9 actual MP4 profiles) + original UI shell Qt smoke — PASS Windows 3-job CI 37746307421**.
+- [ ] **SF12-T10 combined product GUI + native licence/redistribution + end-user portable + all 27 workflow families same HEAD — NOT QUALIFIED / RELEASE BLOCKED**.
+- [ ] **ASTRA ADR required NEXT:** engine, external/bundled FFmpeg libx264/libx265 redistribution, licensing/notices, packaging and frozen UI render integration plan; owner decision before SOL changes core.
+
+T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architecture/UI42/docs70 PASS. GitHub artifacts media ID11535444050, UI ID11535718409. Draft stacked PR #11, main unchanged. Product GUI render DISABLED; original media/Qt packages remain different ZIPs and are NOT the final Windows portable editor.

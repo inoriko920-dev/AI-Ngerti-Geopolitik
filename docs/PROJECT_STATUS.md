@@ -260,3 +260,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Fixed real T08 HEVC routing bug (codec excluded from plain H264 predicate). Target/full pytest and Qt tests, Ruff, mypy 98, imports/architecture/secrets, source-of-truth70/70 and frozen UI42/42 PASS. Evidence `docs/evidence/features/SF12_T09_STRICT_POSTFLIGHT_REAL_MEDIA.md`, artifact ID 11535670942.
 - Draft stacked PR **#10** on PR #9/#8/#7/#6/#5/#4/#3/#2/#1, **not merged to main**; frozen AAVC/UI/MediaEnginePort unchanged. GUI render still DISABLED until T10 packaged Windows E2E/native licensing engine decision. Receipt uses fast stat after full worker SHA verification; T10 to investigate residual tamper/long-media performance.
 - Next exact serial task **SF12-T10 Windows packaged and UI E2E qualification** after user's next `lanjutkan`.
+
+
+## SF12-T10 — WINDOWS PACKAGED QUALIFICATION PASS / FINAL EDITOR RELEASE BLOCKED (2026-10-08 WIB)
+
+- Implementation SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, [Windows 3-job CI 37746307421](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37746307421) **SUCCESS**: full source regression, original PyInstaller onedir UI shell launch and frozen Qt tests, existing STEP10 packaged media smoke + nine real T02–T09 worker/preflight/FFprobe/full-decode MP4 exports from packaged CLI.
+- 9 packaged cells: H264 full, H264 selection, H264 1440p/4K upscale, H264 60fps conversion, H265 1080p30, subtitle OFF, quality Documentary Crisp, sharpen LIGHT. Actual Windows FFmpeg+ffprobe from Chocolatey **external only; not included in the ZIP**. Source unchanged and output no-clobber. All 98 source mypy, Ruff, 70 source-of-truth, 42 frozen UI hashes, full Python+Qt tests PASS.
+- Artifacts: media packaged qualification ID 11535444050; UI-only packaged shell ID 11535718409. Both **NOT end-user combined editor**. Main unchanged, new draft stacked PR #11. Evidence `docs/evidence/packaging/SF12_T10_WINDOWS_PACKAGED_E2E.md`.
+- **Release BLOCKED:** product Qt `btn_export_render` still disabled/unwired; no single integrated portable editor, no native libopenshot strategy/FFmpeg GPL libx264/libx265 and notices/redistribution ADR, full 27-family same-HEAD workflow closure not done, long-form/hardware/live network not qualified. Don't claim complete release or enable unsupported UI.
+- **Next explicit owner continuation:** ASTRA integration/licensing packaging ADR review (blocked decision), then authorised SOL implementation and unified Windows GUI 11 E2E. Blockers `docs/project/SF12_T10_RELEASE_BLOCKERS.md`.
