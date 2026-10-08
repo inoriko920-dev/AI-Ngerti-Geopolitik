@@ -8,13 +8,9 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import StrEnum
 from threading import Event, Lock
-from typing import Generic, TypeVar
 from uuid import uuid4
 
 from ai_ngerti_geopolitik.domain import ProjectState
-
-T = TypeVar("T")
-
 
 class ProjectJobError(RuntimeError):
     """Safe failure without private project contents or filesystem paths."""
@@ -54,7 +50,7 @@ class ProjectJobState(StrEnum):
 
 
 @dataclass(frozen=True, slots=True)
-class ProjectJobSnapshot(Generic[T]):
+class ProjectJobSnapshot[T]:
     job_id: str
     token: ProjectJobToken
     state: ProjectJobState
@@ -62,14 +58,14 @@ class ProjectJobSnapshot(Generic[T]):
 
 
 @dataclass(slots=True)
-class _Record(Generic[T]):
+class _Record[T]:
     token: ProjectJobToken
     cancel: Event
     state: ProjectJobState = ProjectJobState.QUEUED
     result: T | None = None
 
 
-class ReadOnlyProjectJobs(Generic[T]):
+class ReadOnlyProjectJobs[T]:
     """Background validation and recovery inspection with no second state owner."""
 
     def __init__(self) -> None:
