@@ -381,6 +381,46 @@ class MainWindow:
             dialog.show()
             self._active_dialog = dialog
 
+    def present_validation(self, projection: Any) -> None:
+        """Replace UI-041 fixture dialog with a real, stale-safe projection."""
+        from PySide6.QtWidgets import QPushButton
+
+        from ai_ngerti_geopolitik.presentation.dialogs import create_validation_dialog
+
+        self._close_active_dialog()
+        dialog = create_validation_dialog(self.window, self.intent_sink, projection=projection)
+        dialog.setModal(False)
+        dialog.show()
+        self._active_dialog = dialog
+        toolbar = self.window.findChild(QPushButton, "btn_open_validation")
+        if toolbar is not None:
+            if projection.stale:
+                toolbar.setText("! Validasi usang")
+            elif projection.error_count:
+                toolbar.setText(f"! {projection.error_count} Error")
+            else:
+                toolbar.setText("✓ Validasi OK")
+
+    def present_asset_scan(self, projection: Any) -> None:
+        """UI-040: show typed worker progress and only verified manual choices."""
+        from ai_ngerti_geopolitik.presentation.asset_scan import create_asset_scan_dialog
+
+        self._close_active_dialog()
+        dialog = create_asset_scan_dialog(projection, self.intent_sink, parent=self.window)
+        dialog.setModal(False)
+        dialog.show()
+        self._active_dialog = dialog
+
+    def present_recovery(self, projection: Any) -> None:
+        """UI-039: source/snapshot/ignore are explicit semantic intents."""
+        from ai_ngerti_geopolitik.presentation.recovery import create_recovery_dialog
+
+        self._close_active_dialog()
+        dialog = create_recovery_dialog(projection, self.intent_sink, parent=self.window)
+        dialog.setModal(False)
+        dialog.show()
+        self._active_dialog = dialog
+
     def apply_step10_timeline_projection(self, projection: Any) -> None:
         from PySide6.QtWidgets import QLabel
 
