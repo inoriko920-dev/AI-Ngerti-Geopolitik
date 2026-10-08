@@ -1,0 +1,64 @@
+name: ASTRA INT01 Native Security Design Document Integrity
+
+on:
+  push:
+    branches: [planning/astra-int01-native-probe-design-20261008]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  documents-and-frozen-source:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q
+      - run: python -m pip install --disable-pip-version-check python-docx==1.2.0
+      - name: Verify DOCX content, mirrors and 16 native security tests
+        shell: pwsh
+        run: |
+          @'
+          from docx import Document
+          from pathlib import Path
+          from zipfile import ZipFile
+          base = Path("docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08")
+          md = base.with_suffix(".md").read_text(encoding="utf-8")
+          txt = base.with_suffix(".txt").read_text(encoding="utf-8")
+          assert md == txt, "MD/TXT mirror changed"
+          docx_path = base.with_suffix(".docx")
+          with ZipFile(docx_path) as z:
+              assert z.testzip() is None, "Word ZIP corrupted"
+              assert "word/document.xml" in z.namelist()
+              assert "word/styles.xml" in z.namelist()
+          doc = Document(str(docx_path))
+          body = "\n".join(p.text for p in doc.paragraphs)
+          assert len(doc.paragraphs) >= 90
+          for required in ("FFmpeg", "ffprobe", "P01", "P16", "R01", "R10",
+                           "Task 01A", "Task 01F", "NATIVE_PROBE_TIMEOUT", "D1", "D4"):
+              assert required in body, f"Word handoff incomplete: {required}"
+          assert "SOL IMPLEMENTATION BLOCKED" in md
+          assert "NOT APPROVED" in body
+          print(f"PASS: {len(doc.paragraphs)} DOCX paragraphs, {docx_path.stat().st_size}B, MD/TXT parity, 16 planned Windows checks")
+          '@ | python
