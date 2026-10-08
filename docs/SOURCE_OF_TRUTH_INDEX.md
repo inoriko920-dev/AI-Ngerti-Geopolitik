@@ -320,3 +320,13 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `src/ai_ngerti_geopolitik/infrastructure/export_job_adapters.py` — T09 fix H265 1080p30 routed correctly to HEVC matrix, not H264 full baseline.
 - `tests/unit/test_sf12_t09_postflight.py`, `scripts/qualification/sf12_t09_real_postflight.py`, `.github/workflows/sf12-t09-windows-postflight.yml` — negative forged data, 50% truncated MP4 rejection, full decoded 5-cell Windows matrix and CI.
 - `docs/evidence/features/SF12_T09_STRICT_POSTFLIGHT_REAL_MEDIA.md` — code SHA 270fe78, real Windows SUCCESS 37744843294, artifact ID 11535670942. **Next SF12-T10 packaging/UI/native E2E only**, no production export enablement.
+
+
+## SF12-T10 — Windows packaged subsystem smoke & release blockers (2026-10-08 WIB)
+
+- `scripts/package/step10_media_smoke_entry.py` — opt-in `--sf12-t10` using existing PyInstaller onedir packaged CLI, 9 true requested/T03–T09 whole-decoded MP4 cells, JSON/hashes, no GUI render claim.
+- `scripts/package/build_step10_media_smoke.ps1` — original model retained, third-party foundation notices copied; toolchain remains external.
+- `scripts/package/smoke_sf12_t10_packaged.ps1` — executable output check, nine file/report checks, exclude bundled FFmpeg/ffprobe/x264/x265, packaging ZIP/exe SHA.
+- `.github/workflows/sf12-t10-windows-package-ui-e2e.yml` — 3 independent jobs: full pytest/architecture, UI onedir+Qt smoke, media onedir/9 real exports.
+- `docs/evidence/packaging/SF12_T10_WINDOWS_PACKAGED_E2E.md` — source SHA c945d9a, GitHub Actions 37746307421 **SUCCESS**, media artifact ID 11535444050, UI artifact ID 11535718409. Tech subsystem PASS; not an integrated final editor.
+- `docs/project/SF12_T10_RELEASE_BLOCKERS.md` — ASTRA ADR native FFmpeg+libopenshot GPL/LGPL, full UI render binding, notices, full workflow/regression and end-user release BLOCKED.

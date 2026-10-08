@@ -15,6 +15,8 @@ uv run pyinstaller --clean --noconfirm --onedir --console --workpath (Join-Path 
 
 if (-not (Test-Path $AppDir)) { throw "STEP 10 packaged media smoke directory was not created: $AppDir" }
 
+Copy-Item (Join-Path $RepoRoot "THIRD_PARTY_NOTICES.md") (Join-Path $AppDir "THIRD_PARTY_NOTICES.md")
+
 @"
 AI Ngerti Geopolitik — SF-STEP 10 packaged media qualification smoke
 
@@ -22,6 +24,9 @@ This is not a user-facing final application.
 It proves the packaged Python/domain/application/infrastructure path can use an
 external system FFmpeg/ffprobe toolchain to import, edit, save, seek-preview and export.
 FFmpeg is NOT bundled in this qualification artifact.
+SF12-T10 can test nine typed export profiles through --sf12-t10 with external FFmpeg.
+Neither this command-line harness nor the separate STEP09 UI shell is a final editor;
+product GUI export remains disabled and native redistribution approval is pending.
 "@ | Set-Content -Path (Join-Path $AppDir "STEP10_MEDIA_SMOKE_SCOPE.txt") -Encoding UTF8
 
 Compress-Archive -Path (Join-Path $AppDir "*") -DestinationPath $ZipPath -Force
