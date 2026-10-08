@@ -220,3 +220,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 — UI-003 New Project fail-closed regression (2026-10-08 WIB)
 
 - Qt tests: Browse→Continue with selected .docx must not navigate to UI-010 without an actual ProjectSession, and a missing DOCX must not affect existing active project. Next feature milestone is a strictly validated Prompt-1 scene/Asset-ID DOCX importer; do not assume it exists, and do not create fake editor state. Current-head CI required, no D1 Pilot A FFmpeg work, no main merge.
+## Scene DOCX Parser Step — Source-first handoff (8 Oct 2026 WIB)
+
+- Source: `application/scene_docx_contract.py` and `infrastructure/scene_docx_reader.py`. Test: `tests/unit/test_scene_docx_import_contract.py`. Check exact-head Windows workflow including parser and full pytest before qualifying.
+- Requirements from Master Blueprint 8.1: global asset IDs Axxx, scene headers N:1/2, source context; next phase requires folder asset scan/bind + real ProjectState creation/atomic save before enable wizard Continue. Do not bypass with a fake project, fake media metadata or opening an empty editor. Frozen UI and Pilot A boundaries remain.

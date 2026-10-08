@@ -120,3 +120,12 @@ timeline, effect locks, audio mute state or captions when reopened.
 - **No speculative parser:** The required Prompt-1 DOCX Scene/Asset-ID mapping contract does not yet have a production importer connected to this wizard. Merely checking the extension is not a parser and does not assert the DOCX content is valid. Actual import+asset validation+session construction remains a separate feature milestone and gate.
 - **Regression:** Qt tests check the real Browse→Continue wizard path remains at UI-003 without creating a phantom project, and a missing DOCX never discards an already open project. No frozen UI artwork/layout changes, no main merge, no native FFmpeg or portable release.
 - **Gate:** Pending exact-head Windows CI with targeted Qt/unit plus full suite.
+## Scene DOCX importer — v1 source-bound semantic parser (8 Oct 2026 WIB)
+
+**Spec source:** Master Blueprint 8.1 and Step-01 FR-002: explicit `Tampilan Scene N: 1/2` headers, consecutively global-numbered `Asset N: description`, deterministic `A001` IDs, preserve scene source quote/context. No inference for missing or ambiguous structures.
+
+**Implemented scope:** A pure application DTO/parser plus read-only, bounded DOCX reader (standard-library ZIP/WordprocessingML, handles paragraphs in table cells). Reject missing/corrupt/non-DOCX inputs, malformed/ambiguous labels, skipped scene/global asset IDs, wrong scene visual counts, overlong paragraphs, oversized compressed XML members, DTD and entity declarations. Error surfaces are fixed, no private paths/content.
+
+**Not implemented by this scoped commit:** folder-asset matching/metadata/probe, SINGLE/DOUBLE canonical scene-to-clip timeline mapping, wizard step 2/3 or project save. The `NEW_PROJECT` intent remains fail-closed and does NOT claim a created session. Next integration must enforce asset folder selection, validation, review and atomic `.angproj` save before navigating to Editor. No changes to frozen UI artwork.
+
+**Verification:** New deterministic reader/parser regressions and full GitHub Windows CI at exact branch head required. No external FFmpeg Pilot A work, main merge or portable packaging.

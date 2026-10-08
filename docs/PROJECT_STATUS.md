@@ -209,3 +209,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## PR #20 — Prevent phantom project creation through UI-003 wizard (2026-10-08 WIB)
 
 - UI-003 Continue previously navigated to editor while runtime ignored the `NEW_PROJECT` intent. It now passes a selected DOCX path to runtime and refuses to open a fictitious editor session until a true DOCX scene/asset importer is built. Status is explicit and file-project state remains intact. Two Qt regressions added. **Current-HEAD Windows CI pending**; no design/engine/main changes.
+## Scene DOCX import contract vertical slice (8 Oct 2026 WIB)
+
+- Implemented non-mutating DOCX WordprocessingML reader plus strict scene/asset ID parser, mapping the Master Blueprint's `Tampilan Scene N: 1/2` to `A001` global references and preserving scene quote/context. No file writes or canonical timeline claims. Targeted fixture/hostile-ZIP tests included.
+- **Latest-head Windows CI PENDING**. Folder-asset binding, project state mapping, UI wizard 2/3, atomic save and engine/render remain future milestones; Pilot A D1 not approved, `main` untouched.
