@@ -108,9 +108,7 @@ def test_invalid_executable_identity_fails_closed(
         {"encoder_names": ("aac",)},
     ],
 )
-def test_invalid_toolchain_claim_is_rejected(
-    tmp_path: Path, mutations: dict[str, object]
-) -> None:
+def test_invalid_toolchain_claim_is_rejected(tmp_path: Path, mutations: dict[str, object]) -> None:
     with pytest.raises(NativeIdentityError):
         replace(_pair(tmp_path), **mutations)
 
@@ -132,17 +130,13 @@ def test_wrong_pair_and_hevc_qualifications_rejected(tmp_path: Path) -> None:
 
 
 def test_incomplete_discovery_is_not_pilot_qualification(tmp_path: Path) -> None:
-    pair = _pair(
-        tmp_path, qualification_digest=None, qualified_profiles=()
-    )
+    pair = _pair(tmp_path, qualification_digest=None, qualified_profiles=())
     discovery = NativeCapabilityReport(
         status=NativeCapabilityStatus.DETECTED_UNVERIFIED, identity=pair
     )
     assert not discovery.can_start_product_render
     with pytest.raises(NativeIdentityError, match="NATIVE_QUALIFICATION_NOT_EVIDENCED"):
-        NativeCapabilityReport(
-            status=NativeCapabilityStatus.QUALIFIED_PILOT_ONLY, identity=pair
-        )
+        NativeCapabilityReport(status=NativeCapabilityStatus.QUALIFIED_PILOT_ONLY, identity=pair)
 
 
 @pytest.mark.parametrize(

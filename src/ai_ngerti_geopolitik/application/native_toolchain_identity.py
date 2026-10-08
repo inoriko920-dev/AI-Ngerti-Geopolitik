@@ -79,10 +79,7 @@ class NativeExecutableIdentity:
     source: NativeSource
 
     def __post_init__(self) -> None:
-        if not (
-            _valid_path(self.path, "ffmpeg.exe")
-            or _valid_path(self.path, "ffprobe.exe")
-        ):
+        if not (_valid_path(self.path, "ffmpeg.exe") or _valid_path(self.path, "ffprobe.exe")):
             raise NativeIdentityError("INVALID_NATIVE_EXECUTABLE_PATH")
         if not _is_digest(self.sha256):
             raise NativeIdentityError("INVALID_NATIVE_FINGERPRINT")
@@ -123,25 +120,25 @@ class NativeToolchainIdentity:
             or self.ffmpeg.path == self.ffprobe.path
         ):
             raise NativeIdentityError("INVALID_NATIVE_TOOLCHAIN_PAIR")
-        if (
-            type(self.checked_at_unix_ns) is not int
-            or self.checked_at_unix_ns <= 0
-        ):
+        if type(self.checked_at_unix_ns) is not int or self.checked_at_unix_ns <= 0:
             raise NativeIdentityError("INVALID_NATIVE_CHECK_TIME")
         if (
             type(self.encoder_names) is not tuple
             or len(self.encoder_names) > 16
-            or any(type(name) is not str or name not in {"libx264", "libx265", "aac"} for name in self.encoder_names)
+            or any(
+                type(name) is not str or name not in {"libx264", "libx265", "aac"}
+                for name in self.encoder_names
+            )
             or len(set(self.encoder_names)) != len(self.encoder_names)
         ):
             raise NativeIdentityError("INVALID_NATIVE_ENCODER_CLAIM")
-        if self.qualification_digest is not None and not _is_digest(
-            self.qualification_digest
-        ):
+        if self.qualification_digest is not None and not _is_digest(self.qualification_digest):
             raise NativeIdentityError("INVALID_NATIVE_QUALIFICATION_DIGEST")
         if (
             type(self.qualified_profiles) is not tuple
-            or any(type(profile) is not NativeQualifiedProfile for profile in self.qualified_profiles)
+            or any(
+                type(profile) is not NativeQualifiedProfile for profile in self.qualified_profiles
+            )
             or len(set(self.qualified_profiles)) != len(self.qualified_profiles)
             or (self.qualified_profiles and self.qualification_digest is None)
         ):
@@ -180,11 +177,15 @@ class NativeCapabilityReport:
                 raise NativeIdentityError("NATIVE_FAILURE_REASON_REQUIRED")
         elif self.issue is not None:
             raise NativeIdentityError("NATIVE_ISSUE_ONLY_FOR_FAILURE")
-        if self.status in {
-            NativeCapabilityStatus.QUALIFYING,
-            NativeCapabilityStatus.DETECTED_UNVERIFIED,
-            NativeCapabilityStatus.QUALIFIED_PILOT_ONLY,
-        } and self.identity is None:
+        if (
+            self.status
+            in {
+                NativeCapabilityStatus.QUALIFYING,
+                NativeCapabilityStatus.DETECTED_UNVERIFIED,
+                NativeCapabilityStatus.QUALIFIED_PILOT_ONLY,
+            }
+            and self.identity is None
+        ):
             raise NativeIdentityError("NATIVE_IDENTITY_REQUIRED")
         if self.status is NativeCapabilityStatus.QUALIFIED_PILOT_ONLY and (
             self.identity is None or not self.identity.qualified_profiles
