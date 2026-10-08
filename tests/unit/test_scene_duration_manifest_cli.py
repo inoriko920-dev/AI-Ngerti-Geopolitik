@@ -8,12 +8,13 @@ from pathlib import Path
 import pytest
 from PySide6.QtGui import QImage
 
+from scripts.import_scene_project import main
+
 from ai_ngerti_geopolitik.application.scene_import_review import (
     SceneImportReviewError,
     parse_scene_duration_manifest,
 )
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
-from scripts.import_scene_project import main
 
 
 def _docx(path: Path) -> None:
