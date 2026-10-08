@@ -9,11 +9,11 @@ import pytest
 from PySide6.QtGui import QImage
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
-from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
     create_canonical_scene_image_project,
 )
+from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.domain import FrameTime
 from ai_ngerti_geopolitik.domain.properties import (
     ClipProperties,

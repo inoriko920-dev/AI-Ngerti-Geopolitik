@@ -106,7 +106,8 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(
             f"Project tersimpan: {len(review.scenes)} scene, {len(project.assets)} aset, "
-            f"{review.total_frames} frame. Frame preview tersedia; animasi dan MP4 belum dikualifikasi."
+            f"{review.total_frames} frame. Frame preview tersedia; "
+            "animasi dan MP4 belum dikualifikasi."
         )
         return 0
     except (
