@@ -58,7 +58,7 @@ jobs:
           assert len(document.paragraphs) >= 70, "Incomplete Word plan"
           for needle in (
               "POST-T10", "INT-00", "INT-09", "D1", "D4",
-              "FFmpeg", "libopenshot", "NOT APPROVED", "27",
+              "FFmpeg", "libopenshot", "OWNER APPROVAL PENDING", "27",
           ):
               assert needle in content, f"Word plan missing {needle}"
           assert "OWNER" in md and "NO SOL CODING" in md
