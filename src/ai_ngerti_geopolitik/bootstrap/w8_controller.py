@@ -12,7 +12,6 @@ from pathlib import Path
 from uuid import uuid4
 
 from ai_ngerti_geopolitik.application.ports import ProbeResult
-from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
     ReadOnlyProjectJobs,
@@ -31,6 +30,7 @@ from ai_ngerti_geopolitik.application.relink_scan import (
     RelinkScanSnapshot,
     ScanState,
 )
+from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntent,
     UiIntentSink,
@@ -46,8 +46,8 @@ from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfprobeMediaProbe
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.media_status import LocalMediaAvailability
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
-from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
+from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
 from ai_ngerti_geopolitik.presentation.navigation import UiRoute
@@ -395,7 +395,8 @@ class W8RuntimeController:
                     self.scene_docx_plan = parsed
                     self._notify(
                         f"Scene DOCX valid: {len(parsed.scenes)} scene, "
-                        f"{parsed.asset_count} aset. Folder aset belum dipilih; project belum dibuat."
+                        f"{parsed.asset_count} aset. Folder aset belum dipilih; "
+                        "project belum dibuat."
                     )
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
