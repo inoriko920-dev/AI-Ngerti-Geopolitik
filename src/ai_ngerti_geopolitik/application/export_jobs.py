@@ -11,6 +11,7 @@ import shutil
 import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -144,11 +145,9 @@ class ExportJobService:
         job.workspace = None
         job.staged = None
         if folder is not None:
-            try:
+            # Worker still owns cleanup if shutdown already began.
+            with suppress(RuntimeError):
                 self._executor.submit(shutil.rmtree, folder, True)
-            except RuntimeError:
-                # Worker still owns cleanup if shutdown has begun.
-                pass
 
     def _stop(self, job: _Job, status: ExportJobState, reason: str) -> None:
         if job.status in TERMINAL:
