@@ -305,3 +305,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Draft ADR docs/project/ASTRA_ADR_2026_10_08_RENDER_NATIVE_PACKAGING_PROPOSAL.md and detailed serial INT-00..INT-09 plan in docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.md (.txt mirror). PROPOSED, NOT APPROVED.
 - T10 packaged technical PASS on 866464471e5926d7f9a782e56f2030ed2425e7a2 Windows 37746818497; still two ZIPs; Qt Render disabled. Main unchanged; all prior PRs draft. No code, no UI edit or release action this ASTRA step.
 - Recommendation only: pilot one onedir Qt/typed worker with externally provided, verified FFmpeg; no bundled libx264/265, no production libopenshot adoption or MediaEnginePort change. Needs explicit D1–D4 owner decisions; legal licensing/notice and 27/27 same-head CI still open. INT-00 after owner decision, stop before SOL.
+
+## ASTRA INT-00 pre-approval re-audit — 2026-10-08 WIB
+- Current GitHub main c9154eef; PR #1–#12 stacked, open and draft; T10 real packaged UI/media CI 37746818497 and ASTRA DOCX CI 37748230963 SUCCESS. 42 UI PNG files intact, DOCX 27582 bytes verified, no top-level LICENSE, incomplete THIRD_PARTY_NOTICES.
+- New audit `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md`. Gate **AUDIT PASS / APPROVAL BLOCKED**; no software code, Qt UI, native engine, port, merge or release changes.
+- D1 Pilot A external FFmpeg is only RECOMMENDED, NOT accepted by generic `lanjutkan`; D2 final packaging/D3 legal license/D4 production engine remain pending. **Next: explicit owner-scoped approval**; after acceptance create agreed pilot ADR gate and only then INT-01. No coding now.

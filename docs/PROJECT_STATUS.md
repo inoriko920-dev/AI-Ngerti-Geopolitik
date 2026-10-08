@@ -273,3 +273,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## ASTRA post-T10 native licence/integration plan 2026-10-08 WIB
 - Proposal ADR and detailed DOCX/TXT/MD roadmap prepared, with 4 owner decisions D1–D4 pending. No production changes authorized, no merge/release. Recommended external-FFmpeg pilot subject to approval, libopenshot primary candidate preserved D-005. Product GUI render remains DISABLED and final editor BLOCKED.
 - Planning: docs/project/ASTRA_ADR_2026_10_08_RENDER_NATIVE_PACKAGING_PROPOSAL.md; docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.md. Next owner decision, then INT-00 serial.
+
+## ASTRA INT-00 pre-approval readiness audit — 2026-10-08 WIB
+- Rechecked 12 stacked Draft PRs open, main unchanged c9154eef, T10 Windows 37746818497 SUCCESS and ASTRA DOCX 37748230963 SUCCESS; Word planning DOCX 27582B, 42 frozen PNG intact. No top-level LICENSE and notices incomplete. All D1–D4 unresolved.
+- Status **READINESS_AUDIT_PASS / OWNER_DECISION_BLOCKED / SOL_NOT_STARTED**. Audit: `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md`. One pilot opt-in could be recorded as D1 without authorizing final release or codec bundling. No code or UI changes.

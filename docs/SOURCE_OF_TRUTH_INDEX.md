@@ -330,3 +330,6 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `.github/workflows/sf12-t10-windows-package-ui-e2e.yml` — 3 independent jobs: full pytest/architecture, UI onedir+Qt smoke, media onedir/9 real exports.
 - `docs/evidence/packaging/SF12_T10_WINDOWS_PACKAGED_E2E.md` — source SHA c945d9a, GitHub Actions 37746307421 **SUCCESS**, media artifact ID 11535444050, UI artifact ID 11535718409. Tech subsystem PASS; not an integrated final editor.
 - `docs/project/SF12_T10_RELEASE_BLOCKERS.md` — ASTRA ADR native FFmpeg+libopenshot GPL/LGPL, full UI render binding, notices, full workflow/regression and end-user release BLOCKED.
+
+## ASTRA INT-00 pre-approval audit (2026-10-08 WIB)
+- `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md` — read-only GitHub branch/PR/CI/document checks and explicit D1–D4 decision gate; no code authorization. Follows full DOCX, MD and TXT in `docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.*` and proposed ADR under `docs/project/`.

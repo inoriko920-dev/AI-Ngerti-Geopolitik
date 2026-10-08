@@ -1171,3 +1171,9 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [x] Write detailed serial INT-00 through INT-09 plan and TXT mirror.
 - [ ] **OWNER D1–D4 explicit decisions — REQUIRED NEXT; SOL CODE BLOCKED**.
 - [ ] INT-00 through INT-09 one turn/task after accepted architecture/legal gate; production desktop+release remains blocked.
+
+## ASTRA INT-00 re-audit (owner approval pending) — 2026-10-08 WIB
+- [x] Verify main SHA, PR #1–#12 stacking, CI T10/ASTRA, existing DOCX, 42 frozen UI PNG and licensing gap without code edits.
+- [x] Capture decision table D1–D4 and fail-closed approval boundary in planning audit.
+- [ ] **Owner explicit Pilot A acceptance** — pending, do not treat generic continuation as native/legal consent.
+- [ ] **After owner approval:** accept pilot-only ADR, then INT-01 one task per turn. Bundled codec, license and production engine remain blocked.
