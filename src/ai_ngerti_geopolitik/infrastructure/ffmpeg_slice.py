@@ -25,13 +25,13 @@ from ai_ngerti_geopolitik.application.export_preflight import (
     OutputTargetInspectorPort,
 )
 from ai_ngerti_geopolitik.application.export_request import ExportRequest
-from ai_ngerti_geopolitik.application.validation import MediaIntegrityInspectorPort
 from ai_ngerti_geopolitik.application.ports import (
     CancellationToken,
     ExportResult,
     PreviewResult,
     ProbeResult,
 )
+from ai_ngerti_geopolitik.application.validation import MediaIntegrityInspectorPort
 from ai_ngerti_geopolitik.domain import Clip, ProjectState
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_creative import build_w4_creative_plan
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_narration import (
