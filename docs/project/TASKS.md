@@ -1199,3 +1199,12 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [x] Define bounded runner design, typed diagnostic, Windows B01–B20 cases and SOL serialized tasks B1–B6.
 - [ ] Require explicit owner approval of external FFmpeg Pilot A before changing native executor production code.
 - [ ] SOL B1 typed policy after approval, then B2–B6 one task/gate per continuation. UI render disabled, no bundled codec.
+
+
+## SOL INT-01B/B1 Windows acceptance — 2026-10-08 WIB
+
+- [x] **B1 immutable bounded subprocess policy and typed private-safe outcome — PASS pure contracts**. SHA `bfa20eb...`; Windows 37754131337 SUCCESS, mypy100, full pytest, doc70, UI42.
+- [ ] **B2 native bounded process reader** (stdout+stderr drain, timeout, cancellation) — NOT STARTED, waits explicit Pilot A approval D1.
+- [ ] B3 Windows child-tree cleanup, B4 FFprobe bounded adapter, B5 FFmpeg engine wiring, B6 real native Windows smoke — NOT STARTED.
+- [ ] D2 final portable native policy, D3 LICENSE/notices, D4 production libopenshot strategy — PENDING.
+- No UI redesign, no MediaEnginePort change, no main merge or release.

@@ -330,3 +330,11 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Read-only risk review of FfmpegProcessRunner poll-before-communicate + no deadline, unbounded/raw FFprobe subprocess, cancellation/child cleanup and stderr path leaks. Not proven runtime incidents, **no production code changes**.
 - Detailed B1–B6 serial tasks + 20 Windows tests in `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.md` and TXT (DOCX pending verification). Risk audit `docs/evidence/planning/ASTRA_INT01B_PROCESS_RISK_AUDIT_2026-10-08.md`.
 - Gate `DESIGN_READY / OWNER_PILOT_A_NOT_APPROVED / SOL_INT01B_BLOCKED`; all UI-001..042, MediaEnginePort, main and native distribution unchanged. Next: explicit Pilot A consent, then B1 only.
+
+
+## SOL INT-01B/B1 — Pure bounded process contract PASS (2026-10-08 WIB)
+
+- Draft PR **#16** on ASTRA planning PR #15; implementation `bfa20eb942ddda10d6daf9ab34b1265991356e42` Windows [37754131337](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37754131337) **SUCCESS** (Ruff, mypy 100 files, architecture, docs70/70, frozen UI42/42, secrets, targeted and full pytest).
+- New pure application `native_process_contract.py` defines frozen `NativeProcessPolicy` (bounded timeout, stdout/stderr, polling, termination grace, argv sizes) and typed privacy-safe `NativeProcessOutcome`/status validated against existing `NativeIssueCode`. No stdout/stderr data exposed, product render permission False.
+- Evidence `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md`, Windows workflow `sol-int01b-b1-process-contract-windows.yml`, unit `test_sol_int01b_b1_process_contract.py`. **No subprocess, native execution, UI changes or FFmpeg packaging**.
+- **Owner Pilot A explicit approval remains pending.** B2 actual bounded native execution, B3 process-tree, B4 FFprobe, B5 adapter, B6 native real-media tests not started. Main unchanged, all PRs draft. Next after explicit approval: SOL INT-01B/B2 one task only.
