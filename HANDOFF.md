@@ -202,3 +202,13 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Real Windows runner inventory explicitly returned FFmpeg=false, FFprobe=false, libx264=false, libx265=false, AAC=false. This is an observed ABSENCE, not proof of missing codecs in end-user installations, and not a real H.264/H.265 export test.
 - The UI receives an immutable capability snapshot but no production asynchronous capability refresh yet; current conservative default keeps render disabled. `MediaEnginePort` and `ProjectState` unchanged; no AAVC writes, no UI reference asset changes.
 - **Next exact task:** SF12-T02 ExportRequest + engine-port contract ASTRA review. Do not wire or enable rendering before actual backend + output qualification; no STEP13/14/release. W5 physical mic and W6/W7 live Gemini still provisional.
+
+
+## SF12-T02 acceptance — 2026-10-08 WIB
+
+- **T02 code accepted:** `9e12498b7ed181933c1da089204e3daf234d2a35`, Windows workflow [37735699709](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37735699709) **SUCCESS**; new targeted contract tests **27/27 PASS**, full pytest PASS.
+- Ruff format/check, mypy (88 files), architecture/import contracts, no-secrets, source-of-truth **70/70**, frozen UI raster SHA **42/42** PASS.
+- Added typed/frozen ExportRequest, scoped enums, half-open frame selection, absolute MP4 guard, session/project/revision/semantic hash stale token and prospective additive `ExportRequestMediaPort`. Existing frozen `MediaEnginePort.export` was NOT modified; no code path writes/render MP4 through the new contract.
+- Evidence: `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md`.
+- Branch/PR: `feature/sf12-t02-export-request-contract` / draft PR #3, stacked on T01 PR #2 then planning PR #1; none merged to main.
+- **Next exact task** on new owner continuation: **SF12-T03 preflight/capability negotiation only**. No STEP13, release, native engine changes or frozen UI redesign. ASTRA/ADR mandatory for breaking MediaEnginePort changes. W5 microphone and W6/W7 live Gemini remain provisional.
