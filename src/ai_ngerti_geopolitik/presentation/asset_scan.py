@@ -117,6 +117,7 @@ def create_asset_scan_dialog(
         status_cell = QTableWidgetItem(row.verified_text)
         for cell in (id_cell, path_cell, rank_cell, status_cell):
             cell.setFlags(cell.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        id_cell.setFlags(id_cell.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
         if row.selectable:
             id_cell.setFlags(id_cell.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             id_cell.setCheckState(Qt.CheckState.Unchecked)
