@@ -98,8 +98,7 @@ def test_still_scenes_are_genuine_image_clips_and_roundtrip_exactly(tmp_path: Pa
 def test_legacy_video_project_json_and_hash_not_changed_by_optional_field(tmp_path: Path) -> None:
     fps = 30
     asset = Asset(
-        "A001", "/fixture/video.mp4", "video", FrameTime(200, fps), 1920, 1080,
-        True, "b" * 64
+        "A001", "/fixture/video.mp4", "video", FrameTime(200, fps), 1920, 1080, True, "b" * 64
     )
     clip = Clip("VIDEO-001", "A001", FrameTime(0, fps), FrameTime(0, fps), FrameTime(100, fps))
     state = replace(
@@ -141,7 +140,10 @@ def test_image_clip_with_wrong_or_missing_hold_and_video_with_hold_rejected() ->
     image_source_wrong = replace(image, source_out=FrameTime(2, 30))
     mixed = replace(
         state,
-        tracks=(replace(state.tracks[0], clips=(image_source_wrong, *state.tracks[0].clips[1:])), state.tracks[1]),
+        tracks=(
+            replace(state.tracks[0], clips=(image_source_wrong, *state.tracks[0].clips[1:])),
+            state.tracks[1],
+        ),
     )
     with pytest.raises(DomainValidationError, match="intrinsic one frame"):
         mixed.validate()
@@ -169,11 +171,14 @@ def test_image_hold_edit_split_trim_and_undo_redo_are_frame_accurate() -> None:
         tracks=(Track("V1", "video", 0, (_clip("A001", 0, 150),)),),
     )
     bus = CommandBus(original)
+
     def run(command):
         return bus.execute(
-            CommandBatch(f"EDIT-{bus.state.revision}", "image edit", "manual",
-                         bus.state.revision, (command,))
+            CommandBatch(
+                f"EDIT-{bus.state.revision}", "image edit", "manual", bus.state.revision, (command,)
+            )
         )
+
     state = run(SetClipDurationCommand("IMG-A001", 120))
     assert state.clip("IMG-A001").duration_frames == 120
     assert state.clip("IMG-A001").source_out.frames == 1
