@@ -73,6 +73,7 @@ def safe_bundle_payload(snapshot: DiagnosticSnapshot) -> tuple[bytes, bytes]:
     from ai_ngerti_geopolitik.application.persistence_failure import PersistenceStage
 
     items = []
+    last_sequence = 0
     for event in snapshot.events:
         if (
             type(event.sequence) is not int
@@ -87,6 +88,9 @@ def safe_bundle_payload(snapshot: DiagnosticSnapshot) -> tuple[bytes, bytes]:
             )
         ):
             raise DiagnosticError(DiagnosticErrorCode.INVALID_INPUT)
+        if event.sequence <= last_sequence:
+            raise DiagnosticError(DiagnosticErrorCode.INVALID_INPUT)
+        last_sequence = event.sequence
         items.append(
             {
                 "sequence": event.sequence,
@@ -98,8 +102,6 @@ def safe_bundle_payload(snapshot: DiagnosticSnapshot) -> tuple[bytes, bytes]:
                 ),
             }
         )
-    if any(items[i]["sequence"] >= items[i + 1]["sequence"] for i in range(len(items) - 1)):
-        raise DiagnosticError(DiagnosticErrorCode.INVALID_INPUT)
     events = _json({"schema": 1, "events": items})
     manifest = _json(
         {
