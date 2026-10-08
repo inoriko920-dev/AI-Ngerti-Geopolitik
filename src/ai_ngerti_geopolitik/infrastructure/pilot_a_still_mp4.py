@@ -16,6 +16,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -113,10 +114,8 @@ def _encode(
         except (OSError, ValueError, RuntimeError, TypeError) as error:
             failure.append(type(error).__name__)
         finally:
-            try:
+            with suppress(OSError):
                 child.stdin.close()
-            except OSError:
-                pass
             finished.set()
 
     writer = threading.Thread(target=producer, daemon=True, name="ang-pilot-a-rgb24")
