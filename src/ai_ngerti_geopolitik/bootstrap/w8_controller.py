@@ -413,7 +413,11 @@ class W8RuntimeController:
                     folder = QFileDialog.getExistingDirectory(
                         self.window.window, "Pilih Folder Aset", ""
                     )
-                    if folder and not self._closed and self.window.window.property("ui_state") == "UI-003":
+                    if (
+                        folder
+                        and not self._closed
+                        and self.window.window.property("ui_state") == "UI-003"
+                    ):
                         self.scene_asset_inventory = None
                         self.scene_asset_future = self.recovery_worker.submit(
                             scan_scene_asset_folder, parsed, Path(folder)
