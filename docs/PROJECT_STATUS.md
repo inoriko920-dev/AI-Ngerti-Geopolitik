@@ -170,3 +170,11 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+
+## SF-STEP 12 readiness checkpoint — 2026-10-08 WIB
+
+- STEP11 W8 remains CLOSED/PASS; STEP12 **READINESS_REVIEW COMPLETE; IMPLEMENTATION NOT STARTED**.
+- Baseline reviewed `c9154eef85f8b475630816a7c63f5e2b52bf1523`; new DOCX/TXT planning and contract in `docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.*`.
+- P0 gap: Export dialog features do not match `FfmpegSliceMediaEngine.export` fixed `libx264 / ultrafast / CRF28`; intent payload does not wire all options; codec/size/fps/audios verification incomplete.
+- Next *planned* task SF12-T01 capability registry + truth-in-UI only, after gate. Other SF12 tasks are NOT STARTED. Live Gemini and physical microphone remain provisional.

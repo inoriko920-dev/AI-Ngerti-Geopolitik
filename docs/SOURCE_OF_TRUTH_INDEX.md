@@ -230,3 +230,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+
+## SF-STEP 12 readiness source-of-truth (2026-10-08 WIB)
+
+- Planning TXT: `docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.txt`.
+- Planning DOCX: `docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.docx`.
+- Contract/readiness: `docs/project/SF12_INTEGRATION_EXPORT_READINESS_CONTRACT.md`.
+- Distinguish SF-STEP12 external integrations from TECH-WAVE STEP12 export matrix; not separate permissions to skip gates.
+- Status: readiness review only, NO STEP12 coding or full export-matrix qualification. T01 next after gate.
