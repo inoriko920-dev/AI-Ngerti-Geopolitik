@@ -292,9 +292,7 @@ def test_stale_background_validation_is_never_projected(qtbot, tmp_path: Path) -
     controller.window.close()
 
 
-def test_invalid_new_project_inspection_keeps_existing_open_project(
-    qtbot, tmp_path: Path
-) -> None:
+def test_invalid_new_project_inspection_keeps_existing_open_project(qtbot, tmp_path: Path) -> None:
     repo, opened, _media, _asset = saved_project(tmp_path)
     controller, _router = setup(qtbot, repo)
     controller.request_open(opened)
