@@ -129,16 +129,31 @@ def test_valid_boolean_flags_roundtrip_without_semantic_change(tmp_path: Path) -
 
 def _full_project() -> ProjectState:
     video = Asset(
-        "A-VIDEO", "source.mp4", "video", FrameTime(90, 30),
-        1920, 1080, True, "a" * 64,
+        "A-VIDEO",
+        "source.mp4",
+        "video",
+        FrameTime(90, 30),
+        1920,
+        1080,
+        True,
+        "a" * 64,
     )
     narration_asset = Asset(
-        "A-VOICE", "narration.wav", "audio", FrameTime(90, 30),
-        0, 0, True, "b" * 64,
+        "A-VOICE",
+        "narration.wav",
+        "audio",
+        FrameTime(90, 30),
+        0,
+        0,
+        True,
+        "b" * 64,
     )
     clip = Clip(
-        "C-VIDEO", "A-VIDEO", FrameTime(0, 30),
-        FrameTime(0, 30), FrameTime(90, 30),
+        "C-VIDEO",
+        "A-VIDEO",
+        FrameTime(0, 30),
+        FrameTime(0, 30),
+        FrameTime(90, 30),
     )
     cues = (SubtitleCue("SUB-1", 1, FrameTime(0, 30), FrameTime(30, 30), "Caption"),)
     project = replace(
