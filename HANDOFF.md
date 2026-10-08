@@ -2,12 +2,12 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-005 — PASS  
+**Last completed task:** S11-W8-006 — PASS  
 **Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
-**Current task:** S11-W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION
-**Next exact action:** Finish W8-006 Windows QA and crash evidence; W8-007 remains blocked
+**Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
+**Next exact task:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY
 
 ## Read-first constraints
 
@@ -23,6 +23,7 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 - W8-003 verified single asset relink: PASS.
 - W8-004 batch directory relink scan + candidate ranking: PASS.
 - W8-005 autosave catalog + retention hardening: PASS.
+- W8-006 crash marker + explicit startup recovery: PASS.
 
 ## W8-003 qualification
 
@@ -68,24 +69,36 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - New and legacy autosave filename compatibility, deterministic timestamp ordering, validated per-project catalog, maximum **20** managed valid snapshots, corrupt/foreign isolation and write/unlink failure guards qualified.
 - Source `.angproj` and `.bak` are never retention/prune targets; source bytes unchanged in evidence. UI-039 recovery is deferred to W8-006.
 
+## W8-006 accepted evidence
+
+- Accepted W8-006 implementation and same-HEAD regression commit: `5a975bb312714f84315b9b752deac75a33021fab`.
+- [Dedicated Windows recovery workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37726261665): **SUCCESS**.
+- Artifact: `ANG-S11-W8-006-Crash-Recovery`, ID `11528226010`,
+  ZIP SHA-256 `adc9591b108a82f2b4e09d7f7bc3714133a6dd7ec839ed2216e7568351ad1165`.
+- Dedicated recovery tests **15/15 PASS** (12 unit + 3 Qt).
+- Full Python suite **444/444 PASS**; owned crash evidence verifier **12/12 PASS**.
+- Ruff, mypy (79 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- Same-HEAD regression **27/27 workflow families SUCCESS, attempt 1**,
+  including Windows portable foundation, UI shell, timeline, E2E, subtitle,
+  media and previous W8 qualification.
+- Proven: clean/unclean marker, valid newer-only snapshots, corrupt-newest
+  isolation, explicit Open Source / Recover Snapshot / Ignore choices,
+  stale snapshot/source rejection, exact project source bytes unchanged
+  during recovery, dirty working state until explicit Save, clean-close guard.
+- UI-039 intent/projection qualification only; complete main-window wiring
+  remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
+
 ## Next exact action
 
-On next owner's explicit **lanjutkan**, execute **SOL S11-W8-006 only**:
-Crash Marker + Startup Recovery Decision, strictly following locked W8 ASTRA planning.
-W8-007 remains blocked. Preserve source/.bak; recovery must be explicitly chosen
-and must never silently overwrite source. Continue using the existing
-ProjectSession / JsonProjectRepository as single ownership. Do not implement
-W8-007 in the same turn.
+On owner's explicit **lanjutkan**, execute **SOL S11-W8-007 only** using the
+locked ASTRA W8 planning. Inject failures around atomic persistence
+temp/write/replace, protect existing source bytes, verify retry behavior.
+Do not automatically rewrite JsonProjectRepository unless tests prove a defect.
+W8-008 remains blocked. Do not implement W8-008 in the same turn.
 
 ## Provisional gates
 
 W5 microphone physical hardware and W6/W7 live Gemini network tests remain
 provisional; do not claim device/provider smoke results that were not run.
 
-## W8-006 active implementation
-
-W8-006 marker, recovery manager, dirty working-state adoption and frozen UI-039
-projection are committed on main with 12 unit and 3 Qt tests, owned evidence
-runner and dedicated Windows workflow. **Gate IN_VERIFICATION, not PASS**.
-Exact next action: run and fix W8-006 CI, verify actual source bytes unchanged
-and lock same-HEAD regressions. W8-007 BLOCKED.

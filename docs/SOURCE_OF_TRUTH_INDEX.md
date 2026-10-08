@@ -156,8 +156,9 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-003 Single Asset Relink Command + Exact Identity Preservation: **PASS**.
 - W8-004 Batch Directory Relink Scan + Candidate Ranking: **PASS**.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
-- W8-006 Crash Marker + Startup Recovery Decision: **IN_VERIFICATION**, not PASS.
-- W8-007..W8-010: **SERIAL_BLOCKED**.
+- W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
+- W8-007 Atomic Persistence Failure Injection + Remediation: **READY**.
+- W8-008..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -176,9 +177,13 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-005 accepted HEAD `43cb1d04b5d519c26f843714c4b7cd9793054fe9`; workflow `37724812333` SUCCESS, artifact `11526779061`;
 - W8-005 targeted 9/9, full pytest 429/429, evidence 12/12, regression 27/27 PASS;
 - W8-005 evidence `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`;
-- exact next action: **SOL S11-W8-006 Crash Marker + Startup Recovery Decision ONLY**.
+- W8-006 accepted HEAD `5a975bb312714f84315b9b752deac75a33021fab`; Windows workflow `37726261665` SUCCESS;
+- W8-006 targeted 15/15, full pytest 444/444, crash evidence 12/12 and regression 27/27 PASS;
+- W8-006 evidence `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`;
+- exact next action: **SOL S11-W8-007 Atomic Persistence Failure Injection + Remediation ONLY**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
 
-W8-006: implementation and 12 unit + 3 Qt tests committed; Windows/real
-crash evidence pending. W8-007 BLOCKED.
+W8-006 accepted PASS: 12 unit + 3 Qt tests, strict crash-marker
+and source-byte integrity evidence, 27/27 same-HEAD workflow lock.
+W8-007 READY; W8-008 BLOCKED.

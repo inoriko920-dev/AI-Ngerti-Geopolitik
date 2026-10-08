@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 IN_VERIFICATION / W8-007..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 READY / W8-008..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -107,8 +107,8 @@ No new UI image-generation gate:
 - **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
 - W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS
 - W8-005 — Autosave Catalog + Retention Hardening — PASS
-- W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION
-- W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
+- W8-006 — Crash Marker + Startup Recovery Decision — PASS
+- W8-007 — Atomic Persistence Failure Injection + Remediation — READY
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — BLOCKED_BY_W8_007
 - W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008
 - W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009
@@ -171,7 +171,26 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 Next: **SOL S11-W8-006 only**. W8-007 remains blocked.
 
-## W8-006 implementation underway
+## W8-006 accepted
 
-See `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`. Startup explicit decision and clean/unclean
-marker implemented. CI acceptance pending. W8-007 BLOCKED.
+- Accepted W8-006 implementation and same-HEAD regression commit: `5a975bb312714f84315b9b752deac75a33021fab`.
+- [Dedicated Windows recovery workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37726261665): **SUCCESS**.
+- Artifact: `ANG-S11-W8-006-Crash-Recovery`, ID `11528226010`,
+  ZIP SHA-256 `adc9591b108a82f2b4e09d7f7bc3714133a6dd7ec839ed2216e7568351ad1165`.
+- Dedicated recovery tests **15/15 PASS** (12 unit + 3 Qt).
+- Full Python suite **444/444 PASS**; owned crash evidence verifier **12/12 PASS**.
+- Ruff, mypy (79 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- Same-HEAD regression **27/27 workflow families SUCCESS, attempt 1**,
+  including Windows portable foundation, UI shell, timeline, E2E, subtitle,
+  media and previous W8 qualification.
+- Proven: clean/unclean marker, valid newer-only snapshots, corrupt-newest
+  isolation, explicit Open Source / Recover Snapshot / Ignore choices,
+  stale snapshot/source rejection, exact project source bytes unchanged
+  during recovery, dirty working state until explicit Save, clean-close guard.
+- UI-039 intent/projection qualification only; complete main-window wiring
+  remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
+
+## Next
+
+SOL S11-W8-007 only. W8-008 remains blocked. No unapproved UI redesign.

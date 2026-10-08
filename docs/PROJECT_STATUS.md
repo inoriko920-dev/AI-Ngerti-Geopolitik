@@ -2,11 +2,11 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..005 PASS / W8-006 IN_VERIFICATION**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..006 PASS / W8-007 READY**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
-**Current task:** **S11-W8-006 — Crash Marker + Startup Recovery Decision — IN_VERIFICATION**  
+**Last completed task:** **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
 ## W8-003 proven
@@ -64,14 +64,28 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - New and legacy autosave filename compatibility, deterministic timestamp ordering, validated per-project catalog, maximum **20** managed valid snapshots, corrupt/foreign isolation and write/unlink failure guards qualified.
 - Source `.angproj` and `.bak` are never retention/prune targets; source bytes unchanged in evidence. UI-039 recovery is deferred to W8-006.
 
+## W8-006 acceptance
+
+- Accepted W8-006 implementation and same-HEAD regression commit: `5a975bb312714f84315b9b752deac75a33021fab`.
+- [Dedicated Windows recovery workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37726261665): **SUCCESS**.
+- Artifact: `ANG-S11-W8-006-Crash-Recovery`, ID `11528226010`,
+  ZIP SHA-256 `adc9591b108a82f2b4e09d7f7bc3714133a6dd7ec839ed2216e7568351ad1165`.
+- Dedicated recovery tests **15/15 PASS** (12 unit + 3 Qt).
+- Full Python suite **444/444 PASS**; owned crash evidence verifier **12/12 PASS**.
+- Ruff, mypy (79 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- Same-HEAD regression **27/27 workflow families SUCCESS, attempt 1**,
+  including Windows portable foundation, UI shell, timeline, E2E, subtitle,
+  media and previous W8 qualification.
+- Proven: clean/unclean marker, valid newer-only snapshots, corrupt-newest
+  isolation, explicit Open Source / Recover Snapshot / Ignore choices,
+  stale snapshot/source rejection, exact project source bytes unchanged
+  during recovery, dirty working state until explicit Save, clean-close guard.
+- UI-039 intent/projection qualification only; complete main-window wiring
+  remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
+
 ## Exact next action
 
-**S11-W8-006 — Crash Marker + Startup Recovery Decision — READY.**
-W8-007..010 remain serial-blocked. No W8-006 implementation was started in
-the W8-005 completion turn. Live Gemini and physical-microphone qualification
-retain their earlier provisional status.
-
-## W8-006 implementation QA
-
-Marker, explicit recovery decision, dirty working adoption and UI-039
-projection committed; Windows test and regression gate pending. W8-007 BLOCKED.
+**S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY.**
+W8-008..W8-010 remain serial-blocked. No W8-007 coding was started during
+W8-006 closure. W5 physical microphone and W6/W7 live Gemini remain provisional.

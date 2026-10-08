@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..005 PASS / W8-006 IN_VERIFICATION  
+**Status:** CONTRACT_LOCKED / W8-001..006 PASS / W8-007 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -35,8 +35,8 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 3. W8-003 — **PASS**
 4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **PASS**
 5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
-6. W8-006 Crash Marker + Startup Recovery Decision — **IN_VERIFICATION**
-7. W8-007 Atomic Persistence Failure Injection + Remediation — **BLOCKED**
+6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
+7. W8-007 Atomic Persistence Failure Injection + Remediation — **READY**
 8. W8-008 Stale Result Hardening — **BLOCKED**
 9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
 10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
@@ -71,8 +71,26 @@ W8-005 accepted:
   corrupt isolation and writer/unlink failure injection PASS.
 - Never prune source `.angproj`, `.bak`, or foreign project snapshots.
 
-After owner's **lanjutkan**, SOL W8-006 only; do not start W8-007.
+## W8-006 accepted
 
-## W8-006 execution gate
+- Accepted W8-006 implementation and same-HEAD regression commit: `5a975bb312714f84315b9b752deac75a33021fab`.
+- [Dedicated Windows recovery workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37726261665): **SUCCESS**.
+- Artifact: `ANG-S11-W8-006-Crash-Recovery`, ID `11528226010`,
+  ZIP SHA-256 `adc9591b108a82f2b4e09d7f7bc3714133a6dd7ec839ed2216e7568351ad1165`.
+- Dedicated recovery tests **15/15 PASS** (12 unit + 3 Qt).
+- Full Python suite **444/444 PASS**; owned crash evidence verifier **12/12 PASS**.
+- Ruff, mypy (79 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- Same-HEAD regression **27/27 workflow families SUCCESS, attempt 1**,
+  including Windows portable foundation, UI shell, timeline, E2E, subtitle,
+  media and previous W8 qualification.
+- Proven: clean/unclean marker, valid newer-only snapshots, corrupt-newest
+  isolation, explicit Open Source / Recover Snapshot / Ignore choices,
+  stale snapshot/source rejection, exact project source bytes unchanged
+  during recovery, dirty working state until explicit Save, clean-close guard.
+- UI-039 intent/projection qualification only; complete main-window wiring
+  remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
 
-Code and tests committed; Windows qualification pending. W8-007 still blocked.
+## Exact next action
+
+On owner's **lanjutkan**, SOL S11-W8-007 only. W8-008 remains blocked.
