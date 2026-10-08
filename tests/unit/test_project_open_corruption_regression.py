@@ -165,6 +165,8 @@ def _full_project() -> ProjectState:
     )
     project.validate()
     return project
+
+
 @pytest.mark.parametrize(
     "location",
     [
