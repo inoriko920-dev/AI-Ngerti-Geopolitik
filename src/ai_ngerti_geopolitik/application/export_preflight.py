@@ -14,8 +14,8 @@ from typing import Protocol
 
 from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
 from ai_ngerti_geopolitik.application.export_profiles import (
-    MatrixProfile,
     T06_CANDIDATE_PROFILES,
+    MatrixProfile,
     candidate_for_request,
 )
 from ai_ngerti_geopolitik.application.export_request import (

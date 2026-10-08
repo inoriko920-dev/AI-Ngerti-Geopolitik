@@ -18,7 +18,6 @@ from ai_ngerti_geopolitik.application.export_profiles import (
     candidate_for_request,
 )
 from ai_ngerti_geopolitik.application.export_request import (
-    ExportCodec,
     ExportFrameRange,
     ExportRequest,
     ExportScope,
