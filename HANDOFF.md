@@ -2,15 +2,15 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-008 — PASS  
-**Accepted implementation/regression HEAD:** `130407dc728b6417c30dbbc935ecd9b04d37ba43`  
+**Last completed task:** S11-W8-009 — PASS  
+**Accepted implementation/regression HEAD:** `6a4ec93d445e71dc037bcc4dc6edff2008894268`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
 **Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 **Last implementation:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS
-**Current task:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION
-**Next exact action:** Finish W8-009 Windows quality, redaction evidence and regression; W8-010 BLOCKED
+**Last implementation:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS
+**Next exact task:** S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — READY
 
 ## Read-first constraints
 
@@ -136,10 +136,9 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 ## Next exact action
 
-When owner explicitly says `lanjutkan`, execute **SOL S11-W8-009 ONLY**
-under locked ASTRA W8 planning: structured diagnostics + bounded redacted
-ZIP manifest, private content/credentials never bundled by default.
-W8-010 remains blocked. Do not enter W8-010 within W8-009.
+On owner's next `lanjutkan`, execute **SOL S11-W8-010 ONLY**:
+frozen UI-039/040/041 real controller wiring + GOLDEN-03 E2E recovery/relink
+regression, under locked ASTRA W8 planning. No STEP 12 in same turn.
 
 ## Provisional gates
 
@@ -149,13 +148,20 @@ provisional; do not claim device/provider smoke results that were not run.
 
 
 
-## W8-009 implementation handoff
+## W8-009 accepted
 
-W8-009 bounded typed event ledger, redacted deterministic JSON manifest, fixed
-ZIP entries and single-worker on-demand generation are committed to main.
-No arbitrary log/exception/media/project path content is included; event data
-are strict enums and numeric counts only. Output ZIP is size-capped, atomically
-published without overwriting existing files, with cancellation/failure gates.
-Eleven new tests and a strict owned proof runner are committed.
-**Gate: IN_VERIFICATION, NOT PASS** until Windows CI/full regression closes.
-**Do not implement W8-010** within this turn.
+- W8-009 accepted code/regression HEAD: `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+- Windows W8-009 run: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37730435314 — SUCCESS.
+- Artifact `ANG-S11-W8-009-Redacted-Diagnostics` ID `11529353867`;
+  ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+- **11/11** targeted tests, **482/482** full Python suite, **18/18**
+  owned redaction evidence checks PASS.
+- Ruff, mypy **84 files**, import architecture/security,
+  source-of-truth **70/70**, frozen UI SHA **42/42** PASS.
+- **27/27** same-code-HEAD regression workflows SUCCESS, all attempt 1;
+  Windows portable, UI shell, media, E2E regressions PASS.
+- Deterministic 128KiB bounded ZIP with only manifest.json/events.json;
+  excludes project paths, contents, media, exception text and credentials.
+- No canonical state/schema changes or frozen UI redesign.
+
+W8-010 READY only on owner's next explicit `lanjutkan`.

@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — W8-007 PASS — W8-008 PASS — NEXT W8-009**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — W8-007 PASS — W8-008 PASS — NEXT W8-010**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -63,11 +63,22 @@ artifact ID `11529365791`. See
 **Next:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic
 Bundle — READY. W8-010 remains blocked. UI-001..042 frozen; AAVC read-only.
 
-## W8-009 — Structured Diagnostics + Redacted ZIP
+## W8-009 Redacted Diagnostics — PASS
 
-Implementation in verification. An on-demand background worker generates a
-bounded deterministic ZIP containing exactly a validated manifest and sanitized
-enum/count diagnostic events. No project IDs, file paths, raw messages,
-credentials or media content are exported by default. The separate Windows
-qualification and full regression must pass before W8-009 is accepted.
-W8-010 UI-039/040/041 wiring remains blocked.
+- W8-009 accepted code/regression HEAD: `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+- Windows W8-009 run: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37730435314 — SUCCESS.
+- Artifact `ANG-S11-W8-009-Redacted-Diagnostics` ID `11529353867`;
+  ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+- **11/11** targeted tests, **482/482** full Python suite, **18/18**
+  owned redaction evidence checks PASS.
+- Ruff, mypy **84 files**, import architecture/security,
+  source-of-truth **70/70**, frozen UI SHA **42/42** PASS.
+- **27/27** same-code-HEAD regression workflows SUCCESS, all attempt 1;
+  Windows portable, UI shell, media, E2E regressions PASS.
+- Deterministic 128KiB bounded ZIP with only manifest.json/events.json;
+  excludes project paths, contents, media, exception text and credentials.
+- No canonical state/schema changes or frozen UI redesign.
+
+Evidence: `docs/evidence/features/S11_W8_009_DIAGNOSTIC_BUNDLE.md`.
+
+**Next:** SOL S11-W8-010 only. UI frozen; AAVC unchanged.

@@ -2,11 +2,11 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..008 PASS / W8-009 IN_VERIFICATION**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..009 PASS / W8-010 READY**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
-**Last completed task:** **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS**  
+**Last completed task:** **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
 ## W8-003 proven
@@ -132,9 +132,24 @@ W8-010 remains serial-blocked. W5 physical microphone and W6/W7 live Gemini
 tests remain provisional; no physical/provider smoke success is invented.
 No W8-009 implementation was started during W8-008 closure.
 
-## W8-009 implementation qualification pending
+## W8-009 accepted
 
-Strict structured opt-in diagnostic ledger, bounded redacted deterministic
-manifest/ZIP, safe background cancellation and typed errors are committed;
-Windows tests and full regression are pending. No raw media, user content,
-project paths, raw exceptions or credentials are in archive. W8-010 BLOCKED.
+- W8-009 accepted code/regression HEAD: `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+- Windows W8-009 run: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37730435314 — SUCCESS.
+- Artifact `ANG-S11-W8-009-Redacted-Diagnostics` ID `11529353867`;
+  ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+- **11/11** targeted tests, **482/482** full Python suite, **18/18**
+  owned redaction evidence checks PASS.
+- Ruff, mypy **84 files**, import architecture/security,
+  source-of-truth **70/70**, frozen UI SHA **42/42** PASS.
+- **27/27** same-code-HEAD regression workflows SUCCESS, all attempt 1;
+  Windows portable, UI shell, media, E2E regressions PASS.
+- Deterministic 128KiB bounded ZIP with only manifest.json/events.json;
+  excludes project paths, contents, media, exception text and credentials.
+- No canonical state/schema changes or frozen UI redesign.
+
+## Exact next action
+
+**S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure +
+Regression Lock — READY.** W8-010 code was not started in W8-009.
+W5 physical microphone and W6/W7 live Gemini remain provisional.
