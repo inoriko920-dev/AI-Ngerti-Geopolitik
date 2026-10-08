@@ -8,7 +8,10 @@ from pathlib import Path
 import pytest
 
 from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
-from ai_ngerti_geopolitik.application.export_preflight import ExportPreflightCode, ExportPreflightService
+from ai_ngerti_geopolitik.application.export_preflight import (
+    ExportPreflightCode,
+    ExportPreflightService,
+)
 from ai_ngerti_geopolitik.application.export_profiles import (
     T06_CANDIDATE_PROFILES,
     MatrixCell,
@@ -27,7 +30,9 @@ from ai_ngerti_geopolitik.application.validation import (
 )
 from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, ProjectState, Track
 from ai_ngerti_geopolitik.infrastructure.export_output_inspector import LocalExportOutputInspector
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_export_profiles import FfmpegMatrixQualificationExporter
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_export_profiles import (
+    FfmpegMatrixQualificationExporter,
+)
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
     FfmpegSliceMediaEngine,
     MediaOperationCancelled,
@@ -241,9 +246,7 @@ def test_mismatched_native_probe_is_never_published(
 
 
 @pytest.mark.parametrize("bad_step", [1, 2])
-def test_transcode_error_does_not_leave_partial_or_final(
-    tmp_path: Path, bad_step: int
-) -> None:
+def test_transcode_error_does_not_leave_partial_or_final(tmp_path: Path, bad_step: int) -> None:
     state, request = _case(tmp_path, cell=MatrixCell.H264_1440P30)
     runner = FakeRunner(fail_step=bad_step)
     with pytest.raises(MediaToolError):

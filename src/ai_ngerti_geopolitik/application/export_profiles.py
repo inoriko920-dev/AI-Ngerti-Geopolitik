@@ -30,10 +30,10 @@ class MatrixProfile:
     expected_decoder: str
 
     def matches(self, request: ExportRequest) -> bool:
-        return (
-            request.codec is self.codec
-            and (request.width, request.height, request.fps)
-            == (self.width, self.height, self.fps)
+        return request.codec is self.codec and (request.width, request.height, request.fps) == (
+            self.width,
+            self.height,
+            self.fps,
         )
 
 

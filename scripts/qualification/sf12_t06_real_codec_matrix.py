@@ -13,8 +13,13 @@ from ai_ngerti_geopolitik.application.export_request import ExportRequest
 from ai_ngerti_geopolitik.application.vertical_slice import VerticalSliceSession
 from ai_ngerti_geopolitik.infrastructure.export_capability_probe import detect_export_toolchain
 from ai_ngerti_geopolitik.infrastructure.export_output_inspector import LocalExportOutputInspector
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_export_profiles import FfmpegMatrixQualificationExporter
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfmpegSliceMediaEngine, FfprobeMediaProbe
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_export_profiles import (
+    FfmpegMatrixQualificationExporter,
+)
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
+    FfmpegSliceMediaEngine,
+    FfprobeMediaProbe,
+)
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 

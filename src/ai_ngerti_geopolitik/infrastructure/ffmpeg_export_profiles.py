@@ -141,14 +141,8 @@ class FfmpegMatrixQualificationExporter:
                 raise ValueError("empty")
             info = self.engine.probe.raw_probe(path)
             streams = info["streams"]
-            video = [
-                s for s in streams
-                if isinstance(s, dict) and s.get("codec_type") == "video"
-            ]
-            audio = [
-                s for s in streams
-                if isinstance(s, dict) and s.get("codec_type") == "audio"
-            ]
+            video = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "video"]
+            audio = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "audio"]
             if len(video) != 1 or len(audio) != 1:
                 raise ValueError("stream count")
             stream = video[0]

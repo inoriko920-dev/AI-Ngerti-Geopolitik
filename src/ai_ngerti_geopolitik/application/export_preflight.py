@@ -156,10 +156,11 @@ class ExportPreflightService:
         # 4K, FPS conversions, sharpen or selection rendering.
         if request.scope is ExportScope.SELECTION and not selection_qualified:
             add(ExportPreflightCode.SELECTION_NOT_QUALIFIED)
-        baseline = (
-            request.codec is ExportCodec.H264
-            and (request.width, request.height, request.fps) == (1920, 1080, 30)
-        )
+        baseline = request.codec is ExportCodec.H264 and (
+            request.width,
+            request.height,
+            request.fps,
+        ) == (1920, 1080, 30)
         qualified_matrix_candidate = (
             matrix_candidate is not None
             and type(matrix_candidate) is MatrixProfile
