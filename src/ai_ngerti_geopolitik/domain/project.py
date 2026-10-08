@@ -480,7 +480,9 @@ class ProjectState:
                 asset = self.asset(clip.asset_id)
                 if asset.media_type == "image":
                     if clip.image_hold_frames is None:
-                        raise DomainValidationError("image timeline requires explicit HOLD duration")
+                        raise DomainValidationError(
+                            "image timeline requires explicit HOLD duration"
+                        )
                     if (
                         clip.source_in.frames != 0
                         or clip.source_out.frames != 1
