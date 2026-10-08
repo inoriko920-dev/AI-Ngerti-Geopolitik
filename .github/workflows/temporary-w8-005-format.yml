@@ -1,0 +1,33 @@
+name: Temporary W8-005 Ruff Formatting
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/temporary-w8-005-format.yml"
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Pin Ruff exactly as repo
+        run: python -m pip install ruff==0.16.10
+      - name: Scoped fix and formatting
+        run: |
+          ruff check --fix src/ai_ngerti_geopolitik/application/autosave_catalog.py src/ai_ngerti_geopolitik/application/project_session.py tests/unit/test_step11_w8_005_autosave_catalog.py scripts/run_step11_w8_005.py scripts/verify/verify_step11_w8_005_evidence.py || true
+          ruff format src/ai_ngerti_geopolitik/application/autosave_catalog.py src/ai_ngerti_geopolitik/application/project_session.py tests/unit/test_step11_w8_005_autosave_catalog.py scripts/run_step11_w8_005.py scripts/verify/verify_step11_w8_005_evidence.py
+          ruff format --check .
+      - name: Commit formatted code and remove temporary action
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ai_ngerti_geopolitik/application/autosave_catalog.py src/ai_ngerti_geopolitik/application/project_session.py tests/unit/test_step11_w8_005_autosave_catalog.py scripts/run_step11_w8_005.py scripts/verify/verify_step11_w8_005_evidence.py
+          git rm .github/workflows/temporary-w8-005-format.yml
+          git commit -m "style: format W8-005 catalog and remove temporary formatter"
+          git push origin HEAD:main
