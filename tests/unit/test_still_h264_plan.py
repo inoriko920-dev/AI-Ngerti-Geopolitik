@@ -76,9 +76,10 @@ def test_exact_h264_plan_without_file_write_or_process(tmp_path: Path, capsys) -
     assert "-n" in args
     assert not output.exists()
     assert project.read_bytes() == before
-    assert verify_cli(
-        ["--project", str(project), "--frames", str(root), "--plan-mp4", str(output)]
-    ) == 0
+    assert (
+        verify_cli(["--project", str(project), "--frames", str(root), "--plan-mp4", str(output)])
+        == 0
+    )
     stdout = capsys.readouterr().out
     assert "DRY RUN" in stdout
     assert "belum dijalankan" in stdout
@@ -117,10 +118,19 @@ def test_deleted_frame_blocks_plan_and_cli(tmp_path: Path, capsys) -> None:
     (root / "batch_000002_000004" / "frame_000003.png").unlink()
     with pytest.raises(SilentH264PlanError):
         plan_silent_h264_mp4(state, root, tmp_path / "output.mp4")
-    assert verify_cli(
-        ["--project", str(project), "--frames", str(root), "--plan-mp4",
-         str(tmp_path / "output.mp4")]
-    ) == 1
+    assert (
+        verify_cli(
+            [
+                "--project",
+                str(project),
+                "--frames",
+                str(root),
+                "--plan-mp4",
+                str(tmp_path / "output.mp4"),
+            ]
+        )
+        == 1
+    )
     assert "GAGAL" in capsys.readouterr().err
 
 
