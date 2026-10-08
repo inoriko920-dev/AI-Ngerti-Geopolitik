@@ -119,6 +119,7 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                 active[track.track_id] = (clip, asset)
     if "V1" not in active:
         raise StillFramePreviewError("image timeline contains a gap")
+    placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
         placements = ((active["V1"][1], QRect(0, 0, width, height)),)
     elif len(active) == 2 and "V2" in active:
