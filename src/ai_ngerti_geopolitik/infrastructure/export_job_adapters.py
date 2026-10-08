@@ -92,7 +92,8 @@ class QualifiedStagedRender:
         staged_request = replace(request, output_path=stage_path)
         if selection:
             return self.engine.export_h264_selection(
-                state, staged_request,
+                state,
+                staged_request,
                 session_id=request.session_id,
                 media_inspector=self.inspector,
                 target_inspector=self.targets,
@@ -102,7 +103,8 @@ class QualifiedStagedRender:
             )
         if not plain and matrix is not None and style is None:
             return FfmpegMatrixQualificationExporter(self.engine).export(
-                state, staged_request,
+                state,
+                staged_request,
                 session_id=request.session_id,
                 media_inspector=self.inspector,
                 target_inspector=self.targets,
@@ -112,7 +114,8 @@ class QualifiedStagedRender:
             )
         if not plain and style is not None:
             return FfmpegStyleQualificationExporter(self.engine).export(
-                state, staged_request,
+                state,
+                staged_request,
                 session_id=request.session_id,
                 media_inspector=self.inspector,
                 target_inspector=self.targets,
@@ -122,7 +125,8 @@ class QualifiedStagedRender:
             )
         if plain:
             return self.engine.export_h264_baseline(
-                state, staged_request,
+                state,
+                staged_request,
                 session_id=request.session_id,
                 media_inspector=self.inspector,
                 target_inspector=self.targets,
