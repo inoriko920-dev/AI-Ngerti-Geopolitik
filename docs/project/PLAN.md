@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..008 PASS / W8-009 READY  
+**Status:** CONTRACT_LOCKED / W8-001..009 PASS / W8-010 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -38,8 +38,8 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **PASS**
 8. W8-008 Stale Result Hardening — **PASS**
-9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **IN_VERIFICATION**
-10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
+9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **PASS**
+10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **READY**
 
 ## W8-004 accepted
 
@@ -90,8 +90,14 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 On owner's explicit `lanjutkan`, **SOL W8-009 only**. W8-010 remains blocked.
 
-## W8-009 QA gate
+## W8-009 accepted
 
-Structured event ledger + bounded safe ZIP with deterministic manifest and
-background worker implemented. Windows quality, redaction proof and same-HEAD
-regression acceptance pending. W8-010 BLOCKED.
+W8-009 accepted code HEAD `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+Windows `37730435314` SUCCESS, artifact `11529353867`,
+ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+Targeted **11/11**, full pytest **482/482**, evidence **18/18**,
+frozen UI **42/42**, same-HEAD regression **27/27 SUCCESS**, all attempt 1.
+Deterministic 128KiB max redacted ZIP contains fixed manifest/events only.
+No raw paths, private content, credentials or media bytes.
+
+**Next:** On owner's next `lanjutkan`, SOL W8-010 only, no STEP 12.

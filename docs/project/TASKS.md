@@ -827,8 +827,8 @@ Serial contract:
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
 - [x] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**
 - [x] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS**
-- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION**
-- [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
+- [x] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS**
+- [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — READY**
 
 Locked boundaries:
 - build on existing ProjectState/CommandBus/ProjectSession/JsonProjectRepository;
@@ -1011,7 +1011,14 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 **Exact next task:** SOL S11-W8-009 Structured Diagnostics +
 Redacted Diagnostic Bundle ONLY. W8-010 remains serial-blocked.
 
-**W8-009 IN_VERIFICATION:** strict enums/numbers-only bounded events,
-deterministic manifest and 128KiB max on-demand ZIP, non-blocking worker and
-safe cancellation; tests for secrets/path/text exclusion, no overwrites and
-ZIP byte reproducibility. Windows CI and regression pending. W8-010 BLOCKED.
+**W8-009 PASS**
+
+W8-009 accepted code HEAD `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+Windows `37730435314` SUCCESS, artifact `11529353867`,
+ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+Targeted **11/11**, full pytest **482/482**, evidence **18/18**,
+frozen UI **42/42**, same-HEAD regression **27/27 SUCCESS**, all attempt 1.
+Deterministic 128KiB max redacted ZIP contains fixed manifest/events only.
+No raw paths, private content, credentials or media bytes.
+
+**Exact next task:** SOL S11-W8-010 only. UI-001..042 must remain frozen.

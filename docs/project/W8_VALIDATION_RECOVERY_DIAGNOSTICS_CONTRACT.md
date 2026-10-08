@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 PASS / W8-009 READY / W8-010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 PASS / W8-009 PASS / W8-010 READY  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -110,8 +110,8 @@ No new UI image-generation gate:
 - W8-006 — Crash Marker + Startup Recovery Decision — PASS
 - W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — PASS
-- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION
-- W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009
+- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — PASS
+- W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — READY
 
 ## Exact next action
 
@@ -229,8 +229,14 @@ SOL S11-W8-007 only. W8-008 remains blocked. No unapproved UI redesign.
 
 **SOL S11-W8-009 only**. W8-010 remains blocked.
 
-## W8-009 bounded diagnostic ZIP implementation
+## W8-009 accepted
 
-Strict allowlist event codes/status/stages/counts, no content/media/paths/IDs,
-fixed manifest/events ZIP, 128KiB cap, cancellable async worker, typed failures.
-Windows qualification pending. W8-010 remains BLOCKED.
+W8-009 accepted code HEAD `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+Windows `37730435314` SUCCESS, artifact `11529353867`,
+ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+Targeted **11/11**, full pytest **482/482**, evidence **18/18**,
+frozen UI **42/42**, same-HEAD regression **27/27 SUCCESS**, all attempt 1.
+Deterministic 128KiB max redacted ZIP contains fixed manifest/events only.
+No raw paths, private content, credentials or media bytes.
+
+**Next:** SOL S11-W8-010 only, after owner's `lanjutkan`.
