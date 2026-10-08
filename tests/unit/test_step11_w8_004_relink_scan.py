@@ -193,7 +193,7 @@ def test_two_selections_commit_once_and_undo_once(tmp_path: Path) -> None:
     with RelinkScanJobService(LocalRelinkDirectoryScanner(), probe) as service:
         job = service.submit(session.state, tmp_path, session_id="S001")
         result = await_finished(service, job.job_id, session.state)
-        assert len(result.candidates) == 2
+        assert len([item for item in result.candidates if item.fingerprint_verified]) == 2
         approved = service.apply_selected(
             job.job_id,
             session,
