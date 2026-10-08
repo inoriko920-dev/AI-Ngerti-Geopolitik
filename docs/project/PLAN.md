@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..007 PASS / W8-008 READY  
+**Status:** CONTRACT_LOCKED / W8-001..008 PASS / W8-009 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -37,8 +37,8 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
 6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **PASS**
-8. W8-008 Stale Result Hardening — **READY**
-9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
+8. W8-008 Stale Result Hardening — **PASS**
+9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **READY**
 10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
 
 ## W8-004 accepted
@@ -78,6 +78,14 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - Typed `PersistenceError` stages and an actionable, redacted Indonesian
   failure projection qualified. W8-008 not implemented.
 
+## Accepted W8-008
+
+- Code/regression HEAD: `6c35b70bd9122664473a69eff6635ed9b71da5cb`.
+- Windows workflow `37728798520` SUCCESS, artifact `11529365791`.
+- 12/12 targeted, 471/471 full pytest, 18/18 evidence, 27/27
+  regression workflow families SUCCESS, all first attempt.
+- No UI redesign, canonical schema change, or second ProjectState store.
+
 ## Exact next action
 
-On owner's `lanjutkan`, **SOL W8-008 only**, not W8-009.
+On owner's explicit `lanjutkan`, **SOL W8-009 only**. W8-010 remains blocked.

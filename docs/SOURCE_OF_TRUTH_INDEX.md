@@ -160,8 +160,9 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
 - W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
-- W8-008 Stale Result Hardening for W8 Background Jobs: **IN_VERIFICATION**, not PASS.
-- W8-009..W8-010: **SERIAL_BLOCKED**.
+- W8-008 Stale Result Hardening for W8 Background Jobs: **PASS**.
+- W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **READY**.
+- W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -186,7 +187,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-007 accepted HEAD `130407dc728b6417c30dbbc935ecd9b04d37ba43`, workflow `37727525574` SUCCESS;
 - W8-007 targeted 15/15, full pytest 459/459, evidence 19/19, regression 28/28 PASS;
 - W8-007 artifact `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`;
-- exact next action: **SOL S11-W8-008 Stale Result Hardening for W8 Background Jobs ONLY**.
+- W8-008 accepted code HEAD `6c35b70bd9122664473a69eff6635ed9b71da5cb`, Windows `37728798520` SUCCESS;
+- W8-008 targeted 12/12, full pytest 471/471, evidence 18/18, regression 27/27 PASS;
+- W8-008 evidence `docs/evidence/features/S11_W8_008_STALE_JOBS.md`;
+- exact next action: **SOL S11-W8-009 Structured Diagnostics + Redacted Diagnostic Bundle ONLY**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
 
@@ -198,5 +202,6 @@ W8-007 accepted PASS: full same-HEAD 28/28 regression, real
 fault-injection evidence and typed safe error projection. W8-008 READY;
 W8-009 BLOCKED.
 
-W8-008 code/tests/evidence committed; QA pending. Read
-`docs/evidence/features/S11_W8_008_STALE_JOBS.md`. W8-009 remains blocked.
+W8-008 accepted PASS at `6c35b70bd9122664473a69eff6635ed9b71da5cb` with source-safe stale/cancel evidence,
+27/27 same-HEAD regression and no W8-009 implementation.
+W8-009 READY; W8-010 BLOCKED.

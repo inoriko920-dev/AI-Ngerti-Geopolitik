@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 READY / W8-009..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004..005 PASS / W8-006 PASS / W8-007 PASS / W8-008 PASS / W8-009 READY / W8-010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -109,8 +109,8 @@ No new UI image-generation gate:
 - W8-005 — Autosave Catalog + Retention Hardening — PASS
 - W8-006 — Crash Marker + Startup Recovery Decision — PASS
 - W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
-- W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — READY
-- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008
+- W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — PASS
+- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY
 - W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009
 
 ## Exact next action
@@ -217,6 +217,14 @@ SOL S11-W8-007 only. W8-008 remains blocked. No unapproved UI redesign.
 - Typed `PersistenceError` stages and an actionable, redacted Indonesian
   failure projection qualified. W8-008 not implemented.
 
+## Accepted W8-008
+
+- Code HEAD `6c35b70bd9122664473a69eff6635ed9b71da5cb`; Windows `37728798520` SUCCESS.
+- 12/12 targeted, 471/471 full pytest, 18/18 evidence, 27/27
+  same-HEAD workflow regressions SUCCESS.
+- Exact project/session/revision/hash guarding and cancellation safe,
+  with no automatic canonical mutation or duplicate history.
+
 ## Next
 
-**SOL S11-W8-008 only**. W8-009 remains blocked.
+**SOL S11-W8-009 only**. W8-010 remains blocked.
