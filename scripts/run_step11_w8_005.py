@@ -29,16 +29,14 @@ def main() -> int:
     folder = root / "snapshots"
     folder.mkdir(exist_ok=True)
     legacy = folder / (
-        f"{base.project_id}.r{base.revision:06d}."
-        f"{base.semantic_hash()[:12]}.autosave.angproj"
+        f"{base.project_id}.r{base.revision:06d}.{base.semantic_hash()[:12]}.autosave.angproj"
     )
     repo.save_snapshot(base, legacy)
     invalid = folder / f"P-W8-005.r000100.{'f' * 12}.autosave.angproj"
     invalid.write_text("{ invalid", encoding="utf-8")
     foreign_state = ProjectState.create("P-FOREIGN", "Other", 30)
     foreign = folder / (
-        f"{foreign_state.project_id}.r000000."
-        f"{foreign_state.semantic_hash()[:12]}.autosave.angproj"
+        f"{foreign_state.project_id}.r000000.{foreign_state.semantic_hash()[:12]}.autosave.angproj"
     )
     repo.save_snapshot(foreign_state, foreign)
     newest: Path | None = None
@@ -61,7 +59,8 @@ def main() -> int:
         "backup_unchanged": backup.read_bytes() == backup_bytes,
         "newest_valid": newest in (item.path for item in catalog.recoverable),
         "legacy_compatible": repo.load(legacy).project_id == base.project_id
-        if legacy.is_file() else True,
+        if legacy.is_file()
+        else True,
         "no_crash_recovery_started": True,
     }
     path = root / "00_w8_005_report.json"

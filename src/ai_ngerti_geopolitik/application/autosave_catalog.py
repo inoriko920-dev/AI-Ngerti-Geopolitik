@@ -67,9 +67,7 @@ def _sha256(path: Path) -> str:
 class AutosaveCatalogService:
     """Managed extension of the existing ProjectRepositoryPort snapshot writer."""
 
-    def __init__(
-        self, repository: ProjectRepositoryPort, *, retention_limit: int = 20
-    ) -> None:
+    def __init__(self, repository: ProjectRepositoryPort, *, retention_limit: int = 20) -> None:
         if not 1 <= retention_limit <= 20:
             raise ValueError("managed autosave retention must be between 1 and 20")
         self.repository = repository
@@ -195,7 +193,5 @@ class AutosaveCatalogService:
         catalog = self.inspect(folder, state.project_id)
         if not any(entry.path == target for entry in catalog.recoverable):
             raise AutosaveCatalogError("written snapshot failed catalog validation")
-        self.enforce_retention(
-            folder, state.project_id, source_path=source_path, protect=target
-        )
+        self.enforce_retention(folder, state.project_id, source_path=source_path, protect=target)
         return target

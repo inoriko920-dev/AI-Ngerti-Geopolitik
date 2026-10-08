@@ -10,8 +10,12 @@ def main() -> int:
     root = Path("artifacts/step11/w8-005/evidence")
     report = json.loads((root / "00_w8_005_report.json").read_text(encoding="utf-8"))
     required = (
-        "invalid_isolated", "foreign_untouched", "source_unchanged",
-        "backup_unchanged", "newest_valid", "legacy_compatible",
+        "invalid_isolated",
+        "foreign_untouched",
+        "source_unchanged",
+        "backup_unchanged",
+        "newest_valid",
+        "legacy_compatible",
         "no_crash_recovery_started",
     )
     checks = [

@@ -21,12 +21,9 @@ def _project(project_id: str = "P-AUTO", revision: int = 0) -> ProjectState:
     return ProjectState.create(project_id, "Autosave fixture", 30).with_revision(revision)
 
 
-def _legacy(
-    repository: JsonProjectRepository, folder: Path, state: ProjectState
-) -> Path:
+def _legacy(repository: JsonProjectRepository, folder: Path, state: ProjectState) -> Path:
     target = folder / (
-        f"{state.project_id}.r{state.revision:06d}."
-        f"{state.semantic_hash()[:12]}.autosave.angproj"
+        f"{state.project_id}.r{state.revision:06d}.{state.semantic_hash()[:12]}.autosave.angproj"
     )
     repository.save_snapshot(state, target)
     return target
