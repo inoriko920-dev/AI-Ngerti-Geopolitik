@@ -233,3 +233,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
 - No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
 - Current-head Windows CI verification pending.
+
+
+## G-IMAGE-01 canonical image HOLD domain milestone — 2026-10-08 WIB
+
+- User's 'sesuai saranmu kerjakan' directs prioritizing the image timeline; the recommended explicit HOLD-duration approach is the limited schema decision. Implemented optional image_hold_frames on Clip and strict JSON reader; legacy video JSON retains its semantic shape, and image media source remains a single intrinsic frame. Semantic commands use HOLD for duration/trim/split; speed editing incompatible with stills is rejected. Actual editor import/preview/export remain out of this milestone. Same-head Windows CI PENDING; no main merge/FFmpeg execution/portable.

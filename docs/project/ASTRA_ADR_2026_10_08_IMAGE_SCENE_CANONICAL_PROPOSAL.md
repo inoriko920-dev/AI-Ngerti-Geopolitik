@@ -1,7 +1,7 @@
 # ASTRA ADR — Canonical image-backed Scene timeline
 
 Date: 2026-10-08 WIB
-Status: PROPOSED / NOT APPROVED / NO SOL SCHEMA OR RENDER CODING AUTHORITY
+Status: OWNER CONSENT TO RECOMMENDED IMAGE-HOLD DIRECTION (2026-10-08); DOMAIN/PERSISTENCE WAVE IN PROGRESS. NATIVE RUNNER, FROZEN UI AND MERGE NOT AUTHORIZED.
 Project: AI-Ngerti-Geopolitik, Draft PR #20
 
 ## Verified gap and guard
@@ -35,7 +35,7 @@ G. Complete targeted and full pytest, Ruff, mypy, source-of-truth/security and 4
 
 ## Review and permissions
 
-G-IMAGE-01: schema semantic change TRIGGERED under AGENTS.md and Code Constitution. This ADR is PROPOSED, not approval. No implementation of canonical image Clip/schema now.
+G-IMAGE-01: The owner responded 'sesuai saranmu kerjakan' to the recommendation to implement canonical image HOLD semantics. This authorizes the domain/persistence milestone in a Draft PR; wider playback/export, frozen UI changes and external FFmpeg Pilot A remain separate evidence/approval gates.
 G-IMAGE-02: new UI visual changes require separate approved reference.
 G-IMAGE-03: external native FFmpeg runner Pilot A D1 remains separately UNAPPROVED; accepting this ADR must not be treated as granting that permission.
 G-IMAGE-04: merge remains blocked absent owner's explicit instruction; main unchanged.
@@ -43,3 +43,8 @@ G-IMAGE-05: final portable remains last, after real functionality and licensing 
 
 If owner approves, precise statement:
 "Saya setuju ADR image-backed canonical timeline: gunakan durasi HOLD eksplisit untuk gambar pada Clip, proyek lama tetap kompatibel. ASTRA boleh mengunci kontraknya, SOL boleh implementasi domain/persistence dan pengujian di Draft PR. Jangan ubah UI, merge, jalankan FFmpeg eksternal, atau buat portable."
+
+
+## SOL domain/persistence decision wave — 2026-10-08 WIB
+
+Selected backward-compatible field: `Clip.image_hold_frames: int | None = None`. Only image assets may have positive integer image HOLD; intrinsic source_in/out stays [0,1] frame, no speed transform. Video clips must omit it, and existing JSON without the field retains the same semantic serialization/hash. Image frame-based Set Duration, Trim and Split use HOLD timing; non-100% speed is blocked for image. The MLT and FFmpeg video-only adapters remain fail-closed for still images until render/preview qualification. This limited decision does not authorize a new screen, native process or release.

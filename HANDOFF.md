@@ -244,3 +244,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
 - No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
 - Current-head Windows CI verification pending.
+
+
+## Current G-IMAGE-01 implementation handoff
+
+- Review the new Clip.image_hold_frames (None default, explicit positive int on image), ProjectState media-type guard, strict JsonProjectRepository decode and semantic legacy omission, and semantic image SetDuration/Split/Trim/Speed guards on PR #20. Require same-head Windows full suite. MLT/FFmpeg remain video-only/fail closed for image; next milestone is real canonical builder from SceneTimelineReview, saved project + scene metadata, and qualified playback/export. No UI/merge/native Pilot A.

@@ -97,6 +97,7 @@ class Clip:
     source_out: FrameTime
     enabled: bool = True
     properties: ClipProperties = ClipProperties()
+    image_hold_frames: int | None = None
 
     def __post_init__(self) -> None:
         if not self.clip_id:
@@ -108,6 +109,13 @@ class Clip:
             raise DomainValidationError("clip time values must share one FPS")
         if self.source_out.frames <= self.source_in.frames:
             raise DomainValidationError("clip source_out must be after source_in")
+        if self.image_hold_frames is not None:
+            if type(self.image_hold_frames) is not int or not (
+                0 < self.image_hold_frames <= 86400 * self.timeline_start.fps
+            ):
+                raise DomainValidationError("image HOLD duration is invalid")
+            if self.properties.speed.rate_percent != 100:
+                raise DomainValidationError("image HOLD clips require 100 percent speed")
 
     @property
     def source_duration_frames(self) -> int:
@@ -115,6 +123,8 @@ class Clip:
 
     @property
     def duration_frames(self) -> int:
+        if self.image_hold_frames is not None:
+            return self.image_hold_frames
         rate = self.properties.speed.rate_percent
         return max(1, (self.source_duration_frames * 100 + rate - 1) // rate)
 
@@ -468,8 +478,20 @@ class ProjectState:
                 if clip.timeline_start.fps != self.fps:
                     raise DomainValidationError("clip FPS must match project FPS")
                 asset = self.asset(clip.asset_id)
-                if asset.media_type != "video":
-                    raise DomainValidationError("video timeline clips must reference video assets")
+                if asset.media_type == "image":
+                    if clip.image_hold_frames is None:
+                        raise DomainValidationError("image timeline requires explicit HOLD duration")
+                    if (
+                        clip.source_in.frames != 0
+                        or clip.source_out.frames != 1
+                        or asset.duration.frames != 1
+                    ):
+                        raise DomainValidationError("image source must be intrinsic one frame")
+                elif asset.media_type == "video":
+                    if clip.image_hold_frames is not None:
+                        raise DomainValidationError("video clips cannot use image HOLD duration")
+                else:
+                    raise DomainValidationError("visual timeline clips require visual assets")
                 if clip.source_out.frames > asset.duration.frames:
                     raise DomainValidationError("clip exceeds asset duration")
                 if clip.timeline_start.frames < last_end:
@@ -536,6 +558,12 @@ class ProjectState:
 
     def semantic_dict(self, *, include_revision: bool = False) -> dict[str, object]:
         data = asdict(self)
+        # Optional image HOLD is absent from legacy video JSON, preserving the
+        # exact old schema-v1 semantic hash and persistence serialization.
+        for track in data["tracks"]:
+            for clip in track["clips"]:
+                if clip["image_hold_frames"] is None:
+                    del clip["image_hold_frames"]
         if not include_revision:
             data.pop("revision", None)
         return data

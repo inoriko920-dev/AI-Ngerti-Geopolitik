@@ -185,6 +185,7 @@ class JsonProjectRepository:
                     ),
                     enabled=_strict_json_bool(clip.get("enabled", True)),
                     properties=self._decode_clip_properties(clip.get("properties")),
+                    image_hold_frames=self._decode_image_hold_frames(clip),
                 )
                 for clip in item.get("clips", [])
             )
@@ -227,6 +228,15 @@ class JsonProjectRepository:
         )
         state.validate()
         return state
+
+    @staticmethod
+    def _decode_image_hold_frames(raw: dict[str, Any]) -> int | None:
+        hold = raw.get("image_hold_frames")
+        if hold is None:
+            return None
+        if type(hold) is not int or hold <= 0:
+            raise ValueError("image HOLD duration must be a positive integer")
+        return hold
 
     @staticmethod
     def _decode_subtitle(raw: object, fps: int) -> SubtitleTrack | None:
