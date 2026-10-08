@@ -29,7 +29,9 @@ from ai_ngerti_geopolitik.infrastructure.synthetic_process_qualification import 
 def test_both_streams_drain_without_deadlock(fixture: SyntheticFixture) -> None:
     result = run_synthetic_fixture(
         fixture,
-        NativeProcessPolicy(timeout_seconds=8, max_stdout_bytes=1_048_576, max_stderr_bytes=1_048_576),
+        NativeProcessPolicy(
+            timeout_seconds=8, max_stdout_bytes=1_048_576, max_stderr_bytes=1_048_576
+        ),
     )
     assert result.status is NativeProcessStatus.OUTPUT_LIMIT
     assert result.issue is NativeIssueCode.OUTPUT_TOO_LARGE
@@ -62,7 +64,9 @@ def test_stalled_child_hits_monotonic_timeout_and_terminates() -> None:
 def test_cancellation_before_launch_and_during_execution() -> None:
     event = threading.Event()
     event.set()
-    before = run_synthetic_fixture(SyntheticFixture.STALL, NativeProcessPolicy(), cancellation=event)
+    before = run_synthetic_fixture(
+        SyntheticFixture.STALL, NativeProcessPolicy(), cancellation=event
+    )
     assert before.status is NativeProcessStatus.CANCELLED
     assert before.duration_ms == 0
     event.clear()
