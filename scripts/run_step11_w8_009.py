@@ -100,8 +100,7 @@ def main() -> int:
         "path_absent": private_path.encode() not in payload,
         "project_identity_absent": b"asset-ref-" not in payload,
         "no_media_bytes": not any(
-            name.endswith((".mp4", ".wav", ".angproj", ".txt"))
-            for name in names
+            name.endswith((".mp4", ".wav", ".angproj", ".txt")) for name in names
         ),
         "no_full_issue_content": b"Missing media" not in payload,
         "bounded_zip": len(payload) < 128 * 1024,

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import threading
 import time
 import zipfile
 from pathlib import Path
@@ -151,9 +150,7 @@ class PausedWriter:
         self.started = Event()
         self.release = Event()
 
-    def write_bundle(
-        self, target: Path, *, manifest: bytes, events: bytes, cancel: Event
-    ) -> None:
+    def write_bundle(self, target: Path, *, manifest: bytes, events: bytes, cancel: Event) -> None:
         self.started.set()
         self.release.wait(timeout=5)
         LocalDiagnosticZipWriter().write_bundle(
@@ -211,8 +208,12 @@ def test_output_write_failure_leaves_no_archive_or_owned_temp(
     original = LocalDiagnosticZipWriter.write_bundle
 
     def broken(
-        self: LocalDiagnosticZipWriter, target: Path,
-        *, manifest: bytes, events: bytes, cancel: Event
+        self: LocalDiagnosticZipWriter,
+        target: Path,
+        *,
+        manifest: bytes,
+        events: bytes,
+        cancel: Event,
     ) -> None:
         raise OSError("private C:\\Users\\owner\\api-key.txt")
 
@@ -247,10 +248,11 @@ def test_unknown_job_is_typed(tmp_path: Path) -> None:
 def test_bad_snapshot_schema_rejected() -> None:
     log = DiagnosticLedger()
     bad = log.record(DiagnosticCode.PROJECT_OPEN, DiagnosticStatus.INFO)
+    from dataclasses import replace
+
     from ai_ngerti_geopolitik.application.diagnostics import (
         DiagnosticSnapshot,
     )
-    from dataclasses import replace
 
     with pytest.raises(DiagnosticError):
         safe_bundle_payload(DiagnosticSnapshot((replace(bad, sequence=-1),), 0))

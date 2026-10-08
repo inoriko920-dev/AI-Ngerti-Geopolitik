@@ -12,11 +12,20 @@ def main() -> int:
     root = Path("artifacts/step11/w8-009/evidence")
     report = json.loads((root / "00_w8_009_report.json").read_text(encoding="utf-8"))
     required = (
-        "deterministic_zip", "fixed_entries_only", "manifest_sha_matches",
-        "manifest_event_count", "dropped_event_count", "strict_allowlist",
-        "secret_absent", "path_absent", "project_identity_absent",
-        "no_media_bytes", "no_full_issue_content", "bounded_zip",
-        "typed_failure_stage", "no_w8_010_started",
+        "deterministic_zip",
+        "fixed_entries_only",
+        "manifest_sha_matches",
+        "manifest_event_count",
+        "dropped_event_count",
+        "strict_allowlist",
+        "secret_absent",
+        "path_absent",
+        "project_identity_absent",
+        "no_media_bytes",
+        "no_full_issue_content",
+        "bounded_zip",
+        "typed_failure_stage",
+        "no_w8_010_started",
     )
     checks = [report.get("status") == "PASS"]
     checks.extend(report.get(key) is True for key in required)

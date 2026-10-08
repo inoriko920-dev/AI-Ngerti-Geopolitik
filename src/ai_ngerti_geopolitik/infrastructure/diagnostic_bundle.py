@@ -15,9 +15,7 @@ from ai_ngerti_geopolitik.application.diagnostics import DiagnosticError, Diagno
 class LocalDiagnosticZipWriter:
     MAX_ZIP_BYTES = 128 * 1024
 
-    def write_bundle(
-        self, target: Path, *, manifest: bytes, events: bytes, cancel: Event
-    ) -> None:
+    def write_bundle(self, target: Path, *, manifest: bytes, events: bytes, cancel: Event) -> None:
         if target.suffix.lower() != ".zip" or target.is_symlink():
             raise DiagnosticError(DiagnosticErrorCode.INVALID_INPUT)
         if target.exists():
@@ -41,8 +39,7 @@ class LocalDiagnosticZipWriter:
         try:
             target.parent.mkdir(parents=True, exist_ok=True)
             with tempfile.NamedTemporaryFile(
-                "wb", dir=target.parent, prefix=".ang-diagnostics-", suffix=".tmp",
-                delete=False
+                "wb", dir=target.parent, prefix=".ang-diagnostics-", suffix=".tmp", delete=False
             ) as handle:
                 temporary = Path(handle.name)
                 handle.write(payload)

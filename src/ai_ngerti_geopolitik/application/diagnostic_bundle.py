@@ -53,9 +53,9 @@ class _Job:
 
 
 def _json(data: object) -> bytes:
-    return (json.dumps(data, sort_keys=True, ensure_ascii=True, separators=(",", ":")) + "\n").encode(
-        "ascii"
-    )
+    return (
+        json.dumps(data, sort_keys=True, ensure_ascii=True, separators=(",", ":")) + "\n"
+    ).encode("ascii")
 
 
 def safe_bundle_payload(snapshot: DiagnosticSnapshot) -> tuple[bytes, bytes]:
@@ -108,9 +108,7 @@ def safe_bundle_payload(snapshot: DiagnosticSnapshot) -> tuple[bytes, bytes]:
             "redaction": "STRICT_ALLOWLIST",
             "event_count": len(items),
             "dropped_count": snapshot.dropped_count,
-            "files": [
-                {"name": "events.json", "sha256": hashlib.sha256(events).hexdigest()}
-            ],
+            "files": [{"name": "events.json", "sha256": hashlib.sha256(events).hexdigest()}],
         }
     )
     if len(events) + len(manifest) > 128 * 1024:
