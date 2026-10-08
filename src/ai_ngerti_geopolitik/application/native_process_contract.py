@@ -118,10 +118,7 @@ class NativeProcessOutcome:
         elif (
             self.status is NativeProcessStatus.FAILED
             and (self.exit_code is None or self.exit_code == 0)
-        ) or (
-            self.status is NativeProcessStatus.START_FAILED
-            and self.exit_code is not None
-        ):
+        ) or (self.status is NativeProcessStatus.START_FAILED and self.exit_code is not None):
             raise NativeProcessContractError("INVALID_NATIVE_PROCESS_EXIT_CODE")
 
     @property
