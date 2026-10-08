@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from PySide6.QtGui import QImage
@@ -140,3 +141,54 @@ def test_relative_destination_and_linked_input_is_not_qualified(tmp_path: Path) 
         plan_silent_h264_mp4(state, root, Path("relative.mp4"))
     with pytest.raises(SilentH264PlanError):
         plan_silent_h264_mp4(state, root, tmp_path / "CON.mp4")
+
+
+@pytest.mark.parametrize(
+    ("width", "height"),
+    (
+        (8194, 2),
+        (2, 8194),
+    ),
+)
+def test_plan_rejects_geometry_the_rgb24_stream_cannot_decode(
+    tmp_path: Path, width: int, height: int
+) -> None:
+    state, _, root = _fixture(tmp_path)
+    verified = plan_silent_h264_mp4(state, root, tmp_path / "accepted.mp4").verified_frames
+    unsafe = replace(verified, width=width, height=height)
+    with patch(
+        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+        return_value=unsafe,
+    ):
+        with pytest.raises(SilentH264PlanError):
+            plan_silent_h264_mp4(state, root, tmp_path / "rejected.mp4")
+    assert not (tmp_path / "rejected.mp4").exists()
+
+
+def test_plan_rejects_png_exceeding_rgb24_reader_limit(tmp_path: Path) -> None:
+    state, _, root = _fixture(tmp_path)
+    verified = plan_silent_h264_mp4(state, root, tmp_path / "accepted.mp4").verified_frames
+    oversized = replace(
+        verified,
+        frame_bytes=(128 * 1024 * 1024 + 1, *verified.frame_bytes[1:]),
+    )
+    with patch(
+        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+        return_value=oversized,
+    ):
+        with pytest.raises(SilentH264PlanError):
+            plan_silent_h264_mp4(state, root, tmp_path / "oversized.mp4")
+    assert not (tmp_path / "oversized.mp4").exists()
+
+
+def test_plan_rejects_frame_digest_count_inconsistent_with_reader(tmp_path: Path) -> None:
+    state, _, root = _fixture(tmp_path)
+    verified = plan_silent_h264_mp4(state, root, tmp_path / "accepted.mp4").verified_frames
+    invalid = replace(verified, frame_sha256=verified.frame_sha256[:-1])
+    with patch(
+        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+        return_value=invalid,
+    ):
+        with pytest.raises(SilentH264PlanError):
+            plan_silent_h264_mp4(state, root, tmp_path / "invalid.mp4")
+    assert not (tmp_path / "invalid.mp4").exists()

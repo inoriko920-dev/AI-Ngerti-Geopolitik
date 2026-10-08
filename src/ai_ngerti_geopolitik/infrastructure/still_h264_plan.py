@@ -17,6 +17,8 @@ from ai_ngerti_geopolitik.infrastructure.still_sequence_verification import (
 )
 
 _MAX_FRAME_PIXELS = 16_000_000
+_MAX_FRAME_DIMENSION = 8192
+_MAX_ENCODED_PNG_BYTES = 128 * 1024 * 1024
 _FORBIDDEN_WIN_NAME_CHARS = frozenset('<>:"/\\|?*')
 _WIN_RESERVED = frozenset(
     {"CON", "PRN", "AUX", "NUL"}
@@ -92,11 +94,21 @@ def plan_silent_h264_mp4(
             or height < 2
             or width % 2 != 0
             or height % 2 != 0
+            or width > _MAX_FRAME_DIMENSION
+            or height > _MAX_FRAME_DIMENSION
             or width * height > _MAX_FRAME_PIXELS
         ):
             raise ValueError("rawvideo/YUV420p resolution or FPS is not qualified")
-        if len(verified.frame_files) != verified.frame_count:
-            raise ValueError("verified image count differs")
+        if (
+            len(verified.frame_files) != verified.frame_count
+            or len(verified.frame_sha256) != verified.frame_count
+            or len(verified.frame_bytes) != verified.frame_count
+            or any(
+                type(count) is not int or not 0 < count <= _MAX_ENCODED_PNG_BYTES
+                for count in verified.frame_bytes
+            )
+        ):
+            raise ValueError("verified PNG sizes or frame counts exceed RGB24 limits")
         # The actual source PNGs have not been opened by an encoder. The
         # consumer must decode each PNG as packed RGB24 in exact sequence.
         argv = (
