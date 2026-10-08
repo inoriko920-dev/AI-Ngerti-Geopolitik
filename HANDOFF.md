@@ -338,3 +338,11 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - New pure application `native_process_contract.py` defines frozen `NativeProcessPolicy` (bounded timeout, stdout/stderr, polling, termination grace, argv sizes) and typed privacy-safe `NativeProcessOutcome`/status validated against existing `NativeIssueCode`. No stdout/stderr data exposed, product render permission False.
 - Evidence `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md`, Windows workflow `sol-int01b-b1-process-contract-windows.yml`, unit `test_sol_int01b_b1_process_contract.py`. **No subprocess, native execution, UI changes or FFmpeg packaging**.
 - **Owner Pilot A explicit approval remains pending.** B2 actual bounded native execution, B3 process-tree, B4 FFprobe, B5 adapter, B6 native real-media tests not started. Main unchanged, all PRs draft. Next after explicit approval: SOL INT-01B/B2 one task only.
+
+
+## SOL INT-01B/B2 — Python-only child-process prequalification 2026-10-08 WIB
+
+- Draft stacked PR **#17** on #16. Implementation SHA `7e36ccae6e1215e22608ff9e5a7eeb842f2aa55a`, Windows [37755635788](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37755635788) SUCCESS (Ruff/mypy101/full Python/architecture/no-secrets/docs70/frozen UI42).
+- `infrastructure/synthetic_process_qualification.py` runs only `sys.executable -I -c` with an owned fixed Python fixture and enumerated scenarios. Two reader threads drain stdout/stderr without storing private child text; B1 policy caps outputs, monotonic timeout, cancel Event and immediate-child terminate/kill; returns typed safe B1 outcome. Tests `test_sol_int01b_b2_synthetic_subprocess.py` PASS for stdout/stderr flooding, simultaneous pipe drain, timeout, cancel before/during, failed child redaction and bad-input rejection.
+- Evidence `docs/evidence/features/SOL_INT01B_B2_SYNTHETIC_SUBPROCESS.md`. **PASS synthetic only**; not a general FFmpeg runner, no ffprobe/codec/native child-tree proof, no wiring to T04–T09, Qt, bootstrap or MediaEnginePort. Render remains disabled, no binary bundled, main unchanged.
+- **Owner approval D1 Pilot A remains pending**, D2–D4 still unresolved. Next after explicit permission: B2 production path and B3 Windows process-tree, then B4–B6 separately. Do not claim solved deadlock of the old FfmpegProcessRunner.

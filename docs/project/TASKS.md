@@ -1208,3 +1208,12 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [ ] B3 Windows child-tree cleanup, B4 FFprobe bounded adapter, B5 FFmpeg engine wiring, B6 real native Windows smoke — NOT STARTED.
 - [ ] D2 final portable native policy, D3 LICENSE/notices, D4 production libopenshot strategy — PENDING.
 - No UI redesign, no MediaEnginePort change, no main merge or release.
+
+
+## SOL INT-01B/B2 synthetic-only prequalification — 2026-10-08 WIB
+
+- [x] Add standalone synthetic Python process harness and Windows tests: concurrent stdout/stderr draining, size cap, timeout, cancel, redacted output — PASS Windows 37755635788.
+- [x] Verify B1 type contracts, full pytest, mypy101, UI42/42 and source-of-truth70/70 on code SHA 7e36ccae6e1215e22608ff9e5a7eeb842f2aa55a — PASS.
+- [ ] Production bounded `FfmpegProcessRunner` and FFprobe integration — **NOT STARTED**. Python fixture is NOT equivalent to FFmpeg execution.
+- [ ] Windows child-tree B3, FFprobe B4, adapter B5, true external FFmpeg B6 — pending.
+- [ ] Owner D1 external FFmpeg pilot approval; D2-D4 redistribution/legal/engine decisions — still pending. Main unchanged, Draft PR #17; product Qt render remains DISABLED.

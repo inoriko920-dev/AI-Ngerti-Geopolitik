@@ -299,3 +299,10 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Code SHA `bfa20eb942ddda10d6daf9ab34b1265991356e42`; Windows CI `37754131337` SUCCESS with mypy100, frozen UI42/42, source-of-truth70/70, targeted and full pytest. Draft PR #16 stacked on PR #15; main still c9154eef.
 - Added pure `NativeProcessPolicy` and privacy-safe `NativeProcessOutcome` plus negative tests. Enforces hard caps and fail-closed typed issue/status agreement, but launches NO subprocess and cannot enable production render. Evidence `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md`.
 - D1 Pilot A approval pending. The actual FFmpeg/FFprobe bounded runner, cancellation, child process cleanup and Qt integration remain BLOCKED. D2–D4 license, native packaging and production engine unresolved.
+
+
+## SOL INT-01B/B2 synthetic child-process test harness — PASS (2026-10-08 WIB)
+
+- Only an **isolated Python subprocess fixture** added: bounded parallel stdout/stderr drain, timeout/cancel, capped byte counts, typed private-safe outcomes; fixed `sys.executable` and no arbitrary binary, codec or FFmpeg execution.
+- Windows code CI `37755635788` SUCCESS at `7e36ccae6e1215e22608ff9e5a7eeb842f2aa55a`: targeted+full pytest, Ruff, mypy101, architecture, docs70/70, frozen UI42/42 and secrets PASS.
+- Draft PR #17 on #16; **main unchanged**. Evidence `docs/evidence/features/SOL_INT01B_B2_SYNTHETIC_SUBPROCESS.md`. B2 actual external runner, B3 child tree, B4 bounded ffprobe, B5 engine adapters, B6 real FFmpeg and final GUI release all **BLOCKED**, pending explicit owner Pilot A permission/legal gates.
