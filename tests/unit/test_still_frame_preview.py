@@ -145,8 +145,14 @@ def test_cli_outputs_real_preview_png_and_refuses_overwrite(tmp_path: Path) -> N
     assert saved.pixelColor(0, 1).name() == "#00ff00"
     assert saved.pixelColor(12, 1).name() == "#0000ff"
     assert import_cli_main(args) == 1
-    invalid_args = ["preview", "--project", str(project), "--frame", "240",
-                    "--output", str(tmp_path / "outside.png")]
+    invalid_args = [
+        "preview",
+        "--project",
+        str(project),
+        "--frame",
+        "240",
+        "--output",
+        str(tmp_path / "outside.png"),
+    ]
     assert import_cli_main(invalid_args) == 1
     assert not (tmp_path / "outside.png").exists()
-
