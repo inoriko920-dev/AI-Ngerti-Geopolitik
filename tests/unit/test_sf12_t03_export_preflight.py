@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
+from ai_ngerti_geopolitik.application.export_preflight import ExportPreflightCode as Code
 from ai_ngerti_geopolitik.application.export_preflight import (
-    ExportPreflightCode as Code,
     ExportPreflightService,
     OutputTargetInspection,
 )
