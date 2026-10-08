@@ -238,3 +238,11 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## G-IMAGE-01 canonical image HOLD domain milestone — 2026-10-08 WIB
 
 - User's 'sesuai saranmu kerjakan' directs prioritizing the image timeline; the recommended explicit HOLD-duration approach is the limited schema decision. Implemented optional image_hold_frames on Clip and strict JSON reader; legacy video JSON retains its semantic shape, and image media source remains a single intrinsic frame. Semantic commands use HOLD for duration/trim/split; speed editing incompatible with stills is rejected. Actual editor import/preview/export remain out of this milestone. Same-head Windows CI PENDING; no main merge/FFmpeg execution/portable.
+
+
+## Scene-to-Project milestone — 2026-10-08 WIB
+
+- Limited owner go-ahead for image HOLD semantics; optional Clip.image_hold_frames is now in ProjectState and strict JSON persistence, with unchanged legacy video serialization. Canonical Set Duration/Split/Trim and undo/redo honor still-image hold; speed change on stills is blocked.
+- SceneTimelineReview + VerifiedSceneImageSet now yields a genuine canonical image-backed ProjectState through one CommandBatch: Axxx image assets, SINGLE (V1) and DOUBLE simultaneous (V1/V2) clips, exact frame holds and scene note/context markers.
+- JsonProjectRepository successfully saves and reloads the result as .angproj in an automated Windows end-to-end unit integration. PASS on commit f6bfd1ae8472bed6f3823a07342d09e08b2329dd, Windows CI #37791083403 (full pytest and targeted tests, Ruff/mypy/architecture/source-of-truth/42 UI checks).
+- This builder remains at the application/test level: GUI UI-003 has NO approved explicit timing/review/save integration; no Save-time re-scan/atomic activation wired; MLT/FFmpeg still does not play/render image projects. Do not imply shipping or rendered MP4. Native FFmpeg Pilot A D1 still needs separate explicit approval; main unchanged, PR #20 Draft, Windows portable last.

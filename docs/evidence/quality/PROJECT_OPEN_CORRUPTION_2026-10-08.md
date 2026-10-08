@@ -166,3 +166,11 @@ timeline, effect locks, audio mute state or captions when reopened.
 - ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
 - No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
 - Current-head Windows CI verification pending.
+
+
+## Canonical still-image HOLD and real project persistence — Verified 2026-10-08 WIB
+
+- Existing schema-v1 project video semantic serialization kept unchanged with optional image HOLD field. A still keeps its intrinsic one-frame image source and separately holds a positive integer timeline duration; video clips cannot use the image HOLD field. CommandBus duration/split/trim and undo/redo tested.
+- Build genuine Axxx image ProjectState from qualified SceneTimelineReview and VerifiedSceneImageSet in a single canonical CommandBatch. A saved and reopened .angproj retains exact frame timing, image media type, fingerprints, V1/V2 concurrent scene placement and source quote markers.
+- Same-HEAD Windows run #37791083403 SUCCESS, SHA f6bfd1ae8472bed6f3823a07342d09e08b2329dd; targeted domain/persistence/scene/Qt + full pytest and all quality checks passed.
+- Still image MLT/FFmpeg preview/export and GUI final-save timing are intentionally gated. No falsely enabled features, UI layout change, native production FFmpeg, merge or portable.

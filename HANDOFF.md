@@ -249,3 +249,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## Current G-IMAGE-01 implementation handoff
 
 - Review the new Clip.image_hold_frames (None default, explicit positive int on image), ProjectState media-type guard, strict JsonProjectRepository decode and semantic legacy omission, and semantic image SetDuration/Split/Trim/Speed guards on PR #20. Require same-head Windows full suite. MLT/FFmpeg remain video-only/fail closed for image; next milestone is real canonical builder from SceneTimelineReview, saved project + scene metadata, and qualified playback/export. No UI/merge/native Pilot A.
+
+
+## NEXT — Scene image saved project integration gate (8 Oct 2026 WIB)
+
+Current tested functionality: create_canonical_scene_image_project() consumes an explicitly timed SceneTimelineReview and VerifiedSceneImageSet, imports all Axxx images + parallel V1/V2 image HOLD clips + source-context scene markers through a single semantic CommandBatch. Test test_scene_image_materialization.py saves and reloads a real .angproj; same-HEAD Windows CI #37791083403 PASS at f6bfd1ae8472bed6f3823a07342d09e08b2329dd. Next required implementation: re-scan source folders to detect post-preflight duplicate Axxx; verify real file signature immediately before atomic Save; approved duration/review controls on frozen wizard; project session adoption; shared MLT image producer and FULL/LEFT/RIGHT composition/seek/preview plus render parity tests. No external FFmpeg runner without separate Pilot A approval, no merge or portable.
