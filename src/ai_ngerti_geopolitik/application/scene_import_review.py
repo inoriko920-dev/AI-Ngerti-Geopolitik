@@ -7,10 +7,10 @@ qualification or a second owner of canonical ProjectState.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Callable
 
 from ai_ngerti_geopolitik.application.commands import (
     AddClipCommand,
@@ -20,12 +20,12 @@ from ai_ngerti_geopolitik.application.commands import (
     CommandBus,
     ImportAssetCommand,
 )
+from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
 from ai_ngerti_geopolitik.application.scene_asset_bindings import (
     SceneAssetInventory,
     VerifiedSceneImageSet,
 )
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxPlan
-from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
 from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, Marker, ProjectState
 
 _MAX_TIMELINE_SECONDS = 24 * 60 * 60
