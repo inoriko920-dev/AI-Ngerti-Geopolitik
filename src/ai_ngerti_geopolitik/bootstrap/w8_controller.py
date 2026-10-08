@@ -11,11 +11,11 @@ from contextlib import suppress
 from pathlib import Path
 from uuid import uuid4
 
+from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
     ReadOnlyProjectJobs,
 )
-from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import (
     ProjectSession,
 )
