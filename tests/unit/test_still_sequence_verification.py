@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 from PySide6.QtGui import QImage
-from scripts.verify_still_frames import main as verify_cli
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
     create_canonical_scene_image_project,
 )
+from ai_ngerti_geopolitik.bootstrap.still_verify_cli import main as verify_cli
 from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
