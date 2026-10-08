@@ -280,3 +280,10 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 ## ASTRA INT-01 external FFmpeg threat model 2026-10-08 WIB
 - Planning-only typed runtime trust design, bounded subprocess and 16 Windows tests drafted; owner Pilot A approval missing. Existing native detection remains unchanged and not production-authorized. See `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.md`, DOCX, TXT and risk review. Status **DESIGN_READY / CODING_BLOCKED**.
+
+
+## SOL INT-01A — Pure native identity DTO / PASS Windows (2026-10-08 WIB)
+
+- Accepted implementation SHA `51a51eb8de4841d6800ebf63e6220eafafa42541`; Windows run `37750580743` SUCCESS: Ruff format/lint, mypy 99 source files, import/architecture/secrets, source-of-truth 70/70, frozen UI42/42, targeted unit + full Python suite.
+- Added immutable privacy-safe FFmpeg/FFprobe identity and typed fail-closed status without launching native processes. `NativeCapabilityReport.can_start_product_render=False` for **all** values. Evidence `docs/evidence/features/SOL_INT01A_NATIVE_IDENTITY_CONTRACT.md`; draft stacked PR #14, main unchanged.
+- **Pilot A owner approval D1 still PENDING.** No FFmpeg bundled; no UI wiring, code execution, engine switch, license approval or release. Subsequent INT-01B bounded runner and real Windows trust validation not started.

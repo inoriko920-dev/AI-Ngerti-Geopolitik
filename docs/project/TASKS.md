@@ -1183,3 +1183,12 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [x] Draft identity/capability/probe contract, 16 Windows acceptance cases and SOL subtask split 01A–F.
 - [ ] Obtain explicit owner consent for external-FFmpeg Pilot A; generic 'lanjutkan' alone not approval.
 - [ ] After approval, SOL INT-01A typed contract then serial steps; user-facing render stays disabled.
+
+
+## SOL INT-01A accepted application DTO (2026-10-08 WIB)
+
+- [x] INT-01A immutable external FFmpeg/FFprobe identity snapshots, redacted typed statuses, strict validation; **PASS Windows**, no external binary run, no GUI render enablement.
+- [ ] INT-01B bounded/native process runner and timeout/cancel/deadlock tests: **BLOCKED until Pilot A architecture approval**.
+- [ ] INT-01C exact-path resolver/hash/revalidation; INT-01D actual codec encode/probe, INT-01E bootstrap wiring, INT-01F Windows negative suite — NOT STARTED.
+- [ ] D1 Pilot A explicit approval; D2 final packaging; D3 legal notices; D4 production libopenshot engine — pending.
+- Implementation SHA 51a51eb8 / CI 37750580743 SUCCESS, mypy99, docs70/70, frozen UI42/42. Source files untouched except new pure application module; Draft PR #14 stacked on #13, main unmerged.
