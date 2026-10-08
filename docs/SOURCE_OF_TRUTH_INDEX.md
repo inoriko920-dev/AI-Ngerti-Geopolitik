@@ -61,6 +61,7 @@
     - `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`
     - `docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`
     - `docs/evidence/features/S11_W8_008_STALE_JOBS.md`
+    - `docs/evidence/features/S11_W8_009_DIAGNOSTIC_BUNDLE.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -161,7 +162,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
 - W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
 - W8-008 Stale Result Hardening for W8 Background Jobs: **PASS**.
-- W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **READY**.
+- W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **IN_VERIFICATION**.
 - W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
@@ -205,3 +206,6 @@ W8-009 BLOCKED.
 W8-008 accepted PASS at `6c35b70bd9122664473a69eff6635ed9b71da5cb` with source-safe stale/cancel evidence,
 27/27 same-HEAD regression and no W8-009 implementation.
 W8-009 READY; W8-010 BLOCKED.
+
+W8-009: code/tests/strict ZIP evidence and dedicated Windows workflow committed;
+GATE IN_VERIFICATION pending same-HEAD regression. W8-010 BLOCKED.

@@ -9,7 +9,8 @@
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
 **Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 **Last implementation:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS
-**Next exact task:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY
+**Current task:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION
+**Next exact action:** Finish W8-009 Windows quality, redaction evidence and regression; W8-010 BLOCKED
 
 ## Read-first constraints
 
@@ -147,3 +148,14 @@ provisional; do not claim device/provider smoke results that were not run.
 
 
 
+
+## W8-009 implementation handoff
+
+W8-009 bounded typed event ledger, redacted deterministic JSON manifest, fixed
+ZIP entries and single-worker on-demand generation are committed to main.
+No arbitrary log/exception/media/project path content is included; event data
+are strict enums and numeric counts only. Output ZIP is size-capped, atomically
+published without overwriting existing files, with cancellation/failure gates.
+Eleven new tests and a strict owned proof runner are committed.
+**Gate: IN_VERIFICATION, NOT PASS** until Windows CI/full regression closes.
+**Do not implement W8-010** within this turn.

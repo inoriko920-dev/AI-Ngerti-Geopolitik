@@ -827,7 +827,7 @@ Serial contract:
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
 - [x] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**
 - [x] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS**
-- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY**
+- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION**
 - [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
 
 Locked boundaries:
@@ -1010,3 +1010,8 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 **Exact next task:** SOL S11-W8-009 Structured Diagnostics +
 Redacted Diagnostic Bundle ONLY. W8-010 remains serial-blocked.
+
+**W8-009 IN_VERIFICATION:** strict enums/numbers-only bounded events,
+deterministic manifest and 128KiB max on-demand ZIP, non-blocking worker and
+safe cancellation; tests for secrets/path/text exclusion, no overwrites and
+ZIP byte reproducibility. Windows CI and regression pending. W8-010 BLOCKED.

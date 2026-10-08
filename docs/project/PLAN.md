@@ -38,7 +38,7 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **PASS**
 8. W8-008 Stale Result Hardening — **PASS**
-9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **READY**
+9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **IN_VERIFICATION**
 10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
 
 ## W8-004 accepted
@@ -89,3 +89,9 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 ## Exact next action
 
 On owner's explicit `lanjutkan`, **SOL W8-009 only**. W8-010 remains blocked.
+
+## W8-009 QA gate
+
+Structured event ledger + bounded safe ZIP with deterministic manifest and
+background worker implemented. Windows quality, redaction proof and same-HEAD
+regression acceptance pending. W8-010 BLOCKED.

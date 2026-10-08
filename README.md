@@ -62,3 +62,12 @@ artifact ID `11529365791`. See
 
 **Next:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic
 Bundle — READY. W8-010 remains blocked. UI-001..042 frozen; AAVC read-only.
+
+## W8-009 — Structured Diagnostics + Redacted ZIP
+
+Implementation in verification. An on-demand background worker generates a
+bounded deterministic ZIP containing exactly a validated manifest and sanitized
+enum/count diagnostic events. No project IDs, file paths, raw messages,
+credentials or media content are exported by default. The separate Windows
+qualification and full regression must pass before W8-009 is accepted.
+W8-010 UI-039/040/041 wiring remains blocked.

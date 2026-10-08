@@ -2,7 +2,7 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..008 PASS / W8-009 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..008 PASS / W8-009 IN_VERIFICATION**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
@@ -127,7 +127,14 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 ## Exact next action
 
-**S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY.**
+**S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION.**
 W8-010 remains serial-blocked. W5 physical microphone and W6/W7 live Gemini
 tests remain provisional; no physical/provider smoke success is invented.
 No W8-009 implementation was started during W8-008 closure.
+
+## W8-009 implementation qualification pending
+
+Strict structured opt-in diagnostic ledger, bounded redacted deterministic
+manifest/ZIP, safe background cancellation and typed errors are committed;
+Windows tests and full regression are pending. No raw media, user content,
+project paths, raw exceptions or credentials are in archive. W8-010 BLOCKED.

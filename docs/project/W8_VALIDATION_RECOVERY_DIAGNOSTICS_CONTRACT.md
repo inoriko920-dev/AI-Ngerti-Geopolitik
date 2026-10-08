@@ -110,7 +110,7 @@ No new UI image-generation gate:
 - W8-006 — Crash Marker + Startup Recovery Decision — PASS
 - W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — PASS
-- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY
+- W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — IN_VERIFICATION
 - W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009
 
 ## Exact next action
@@ -228,3 +228,9 @@ SOL S11-W8-007 only. W8-008 remains blocked. No unapproved UI redesign.
 ## Next
 
 **SOL S11-W8-009 only**. W8-010 remains blocked.
+
+## W8-009 bounded diagnostic ZIP implementation
+
+Strict allowlist event codes/status/stages/counts, no content/media/paths/IDs,
+fixed manifest/events ZIP, 128KiB cap, cancellable async worker, typed failures.
+Windows qualification pending. W8-010 remains BLOCKED.
