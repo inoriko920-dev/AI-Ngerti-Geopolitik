@@ -105,7 +105,6 @@ def scan_scene_asset_folder(
         raise SceneAssetScanError("asset folder could not be scanned") from None
 
 
-
 def verify_scene_image_media(
     inventory: SceneAssetInventory, *, max_image_bytes: int = 128 * 1024 * 1024
 ) -> VerifiedSceneImageSet:
