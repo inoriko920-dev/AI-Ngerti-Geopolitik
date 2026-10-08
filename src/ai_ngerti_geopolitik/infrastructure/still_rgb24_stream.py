@@ -61,11 +61,7 @@ def _decode_rgb(data: bytes, width: int, height: int) -> QImage:
         reader = QImageReader(buffer)
         reader.setAutoTransform(False)
         dimensions = reader.size()
-        if (
-            not dimensions.isValid()
-            or dimensions.width() != width
-            or dimensions.height() != height
-        ):
+        if not dimensions.isValid() or dimensions.width() != width or dimensions.height() != height:
             raise ValueError("PNG dimensions changed")
         decoded = reader.read()
         if decoded.isNull() or decoded.width() != width or decoded.height() != height:
