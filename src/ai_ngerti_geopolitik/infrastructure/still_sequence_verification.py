@@ -89,11 +89,11 @@ def _verify_png(path: Path, expected_hash: str, expected_bytes: int, size: tuple
         while chunk := handle.read(1024 * 1024):
             sha.update(chunk)
     after = path.stat()
-    if (
-        sha.hexdigest() != expected_hash
-        or (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
-        != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
-    ):
+    if sha.hexdigest() != expected_hash or (
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    ) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
         raise ValueError("frame checksum changed")
 
 
@@ -151,9 +151,7 @@ def _verify(state: ProjectState, root: Path) -> VerifiedStillSequence:
         if batch_dir.is_symlink() or not batch_dir.is_dir():
             raise ValueError("invalid batch directory")
         batch, bytes_read = _load_json(batch_dir / "manifest.json", _MAX_BATCH_MANIFEST_BYTES)
-        if hashlib.sha256(bytes_read).hexdigest() != _digest(
-            batch_record.get("manifest_sha256")
-        ):
+        if hashlib.sha256(bytes_read).hexdigest() != _digest(batch_record.get("manifest_sha256")):
             raise ValueError("batch manifest checksum changed")
         if (
             batch.get("format") != "ang-still-sequence-v1"

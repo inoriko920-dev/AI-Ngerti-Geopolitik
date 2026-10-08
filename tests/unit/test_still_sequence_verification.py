@@ -66,9 +66,7 @@ def test_verified_frames_order_and_user_cli(tmp_path: Path, capsys) -> None:
     assert result.frame_count == 5
     assert result.fps == 30
     assert (result.width, result.height) == (13, 8)
-    assert [p.name for p in result.frame_files] == [
-        f"frame_{i:06d}.png" for i in range(5)
-    ]
+    assert [p.name for p in result.frame_files] == [f"frame_{i:06d}.png" for i in range(5)]
     assert result.png_bytes > 0
     assert verify_cli(["--project", str(project), "--frames", str(folder)]) == 0
     assert "BELUM MP4" in capsys.readouterr().out
