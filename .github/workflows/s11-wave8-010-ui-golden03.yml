@@ -1,0 +1,72 @@
+name: S11 W8-010 UI Wiring GOLDEN-03 Closure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/bootstrap/main.py"
+      - "src/ai_ngerti_geopolitik/bootstrap/w8_controller.py"
+      - "src/ai_ngerti_geopolitik/presentation/main_window.py"
+      - "tests/qt/test_step11_w8_010_runtime_wiring.py"
+      - "scripts/run_step11_w8_010.py"
+      - "scripts/verify/verify_step11_w8_010_evidence.py"
+      - ".github/workflows/s11-wave8-010-ui-golden03.yml"
+      - "docs/evidence/features/S11_W8_010_UI_GOLDEN03.md"
+      - "docs/project/**"
+      - "HANDOFF.md"
+      - "docs/PROJECT_STATUS.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-010:
+    runs-on: windows-latest
+    name: W8-010 frozen UI recovery and real GOLDEN-03 acceptance
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - name: Ensure ffprobe available for real-media E2E
+        shell: pwsh
+        run: |
+          if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) {
+            choco install ffmpeg -y --no-progress
+          }
+          ffmpeg -version
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/qt/test_step11_w8_010_runtime_wiring.py
+      - run: uv run pytest -q
+      - run: >
+          uv run python scripts/generate_step10_fixture.py
+          --output artifacts/step11/w8-010/input-video.mp4
+      - run: >
+          uv run python scripts/run_step11_w8_010.py
+          --video artifacts/step11/w8-010/input-video.mp4
+          --evidence artifacts/step11/w8-010/evidence
+      - run: uv run python scripts/verify/verify_step11_w8_010_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-010-UI-GOLDEN03
+          path: artifacts/step11/w8-010/evidence/**
+          retention-days: 14
+          if-no-files-found: error
