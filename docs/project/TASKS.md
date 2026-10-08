@@ -1039,3 +1039,13 @@ No raw paths, private content, credentials or media bytes.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+
+## SF-STEP 12 — T02 acceptance, non-breaking contract (2026-10-08 WIB)
+
+- [x] **SF12-T01 — Export capability truth-in-UI — PASS_WITH_PROVISIONAL_NATIVE_ENCODER_INVENTORY**
+- [x] **SF12-T02 — Typed ExportRequest and additive port contract — PASS_CONTRACT_ONLY**
+- [ ] **SF12-T03 — Export preflight + capability negotiation — READY, NOT STARTED**
+- [ ] T04–T10 — WAITING FOR SERIAL GATE
+
+T02 GitHub Actions workflow 37735699709 SUCCESS for code SHA 9e12498; targeted 27/27 cases, full pytest, Ruff/mypy/imports/architecture/secrets/70 source-of-truth/42 UI reference checks PASS. No actual FFmpeg render, native matrix qualification or merge to main. See `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md`. Breaking `MediaEnginePort` adoption requires ASTRA/ADR first.

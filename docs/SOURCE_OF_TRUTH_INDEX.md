@@ -247,3 +247,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - Stacked draft PR: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/pull/2 (PR #1 contains STEP12 planning prerequisites).
 - Windows verification: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37734750417 (SUCCESS on `b0edecb` before documentation closure).
 - Status: PASS_WITH_PROVISIONAL_NATIVE_ENCODER_INVENTORY; next SF12-T02 ASTRA port contract review.
+
+
+## SF12-T02 accepted evidence (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/export_request.py` — typed additive immutable request/selection/snapshot contract and prospective, non-adopted port.
+- `tests/unit/test_sf12_t02_export_request.py` — 27 Windows passing contract cases.
+- `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md` — proof, tested SHA, caveats and next task.
+- `.github/workflows/sf12-t02-export-request.yml` — dedicated repeatable Windows gate.
+- No generated binary/codec claims or change to frozen `MediaEnginePort`, `ProjectState`, UI 001–042.
