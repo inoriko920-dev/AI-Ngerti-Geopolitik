@@ -38,11 +38,16 @@ _STATUS_ISSUE = {
 
 
 def _seconds_between(value: object, low: float, high: float) -> bool:
-    return type(value) in (int, float) and math.isfinite(value) and low <= value <= high
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+        and low <= value <= high
+    )
 
 
 def _bounded_int(value: object, low: int, high: int) -> bool:
-    return type(value) is int and low <= value <= high
+    return isinstance(value, int) and not isinstance(value, bool) and low <= value <= high
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,11 +115,13 @@ class NativeProcessOutcome:
                 raise NativeProcessContractError("INVALID_NATIVE_PROCESS_SUCCESS")
         elif self.issue is not _STATUS_ISSUE[self.status]:
             raise NativeProcessContractError("INVALID_NATIVE_PROCESS_FAILURE")
-        elif self.status is NativeProcessStatus.FAILED and (
-            self.exit_code is None or self.exit_code == 0
+        elif (
+            self.status is NativeProcessStatus.FAILED
+            and (self.exit_code is None or self.exit_code == 0)
+        ) or (
+            self.status is NativeProcessStatus.START_FAILED
+            and self.exit_code is not None
         ):
-            raise NativeProcessContractError("INVALID_NATIVE_PROCESS_EXIT_CODE")
-        elif self.status is NativeProcessStatus.START_FAILED and self.exit_code is not None:
             raise NativeProcessContractError("INVALID_NATIVE_PROCESS_EXIT_CODE")
 
     @property

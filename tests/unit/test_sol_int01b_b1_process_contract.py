@@ -88,8 +88,8 @@ def test_success_has_bounded_counters_and_no_stdout_or_stderr() -> None:
     assert result.successful
     assert not result.product_render_authorized
     assert result.issue is None
-    assert "stderr" not in repr(result)
-    assert "stdout" not in repr(result)
+    assert not hasattr(result, "stderr")
+    assert not hasattr(result, "stdout")
     with pytest.raises(FrozenInstanceError):
         result.duration_ms = 99  # type: ignore[misc]
 
