@@ -1,0 +1,60 @@
+name: S11 W8-005 Autosave Catalog Retention
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/autosave_catalog.py"
+      - "src/ai_ngerti_geopolitik/application/project_session.py"
+      - "tests/unit/test_step11_w8_005_autosave_catalog.py"
+      - "scripts/run_step11_w8_005.py"
+      - "scripts/verify/verify_step11_w8_005_evidence.py"
+      - ".github/workflows/s11-wave8-005-autosave-catalog.yml"
+      - "docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md"
+      - "HANDOFF.md"
+      - "docs/PROJECT_STATUS.md"
+      - "docs/project/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-005:
+    runs-on: windows-latest
+    name: Validate managed autosave catalog and strict pruning
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w8_005_autosave_catalog.py
+      - run: uv run pytest -q
+      - run: >
+          uv run python scripts/run_step11_w8_005.py
+          --evidence artifacts/step11/w8-005/evidence
+      - run: uv run python scripts/verify/verify_step11_w8_005_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-005-Autosave-Catalog
+          path: artifacts/step11/w8-005/evidence/**
+          retention-days: 14
+          if-no-files-found: error
