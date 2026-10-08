@@ -38,3 +38,15 @@ GitHub Actions 37755635788, success on source commit `7e36ccae...`:
 6. No new DOCX is needed for this implementation-only substep: planning authority remains `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.docx`.
 
 **Next gated task:** Only after explicit owner approval of Pilot A, implement a bounded external/native runner with exact-path validation and real Windows child-tree cleanup (B2/B3), then separately wire FFprobe and FFmpeg (B4/B5) and run native smoke (B6). Do not activate `btn_export_render` until later UI integration gates pass.
+
+## B2-prep integration hardening — combined PR #19, 8 October 2026 WIB
+
+Previous standalone synthetic reader tests and the bounded private collector passed independently, but their combined use was not exercised. The Python-only subprocess harness now **feeds each pipe concurrently into `NativeBoundedCapture`**, using its independent stdout/stderr byte caps, strict overflow and EOF lifecycle, sealed private buffers and redacted metrics. All private fixture output is discarded after readers finish, never exposed in `NativeProcessOutcome`. On failed reader or overflow it returns an unsuccessful, fail-closed synthetic outcome.
+
+On Windows, the synthetic fixture also calls the existing pure `inspect_native_command_shape` before `Popen`: the owned Python executable and fixed internally authored argv are checked for bounded UTF-16 Windows command-line length. A deliberately too-small argv-count policy is verified to reject **before any child launch**.
+
+Regression tests verify real use of the shared collector for controlled stdout and stderr fixture bytes and the Windows pre-spawn argument-limit gate. Existing cancellation, timeout, overflow, privacy and combined full-suite Windows checks still apply.
+
+**Strict limits:** This integration exercises only fixed owned `sys.executable -I -c` fixtures, **not external FFmpeg/FFprobe, production `FfmpegProcessRunner`, native executable provenance, user commands or media rendering**. B3 child-tree cleanup, B4–B6 real adapters/smoke, D1 owner approval and D2–D4 native/legal policy remain pending. No main merge, UI changes, bundled native executables or portable release.
+
+**Acceptance evidence:** Verify the newest Windows Actions run at the exact combined PR #19 commit; older passing CI does not prove this integration.

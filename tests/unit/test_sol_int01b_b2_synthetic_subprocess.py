@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
 import threading
 import time
 
@@ -12,6 +14,7 @@ from ai_ngerti_geopolitik.application.native_process_contract import (
     NativeProcessStatus,
 )
 from ai_ngerti_geopolitik.application.native_toolchain_identity import NativeIssueCode
+from ai_ngerti_geopolitik.infrastructure.native_bounded_capture import NativeBoundedCapture
 from ai_ngerti_geopolitik.infrastructure.synthetic_process_qualification import (
     SyntheticFixture,
     run_synthetic_fixture,
@@ -113,3 +116,45 @@ def test_invalid_cancellation_is_rejected_before_any_process() -> None:
             NativeProcessPolicy(),
             cancellation="not-an-event",  # type: ignore[arg-type]
         )
+
+
+def test_python_subprocess_really_feeds_both_streams_to_the_shared_bounded_capture(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The three components must interact, not merely coexist in separate files."""
+    observed: list[tuple[str, int]] = []
+    lock = threading.Lock()
+    original = NativeBoundedCapture.append
+
+    def record(self: NativeBoundedCapture, stream: str, chunk: bytes) -> None:
+        with lock:
+            observed.append((stream, len(chunk)))
+        original(self, stream, chunk)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(NativeBoundedCapture, "append", record)
+    success = run_synthetic_fixture(SyntheticFixture.SUCCESS, NativeProcessPolicy())
+    failure = run_synthetic_fixture(SyntheticFixture.FAIL_PRIVATE, NativeProcessPolicy())
+    assert success.successful
+    assert failure.status is NativeProcessStatus.FAILED
+    assert ("stdout", 2) in observed
+    assert any(stream == "stderr" and size > 0 for stream, size in observed)
+    assert "SECRET_TOKEN_DO_NOT_LOG" not in str(failure)
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="pure Windows argv guard")
+def test_invalid_windows_argv_is_rejected_before_synthetic_process_spawn(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invoked = []
+
+    def forbidden(*args: object, **kwargs: object) -> None:
+        invoked.append(True)
+        raise AssertionError("UNEXPECTED_SUBPROCESS_LAUNCH")
+
+    monkeypatch.setattr(subprocess, "Popen", forbidden)
+    with pytest.raises(ValueError, match="^INVALID_NATIVE_ARGV_LIMIT$"):
+        run_synthetic_fixture(
+            SyntheticFixture.SUCCESS,
+            NativeProcessPolicy(max_argv_items=4),
+        )
+    assert not invoked

@@ -19,11 +19,19 @@ from enum import StrEnum
 from typing import IO
 
 from ai_ngerti_geopolitik.application.native_process_contract import (
+    NativeProcessContractError,
     NativeProcessOutcome,
     NativeProcessPolicy,
     NativeProcessStatus,
 )
 from ai_ngerti_geopolitik.application.native_toolchain_identity import NativeIssueCode
+from ai_ngerti_geopolitik.infrastructure.native_bounded_capture import (
+    NativeBoundedCapture,
+    NativeStream,
+)
+from ai_ngerti_geopolitik.infrastructure.native_command_preflight import (
+    inspect_native_command_shape,
+)
 
 
 class SyntheticFixture(StrEnum):
@@ -62,21 +70,27 @@ else:
 
 @dataclass(slots=True)
 class _PipeCounter:
+    """Feed concurrent synthetic pipe readers into the existing bounded collector."""
+
     stream: IO[bytes]
-    maximum: int
-    total: int = 0
+    capture: NativeBoundedCapture
+    channel: NativeStream
     exceeded: bool = False
+    read_failed: bool = False
 
     def drain(self) -> None:
         try:
             while data := self.stream.read(16_384):
-                self.total += len(data)
-                if self.total > self.maximum:
+                try:
+                    self.capture.append(self.channel, data)
+                except NativeProcessContractError:
+                    # Fail closed: the collector also clears private bytes on overflow.
                     self.exceeded = True
-                # Intentionally never store or log child output.
-        except (OSError, ValueError):
-            # The owner may close streams while terminating a stuck child.
-            return
+                    return
+            self.capture.finish_stream(self.channel)
+        except (OSError, ValueError, NativeProcessContractError):
+            # A closed or broken reader must never produce a successful result.
+            self.read_failed = True
 
 
 def _outcome(
@@ -139,6 +153,13 @@ def run_synthetic_fixture(
     if cancellation is not None and cancellation.is_set():
         return _outcome(NativeProcessStatus.CANCELLED, 0, 0, 0)
 
+    # The shared Windows command-shape guard is exercised by this fixed fixture.
+    # It only validates syntax; it is NOT trust, identity or FFmpeg authorization.
+    if sys.platform == "win32":
+        inspect_native_command_shape(
+            sys.executable, ("-I", "-c", _FIXTURE, fixture.value), policy
+        )
+
     start = time.monotonic()
     try:
         process = subprocess.Popen(
@@ -157,8 +178,9 @@ def run_synthetic_fixture(
         )
 
     assert process.stdout is not None and process.stderr is not None
-    out = _PipeCounter(process.stdout, policy.max_stdout_bytes)
-    err = _PipeCounter(process.stderr, policy.max_stderr_bytes)
+    capture = NativeBoundedCapture(policy)
+    out = _PipeCounter(process.stdout, capture, "stdout")
+    err = _PipeCounter(process.stderr, capture, "stderr")
     readers = [
         threading.Thread(target=out.drain, daemon=True),
         threading.Thread(target=err.drain, daemon=True),
@@ -171,7 +193,7 @@ def run_synthetic_fixture(
             if cancellation is not None and cancellation.is_set():
                 status = NativeProcessStatus.CANCELLED
                 break
-            if out.exceeded or err.exceeded:
+            if out.exceeded or err.exceeded or out.read_failed or err.read_failed:
                 status = NativeProcessStatus.OUTPUT_LIMIT
                 break
             if time.monotonic() - start >= policy.timeout_seconds:
@@ -188,16 +210,25 @@ def run_synthetic_fixture(
         for stream in (process.stdout, process.stderr):
             stream.close()
 
+    # Collect metadata only after both readers have joined. Never return or log
+    # the private bytes, including the known synthetic credential in stderr.
+    metrics = capture.metrics()
+    capture.discard()
+    stdout_count = metrics.bytes_seen_stdout
+    stderr_count = metrics.bytes_seen_stderr
+
     elapsed = int((time.monotonic() - start) * 1000)
     # Reader data can continue to arrive after the child has exited.
-    if status is None and (out.exceeded or err.exceeded):
+    if status is None and (
+        metrics.overflowed or out.exceeded or err.exceeded or out.read_failed or err.read_failed
+    ):
         status = NativeProcessStatus.OUTPUT_LIMIT
     if status is None and cancellation is not None and cancellation.is_set():
         status = NativeProcessStatus.CANCELLED
     if status is not None:
-        return _outcome(status, elapsed, out.total, err.total)
+        return _outcome(status, elapsed, stdout_count, stderr_count)
     if process.returncode == 0:
-        return _outcome(NativeProcessStatus.SUCCESS, elapsed, out.total, err.total, 0)
+        return _outcome(NativeProcessStatus.SUCCESS, elapsed, stdout_count, stderr_count, 0)
     if process.returncode is None:
-        return _outcome(NativeProcessStatus.TIMED_OUT, elapsed, out.total, err.total)
-    return _outcome(NativeProcessStatus.FAILED, elapsed, out.total, err.total, process.returncode)
+        return _outcome(NativeProcessStatus.TIMED_OUT, elapsed, stdout_count, stderr_count)
+    return _outcome(NativeProcessStatus.FAILED, elapsed, stdout_count, stderr_count, process.returncode)
