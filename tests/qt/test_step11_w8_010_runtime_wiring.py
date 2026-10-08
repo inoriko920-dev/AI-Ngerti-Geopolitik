@@ -811,7 +811,7 @@ def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_pat
     image = pixmap.toImage()
     assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
     assert image.pixelColor(3 * image.width() // 4, image.height() // 2).name() == "#0000ff"
-    slider = controller.window.window.findChild(QSlider, "timeline_scrubber")
+    slider = controller.window.stack.currentWidget().findChild(QSlider, "timeline_scrubber")
     assert slider is not None and slider.maximum() == 239 and slider.value() == 150
 
     router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("delta", "1"),)))
