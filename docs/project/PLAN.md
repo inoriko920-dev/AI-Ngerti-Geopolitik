@@ -118,3 +118,8 @@ No raw paths, private content, credentials or media bytes.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+
+## T03 acceptance and next serial handoff — 2026-10-08 WIB
+
+SF12-T03 preflight code SHA `7bee32aae7248ae9023afe4b9b62bf2caf357095`, Windows workflow `37736630766` SUCCESS. Conservative profile gate and output safety checks are implemented and tested; **real render not enabled**. Exact next after explicit owner continuation: **SF12-T04 H264 baseline export only**, with genuine codec and media evidence, no API-breaking engine change without ASTRA/ADR.

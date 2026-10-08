@@ -256,3 +256,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md` — proof, tested SHA, caveats and next task.
 - `.github/workflows/sf12-t02-export-request.yml` — dedicated repeatable Windows gate.
 - No generated binary/codec claims or change to frozen `MediaEnginePort`, `ProjectState`, UI 001–042.
+
+
+## SF12-T03 — Preflight contract and proof (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/export_preflight.py`: typed non-rendering precheck and conservative profile negotiation.
+- `src/ai_ngerti_geopolitik/infrastructure/export_output_inspector.py`: protected source collision, safe temp write probe, disk margin.
+- `tests/unit/test_sf12_t03_export_preflight.py`, `.github/workflows/sf12-t03-windows-preflight.yml`.
+- `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`: accepted Windows run 37736630766 / code 7bee32a, gate results and T04 handoff.
+- No project schema, MediaEnginePort, frozen UI-001..042, or AAVC mutation. No encoder/render/export acceptance claimed.

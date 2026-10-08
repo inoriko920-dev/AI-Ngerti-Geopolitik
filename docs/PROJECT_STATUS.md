@@ -197,3 +197,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Typed immutable request and prospective additive port only. No MediaEnginePort signature change, no project schema or UI redraw. Renderer remains disabled; no H.265/4K/60fps or selection export qualification in this task.
 - Branch `feature/sf12-t02-export-request-contract`, stacked draft PR #3 over #2 over #1; NOT merged to main.
 - Next exact serial task SF12-T03 Preflight + Capability Negotiation, after explicit owner continuation. Review `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md`. ASTRA review gate applies to any future breaking media port/native dependency change.
+
+
+## SF12-T03 — PREFLIGHT & CAPABILITY NEGOTIATION / PASS_CONTRACT_ONLY (2026-10-08 WIB)
+
+- Accepted code SHA `7bee32aae7248ae9023afe4b9b62bf2caf357095`; dedicated Windows workflow `37736630766` **SUCCESS**.
+- Typed, non-mutating preflight; W8 real media validation, session/hash checks, native toolchain capability snapshot, conservative profile gating, filesystem collision/permission/disk checks. Error codes redact paths. Render remains **DISABLED**.
+- Targeted and complete pytest PASS; Ruff/mypy 90 files, architecture/imports, secret gate, 70/70 source-of-truth, UI 42/42 PASS. This is not evidence of production media export.
+- Draft PR #4 stacked above PR #3/#2/#1, not merged into main. T04 H264 baseline pipeline is READY after owner's next `lanjutkan`; T05–T10 remain serial blocked. No breaking MediaEnginePort change or AAVC/UI redesign.
+- Evidence: `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`. W5 mic and W6/W7 Gemini live provisional.

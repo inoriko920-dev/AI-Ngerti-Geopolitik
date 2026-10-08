@@ -1049,3 +1049,14 @@ No raw paths, private content, credentials or media bytes.
 - [ ] T04–T10 — WAITING FOR SERIAL GATE
 
 T02 GitHub Actions workflow 37735699709 SUCCESS for code SHA 9e12498; targeted 27/27 cases, full pytest, Ruff/mypy/imports/architecture/secrets/70 source-of-truth/42 UI reference checks PASS. No actual FFmpeg render, native matrix qualification or merge to main. See `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md`. Breaking `MediaEnginePort` adoption requires ASTRA/ADR first.
+
+
+## SF12-T03 acceptance checkpoint — 2026-10-08 WIB
+
+- [x] SF12-T01 — Export Capability Truth in UI — PASS_WITH_PROVISIONAL_NATIVE_ENCODER_INVENTORY.
+- [x] SF12-T02 — Typed ExportRequest non-breaking contract — PASS_CONTRACT_ONLY.
+- [x] **SF12-T03 — Export preflight and capability negotiation — PASS_CONTRACT_ONLY**.
+- [ ] **SF12-T04 — Real H.264 baseline export pipeline — READY, not started.**
+- [ ] SF12-T05..T10 — serial blocked pending prior gates.
+
+T03 code `7bee32aae7248ae9023afe4b9b62bf2caf357095`, Windows CI `37736630766` SUCCESS, new targeted+full pytest pass; Ruff, mypy(90), architecture/import contracts/secrets, 70 source-of-truth, UI 42/42 SHA PASS. No real codec render, no GUI render enablement or frozen MediaEnginePort change. See `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`. Draft stacked PR #4 not merged.
