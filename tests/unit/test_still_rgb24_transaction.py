@@ -27,6 +27,7 @@ from ai_ngerti_geopolitik.infrastructure.still_rgb24_sink import (
 )
 from ai_ngerti_geopolitik.infrastructure.still_rgb24_transaction import transfer_staged_rgb24
 
+
 def _plan(tmp_path: Path):
     docx = parse_scene_docx_lines(
         ("Scene 1: 1", "Asset 1: Red", "Scene 2: 2", "Asset 2: Green", "Asset 3: Blue")
