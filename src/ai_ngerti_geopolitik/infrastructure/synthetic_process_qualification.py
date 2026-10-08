@@ -10,6 +10,7 @@ Actual FFmpeg, Windows child trees and production adapters require later gates.
 from __future__ import annotations
 
 import subprocess
+from contextlib import suppress
 import sys
 import threading
 import time
@@ -111,16 +112,12 @@ def _terminate_owned(process: subprocess.Popen[bytes], grace_seconds: float) -> 
         process.wait(timeout=grace_seconds)
     except subprocess.TimeoutExpired:
         process.kill()
-        try:
+        with suppress(subprocess.TimeoutExpired):
             process.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            pass
     except OSError:
         if process.poll() is None:
-            try:
+            with suppress(OSError):
                 process.kill()
-            except OSError:
-                pass
 
 
 def run_synthetic_fixture(
