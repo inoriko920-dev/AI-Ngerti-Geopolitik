@@ -48,9 +48,11 @@ class OwnedProbe:
         )
 
 
-def setup(qtbot, repo: JsonProjectRepository | None = None):
+def setup(
+    qtbot, repo: JsonProjectRepository | None = None, *, initial_route: str = "UI-010"
+):
     router = W8IntentRouter()
-    window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
+    window = create_main_window(initial_route, fixture_mode=True, intent_sink=router)
     qtbot.addWidget(window.window)
     probe = OwnedProbe()
     session = ProjectSession(repo or JsonProjectRepository())
@@ -487,5 +489,46 @@ def test_denied_old_clean_marker_write_does_not_drop_open_project(
     assert marker_store.read(opened, old_marker.project_id) == old_marker
     assert marker_store.read(next_path, "P-NEW").status == "clean"
     assert "Tidak dapat menutup" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_open_saved_project_from_home_switches_to_real_editor(qtbot, tmp_path: Path) -> None:
+    repo, project, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo, initial_route="UI-002")
+    assert controller.window.window.property("ui_state") == "UI-002"
+    assert not controller.session.is_open
+
+    controller.request_open(project)
+    pump(
+        qtbot,
+        lambda: (
+            controller.session.is_open
+            and controller.validation_job_id is None
+            and controller.window.window.property("ui_state") == "UI-010"
+        ),
+        controller,
+    )
+
+    assert controller.session.current_path == project
+    assert controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-010"
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_corrupt_project_from_home_does_not_navigate_to_editor(qtbot, tmp_path: Path) -> None:
+    repo = JsonProjectRepository()
+    invalid = tmp_path / "invalid-home-open.angproj"
+    invalid.write_text("{broken-json", encoding="utf-8")
+    controller, _router = setup(qtbot, repo, initial_route="UI-002")
+    assert controller.window.window.property("ui_state") == "UI-002"
+
+    controller.request_open(invalid)
+    pump(qtbot, lambda: controller.recovery_future is None, controller)
+
+    assert controller.window.window.property("ui_state") == "UI-002"
+    assert not controller.session.is_open
+    assert "Tidak dapat memeriksa" in controller.last_error
     controller.shutdown()
     controller.window.close()

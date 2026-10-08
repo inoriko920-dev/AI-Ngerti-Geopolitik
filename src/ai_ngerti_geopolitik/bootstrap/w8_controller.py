@@ -48,6 +48,7 @@ from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepositor
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
+from ai_ngerti_geopolitik.presentation.navigation import UiRoute
 from ai_ngerti_geopolitik.presentation.recovery import recovery_projection
 from ai_ngerti_geopolitik.presentation.validation_center import project_validation_center
 
@@ -217,7 +218,9 @@ class W8RuntimeController:
         self.active_marker = decision.active_marker
         self.offer = None
         self.session_id = uuid4().hex
-        self.window._close_active_dialog()
+        # The successful OPEN/RECOVER action must activate the existing editor
+        # route. Previously the project loaded but Home remained visible.
+        self.window.show_route(UiRoute.EDITOR)
         self._notify("Project dibuka. Periksa media dan simpan perubahan secara manual.")
         self.request_validation()
 

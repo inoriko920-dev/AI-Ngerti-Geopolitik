@@ -212,3 +212,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 — previous clean-marker close fault gate (2026-10-08 WIB)
 
 - Check exact current-head Windows CI for marker-write denial preserving previous editor, dirty guard rejecting clean marker, unexpected close rollback, and Qt old/candidate marker ownership. Keep PR Draft; D1 Pilot A still pending; portable remains last.
+
+## PR #20 — Home-to-Editor runtime navigation fix (2026-10-08 WIB)
+
+- Verify Qt: open saved project from UI-002 reaches UI-010 only on accepted session; corrupt target stays UI-002 with no opened project. Confirm W8-010 targeted and full Windows tests at current PR head. No frozen reference image/layout changes, no main merge and no Pilot A authorization.

@@ -102,3 +102,13 @@ timeline, effect locks, audio mute state or captions when reopened.
 **Regression:** Add two fault-injection unit tests (clean-marker write rejection and unexpected close failure) and one Qt staged-switch test (old marker write rejected, candidate marker cleaned, original session/bytes preserved). The Windows workflow now runs both W8-006 unit recovery and W8-010 Qt targeted tests plus full pytest/Ruff/mypy/security/architecture/UI checks.
 
 **Acceptance:** PENDING same-HEAD Windows CI for this commit; `main` remains unchanged, PR #20 remains Draft; no native FFmpeg integration, UI design change, or portable package.
+
+## Home → Editor route: real project-open success (2026-10-08 WIB)
+
+**Confirmed user-facing defect:** Opening a valid saved `.angproj` from the Home screen successfully established the W8 session, but `W8RuntimeController._decide` never navigated to `UiRoute.EDITOR`. The Home page remained visible despite the project being active. The recovery UI handoff likewise lacked a successful route change.
+
+**Fix:** On successful staged project open/recovery and only after acquiring the active session, route to existing frozen Editor Overview `UI-010`. Do not navigate on corrupt file, stale offer, declined recovery or failed marker transition. The patch changes runtime navigation behavior only, **not** the frozen 42 UI designs, widget layout or product render controls.
+
+**Qt regression:** Real saved project opened from `UI-002` navigates to `UI-010` and keeps canonical project session; malformed `.angproj` fails safely and remains at `UI-002`. The existing W8-010 GUI suite and entire Windows CI must pass on the latest exact commit before accepting.
+
+**Gate:** PENDING exact-head Windows CI. No merge, no native FFmpeg Pilot A execution, no portable package.

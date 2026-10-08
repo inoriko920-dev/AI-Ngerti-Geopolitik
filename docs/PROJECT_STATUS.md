@@ -201,3 +201,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## PR #20 — Guard crash-marker close before in-memory session release (2026-10-08 WIB)
 
 - Fix `RecoveryManager.close_clean` ordering: validate dirty-state, persist clean marker, then release memory; if marker write fails, original project remains open. An unexpected close failure attempts marker rollback. New unit+Qt fault-injection tests; current-head Windows CI pending. No new visual UI, `main` merge or FFmpeg pilot authority.
+
+## W8 project opening from Home navigates into existing editor (2026-10-08 WIB)
+
+- PR #20 corrects the successful `.angproj` open/recovery flow to enter existing Editor Overview `UI-010`. Failed opens remain on `UI-002`. Two Qt regression tests cover success/failure without changing any frozen UI art/layout. **New-head CI PENDING**; `main` untouched and no Pilot A FFmpeg production work.
