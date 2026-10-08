@@ -120,10 +120,14 @@ class ProjectSession:
         self._guard_replacement(discard_unsaved)
         resolved = path.resolve()
         state = self.repository.load(resolved)
-        self._bus = CommandBus(state)
+        # Compute the hash before replacing any active project session:
+        # a malformed state from any repository must never install itself.
+        saved_hash = state.semantic_hash()
+        next_bus = CommandBus(state)
+        self._bus = next_bus
         self._session_id = uuid4().hex
         self._current_path = resolved
-        self._saved_hash = state.semantic_hash()
+        self._saved_hash = saved_hash
         return state
 
     def close(self, *, discard_unsaved: bool = False) -> None:

@@ -165,3 +165,72 @@ def _full_project() -> ProjectState:
     )
     project.validate()
     return project
+@pytest.mark.parametrize(
+    "location",
+    [
+        ("name",),
+        ("tracks", 0, "name"),
+        ("subtitle", "cues", 0, "text"),
+    ],
+)
+@pytest.mark.parametrize("invalid_char", ["\ud800", "\udfff"])
+def test_unpaired_surrogate_unicode_is_rejected_before_project_open(
+    tmp_path: Path, location: tuple[str | int, ...], invalid_char: str
+) -> None:
+    repository = JsonProjectRepository()
+    document = _full_project().semantic_dict(include_revision=True)
+    location_node: object = document
+    for key in location[:-1]:
+        location_node = location_node[key]  # type: ignore[index]
+    location_node[location[-1]] = invalid_char  # type: ignore[index]
+    bad = tmp_path / "SECRET_SURROGATE.angproj"
+    # JSON escape sequences may legally encode invalid lone UTF-16 surrogates.
+    bad.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$") as error:
+        repository.load(bad)
+    assert "SECRET_" not in str(error.value)
+    assert error.value.__suppress_context__
+
+
+def test_unicode_corruption_preserves_active_session_and_saved_file(tmp_path: Path) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-ACTIVE", "Existing project", 30)
+    original_path = session.save(tmp_path / "current.angproj")
+    original_bytes = original_path.read_bytes()
+    original_hash = session.state.semantic_hash()
+    original_session_id = session.session_id
+
+    damaged = _full_project().semantic_dict(include_revision=True)
+    damaged["name"] = "\ud800"
+    corrupt = tmp_path / "SECRET_BAD_UNICODE.angproj"
+    corrupt.write_text(json.dumps(damaged), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$"):
+        session.open_project(corrupt, discard_unsaved=True)
+
+    assert session.current_path == original_path
+    assert session.session_id == original_session_id
+    assert session.state.semantic_hash() == original_hash
+    assert not session.dirty
+    assert original_path.read_bytes() == original_bytes
+
+
+def test_even_non_json_repository_cannot_replace_session_with_unhashable_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-ACTIVE", "Existing project", 30)
+    active_path = session.save(tmp_path / "original.angproj")
+    old_id = session.session_id
+    old_hash = session.state.semantic_hash()
+    poisoned = replace(session.state, name="\ud800")
+    monkeypatch.setattr(repository, "load", lambda path: poisoned)
+
+    with pytest.raises(UnicodeEncodeError):
+        session.open_project(tmp_path / "synthetic.angproj", discard_unsaved=True)
+    assert session.current_path == active_path
+    assert session.session_id == old_id
+    assert session.state.semantic_hash() == old_hash

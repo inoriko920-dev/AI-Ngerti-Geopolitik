@@ -193,3 +193,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 project-open follow-up: strict boolean flags
 
 - Load must fail closed instead of coercing malformed `"false"` strings to True in canonical project flags. New tests cover 10 fields / 50 invalid values plus valid roundtrip. Confirm Windows full CI on exact latest head before marking PASS; no `main` merge.
+
+## PR #20 Unicode project-load follow-up (8 Oct 2026 WIB)
+
+- Inspect exact current-head Windows CI for unpaired-surrogate malformed JSON, safe exception mapping and project-session atomicity; prior `a3bebefa` PASS is not evidence for new changes. Keep PR Draft, no main merge. Pilot A remains pending.

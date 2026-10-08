@@ -180,3 +180,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - On Draft PR #20, ensure invalid JSON strings/numbers/null cannot silently flip enabled/muted/locked/visible flags on reopen; source-of-truth v1 schema and frozen UI unchanged.
 - Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. Windows CI on new HEAD pending before PASS. No native FFmpeg or portable work.
+
+## PR #20 — Project load Unicode/atomicity hardening (8 Oct 2026 WIB)
+
+- Unpaired Unicode surrogate escapes in a valid JSON file could pass decode then fail `semantic_hash` after `ProjectSession.open_project` began replacing the active session. Validate canonical hashing inside repository load and hash before session mutation; add synthetic-invalid-repository and valid-existing-project regression tests. Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`.
+- **PENDING current-head Windows CI**, source schema/UI/main/FFmpeg execution unchanged; PR #20 remains Draft, portable last.

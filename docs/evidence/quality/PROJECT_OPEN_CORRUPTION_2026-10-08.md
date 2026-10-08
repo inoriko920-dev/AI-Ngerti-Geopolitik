@@ -59,3 +59,11 @@ timeline, effect locks, audio mute state or captions when reopened.
   file is modified by failing `load`.
 - Windows CI on the updated exact branch SHA must pass before acceptance.
   Native FFmpeg Pilot A remains pending; portable is reserved for final release.
+
+## Invalid-Unicode project-load atomicity (8 October 2026 WIB)
+
+- A JSON document may contain escaped lone UTF-16 surrogates (`\\ud800` or `\\udfff`). The prior decoder accepted such strings because the domain validation did not check Unicode encodability. `ProjectSession.open_project` then attempted `state.semantic_hash()` only **after** replacing the active project, raising `UnicodeEncodeError` and leaving a partial session switch.
+- `JsonProjectRepository.load` now computes the canonical semantic hash before returning, so strings that cannot be encoded as UTF-8 are rejected through existing privacy-safe `ProjectFormatError` handling. No JSON schema changes.
+- `ProjectSession.open_project` computes the hash and builds a new bus before altering `_bus`, `_session_id`, path, or saved hash; even an alternate repository that returns an unhashable state cannot partially swap an active project.
+- New tests exercise escaped lone surrogates in project name, track name and subtitle cue text, confirm the previous project and bytes remain intact, and simulate a non-JSON repository returning an invalid state.
+- Current source and tests require **new same-HEAD Windows CI PASS**; no FFmpeg external execution, UI rework, codec bundling, main merge, or portable release.

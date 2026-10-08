@@ -132,7 +132,12 @@ class JsonProjectRepository:
             raw = json.loads(path.read_text(encoding="utf-8"))
             if not isinstance(raw, dict):
                 raise TypeError("project root must be an object")
-            return self._decode(raw)
+            state = self._decode(raw)
+            # Validation of the domain model alone cannot guarantee that every
+            # nested string can be encoded when ProjectSession computes its
+            # semantic hash. Reject malformed Unicode BEFORE returning state.
+            state.semantic_hash()
+            return state
         except (
             OSError,
             json.JSONDecodeError,
