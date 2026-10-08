@@ -178,3 +178,13 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Baseline reviewed `c9154eef85f8b475630816a7c63f5e2b52bf1523`; new DOCX/TXT planning and contract in `docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.*`.
 - P0 gap: Export dialog features do not match `FfmpegSliceMediaEngine.export` fixed `libx264 / ultrafast / CRF28`; intent payload does not wire all options; codec/size/fps/audios verification incomplete.
 - Next *planned* task SF12-T01 capability registry + truth-in-UI only, after gate. Other SF12 tasks are NOT STARTED. Live Gemini and physical microphone remain provisional.
+
+
+## SF12-T01 status — 2026-10-08 WIB
+
+- Code commit tested: `b0edecbb01b6eb76fb46fd1489e442bcacd589ba` on `feature/sf12-t01-export-capabilities` (stacked draft PR #2 above planning draft PR #1). Never claim merged into main.
+- Windows Actions dedicated run [37734750417](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37734750417): **SUCCESS**. Targeted 6 tests and entire existing pytest suite PASS. Ruff format/check, mypy, import contracts, architecture, source-of-truth 70/70, secret check, frozen UI manifest 42/42 PASS.
+- T01 result: **PASS_WITH_PROVISIONAL_NATIVE_ENCODER_INVENTORY**. Export controls fail closed: no enabled `Mulai Render` button, no claimed H.265/1440p/4K/60fps/sharpen/subtitle switch rendering. Default output directory now per-user Videos rather than a developer D: example.
+- Real Windows runner inventory explicitly returned FFmpeg=false, FFprobe=false, libx264=false, libx265=false, AAC=false. This is an observed ABSENCE, not proof of missing codecs in end-user installations, and not a real H.264/H.265 export test.
+- The UI receives an immutable capability snapshot but no production asynchronous capability refresh yet; current conservative default keeps render disabled. `MediaEnginePort` and `ProjectState` unchanged; no AAVC writes, no UI reference asset changes.
+- **Next exact task:** SF12-T02 ExportRequest + engine-port contract ASTRA review. Do not wire or enable rendering before actual backend + output qualification; no STEP13/14/release. W5 physical mic and W6/W7 live Gemini still provisional.
