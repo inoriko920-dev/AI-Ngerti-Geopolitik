@@ -311,9 +311,7 @@ class W8RuntimeController:
                     # DOCX Scene + Asset-ID ingestion has not been implemented
                     # in the live W8 controller. Do not silently invent a
                     # ProjectSession or navigate to an empty editor.
-                    self._notify(
-                        "Impor Scene DOCX belum terhubung. Project belum dibuat."
-                    )
+                    self._notify("Impor Scene DOCX belum terhubung. Project belum dibuat.")
         elif kind is UiIntentType.OPEN_PROJECT:
             filename = data.get("path", "")
             if not filename:

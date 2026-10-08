@@ -6,7 +6,15 @@ import hashlib
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QFileDialog, QLabel, QLineEdit, QListWidget, QPushButton, QTableWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QFileDialog,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QPushButton,
+    QTableWidget,
+)
 
 from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBatch
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
