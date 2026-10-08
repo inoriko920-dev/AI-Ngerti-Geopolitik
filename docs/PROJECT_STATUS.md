@@ -303,3 +303,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 ## SOL INT-01B/B1 extreme-input hardening — 2026-10-08 WIB
 - Fixed pure validator overlarge Python integer causing `math.isfinite` OverflowError; typed fail-closed now applies to timeout and grace inputs. Code SHA 7b95beeb; Windows CI 37756572639 SUCCESS full regression/UI42/architecture. No production process execution. INT-01B/B2 still blocked until explicit Pilot A approval.
+
+
+## SOL INT-01B/B2 bounded output preparation — 2026-10-08 WIB
+- **B2_PREP_PASS (pure collector only)**, code ef8b06a4, Windows [37757835429](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37757835429) SUCCESS including whole pytest, mypy101, docs70/UI42, architecture/security. `NativeBoundedCapture` protects memory for synthetic stdout/stderr chunks with typed overflow/cleanup and no external/native process launch. Draft stacked PR #18; main untouched.
+- **Full B2 bounded native runner not started**: explicit external-FFmpeg Pilot A owner approval D1 pending. Production FFmpeg runner/FFprobe, Qt button, engine, media port and binary licenses/distribution unchanged. Evidence `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md`.

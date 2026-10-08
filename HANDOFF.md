@@ -344,3 +344,10 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Huge Python int timeout/grace previously raised OverflowError during math.isfinite; hardened pure validator to call math.isfinite only on floats. Tests for 10**1000 and -(10**1000), plus outcome large counter.
 - Code SHA 7b95beebc3c277590371e8499acca81616d99aa4, Windows [37756572639](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37756572639) SUCCESS targeted/full pytest + static/architecture/frozen UI. Evidence docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md updated.
 - B1 remains **PASS_PURE_CONTRACT**, B2 external/subprocess runner **OWNER_D1_BLOCKED**. No FFmpeg execution, UI wiring, native distribution, merge or release.
+
+
+## SOL INT-01B/B2-prep — Pure bounded capture (2026-10-08 WIB)
+- Implementation SHA ef8b06a4, Windows [37757835429](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37757835429) SUCCESS: 101 mypy sources, full pytest, Ruff/imports/architecture/secrets, source-of-truth70/UI42 PASS. Draft stacked PR #18 (base B1 PR #16). Main unchanged.
+- New `infrastructure/native_bounded_capture.py` synchronizes synthetic writes to independent capped stdout/stderr buffers (per B1 NativeProcessPolicy); overflow fails closed/redacts, discard and one-time internal parser handoff erase buffers. Only safe counters exposed externally. Tests `tests/unit/test_sol_int01b_b2_prep_bounded_capture.py`; native subprocess/FFmpeg is **NEVER launched** here.
+- `docs/evidence/features/SOL_INT01B_B2_PREP_BOUNDED_CAPTURE.md`. **Gate B2_PREP_PASS / B2_ACTUAL_SUBPROCESS_BLOCKED_PENDING_D1**. Old FFmpeg runner and FFprobe remain unchanged. No GUI render, codec bundling, legal approvals or release.
+- Next after explicit owner Pilot A approval: real bounded B2 process executor. Generic `lanjutkan` is not authorization for native engine/redistribution.

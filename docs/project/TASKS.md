@@ -1213,3 +1213,11 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 ## SOL INT-01B/B1 hardened edge cases — 2026-10-08 WIB
 - [x] Test and fix timeout/grace `10**1000` int OverflowError; fixed-code fail-closed PASS Windows [37756572639](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37756572639).
 - [ ] B2 actual bounded subprocess process runner; **explicit Pilot A owner approval required**. No product render activation/FFmpeg binary bundling.
+
+
+## SOL INT-01B/B2 preparation (2026-10-08 WIB)
+- [x] B1 immutable process policy/outcomes with huge-int negative regression — PASS, CI 37757021414.
+- [x] **B2-prep** only: pure memory-bounded, thread-safe native output collector, private one-time output and redacted metrics — PASS Windows [37757835429](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37757835429), source-of-truth70/UI42/full pytest.
+- [ ] **B2 full native process runner** draining real child PIPEs, deadline/cancel/typed errors — NOT STARTED, requires explicit Pilot A D1 owner approval.
+- [ ] B3 Windows process-tree cleanup, B4 FFprobe bounded probing, B5 FFmpeg production adapter integration, B6 real native Windows qualification — pending individual gates.
+- [ ] D2 encoder distro, D3 LICENSE/notices and D4 final native engine choice — still pending. No UI render, main merge or release.
