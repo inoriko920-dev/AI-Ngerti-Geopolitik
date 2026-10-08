@@ -256,3 +256,15 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Evidence `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md`; artifact `ANG-SF12-T06-CodecMatrix-RealMedia` ID **11533866135**, ZIP digest `04fea1ca343b133cedb838fe3a4924d50763cc01a63c67e0292080155468d1fd` (14-day retention).
 - Draft stacked **PR #7**, base `feature/sf12-t05-selection-frame-mapping` / PR #6, other T01-T05 still open; **main not changed**.
 - **Exact next serial task after user's next `lanjutkan`: SF12-T07 — Subtitle, Narration, Sharpen & Quality Binding ONLY.** Do not broaden to T08+ in same step. External FFmpeg licensing/package architecture changes require ASTRA/ADR; W5 physical microphone, W6/W7 live Gemini stay provisional.
+
+
+## SF12-T07 — Accepted 2026-10-08 WIB
+
+- **T07 PASS_REAL_MEDIA_STYLES / PRODUCT_RENDER_DISABLED**. Code SHA `79b24e93d4574cff0fc8a1650a6bd569e7640965`, Windows [37741355411](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37741355411) SUCCESS.
+- Six exact real H264/AAC 1080p30 60-frame / 2-sec outputs: subtitle burn-in on vs off, quality high CRF28 ultrafast, youtube_clean CRF21 medium, documentary_crisp CRF18 slow; sharpen none/light/crisp (unsharp levels 0.6/1.2), all visually and codec verified. Narration begins frame 15 with 440Hz synthetic WAV.
+- Objective visual mean gray pixel difference: subtitles on/off 1.1399; sharpen light 0.6486, crisp 1.0716 vs base. PCM comparison with no-narration control mean difference pre-start 4.2776, during narration 2399.3156; not subjective quality scores.
+- `application/export_style_policy.py`, `infrastructure/ffmpeg_export_style.py`, opt-in T03 preflight; no ProjectState mutation, UI or MediaEnginePort breaking changes. Reuses W5 render plan, safe temp, post-check and atomic no-clobber. **Default UI render still disabled** until T08/T09/T10.
+- Tests T07 + full pytest/Ruff/mypy **94 source files**/lint-imports/architecture/secrets/70 documents/42 UI reference hashes all PASS.
+- Evidence `docs/evidence/features/SF12_T07_STYLE_REAL_MEDIA.md`, artifact `ANG-SF12-T07-Style-RealMedia` id **11533749234**, ZIP digest `894f7381105616d68ba27d64748713fd876127bf806ba1f4727824ff96d3c6ec`. GitHub branch `feature/sf12-t07-style-subtitles-narration` / **draft PR #8** stacked on T06 PR #7 and prior #6/#5/#4/#3/#2/#1, none merged into main.
+- Disallowed options: arbitrary style permutations, quality slider, audio OFF, sidecar SRT, H265+sharpen/4K+styles, unqualified codecs. Native FFmpeg is installed only on runner, no portable bundle. W5 physical microphone and live W6/W7 Gemini tests provisional.
+- **Next exact task only after next user's `lanjutkan`: SF12-T08 Nonblocking Render Job Lifecycle**, with progress, safe cancellation, timeout, stale request/close guard and tests; T09 postflight and T10 Windows packaged qualification remain separate. No frozen port/engine dependency changes without ASTRA ADR.

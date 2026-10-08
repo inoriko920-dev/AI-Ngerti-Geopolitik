@@ -233,3 +233,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Dedicated candidate list + fail-closed T03 allowlist + additive safe FFmpeg qualification exporter; frozen engine port, Qt UI references, ProjectState and original AAVC untouched. No native binary bundled.
 - Complete pytest and T06 target PASS; Ruff, mypy 92, lint-imports, architecture, secret checks, source-of-truth 70/70, UI SHA refs 42/42 PASS. Evidence `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md`, GitHub artifact ID 11533866135.
 - Draft PR #7 stacked on PR #6/#5/#4/#3/#2/#1, **not merged to main**. Next **SF12-T07 Subtitle/Narration/Sharpen/Quality binding**, only after explicit `lanjutkan`.
+
+
+## SF12-T07 — STYLES, SUBTITLE, NARRATION / PASS_REAL_MEDIA_STYLES (2026-10-08 WIB)
+
+- Code SHA `79b24e93d4574cff0fc8a1650a6bd569e7640965`; Windows run `37741355411` **SUCCESS**. Six real 2-second H264/1080p30/AAC files, default burn-in vs subtitle OFF, sharpen light/crisp measurable pixel changes, and high/youtube_clean/documentary_crisp CRF/preset bindings. Narration late start frame15 verified by independent PCM comparator.
+- Pixel means subtitle on/off 1.1399, sharpen light 0.6486, crisp 1.0716. Audio-vs-no-narration pre mean 4.2776, during mean 2399.3156. Sources unchanged and output no-clobber safety proven.
+- T07 targeted/full pytest, Ruff/mypy **94**, import/architecture/secret, source-of-truth 70/70, frozen UI SHA42/42 PASS. Evidence `docs/evidence/features/SF12_T07_STYLE_REAL_MEDIA.md`, GitHub artifact ID 11533749234.
+- Additive style qualification and T03 opt-in only; original W5 render plans, ProjectState, AAVC and frozen MediaEnginePort/UI untouched. GUI render still disabled pending T08/T09/T10. Unlisted style permutations/audio OFF/sidecar SRT not qualified.
+- Draft stacked PR **#8** on PR #7/#6/#5/#4/#3/#2/#1; **not merged to main**. Next serial task **T08 async render job lifecycle** after owner continuation.
