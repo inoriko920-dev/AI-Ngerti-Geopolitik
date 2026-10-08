@@ -440,9 +440,11 @@ class W8RuntimeController:
             else:
                 if self.window.window.property("ui_state") == "UI-003":
                     self.scene_asset_inventory = inventory
+                    ready = inventory.ready_count
+                    total = len(inventory.bindings)
                     if inventory.all_ready:
                         self._notify(
-                            f"Folder aset: {inventory.ready_count}/{len(inventory.bindings)} READY. "
+                            f"Folder aset: {ready}/{total} READY. "
                             "Project belum dibuat."
                         )
                     else:
@@ -451,7 +453,7 @@ class W8RuntimeController:
                             for item in inventory.blockers[:4]
                         )
                         self._notify(
-                            f"Folder aset: {inventory.ready_count}/{len(inventory.bindings)} READY. "
+                            f"Folder aset: {ready}/{total} READY. "
                             f"Perbaiki {issues}. Project belum dibuat."
                         )
         if self.validation_job_id is not None:
