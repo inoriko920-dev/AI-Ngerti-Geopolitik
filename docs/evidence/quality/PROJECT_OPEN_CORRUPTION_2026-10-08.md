@@ -180,3 +180,7 @@ timeline, effect locks, audio mute state or captions when reopened.
 
 - Expected fail-closed: new target only; input DOCX reread, initial asset inventory and fingerprint check, CommandBatch project creation, second scan/fingerprint check, .angproj Save and canonical reload/semantic equality. No GUI session mutated.
 - Dedicated regression cases for altered DOCX, changed/deleted images, duplicate candidates introduced after preflight or before write, no overwrite, and real saved project accepted by ProjectSession. Requires same-head Windows full pytest and 42 frozen UI checks to report PASS.
+
+## Depth-limit fail-closed hardening (8 Oct 2026 WIB)
+
+The Axxx folder walk previously silently truncated directory descent at `max_depth`. This could incorrectly report READY while hiding a second matching A001 deeper than the limit. The scanner now raises a typed, path-redacted scan-depth error on unvisited real directories. A regression verifies fail-closed behavior and duplicate detection once the limit is raised.

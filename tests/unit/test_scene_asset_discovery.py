@@ -184,3 +184,20 @@ def test_oversize_or_incomplete_image_inventory_is_blocked(tmp_path: Path) -> No
         verify_scene_image_media(ready, max_image_bytes=1)
     with pytest.raises(SceneAssetScanError, match="size"):
         verify_scene_image_media(ready, max_image_bytes=0)
+
+
+def test_depth_limit_rejects_unscanned_nested_duplicate_not_false_ready(
+    tmp_path: Path,
+) -> None:
+    for number in (1, 2, 3):
+        make_image(tmp_path / f"A{number:03d}.png")
+    deepest = tmp_path / "first" / "second" / "third"
+    deepest.mkdir(parents=True)
+    make_image(deepest / "A001.png")
+    with pytest.raises(SceneAssetScanError, match="scan depth"):
+        scan_scene_asset_folder(plan(), tmp_path, max_depth=2)
+    # Increasing the limit must reveal the duplicate, not choose either copy.
+    inventory = scan_scene_asset_folder(plan(), tmp_path, max_depth=5)
+    assert inventory.bindings[0].status is SceneAssetStatus.DUPLICATE
+    assert not inventory.all_ready
+
