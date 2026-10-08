@@ -144,6 +144,30 @@ class ProjectSession:
     def save_as(self, path: Path) -> Path:
         return self.save(path)
 
+    def recover_snapshot(
+        self,
+        source_path: Path,
+        snapshot_path: Path,
+        *,
+        discard_unsaved: bool = False,
+    ) -> ProjectState:
+        """Adopt validated snapshot as dirty working state; never write source."""
+        self._guard_replacement(discard_unsaved)
+        source = source_path.resolve()
+        original = self.repository.load(source)
+        restored = self.repository.load(snapshot_path.resolve())
+        original.validate()
+        restored.validate()
+        if original.project_id != restored.project_id:
+            raise ProjectSessionError("recovery snapshot project mismatch")
+        if restored.revision < original.revision:
+            raise ProjectSessionError("recovery snapshot is older than source")
+        self._bus = CommandBus(restored)
+        self._current_path = source
+        # Force dirty even for an identical semantic state: explicit Save is mandatory.
+        self._saved_hash = None
+        return restored
+
     def autosave(self, snapshot_dir: Path | None = None) -> Path:
         state = self.state
         if snapshot_dir is None:
