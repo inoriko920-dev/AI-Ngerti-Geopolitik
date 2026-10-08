@@ -315,3 +315,12 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Identified bounded native process/path risks in export_capability_probe.py and ffmpeg_slice.py (PATH spoof/mismatch, encoder text cannot qualify actual encode, ffprobe no timeout, blocked subprocess pipes, incomplete cancellation). No runtime exploit claim.
 - Detailed design + P01–P16 tests, immutable identity/typed code and subtask SOL 01A–F: `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.docx` with MD/TXT mirrors. Risk review docs/evidence/planning/ASTRA_INT01_NATIVE_TOOLCHAIN_DESIGN_REVIEW_2026-10-08.md.
 - **DESIGN_PASS / PILOT_A_OWNER_APPROVAL_PENDING / SOL_CODE_BLOCKED**. No code/engine/UI/release edits. Explicit D1 first, then SOL INT-01A only.
+
+
+## SOL INT-01A typed native identity — 2026-10-08 WIB
+
+- **PASS pure typed application contract only; PILOT A ARCHITECTURE NOT APPROVED**. Implementation SHA `51a51eb8de4841d6800ebf63e6220eafafa42541`; Windows [37750580743](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37750580743) SUCCESS.
+- New pure `application/native_toolchain_identity.py`: frozen safe ffmpeg/ffprobe value objects, SHA256 and encoder/profile claims, source category, typed status and privacy-safe issue codes. All fake/invalid claims denied. `can_start_product_render` ALWAYS False, no native execution.
+- Tests `tests/unit/test_sol_int01a_native_identity.py`, workflow `.github/workflows/sol-int01a-native-identity-windows.yml` full pytest, Ruff, mypy 99, lint-imports/architecture/secrets, source-of-truth70/UI42 PASS.
+- Full evidence `docs/evidence/features/SOL_INT01A_NATIVE_IDENTITY_CONTRACT.md`. Draft stacked **PR #14** on ASTRA design PR #13, all others unmerged to main; Qt render disabled, source/engine unchanged.
+- **RISK OPEN:** No real process identity hash, PATH/canonicalization protection, bounded runner or actual encoder qualification yet. Approval D1 Pilot A and final legal D2–D4 remain pending; next only after scoped owner authorization **INT-01B bounded native process runner**. No bundled FFmpeg or release.

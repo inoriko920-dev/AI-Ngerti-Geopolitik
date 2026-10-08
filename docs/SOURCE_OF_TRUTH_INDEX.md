@@ -337,3 +337,11 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 ## ASTRA INT-01 native-toolchain risk design (2026-10-08 WIB)
 - `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.md` / .txt / .docx: pre-implementation pilot A proposal, typed security contracts, P01–P16 test matrix and 01A–F serial SOL tasks, owner D1 pending.
 - `docs/evidence/planning/ASTRA_INT01_NATIVE_TOOLCHAIN_DESIGN_REVIEW_2026-10-08.md`: read-only audit of existing process/path risks; no production capability approval.
+
+
+## SOL INT-01A — Typed FFmpeg identity/issue contract (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/native_toolchain_identity.py`: immutable toolchain identity/status/errors, input validation and guaranteed product render deny.
+- `tests/unit/test_sol_int01a_native_identity.py`: type, digests, encoder claims, privacy, enum and immutable projection negative tests.
+- `.github/workflows/sol-int01a-native-identity-windows.yml`: native-free Windows test full gates and UI freeze.
+- `docs/evidence/features/SOL_INT01A_NATIVE_IDENTITY_CONTRACT.md`: accepted code SHA 51a51eb8, Windows SUCCESS 37750580743, release/owner decision still blocked.
