@@ -20,9 +20,7 @@ def test_corrupt_nested_track_has_typed_private_safe_error(
     tmp_path: Path, invalid_track: object
 ) -> None:
     repo = JsonProjectRepository()
-    document = ProjectState.create("P-OPEN", "Valid", 30).semantic_dict(
-        include_revision=True
-    )
+    document = ProjectState.create("P-OPEN", "Valid", 30).semantic_dict(include_revision=True)
     document["tracks"] = [invalid_track]
     bad = tmp_path / "SECRET_TOKEN_PRIVATE_PROJECT.angproj"
     bad.write_text(json.dumps(document), encoding="utf-8")
@@ -58,9 +56,7 @@ def test_corrupt_open_does_not_replace_valid_active_session(tmp_path: Path) -> N
     before_session = session.session_id
     before_bytes = active.read_bytes()
 
-    document = ProjectState.create("P-INVALID", "Corrupt", 30).semantic_dict(
-        include_revision=True
-    )
+    document = ProjectState.create("P-INVALID", "Corrupt", 30).semantic_dict(include_revision=True)
     document["tracks"] = [17]
     corrupt = tmp_path / "SECRET_TOKEN_CORRUPTED.angproj"
     corrupt.write_text(json.dumps(document), encoding="utf-8")
