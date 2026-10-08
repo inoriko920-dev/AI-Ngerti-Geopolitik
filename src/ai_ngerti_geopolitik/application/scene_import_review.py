@@ -11,8 +11,20 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
-from ai_ngerti_geopolitik.application.scene_asset_bindings import SceneAssetInventory
+from ai_ngerti_geopolitik.application.commands import (
+    AddClipCommand,
+    AddMarkerCommand,
+    Command,
+    CommandBatch,
+    CommandBus,
+    ImportAssetCommand,
+)
+from ai_ngerti_geopolitik.application.scene_asset_bindings import (
+    SceneAssetInventory,
+    VerifiedSceneImageSet,
+)
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxPlan
+from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, Marker, ProjectState
 
 _MAX_TIMELINE_SECONDS = 24 * 60 * 60
 
@@ -132,3 +144,123 @@ def build_scene_timeline_review(
         )
         current_frame = end_frame
     return SceneTimelineReview(fps, tuple(scenes), current_frame, len(ordered_assets))
+
+
+
+def create_canonical_scene_image_project(
+    review: SceneTimelineReview,
+    verified: VerifiedSceneImageSet,
+    *,
+    project_id: str,
+    project_name: str,
+) -> ProjectState:
+    """Make one genuine ProjectState using one semantic CommandBatch.
+
+    The caller must re-scan and re-verify original files immediately before
+    persistence. This produces canonical project data, NOT qualified rendering.
+    """
+    if review.fps not in (30, 60) or not review.scenes or review.total_frames <= 0:
+        raise SceneImportReviewError("scene review is invalid")
+    if len(verified.images) != review.asset_count:
+        raise SceneImportReviewError("verified asset count does not match review")
+    by_id = {item.asset_id: item for item in verified.images}
+    if len(by_id) != len(verified.images):
+        raise SceneImportReviewError("verified image IDs are duplicated")
+
+    commands: list[Command] = []
+    for item in verified.images:
+        if (
+            item.width <= 0
+            or item.height <= 0
+            or item.file_size <= 0
+            or len(item.fingerprint_sha256) != 64
+        ):
+            raise SceneImportReviewError("verified image metadata is invalid")
+        commands.append(
+            ImportAssetCommand(
+                Asset(
+                    asset_id=item.asset_id,
+                    path_ref=str(item.path),
+                    media_type="image",
+                    duration=FrameTime(1, review.fps),
+                    width=item.width,
+                    height=item.height,
+                    has_audio=False,
+                    fingerprint_sha256=item.fingerprint_sha256,
+                    source_name=item.path.name,
+                    file_size=item.file_size,
+                )
+            )
+        )
+    cursor = 0
+    seen: set[str] = set()
+    for index, scene in enumerate(review.scenes, 1):
+        if (
+            scene.scene_number != index
+            or scene.start_frame != cursor
+            or scene.end_frame <= scene.start_frame
+            or scene.end_frame > review.total_frames
+        ):
+            raise SceneImportReviewError("scene order or timing is invalid")
+        regions = (
+            ((SceneRegion.FULL, "V1"),)
+            if scene.layout is SceneLayout.SINGLE
+            else ((SceneRegion.LEFT, "V1"), (SceneRegion.RIGHT, "V2"))
+        )
+        if len(scene.visuals) != len(regions):
+            raise SceneImportReviewError("scene visual count is inconsistent")
+        for visual, (region, track_id) in zip(scene.visuals, regions, strict=True):
+            media = by_id.get(visual.asset_id)
+            if (
+                media is None
+                or visual.asset_id in seen
+                or visual.path != media.path
+                or visual.region is not region
+                or visual.track_id != track_id
+                or visual.start_frame != scene.start_frame
+                or visual.end_frame != scene.end_frame
+            ):
+                raise SceneImportReviewError("scene image placement is inconsistent")
+            seen.add(visual.asset_id)
+            commands.append(
+                AddClipCommand(
+                    Clip(
+                        clip_id=f"SCENE-{index:04d}-{visual.asset_id}",
+                        asset_id=visual.asset_id,
+                        timeline_start=FrameTime(scene.start_frame, review.fps),
+                        source_in=FrameTime(0, review.fps),
+                        source_out=FrameTime(1, review.fps),
+                        image_hold_frames=scene.end_frame - scene.start_frame,
+                    ),
+                    track_id=track_id,
+                )
+            )
+        commands.append(
+            AddMarkerCommand(
+                Marker(
+                    marker_id=f"SCENE-{index:04d}",
+                    frame=FrameTime(scene.start_frame, review.fps),
+                    label="\n".join(
+                        (f"Scene {index} [{scene.layout.value}]", *scene.source_context)
+                    ),
+                    marker_type="note",
+                )
+            )
+        )
+        cursor = scene.end_frame
+
+    if cursor != review.total_frames or seen != set(by_id):
+        raise SceneImportReviewError("review and verified images differ")
+    try:
+        bus = CommandBus(ProjectState.create(project_id, project_name, review.fps))
+        return bus.execute(
+            CommandBatch(
+                batch_id="SCENE-DOCX-IMPORT-0001",
+                label="Create Scene DOCX image timeline",
+                actor="manual",
+                expected_revision=0,
+                commands=tuple(commands),
+            )
+        )
+    except (ValueError, RuntimeError):
+        raise SceneImportReviewError("canonical scene project creation failed") from None
