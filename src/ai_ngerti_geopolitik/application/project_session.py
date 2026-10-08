@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from ai_ngerti_geopolitik.application.autosave_catalog import AutosaveCatalogService
 from ai_ngerti_geopolitik.application.commands import CommandBatch, CommandBus
 from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
 from ai_ngerti_geopolitik.domain import ProjectState
@@ -28,8 +29,14 @@ class ProjectLifecycleSnapshot:
 
 
 class ProjectSession:
-    def __init__(self, repository: ProjectRepositoryPort) -> None:
+    def __init__(
+        self,
+        repository: ProjectRepositoryPort,
+        *,
+        autosave_catalog: AutosaveCatalogService | None = None,
+    ) -> None:
         self.repository = repository
+        self.autosave_catalog = autosave_catalog or AutosaveCatalogService(repository)
         self._bus: CommandBus | None = None
         self._current_path: Path | None = None
         self._saved_hash: str | None = None
@@ -143,12 +150,6 @@ class ProjectSession:
             if self._current_path is None:
                 raise ProjectSessionError("unsaved project autosave requires snapshot_dir")
             snapshot_dir = self._current_path.parent / ".ang-autosave"
-        snapshot_dir = snapshot_dir.resolve()
-        snapshot_dir.mkdir(parents=True, exist_ok=True)
-        filename = (
-            f"{state.project_id}.r{state.revision:06d}."
-            f"{state.semantic_hash()[:12]}.autosave.angproj"
+        return self.autosave_catalog.create_snapshot(
+            state, snapshot_dir, source_path=self._current_path
         )
-        target = snapshot_dir / filename
-        self.repository.save_snapshot(state, target)
-        return target
