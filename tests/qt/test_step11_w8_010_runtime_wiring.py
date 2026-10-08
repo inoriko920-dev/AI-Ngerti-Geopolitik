@@ -1136,13 +1136,17 @@ def test_dirty_session_stays_open_before_timing_dialog_for_new_scene_project(
     identity = controller.session.session_id
     current = controller.session.state.semantic_hash()
     assert controller.session.dirty
-    intent = UiIntent(UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(docx))))
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(docx)))
+    )
     controller.handle(intent)
     pump(
         qtbot,
-        lambda: controller.scene_docx_future is None
-        and controller.scene_asset_future is None
-        and controller.scene_asset_inventory is not None,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
         controller,
     )
     controller.handle(intent)
@@ -1153,4 +1157,3 @@ def test_dirty_session_stays_open_before_timing_dialog_for_new_scene_project(
     assert "Simpan perubahan" in controller.last_error
     controller.shutdown()
     controller.window.close()
-
