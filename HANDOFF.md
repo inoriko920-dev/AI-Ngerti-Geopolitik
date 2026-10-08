@@ -8,7 +8,8 @@
 **Current implementation:** S11-W8-005 — PASS
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
 **Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
-**Next exact task:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY
+**Current task:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION
+**Next exact action:** complete W8-008 tests/evidence on formatted code; W8-009 remains blocked
 
 ## Read-first constraints
 
@@ -126,3 +127,13 @@ W5 microphone physical hardware and W6/W7 live Gemini network tests remain
 provisional; do not claim device/provider smoke results that were not run.
 
 
+
+## W8-008 — QA pending
+
+ProjectSession lifecycle session_id rotates on New/Open/Recover and clears on
+Close. Immutable ProjectJobToken validates project/session/revision/semantic
+hash. ReadOnlyProjectJobs executes validation and recovery inspection away
+from UI, never mutates canonical ProjectState, and discards stale/cancelled
+results. RelinkScanJobService adopts the same session-bound token. 12
+concurrency tests and strict owned evidence runner committed. Dedicated
+Windows CI still being qualified; do NOT claim PASS or begin W8-009.

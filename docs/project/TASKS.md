@@ -826,7 +826,7 @@ Serial contract:
 - [x] **S11-W8-005 — Autosave Catalog + Retention Hardening — PASS**
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
 - [x] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**
-- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY**
+- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION**
 - [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
 - [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
 
@@ -991,3 +991,7 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 **Exact next task:** S11-W8-008 Stale Result Hardening for W8 Background
 Jobs ONLY. W8-009 remains serial-blocked.
+
+**W8-008:** lifecycle IDs, project/session/revision/semantic SHA-256 token,
+validation/recovery read-only worker, relink stale/cancel safety, 12 focused
+tests and evidence runner. **IN_VERIFICATION**, do not start W8-009.

@@ -2,7 +2,7 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..007 PASS / W8-008 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..007 PASS / W8-008 IN_VERIFICATION**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
@@ -108,6 +108,13 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 ## Exact next action
 
-**S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY.**
+**S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION.**
 W8-009..010 remain blocked. W5 physical microphone and W6/W7 live Gemini
 network qualification remain provisional. No W8-008 coding was started here.
+
+## W8-008 active gate
+
+Shared lifecycle token, read-only validation/recovery worker and relink
+closed-session stale protection implemented. 12 targeted concurrency tests
+and strict no-mutation evidence committed; Windows CI acceptance pending.
+W8-009 remains SERIAL_BLOCKED.

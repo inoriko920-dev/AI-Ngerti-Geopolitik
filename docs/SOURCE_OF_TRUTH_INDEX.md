@@ -60,6 +60,7 @@
     - `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`
     - `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`
     - `docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`
+    - `docs/evidence/features/S11_W8_008_STALE_JOBS.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -159,7 +160,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
 - W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
-- W8-008 Stale Result Hardening for W8 Background Jobs: **READY**.
+- W8-008 Stale Result Hardening for W8 Background Jobs: **IN_VERIFICATION**, not PASS.
 - W8-009..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
@@ -196,3 +197,6 @@ W8-007 READY; W8-008 BLOCKED.
 W8-007 accepted PASS: full same-HEAD 28/28 regression, real
 fault-injection evidence and typed safe error projection. W8-008 READY;
 W8-009 BLOCKED.
+
+W8-008 code/tests/evidence committed; QA pending. Read
+`docs/evidence/features/S11_W8_008_STALE_JOBS.md`. W8-009 remains blocked.
