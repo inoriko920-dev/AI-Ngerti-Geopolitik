@@ -17,16 +17,12 @@ from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_doc
 
 def _write_docx(path: Path, lines: tuple[str, ...]) -> None:
     document = "".join(
-        '<w:p><w:r><w:t xml:space="preserve">'
-        + escape(line)
-        + "</w:t></w:r></w:p>"
+        '<w:p><w:r><w:t xml:space="preserve">' + escape(line) + "</w:t></w:r></w:p>"
         for line in lines
     )
     xml = (
         '<w:document xmlns:w="http://schemas.openxmlformats.org/'
-        'wordprocessingml/2006/main"><w:body>'
-        + document
-        + "</w:body></w:document>"
+        'wordprocessingml/2006/main"><w:body>' + document + "</w:body></w:document>"
     )
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as out:
         out.writestr("word/document.xml", xml)
@@ -116,9 +112,9 @@ def test_docx_table_paragraphs_read_in_order(tmp_path: Path) -> None:
     path = tmp_path / "table.docx"
     xml = (
         b'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-        b'<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>'
-        b'<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Asset 1: table</w:t>'
-        b'</w:r></w:p></w:tc></w:tr></w:tbl>'
+        b"<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        b"<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Asset 1: table</w:t>"
+        b"</w:r></w:p></w:tc></w:tr></w:tbl>"
         b"</w:body></w:document>"
     )
     with zipfile.ZipFile(path, "w") as out:

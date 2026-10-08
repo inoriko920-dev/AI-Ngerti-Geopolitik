@@ -50,10 +50,7 @@ def read_scene_docx(path: Path) -> SceneDocxPlan:
         for paragraph in body.iter(f"{_WORD_NS}p"):
             if len(lines) >= _MAX_PARAGRAPHS:
                 raise SceneDocxFormatError("Scene DOCX has too many paragraphs")
-            words = [
-                node.text or ""
-                for node in paragraph.iter(f"{_WORD_NS}t")
-            ]
+            words = [node.text or "" for node in paragraph.iter(f"{_WORD_NS}t")]
             lines.append("".join(words))
         return parse_scene_docx_lines(tuple(lines))
     except SceneDocxFormatError:

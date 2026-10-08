@@ -60,9 +60,7 @@ def parse_scene_docx_lines(lines: tuple[str, ...]) -> SceneDocxPlan:
             return
         if len(assets) != expected_visuals:
             raise SceneDocxFormatError("scene asset count does not match header")
-        scenes.append(
-            SceneDocxRow(current_number, expected_visuals, tuple(assets), tuple(context))
-        )
+        scenes.append(SceneDocxRow(current_number, expected_visuals, tuple(assets), tuple(context)))
 
     for raw in lines:
         if not isinstance(raw, str):
