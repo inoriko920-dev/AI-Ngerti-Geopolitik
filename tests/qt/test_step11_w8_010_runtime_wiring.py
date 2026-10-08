@@ -415,9 +415,7 @@ def test_failed_candidate_marker_write_preserves_active_project(
     controller.window.close()
 
 
-def test_valid_switch_opens_staged_session_and_cleans_old_marker(
-    qtbot, tmp_path: Path
-) -> None:
+def test_valid_switch_opens_staged_session_and_cleans_old_marker(qtbot, tmp_path: Path) -> None:
     repo, opened, _media, _asset = saved_project(tmp_path)
     controller, _router = setup(qtbot, repo)
     controller.request_open(opened)
@@ -444,8 +442,6 @@ def test_valid_switch_opens_staged_session_and_cleans_old_marker(
     assert opened.read_bytes() == old_bytes
     assert next_path.read_bytes() == next_bytes
     if old_marker is not None:
-        assert controller.recovery.markers.read(
-            opened, old_marker.project_id
-        ).status == "clean"
+        assert controller.recovery.markers.read(opened, old_marker.project_id).status == "clean"
     controller.shutdown()
     controller.window.close()
