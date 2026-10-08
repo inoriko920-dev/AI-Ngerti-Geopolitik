@@ -18,11 +18,21 @@ from ai_ngerti_geopolitik.presentation.recovery import (
 
 def offer(*, candidates: bool) -> RecoveryOffer:
     item = AutosaveRecord(
-        Path("recovered.autosave.angproj"), "P01", 3, "a" * 64, "b" * 64,
-        1_700_000_000_000_000_000, False,
+        Path("recovered.autosave.angproj"),
+        "P01",
+        3,
+        "a" * 64,
+        "b" * 64,
+        1_700_000_000_000_000_000,
+        False,
     )
     return RecoveryOffer(
-        Path("source.angproj"), "P01", "c" * 64, 2, "d" * 64, CrashMarker("P01", "e" * 64, "s01", "unclean", 2),
+        Path("source.angproj"),
+        "P01",
+        "c" * 64,
+        2,
+        "d" * 64,
+        CrashMarker("P01", "e" * 64, "s01", "unclean", 2),
         (item,) if candidates else (),
     )
 

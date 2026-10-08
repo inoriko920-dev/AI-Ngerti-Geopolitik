@@ -50,9 +50,7 @@ def main() -> int:
     assert recovered.opened_state is not None
     assert next_session.dirty and next_session.current_path == source
     assert source.read_bytes() == source_before
-    restarting.close_clean(
-        next_session, source, recovered.active_marker, discard_unsaved=True
-    )
+    restarting.close_clean(next_session, source, recovered.active_marker, discard_unsaved=True)
     assert store.read(source, state.project_id).status == "clean"
     assert not restarting.inspect(source).interrupted
     assert source.read_bytes() == source_before

@@ -10,9 +10,15 @@ def main() -> int:
     root = Path("artifacts/step11/w8-006/evidence")
     report = json.loads((root / "00_w8_006_report.json").read_text(encoding="utf-8"))
     required = (
-        "unclean_detected", "valid_newer_only", "corrupt_newest_excluded",
-        "ignore_zero_mutation", "explicit_restore", "recovered_working_state_dirty",
-        "source_bytes_unchanged", "clean_close_clears_warning", "no_silent_save",
+        "unclean_detected",
+        "valid_newer_only",
+        "corrupt_newest_excluded",
+        "ignore_zero_mutation",
+        "explicit_restore",
+        "recovered_working_state_dirty",
+        "source_bytes_unchanged",
+        "clean_close_clears_warning",
+        "no_silent_save",
         "no_w8_007_started",
     )
     checks = [report.get("status") == "PASS"]

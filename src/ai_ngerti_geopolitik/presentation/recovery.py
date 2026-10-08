@@ -46,7 +46,9 @@ def recovery_projection(offer: RecoveryOffer) -> RecoveryProjection:
 
 
 def create_recovery_dialog(
-    projection: RecoveryProjection, sink: UiIntentSink | None = None, *,
+    projection: RecoveryProjection,
+    sink: UiIntentSink | None = None,
+    *,
     parent: Any = None,
 ) -> Any:
     """UI emits intents only. RecoveryManager owns disk read and decision."""

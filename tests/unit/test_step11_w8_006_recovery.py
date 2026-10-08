@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
@@ -63,9 +62,7 @@ def test_crash_recovery_explicit_and_no_silent_save(tmp_path: Path) -> None:
     assert len(offer.candidates) == 1 and offer.candidates[0].path == valid
     assert source.read_bytes() == before
     session = ProjectSession(repo)
-    choice = manager.decide(
-        offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid
-    )
+    choice = manager.decide(offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid)
     assert choice.opened_state is not None and choice.opened_state.revision == 5
     assert choice.active_marker is not None
     assert session.current_path == source
@@ -88,9 +85,7 @@ def test_corrupt_newest_falls_back_to_older_valid(tmp_path: Path) -> None:
     assert corrupt.exists() and corrupt not in [row.path for row in offer.candidates]
     assert {row.path for row in offer.candidates} == {valid, older}
     sess = ProjectSession(repo)
-    decided = manager.decide(
-        offer, RecoveryChoice.RECOVER_SNAPSHOT, sess, selected_path=valid
-    )
+    decided = manager.decide(offer, RecoveryChoice.RECOVER_SNAPSHOT, sess, selected_path=valid)
     assert decided.opened_state is not None and decided.opened_state.revision == 3
     assert corrupt.exists() and source.read_bytes() == before
 
@@ -110,7 +105,9 @@ def test_older_and_equal_identical_snapshots_not_recoverable(tmp_path: Path) -> 
     assert offer.candidates == ()
     with pytest.raises(RecoveryError, match="validated recovery"):
         manager.decide(
-            offer, RecoveryChoice.RECOVER_SNAPSHOT, ProjectSession(repo),
+            offer,
+            RecoveryChoice.RECOVER_SNAPSHOT,
+            ProjectSession(repo),
             selected_path=folder / "not-a-snapshot.angproj",
         )
 
@@ -147,9 +144,7 @@ def test_stale_source_change_refuses_recovery(tmp_path: Path) -> None:
     repo.save(state.with_revision(10), source)
     session = ProjectSession(repo)
     with pytest.raises(RecoveryError, match="stale"):
-        manager.decide(
-            offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid
-        )
+        manager.decide(offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid)
     assert not session.is_open
 
 
@@ -159,13 +154,17 @@ def test_tampered_snapshot_and_unlisted_path_rejected(tmp_path: Path) -> None:
     offer = manager.inspect(source)
     with pytest.raises(RecoveryError, match="stale"):
         manager.decide(
-            offer, RecoveryChoice.RECOVER_SNAPSHOT, ProjectSession(repo),
+            offer,
+            RecoveryChoice.RECOVER_SNAPSHOT,
+            ProjectSession(repo),
             selected_path=source,
         )
     valid.write_text("tampered", encoding="utf-8")
     with pytest.raises(RecoveryError, match="stale"):
         manager.decide(
-            offer, RecoveryChoice.RECOVER_SNAPSHOT, ProjectSession(repo),
+            offer,
+            RecoveryChoice.RECOVER_SNAPSHOT,
+            ProjectSession(repo),
             selected_path=valid,
         )
     assert source.read_bytes() == before
@@ -176,9 +175,7 @@ def test_dirty_close_guard_leaves_unclean_marker(tmp_path: Path) -> None:
     _m, valid = crash(repo, service, manager, source, state)
     session = ProjectSession(repo)
     offer = manager.inspect(source)
-    decided = manager.decide(
-        offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid
-    )
+    decided = manager.decide(offer, RecoveryChoice.RECOVER_SNAPSHOT, session, selected_path=valid)
     assert decided.active_marker is not None
     with pytest.raises(UnsavedChangesError):
         manager.close_clean(session, source, decided.active_marker)
