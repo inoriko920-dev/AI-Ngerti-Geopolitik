@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from uuid import uuid4
 
 from ai_ngerti_geopolitik.application.autosave_catalog import AutosaveCatalogService
 from ai_ngerti_geopolitik.application.commands import CommandBatch, CommandBus
@@ -38,12 +39,18 @@ class ProjectSession:
         self.repository = repository
         self.autosave_catalog = autosave_catalog or AutosaveCatalogService(repository)
         self._bus: CommandBus | None = None
+        self._session_id: str | None = None
         self._current_path: Path | None = None
         self._saved_hash: str | None = None
 
     @property
     def is_open(self) -> bool:
         return self._bus is not None
+
+    @property
+    def session_id(self) -> str | None:
+        """Unique lifecycle identity across close/open, even at equal revisions."""
+        return self._session_id
 
     @property
     def bus(self) -> CommandBus:
@@ -104,6 +111,7 @@ class ProjectSession:
             aspect_ratio=aspect_ratio,
         )
         self._bus = CommandBus(state)
+        self._session_id = uuid4().hex
         self._current_path = None
         self._saved_hash = None
         return state
@@ -113,6 +121,7 @@ class ProjectSession:
         resolved = path.resolve()
         state = self.repository.load(resolved)
         self._bus = CommandBus(state)
+        self._session_id = uuid4().hex
         self._current_path = resolved
         self._saved_hash = state.semantic_hash()
         return state
@@ -120,6 +129,7 @@ class ProjectSession:
     def close(self, *, discard_unsaved: bool = False) -> None:
         self._guard_replacement(discard_unsaved)
         self._bus = None
+        self._session_id = None
         self._current_path = None
         self._saved_hash = None
 
@@ -163,6 +173,7 @@ class ProjectSession:
         if restored.revision < original.revision:
             raise ProjectSessionError("recovery snapshot is older than source")
         self._bus = CommandBus(restored)
+        self._session_id = uuid4().hex
         self._current_path = source
         # Force dirty even for an identical semantic state: explicit Save is mandatory.
         self._saved_hash = None

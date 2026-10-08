@@ -19,6 +19,7 @@ from uuid import uuid4
 from ai_ngerti_geopolitik.application.commands import CommandBatch, CommandError, RelinkAssetCommand
 from ai_ngerti_geopolitik.application.media_import import CommandSession, build_asset_from_probe
 from ai_ngerti_geopolitik.application.ports import MediaProbePort
+from ai_ngerti_geopolitik.application.project_jobs import ProjectJobToken
 from ai_ngerti_geopolitik.application.relink import RelinkService, _metadata_compatible
 from ai_ngerti_geopolitik.domain import Asset, ProjectState
 
@@ -56,20 +57,7 @@ class RelinkDirectoryPort(Protocol):
     ) -> Iterator[Path]: ...
 
 
-@dataclass(frozen=True, slots=True)
-class RelinkScanToken:
-    project_id: str
-    session_id: str
-    revision: int
-    semantic_hash: str
-
-    def is_stale(self, state: ProjectState, session_id: str) -> bool:
-        return (
-            self.project_id != state.project_id
-            or self.session_id != session_id
-            or self.revision != state.revision
-            or self.semantic_hash != state.semantic_hash()
-        )
+RelinkScanToken = ProjectJobToken
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,7 +159,7 @@ class RelinkScanJobService:
         if not root.is_dir():
             raise RelinkScanError("selected scan directory is unavailable")
         missing = tuple(asset for asset in state.assets if asset.availability != "online")
-        token = RelinkScanToken(state.project_id, session_id, state.revision, state.semantic_hash())
+        token = RelinkScanToken.capture(state, session_id)
         job_id = uuid4().hex
         record = _Record(token, ScanCancel())
         with self._lock:
@@ -188,7 +176,7 @@ class RelinkScanJobService:
             record.future = future
             return self._snapshot(job_id, record)
 
-    def snapshot(self, job_id: str, *, state: ProjectState, session_id: str) -> RelinkScanSnapshot:
+    def snapshot(self, job_id: str, *, state: ProjectState | None, session_id: str | None) -> RelinkScanSnapshot:
         with self._lock:
             record = self._record(job_id)
             return self._snapshot(job_id, record, stale=record.token.is_stale(state, session_id))
