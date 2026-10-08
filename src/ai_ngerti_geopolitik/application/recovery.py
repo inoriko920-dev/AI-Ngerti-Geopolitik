@@ -162,8 +162,10 @@ class RecoveryManager:
             raise RecoveryError("recovery marker changed during decision")
         restored: ProjectState | None = None
         if choice is RecoveryChoice.RECOVER_SNAPSHOT:
-            if not current.can_recover or selected_path is None:
+            if not offer.can_recover or selected_path is None:
                 raise RecoveryError("a validated recovery snapshot must be selected")
+            if not current.can_recover:
+                raise RecoveryError("selected recovery snapshot is stale or invalid")
             target = selected_path.resolve()
             candidate = next((x for x in offer.candidates if x.path == target), None)
             fresh = next((x for x in current.candidates if x.path == target), None)
