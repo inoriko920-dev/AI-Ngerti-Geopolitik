@@ -142,6 +142,7 @@ def test_wrong_policy_type_rejected() -> None:
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_PROCESS_POLICY$"):
         NativeBoundedCapture(None)  # type: ignore[arg-type]
 
+
 def test_handoff_requires_both_readers_finished_without_losing_partial_data() -> None:
     capture = _capture()
     capture.append("stdout", b"A")
