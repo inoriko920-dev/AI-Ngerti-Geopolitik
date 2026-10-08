@@ -39,7 +39,6 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-
 def verify_sf12_t10_packaged(fixture: Path, output_dir: Path) -> int:
     """T10 standalone frozen-package qualification; NOT a production UI render binding."""
 
