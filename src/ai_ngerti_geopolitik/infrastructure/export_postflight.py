@@ -10,7 +10,6 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 from pathlib import Path
-from typing import Protocol
 
 from ai_ngerti_geopolitik.application.export_postflight import (
     ExportPostflightError,

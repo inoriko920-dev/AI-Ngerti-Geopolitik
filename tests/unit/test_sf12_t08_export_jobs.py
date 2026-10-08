@@ -14,10 +14,16 @@ from ai_ngerti_geopolitik.application.export_jobs import (
     ExportJobService,
     ExportJobState,
 )
+from ai_ngerti_geopolitik.application.export_postflight import PostflightReceipt
 from ai_ngerti_geopolitik.application.export_request import ExportRequest
 from ai_ngerti_geopolitik.application.ports import ExportResult
 from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, ProjectState, Track
 from ai_ngerti_geopolitik.infrastructure.export_job_adapters import AtomicExportPublisher
+
+
+class FakePostflight:
+    def verify(self, stage_path, request, state, result, cancellation):
+        return PostflightReceipt.capture(stage_path, result.duration_frames)
 
 
 class FakeRender:
@@ -97,7 +103,7 @@ def test_accept_is_owner_thread_only_and_does_not_publish_before_accept(
     state, request = _case(tmp_path)
     fake = FakeRender()
     before = state.semantic_json(include_revision=True)
-    with ExportJobService(fake, AtomicExportPublisher()) as jobs:
+    with ExportJobService(fake, AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         queued = jobs.submit(state, request, session_id="T08-session")
         assert queued.status in {ExportJobState.QUEUED, ExportJobState.RUNNING}
         _wait(jobs, request, state, ExportJobState.READY)
@@ -132,7 +138,7 @@ def test_accept_is_owner_thread_only_and_does_not_publish_before_accept(
 def test_double_click_and_duplicate_id_are_rejected(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
     fake = FakeRender(paused=True)
-    with ExportJobService(fake, AtomicExportPublisher()) as jobs:
+    with ExportJobService(fake, AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session")
         assert fake.entered.wait(4)
         with pytest.raises(ExportJobError, match="DUPLICATE_EXPORT_JOB"):
@@ -148,7 +154,7 @@ def test_double_click_and_duplicate_id_are_rejected(tmp_path: Path) -> None:
 
 def test_revision_and_session_close_reject_ready_result(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
-    with ExportJobService(FakeRender(), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session")
         _wait(jobs, request, state, ExportJobState.READY)
         edited = replace(state, name="same revision different semantics")
@@ -162,7 +168,7 @@ def test_revision_and_session_close_reject_ready_result(tmp_path: Path) -> None:
     _no_workspaces(tmp_path)
 
     state2, req2 = _case(tmp_path)
-    with ExportJobService(FakeRender(), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state2, req2, session_id="T08-session")
         _wait(jobs, req2, state2, ExportJobState.READY)
         snap = jobs.snapshot(req2.request_id, state=None, session_id=None)
@@ -174,7 +180,7 @@ def test_revision_and_session_close_reject_ready_result(tmp_path: Path) -> None:
 def test_timeout_aborts_paused_worker_without_publishing(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
     fake = FakeRender(paused=True)
-    with ExportJobService(fake, AtomicExportPublisher()) as jobs:
+    with ExportJobService(fake, AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session", timeout_seconds=0.08)
         assert fake.entered.wait(4)
         _wait(jobs, request, state, ExportJobState.TIMED_OUT)
@@ -188,7 +194,7 @@ def test_timeout_aborts_paused_worker_without_publishing(tmp_path: Path) -> None
 def test_cancel_while_worker_ignores_cancellation_never_publishes(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
     fake = FakeRender(paused=True, cooperative=False)
-    jobs = ExportJobService(fake, AtomicExportPublisher())
+    jobs = ExportJobService(fake, AtomicExportPublisher(), postflight=FakePostflight())
     jobs.submit(state, request, session_id="T08-session")
     assert fake.entered.wait(4)
     started = time.monotonic()
@@ -205,7 +211,7 @@ def test_cancel_while_worker_ignores_cancellation_never_publishes(tmp_path: Path
 
 def test_cancel_ready_cleans_staging_and_retains_source(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
-    with ExportJobService(FakeRender(), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session")
         _wait(jobs, request, state, ExportJobState.READY)
         assert jobs.cancel(request.request_id)
@@ -219,7 +225,7 @@ def test_cancel_ready_cleans_staging_and_retains_source(tmp_path: Path) -> None:
 
 def test_worker_failure_leaks_no_private_path(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
-    with ExportJobService(FakeRender(fail=True), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(fail=True), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session")
         _wait(jobs, request, state, ExportJobState.FAILED)
         snap = jobs.snapshot(request.request_id, state=state, session_id="T08-session")
@@ -231,7 +237,7 @@ def test_worker_failure_leaks_no_private_path(tmp_path: Path) -> None:
 
 def test_output_race_and_protected_source_are_never_overwritten(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
-    with ExportJobService(FakeRender(), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, request, session_id="T08-session")
         _wait(jobs, request, state, ExportJobState.READY)
         request.output_path.write_bytes(b"other writer")
@@ -242,7 +248,7 @@ def test_output_race_and_protected_source_are_never_overwritten(tmp_path: Path) 
 
     source = tmp_path / "source.mp4"
     colliding = replace(request, output_path=source)
-    with ExportJobService(FakeRender(), AtomicExportPublisher()) as jobs:
+    with ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         jobs.submit(state, colliding, session_id="T08-session")
         _wait(jobs, colliding, state, ExportJobState.READY)
         with pytest.raises(ExportJobError, match="EXPORT_PUBLISH_FAILED"):
@@ -253,7 +259,7 @@ def test_output_race_and_protected_source_are_never_overwritten(tmp_path: Path) 
 
 def test_invalid_timeout_and_closed_service_rejected(tmp_path: Path) -> None:
     state, request = _case(tmp_path)
-    jobs = ExportJobService(FakeRender(), AtomicExportPublisher())
+    jobs = ExportJobService(FakeRender(), AtomicExportPublisher(), postflight=FakePostflight())
     with pytest.raises(ExportJobError, match="INVALID_EXPORT_TIMEOUT"):
         jobs.submit(state, request, session_id="T08-session", timeout_seconds=-1)
     jobs.shutdown()
