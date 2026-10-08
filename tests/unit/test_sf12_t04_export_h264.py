@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
+from ai_ngerti_geopolitik.application.export_preflight import OutputTargetInspection
 from ai_ngerti_geopolitik.application.export_request import ExportCodec, ExportRequest
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.validation import (
@@ -206,3 +207,38 @@ def test_cancelled_before_start_does_not_write(tmp_path: Path) -> None:
         )
     assert runner.calls == 0
     assert not request.output_path.exists()
+
+
+def test_last_moment_output_race_never_overwrites(tmp_path: Path) -> None:
+    state, request = _setup(tmp_path)
+
+    class RacyTargetInspector:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def inspect(
+            self, output: Path, protected: tuple[Path, ...], min_bytes: int
+        ) -> OutputTargetInspection:
+            self.calls += 1
+            observed = LocalExportOutputInspector().inspect(output, protected, min_bytes)
+            if self.calls == 2:
+                assert observed.issue is None
+                output.write_bytes(b"other writer's existing content")
+            return observed
+
+    runner = FakeRunner()
+    engine = FfmpegSliceMediaEngine(FakeProbe(), ffmpeg="fake", runner=runner)
+    guard = RacyTargetInspector()
+    with pytest.raises(MediaToolError, match="EXPORT_OUTPUT_PUBLISH_FAILED"):
+        engine.export_h264_baseline(
+            state,
+            request,
+            session_id="session-1",
+            media_inspector=FakeMediaInspector(),
+            target_inspector=guard,
+            toolchain=TOOLS,
+        )
+    assert guard.calls == 2
+    assert runner.calls == 1
+    assert request.output_path.read_bytes() == b"other writer's existing content"
+    assert not list(tmp_path.glob(".ang-h264-*"))
