@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
+from ai_ngerti_geopolitik.application.export_capabilities import ExportCapabilities
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentSink, UiIntentType
 from ai_ngerti_geopolitik.presentation.common import make_primary_button, muted_label
 from ai_ngerti_geopolitik.presentation.validation_center import ValidationCenterProjection
@@ -11,8 +13,9 @@ def create_export_dialog(
     parent: Any = None,
     intent_sink: UiIntentSink | None = None,
     *,
-    default_directory: str = r"D:\Video Projects\Liburan ke Bromo\Hasil Akhir",
-    default_name: str = "Liburan ke Bromo - Final",
+    default_directory: str | None = None,
+    default_name: str = "Video - Final",
+    capabilities: ExportCapabilities | None = None,
 ) -> Any:
     """AAVC-parity STEP 09 export shell.
 
@@ -32,6 +35,7 @@ def create_export_dialog(
         QVBoxLayout,
     )
 
+    capability = capabilities if capabilities is not None else ExportCapabilities()
     dialog = QDialog(parent)
     dialog.setObjectName("dlg_export_setup")
     dialog.setWindowTitle("Ekspor Video")
@@ -48,14 +52,23 @@ def create_export_dialog(
     )
 
     form = QFormLayout()
-    output_path = QLineEdit(default_directory)
+    output_path = QLineEdit(
+        default_directory if default_directory is not None else str(Path.home() / "Videos")
+    )
     output_path.setObjectName("field_export_directory")
     output_name = QLineEdit(default_name)
     output_name.setObjectName("field_export_name")
 
     format_box = QComboBox()
+    format_box.setObjectName("combo_export_format")
     format_box.addItems(["MP4 (H.264)", "MP4 (H.265)"])
+    format_box.model().item(1).setEnabled(False)
+    format_box.setEnabled(capability.toolchain.baseline_detected)
+    format_box.setToolTip("H.265 belum diuji pada pipeline render Windows.")
     preset = QComboBox()
+    preset.setObjectName("combo_export_preset")
+    preset.setEnabled(False)
+    preset.setToolTip("Preset belum terhubung ke mesin render.")
     preset.addItems(
         [
             "Kualitas Tinggi (Rekomendasi)",
@@ -64,6 +77,9 @@ def create_export_dialog(
         ]
     )
     resolution = QComboBox()
+    resolution.setObjectName("combo_export_resolution")
+    resolution.setEnabled(False)
+    resolution.setToolTip("Resolusi alternatif belum teruji.")
     resolution.addItems(
         [
             "1920 × 1080 (Full HD)",
@@ -72,6 +88,9 @@ def create_export_dialog(
         ]
     )
     fps = QComboBox()
+    fps.setObjectName("combo_export_fps")
+    fps.setEnabled(False)
+    fps.setToolTip("FPS ekspor belum terhubung.")
     fps.addItems(["30 fps", "60 fps"])
 
     form.addRow("Lokasi Output", output_path)
@@ -83,16 +102,25 @@ def create_export_dialog(
     layout.addLayout(form)
 
     quality = QSlider(Qt.Orientation.Horizontal)
+    quality.setObjectName("slider_export_quality")
+    quality.setEnabled(False)
+    quality.setToolTip("Kualitas belum memiliki pemetaan CRF nyata.")
     quality.setRange(0, 100)
     quality.setValue(78)
     form2 = QFormLayout()
     form2.addRow("Bitrate / Kualitas", quality)
 
     sharpen = QComboBox()
+    sharpen.setObjectName("combo_export_sharpen")
+    sharpen.setEnabled(False)
+    sharpen.setToolTip("Sharpen belum teruji dalam video render.")
     sharpen.addItems(["Normal", "Tajam Ringan", "Documentary Crisp"])
     form2.addRow("Ketajaman Video", sharpen)
 
     subtitle = QComboBox()
+    subtitle.setObjectName("combo_export_subtitle")
+    subtitle.setEnabled(False)
+    subtitle.setToolTip("Pengaturan subtitle ekspor belum terhubung.")
     subtitle.addItems(["Sertakan Subtitle (Burn-in ke Video)", "Tanpa Subtitle"])
     form2.addRow("Subtitle", subtitle)
     layout.addLayout(form2)
@@ -104,8 +132,12 @@ def create_export_dialog(
     cancel.setObjectName("btn_export_cancel")
     cancel.clicked.connect(dialog.reject)
     render = make_primary_button("Mulai Render", "btn_export_render")
+    render.setEnabled(capability.can_start_render)
+    render.setToolTip("Render belum tersedia sampai engine dan UI terhubung serta teruji.")
 
     def request_render() -> None:
+        if not capability.can_start_render:
+            return
         if intent_sink is not None:
             intent_sink(
                 UiIntent(
@@ -114,6 +146,13 @@ def create_export_dialog(
                         ("action", "render_requested"),
                         ("format", format_box.currentText()),
                         ("preset", preset.currentText()),
+                        ("directory", output_path.text()),
+                        ("filename", output_name.text()),
+                        ("resolution", resolution.currentText()),
+                        ("fps", fps.currentText()),
+                        ("quality", str(quality.value())),
+                        ("sharpen", sharpen.currentText()),
+                        ("subtitle", subtitle.currentText()),
                     ),
                 )
             )
