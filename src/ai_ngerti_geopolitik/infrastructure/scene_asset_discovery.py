@@ -6,6 +6,7 @@ path guesses, symlink traversal, media copying, or canonical state mutations.
 
 from __future__ import annotations
 
+import hashlib
 import os
 from pathlib import Path
 
@@ -13,6 +14,8 @@ from ai_ngerti_geopolitik.application.scene_asset_bindings import (
     SceneAssetCandidate,
     SceneAssetInventory,
     SceneAssetScanError,
+    VerifiedSceneImage,
+    VerifiedSceneImageSet,
     bind_scene_asset_candidates,
 )
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxPlan
@@ -100,3 +103,76 @@ def scan_scene_asset_folder(
         raise
     except (OSError, RuntimeError, ValueError):
         raise SceneAssetScanError("asset folder could not be scanned") from None
+
+
+
+def verify_scene_image_media(
+    inventory: SceneAssetInventory, *, max_image_bytes: int = 128 * 1024 * 1024
+) -> VerifiedSceneImageSet:
+    """Recheck decoded dimensions and SHA-256 in a worker, before future Save."""
+    from PySide6.QtGui import QImageReader
+
+    if not 1 <= max_image_bytes <= 1024 * 1024 * 1024:
+        raise SceneAssetScanError("image size limit is invalid")
+    if not inventory.all_ready:
+        raise SceneAssetScanError("unresolved asset blockers prevent verification")
+    verified: list[VerifiedSceneImage] = []
+    try:
+        for item in inventory.bindings:
+            path = item.path
+            if (
+                path is None
+                or len(item.candidates) != 1
+                or path.is_symlink()
+                or path.suffix.lower() not in _SUPPORTED
+                or not path.is_file()
+            ):
+                raise SceneAssetScanError("image binding changed or is ambiguous")
+            before = path.stat()
+            if not 0 < before.st_size <= max_image_bytes:
+                raise SceneAssetScanError("image size is outside safe limits")
+            if not _valid_image(path):
+                raise SceneAssetScanError("image no longer decodes")
+            size = QImageReader(str(path)).size()
+            if (
+                not size.isValid()
+                or size.width() <= 0
+                or size.height() <= 0
+                or size.width() * size.height() > _MAX_IMAGE_PIXELS
+            ):
+                raise SceneAssetScanError("image dimensions are invalid")
+            digest = hashlib.sha256()
+            with path.open("rb") as handle:
+                while chunk := handle.read(1024 * 1024):
+                    digest.update(chunk)
+            after = path.stat()
+            if (
+                (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+                != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+            ):
+                raise SceneAssetScanError("image changed during verification")
+            verified.append(
+                VerifiedSceneImage(
+                    asset_id=item.asset_id,
+                    path=path,
+                    fingerprint_sha256=digest.hexdigest(),
+                    file_size=after.st_size,
+                    width=size.width(),
+                    height=size.height(),
+                )
+            )
+        return VerifiedSceneImageSet(tuple(verified))
+    except SceneAssetScanError:
+        raise
+    except (OSError, RuntimeError, ValueError):
+        raise SceneAssetScanError("image verification failed") from None
+
+
+def require_unchanged_scene_images(
+    inventory: SceneAssetInventory, baseline: VerifiedSceneImageSet
+) -> VerifiedSceneImageSet:
+    """Reject stale image content, never silently save it as an Axxx binding."""
+    current = verify_scene_image_media(inventory)
+    if current != baseline:
+        raise SceneAssetScanError("image changed since preflight")
+    return current

@@ -110,3 +110,78 @@ def test_invalid_folder_and_limits_are_fixed_privacy_safe_errors(tmp_path: Path)
             scan_scene_asset_folder(plan(), folder, **bounds)
         assert str(folder) not in str(exc.value)
         assert "SECRET_PRIVATE" not in str(exc.value)
+
+
+
+def test_verified_images_have_real_hash_and_dimensions(tmp_path: Path) -> None:
+    import hashlib
+
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        require_unchanged_scene_images,
+        verify_scene_image_media,
+    )
+
+    for number in (1, 2, 3):
+        make_image(tmp_path / f"A{number:03d}.png")
+    inventory = scan_scene_asset_folder(plan(), tmp_path)
+    snapshot = verify_scene_image_media(inventory)
+    assert len(snapshot.images) == 3
+    assert [x.asset_id for x in snapshot.images] == ["A001", "A002", "A003"]
+    for image in snapshot.images:
+        assert image.fingerprint_sha256 == hashlib.sha256(image.path.read_bytes()).hexdigest()
+        assert image.file_size == image.path.stat().st_size
+        assert (image.width, image.height) == (4, 4)
+    assert require_unchanged_scene_images(inventory, snapshot) == snapshot
+
+
+def test_changed_image_after_scan_fails_closed(tmp_path: Path) -> None:
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        require_unchanged_scene_images,
+        verify_scene_image_media,
+    )
+
+    for number in (1, 2, 3):
+        make_image(tmp_path / f"A{number:03d}.png")
+    inventory = scan_scene_asset_folder(plan(), tmp_path)
+    original = verify_scene_image_media(inventory)
+    new_image = QImage(6, 5, QImage.Format.Format_RGB32)
+    new_image.fill(0x00DD4422)
+    assert new_image.save(str(tmp_path / "A001.png"), "PNG")
+    with pytest.raises(SceneAssetScanError, match="changed since preflight"):
+        require_unchanged_scene_images(inventory, original)
+
+
+def test_removed_or_corrupted_image_is_redacted_error(tmp_path: Path) -> None:
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        verify_scene_image_media,
+    )
+
+    for number in (1, 2, 3):
+        make_image(tmp_path / f"A{number:03d}.png")
+    inventory = scan_scene_asset_folder(plan(), tmp_path)
+    target = tmp_path / "A002.png"
+    target.unlink()
+    with pytest.raises(SceneAssetScanError) as err:
+        verify_scene_image_media(inventory)
+    assert str(tmp_path) not in str(err.value)
+    target.write_bytes(b"invalid private image")
+    with pytest.raises(SceneAssetScanError, match="no longer decodes"):
+        verify_scene_image_media(inventory)
+
+
+def test_oversize_or_incomplete_image_inventory_is_blocked(tmp_path: Path) -> None:
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        verify_scene_image_media,
+    )
+
+    make_image(tmp_path / "A001.png")
+    incomplete = scan_scene_asset_folder(plan(), tmp_path)
+    with pytest.raises(SceneAssetScanError, match="blockers"):
+        verify_scene_image_media(incomplete)
+    for number in (2, 3):
+        make_image(tmp_path / f"A{number:03d}.png")
+    ready = scan_scene_asset_folder(plan(), tmp_path)
+    with pytest.raises(SceneAssetScanError, match="size"):
+        verify_scene_image_media(ready, max_image_bytes=1)
+    with pytest.raises(SceneAssetScanError, match="size"):
+        verify_scene_image_media(ready, max_image_bytes=0)

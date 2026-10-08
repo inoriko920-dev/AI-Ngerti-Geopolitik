@@ -90,3 +90,20 @@ def bind_scene_asset_candidates(
             )
         )
     return SceneAssetInventory(tuple(result))
+
+
+@dataclass(frozen=True, slots=True)
+class VerifiedSceneImage:
+    """Read-only image identity, not yet a canonical Asset."""
+
+    asset_id: str
+    path: Path
+    fingerprint_sha256: str
+    file_size: int
+    width: int
+    height: int
+
+
+@dataclass(frozen=True, slots=True)
+class VerifiedSceneImageSet:
+    images: tuple[VerifiedSceneImage, ...]
