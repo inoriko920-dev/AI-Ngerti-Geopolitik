@@ -443,10 +443,7 @@ class W8RuntimeController:
                     ready = inventory.ready_count
                     total = len(inventory.bindings)
                     if inventory.all_ready:
-                        self._notify(
-                            f"Folder aset: {ready}/{total} READY. "
-                            "Project belum dibuat."
-                        )
+                        self._notify(f"Folder aset: {ready}/{total} READY. Project belum dibuat.")
                     else:
                         issues = ", ".join(
                             f"{item.asset_id}:{item.status.value}"
