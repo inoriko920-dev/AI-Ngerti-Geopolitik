@@ -33,3 +33,9 @@ Windows: Ruff, mypy, import contracts, architecture, source-of-truth,
 no-secrets, frozen UI SHA-256 manifest, targeted/full pytest,
 owned failure evidence verifier, and all previous workflow families at one
 accepted implementation HEAD. W8-008 remains blocked.
+
+## Formatter qualification
+
+Pinned Ruff 0.16.10 formatting completed. Temporary workflow removed after
+formatting the owned W8-007 source, tests and evidence scripts. Windows fault
+matrix and full regression remain pending; this section does not claim PASS.
