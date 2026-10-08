@@ -84,7 +84,16 @@ def pump(qtbot, predicate, controller: W8RuntimeController) -> None:
         controller.poll()
         return bool(predicate())
 
-    qtbot.waitUntil(update, timeout=8000)
+    try:
+        qtbot.waitUntil(update, timeout=8000)
+    except Exception as exc:
+        raise AssertionError(
+            f"Poll timeout: {controller.last_error!r}, "
+            f"preview requested={controller.still_preview_desired!r}, "
+            f"inflight={controller.still_preview_inflight!r}, "
+            f"future_done={controller.still_preview_future.done() if controller.still_preview_future is not None else None}, "
+            f"route={controller.window.window.property('ui_state')!r}"
+        ) from exc
 
 
 def saved_project(tmp_path: Path):
