@@ -176,7 +176,9 @@ class RelinkScanJobService:
             record.future = future
             return self._snapshot(job_id, record)
 
-    def snapshot(self, job_id: str, *, state: ProjectState | None, session_id: str | None) -> RelinkScanSnapshot:
+    def snapshot(
+        self, job_id: str, *, state: ProjectState | None, session_id: str | None
+    ) -> RelinkScanSnapshot:
         with self._lock:
             record = self._record(job_id)
             return self._snapshot(job_id, record, stale=record.token.is_stale(state, session_id))

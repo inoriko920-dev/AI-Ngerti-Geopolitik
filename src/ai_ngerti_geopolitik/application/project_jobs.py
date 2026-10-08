@@ -151,9 +151,7 @@ class ReadOnlyProjectJobs(Generic[T]):
             record.result = None
             record.state = ProjectJobState.CANCELLED
 
-    def resolve(
-        self, job_id: str, *, state: ProjectState | None, session_id: str | None
-    ) -> T:
+    def resolve(self, job_id: str, *, state: ProjectState | None, session_id: str | None) -> T:
         item = self.snapshot(job_id, state=state, session_id=session_id)
         if item.state is ProjectJobState.STALE:
             raise ProjectJobError("result is stale; run a new job")

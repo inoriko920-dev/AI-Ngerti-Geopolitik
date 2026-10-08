@@ -72,7 +72,7 @@ def session(tmp_path: Path, project_id: str = "P-JOB") -> ProjectSession:
 def edit(current: ProjectSession, width: int = 1440) -> None:
     current.execute(
         CommandBatch(
-            batch_id=f"EDIT-{current.state.revision+1}",
+            batch_id=f"EDIT-{current.state.revision + 1}",
             label="edit during background work",
             actor="manual",
             expected_revision=current.state.revision,
@@ -82,7 +82,9 @@ def edit(current: ProjectSession, width: int = 1440) -> None:
 
 
 def complete(
-    jobs: ReadOnlyProjectJobs[ValidationResult], job_id: str, state: ProjectState,
+    jobs: ReadOnlyProjectJobs[ValidationResult],
+    job_id: str,
+    state: ProjectState,
     sid: str,
 ):
     until = time.monotonic() + 8
@@ -136,7 +138,7 @@ def test_token_rejects_same_revision_different_semantics_and_lifecycle(
     different = replace(current.state, name="same revision, different content")
     assert different.revision == current.state.revision
     assert token.is_stale(different, sid)
-    assert token.is_stale(current.state.with_revision(current.state.revision+1), sid)
+    assert token.is_stale(current.state.with_revision(current.state.revision + 1), sid)
     assert token.is_stale(current.state, "wrong-session")
     assert token.is_stale(None, None)
     assert token.is_stale(ProjectState.create("P-OTHER", "Other", 30), sid)
@@ -162,7 +164,10 @@ def test_paused_validation_manual_edit_discards_stale_and_no_mutation(
         assert gate.entered.wait(timeout=8)
         edit(current)
         changed_hash = current.state.semantic_hash()
-        assert jobs.snapshot(job.job_id, state=current.state, session_id=sid).state is ProjectJobState.STALE
+        assert (
+            jobs.snapshot(job.job_id, state=current.state, session_id=sid).state
+            is ProjectJobState.STALE
+        )
         gate.release.set()
         with pytest.raises(ProjectJobError, match="stale"):
             jobs.resolve(job.job_id, state=current.state, session_id=sid)
@@ -177,16 +182,15 @@ def test_validation_close_reopen_identical_content_stale(tmp_path: Path) -> None
     assert sid is not None and source is not None
     old = current.state
     with ReadOnlyProjectJobs[ValidationResult]() as jobs:
-        job = jobs.submit(
-            old, session_id=sid, work=lambda: ValidationService().validate(old)
-        )
+        job = jobs.submit(old, session_id=sid, work=lambda: ValidationService().validate(old))
         current.close()
         assert jobs.snapshot(job.job_id, state=None, session_id=None).state is ProjectJobState.STALE
         current.open_project(source)
         assert current.state.semantic_hash() == old.semantic_hash()
-        assert jobs.snapshot(
-            job.job_id, state=current.state, session_id=current.session_id
-        ).state is ProjectJobState.STALE
+        assert (
+            jobs.snapshot(job.job_id, state=current.state, session_id=current.session_id).state
+            is ProjectJobState.STALE
+        )
         with pytest.raises(ProjectJobError, match="stale"):
             jobs.resolve(job.job_id, state=current.state, session_id=current.session_id)
 
@@ -207,7 +211,9 @@ def test_background_cancel_late_result_never_publishes(tmp_path: Path) -> None:
         assert gate.entered.wait(timeout=8)
         jobs.cancel(job.job_id)
         gate.release.set()
-        assert jobs.snapshot(job.job_id, state=base, session_id=sid).state is ProjectJobState.CANCELLED
+        assert (
+            jobs.snapshot(job.job_id, state=base, session_id=sid).state is ProjectJobState.CANCELLED
+        )
         with pytest.raises(ProjectJobError, match="eligible"):
             jobs.resolve(job.job_id, state=base, session_id=sid)
         assert current.state.semantic_hash() == base.semantic_hash()
@@ -238,14 +244,17 @@ def test_failing_background_job_leaks_no_private_details(tmp_path: Path) -> None
     sid = current.session_id
     assert sid is not None
     with ReadOnlyProjectJobs[str]() as jobs:
+
         def unsafe() -> str:
             raise RuntimeError("API-KEY-SECRET C:\\Users\\private\\file.mp4")
+
         job = jobs.submit(current.state, session_id=sid, work=unsafe)
-        end = time.monotonic()+8
+        end = time.monotonic() + 8
         while jobs.snapshot(job.job_id, state=current.state, session_id=sid).state in {
-            ProjectJobState.QUEUED, ProjectJobState.RUNNING
+            ProjectJobState.QUEUED,
+            ProjectJobState.RUNNING,
         }:
-            assert time.monotonic()<end
+            assert time.monotonic() < end
             time.sleep(0.01)
         status = jobs.snapshot(job.job_id, state=current.state, session_id=sid)
         assert status.state is ProjectJobState.FAILED
@@ -283,9 +292,10 @@ def test_relink_close_reopen_other_project_no_result_leak(tmp_path: Path) -> Non
         current.close()
         assert scans.snapshot(job.job_id, state=None, session_id=None).state is ScanState.STALE
         current.new_project("P-OTHER", "Other project")
-        assert scans.snapshot(
-            job.job_id, state=current.state, session_id=current.session_id
-        ).state is ScanState.STALE
+        assert (
+            scans.snapshot(job.job_id, state=current.state, session_id=current.session_id).state
+            is ScanState.STALE
+        )
         scans.cancel(job.job_id)
         gate.release.set()
         assert current.state.project_id == "P-OTHER"
@@ -300,12 +310,9 @@ def test_recovery_inspection_result_stale_after_close_reopen_same_project(
     assert sid is not None and source is not None
     repo = current.repository
     assert isinstance(repo, JsonProjectRepository)
-    recovery = RecoveryManager(
-        repo, AutosaveCatalogService(repo), FileCrashMarkerStore()
-    )
+    recovery = RecoveryManager(repo, AutosaveCatalogService(repo), FileCrashMarkerStore())
     begin = recovery.decide(
-        recovery.inspect(source), RecoveryChoice.OPEN_SOURCE,
-        ProjectSession(repo)
+        recovery.inspect(source), RecoveryChoice.OPEN_SOURCE, ProjectSession(repo)
     )
     assert begin.active_marker is not None
     snapshot = AutosaveCatalogService(repo).create_snapshot(
@@ -325,9 +332,7 @@ def test_recovery_inspection_result_stale_after_close_reopen_same_project(
         current.open_project(source)
         gate.release.set()
         with pytest.raises(ProjectJobError, match="stale"):
-            jobs.resolve(
-                job.job_id, state=current.state, session_id=current.session_id
-            )
+            jobs.resolve(job.job_id, state=current.state, session_id=current.session_id)
         assert snapshot.is_file()
         assert current.state.revision == 0
         assert hashlib.sha256(source.read_bytes()).hexdigest() == source_hash
@@ -341,9 +346,7 @@ def test_recovery_cancellation_zero_mutation(tmp_path: Path) -> None:
     assert sid is not None and source is not None
     repo = current.repository
     assert isinstance(repo, JsonProjectRepository)
-    recovery = RecoveryManager(
-        repo, AutosaveCatalogService(repo), FileCrashMarkerStore()
-    )
+    recovery = RecoveryManager(repo, AutosaveCatalogService(repo), FileCrashMarkerStore())
     gate = PausedWork()
     before = source.read_bytes()
 
@@ -356,9 +359,10 @@ def test_recovery_cancellation_zero_mutation(tmp_path: Path) -> None:
         assert gate.entered.wait(timeout=8)
         jobs.cancel(job.job_id)
         gate.release.set()
-        assert jobs.snapshot(
-            job.job_id, state=current.state, session_id=sid
-        ).state is ProjectJobState.CANCELLED
+        assert (
+            jobs.snapshot(job.job_id, state=current.state, session_id=sid).state
+            is ProjectJobState.CANCELLED
+        )
         assert source.read_bytes() == before
         with pytest.raises(ProjectJobError):
             jobs.resolve(job.job_id, state=current.state, session_id=sid)
