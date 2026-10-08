@@ -7,9 +7,9 @@ qualification or a second owner of canonical ProjectState.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
-import re
 from enum import StrEnum
 from pathlib import Path
 

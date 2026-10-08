@@ -38,6 +38,25 @@ def _media(folder: Path) -> None:
         assert image.save(str(folder / f"A{i:03d}.png"), "PNG")
 
 
+
+def _create(docx: Path, folder: Path, timing: Path, target: Path, name: str) -> int:
+    args = [
+        "create",
+        "--docx",
+        str(docx),
+        "--assets",
+        str(folder),
+        "--timing",
+        str(timing),
+        "--output",
+        str(target),
+        "--name",
+        name,
+    ]
+    return main(args)
+
+
+
 def test_manifest_requires_exact_explicit_order_and_rejects_guesswork() -> None:
     assert parse_scene_duration_manifest(
         "# FPS=30\nScene 1: 150 frames\n\nScene 2: 90 frames\n", scene_count=2
@@ -67,28 +86,19 @@ def test_template_to_real_saved_image_project_without_gui(tmp_path: Path) -> Non
     assert main(["template", "--docx", str(docx), "--output", str(template)]) == 0
     assert not target.exists()
     assert "Scene 1: ____ frames" in template.read_text(encoding="utf-8")
-    assert main(
-        ["create", "--docx", str(docx), "--assets", str(folder), "--timing",
-         str(template), "--output", str(target), "--name", "Historical Film"]
-    ) == 1
+    assert _create(docx, folder, template, target, "Historical Film") == 1
     assert not target.exists()
     template.write_text(
         "# 30 FPS\nScene 1: 150 frames\nScene 2: 90 frames\n",
         encoding="utf-8",
     )
-    assert main(
-        ["create", "--docx", str(docx), "--assets", str(folder), "--timing",
-         str(template), "--output", str(target), "--name", "Historical Film"]
-    ) == 0
+    assert _create(docx, folder, template, target, "Historical Film") == 0
     state = JsonProjectRepository().load(target)
     assert state.timeline_end_frame == 240
     assert [a.media_type for a in state.assets] == ["image"] * 3
     assert [c.image_hold_frames for c in state.tracks[0].clips] == [150, 90]
     assert state.tracks[1].clips[0].image_hold_frames == 90
-    assert main(
-        ["create", "--docx", str(docx), "--assets", str(folder), "--timing",
-         str(template), "--output", str(target), "--name", "Historical Film"]
-    ) == 1
+    assert _create(docx, folder, template, target, "Historical Film") == 1
 
 
 def test_missing_image_cannot_create_project(tmp_path: Path) -> None:
@@ -100,8 +110,5 @@ def test_missing_image_cannot_create_project(tmp_path: Path) -> None:
     timing = tmp_path / "timing.txt"
     timing.write_text("Scene 1: 120 frames\nScene 2: 90 frames\n", encoding="utf-8")
     target = tmp_path / "output.angproj"
-    assert main(
-        ["create", "--docx", str(docx), "--assets", str(folder), "--timing",
-         str(timing), "--output", str(target), "--name", "Invalid"]
-    ) == 1
+    assert _create(docx, folder, timing, target, "Invalid") == 1
     assert not target.exists()

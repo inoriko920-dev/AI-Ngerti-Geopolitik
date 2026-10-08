@@ -85,7 +85,13 @@ def main(argv: list[str] | None = None) -> int:
             f"{review.total_frames} frame. Preview/render gambar belum dikualifikasi."
         )
         return 0
-    except (SceneDocxFormatError, SceneImportReviewError, SceneAssetScanError, OSError, ValueError) as err:
+    except (
+        SceneDocxFormatError,
+        SceneImportReviewError,
+        SceneAssetScanError,
+        OSError,
+        ValueError,
+    ) as err:
         # Reader errors are redacted. Do not print user's private input paths.
         print(f"GAGAL: {err}", file=sys.stderr)
         return 1
