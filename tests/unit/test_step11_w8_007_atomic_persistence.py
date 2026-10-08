@@ -1,11 +1,10 @@
 """W8-007 fault injection gates around existing JsonProjectRepository."""
+
 from __future__ import annotations
 
 import hashlib
-import os
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
 
 import pytest
 
@@ -106,9 +105,7 @@ def install_fault(monkeypatch: pytest.MonkeyPatch, fault: str, source: Path) -> 
     elif fault in {"backup_replace", "source_replace"}:
         original_replace = persistence.os.replace
         destination = (
-            source.with_name(source.name + ".bak")
-            if fault == "backup_replace"
-            else source
+            source.with_name(source.name + ".bak") if fault == "backup_replace" else source
         )
 
         def fail_replace(src: Path, dst: Path) -> None:
@@ -205,7 +202,9 @@ def test_failed_save_retains_session_dirty_current_path_and_history(
     source = session.save(tmp_path / "active.angproj")
     before = source.read_bytes()
     batch = CommandBatch(
-        batch_id="B-W8-007", label="edit dimensions", actor="manual",
+        batch_id="B-W8-007",
+        label="edit dimensions",
+        actor="manual",
         expected_revision=session.state.revision,
         commands=(UpdateProjectSettingsCommand(1280, 720, 30, "16:9"),),
     )

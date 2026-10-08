@@ -93,9 +93,7 @@ def main() -> int:
                 with patch.object(
                     persistence.os,
                     "replace",
-                    side_effect=inject_replace(
-                        source, backup=name == "backup_replace"
-                    ),
+                    side_effect=inject_replace(source, backup=name == "backup_replace"),
                 ):
                     session.save()
             raise AssertionError("unexpected persistence success under fault")
