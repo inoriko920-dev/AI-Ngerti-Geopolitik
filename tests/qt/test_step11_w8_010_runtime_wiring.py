@@ -91,7 +91,7 @@ def pump(qtbot, predicate, controller: W8RuntimeController) -> None:
             f"Poll timeout: {controller.last_error!r}, "
             f"preview requested={controller.still_preview_desired!r}, "
             f"inflight={controller.still_preview_inflight!r}, "
-            f"future_done={controller.still_preview_future.done() if controller.still_preview_future is not None else None}, "
+            f"future={controller.still_preview_future!r}, "
             f"route={controller.window.window.property('ui_state')!r}"
         ) from exc
 
