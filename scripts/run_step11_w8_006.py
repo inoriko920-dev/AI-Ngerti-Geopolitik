@@ -49,6 +49,7 @@ def main() -> int:
     assert recovered.active_marker is not None
     assert recovered.opened_state is not None
     assert next_session.dirty and next_session.current_path == source
+    recovered_dirty_before_close = next_session.dirty
     assert source.read_bytes() == source_before
     restarting.close_clean(next_session, source, recovered.active_marker, discard_unsaved=True)
     assert store.read(source, state.project_id).status == "clean"
@@ -61,7 +62,7 @@ def main() -> int:
         "corrupt_newest_excluded": corrupt.exists(),
         "ignore_zero_mutation": ignored.opened_state is None,
         "explicit_restore": recovered.opened_state.revision == 4,
-        "recovered_working_state_dirty": not next_session.is_open,
+        "recovered_working_state_dirty": recovered_dirty_before_close,
         "source_bytes_unchanged": source.read_bytes() == source_before,
         "clean_close_clears_warning": not restarting.inspect(source).interrupted,
         "no_silent_save": repo.load(source).revision == 0,

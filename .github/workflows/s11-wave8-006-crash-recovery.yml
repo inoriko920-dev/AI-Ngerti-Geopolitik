@@ -10,7 +10,7 @@ on:
       - "src/ai_ngerti_geopolitik/application/project_session.py"
       - "src/ai_ngerti_geopolitik/application/ui_intents.py"
       - "tests/unit/test_step11_w8_006_recovery.py"
-      - "tests/qt/test_step11_w8_006_recovery.py"
+      - "tests/qt/test_step11_w8_006_recovery_ui.py"
       - "scripts/run_step11_w8_006.py"
       - "scripts/verify/verify_step11_w8_006_evidence.py"
       - ".github/workflows/s11-wave8-006-crash-recovery.yml"
@@ -50,7 +50,7 @@ jobs:
       - run: uv run python scripts/verify/verify_source_of_truth.py --root .
       - run: uv run python scripts/verify/verify_no_secrets.py --root .
       - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
-      - run: uv run pytest -q tests/unit/test_step11_w8_006_recovery.py tests/qt/test_step11_w8_006_recovery.py
+      - run: uv run pytest -q tests/unit/test_step11_w8_006_recovery.py tests/qt/test_step11_w8_006_recovery_ui.py
       - run: uv run pytest -q
       - run: >
           uv run python scripts/run_step11_w8_006.py
