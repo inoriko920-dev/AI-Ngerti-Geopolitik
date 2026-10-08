@@ -1,38 +1,46 @@
 # S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle
 
-**Status:** IN_VERIFICATION — NOT PASS  
-**Contract:** locked ASTRA W8 §10.9  
-**Dedicated CI:** `.github/workflows/s11-wave8-009-diagnostics.yml`
+**Status:** PASS  
+**Accepted code HEAD:** `6a4ec93d445e71dc037bcc4dc6edff2008894268`  
+**Windows run:** [37730435314](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37730435314) — SUCCESS  
+**Artifact:** `ANG-S11-W8-009-Redacted-Diagnostics` / ID `11529353867`  
+**Artifact ZIP SHA-256:** `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`
 
-## Implementation and privacy gates
+## Implementation
 
-- `application/diagnostics.py`: bounded typed event ledger (max 256, dropped count),
-  allowlisted event code/status/persistence stage + bounded numeric counters.
-- `application/diagnostic_bundle.py`: strict serialization of allowed fields,
-  deterministic JSON event + manifest bytes, SHA-256 manifest integrity,
-  single-worker on-demand job, status/cancel/failure without UI blocking.
-- `infrastructure/diagnostic_bundle.py`: fixed ZIP layout of
-  `manifest.json` and `events.json`, fixed timestamps/order, 128KiB cap,
-  safe atomic hard-link publish (never overwrite existing user ZIP),
-  temp cleanup, typed no-path errors.
-- Raw exception cause/args, project ID/hash, private paths, file names,
-  media bytes, AI user prompt, subtitle/narration text, API keys, token strings,
-  raw ValidationIssue messages/targets are NOT serialized.
-- Owned real proof runner injects private markers and validates exclusion,
-  deterministic ZIP SHA/bytes, fixed whitelist, count, archive bound,
-  typed failure stage.
-- Tests check exclusion, deterministic ZIP, cancellation, overwrite refusal,
-  output failure, symlink safety, strict type validation and event cap.
-- No changes to ProjectState/schema/CommandBus, AAVC repository or frozen UI.
-- W8-010 UI wiring remains future task.
+- `application/diagnostics.py`: bounded max 256 structured events, fixed
+  event/status/stage enums and numeric counters; no raw project content.
+- `application/diagnostic_bundle.py`: background, cancellable, opt-in
+  generation; deterministic JSON event list plus SHA-256 manifest.
+- `infrastructure/diagnostic_bundle.py`: exactly two ZIP members,
+  `manifest.json` / `events.json`, fixed timestamps/order,
+  128KiB cap, atomic no-overwrite output, failure cleanup.
+- Private project paths/IDs, media/subtitle/narration bytes, raw exceptions,
+  API tokens, credentials and user text never enter the bundle by default.
+- Privacy tests assert deterministic identical archives, sensitive marker
+  exclusion, bounded data, typed failures, safe cancellation, overwrite
+  refusal and snapshot isolation.
 
-## Pending QA
+## Verified Windows qualification
 
-Dedicated Windows Ruff/mypy/import-linter/architecture/security/UI manifest,
-targeted/full pytest, proof verifier, and same-HEAD historical workflows must
-pass. No status PASS until complete.
+- Accepted W8-009 implementation/regression HEAD: `6a4ec93d445e71dc037bcc4dc6edff2008894268`.
+- [Dedicated Windows diagnostic workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37730435314) — SUCCESS.
+- Artifact: `ANG-S11-W8-009-Redacted-Diagnostics`, ID `11529353867`,
+  ZIP SHA-256 `17bc6c66063c240258f8f27fd68e8755ea8d26b63ba73a498c96e1f6e08d3b6e`.
+- Targeted tests **11/11 PASS**; full pytest **482/482 PASS**;
+  redaction evidence verifier **18/18 PASS**.
+- Ruff, mypy (**84 files**), imports, architecture/no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 PASS**.
+- **27/27 same-HEAD workflow families SUCCESS**, first attempt;
+  Windows portable foundation, media, UI shell and E2E included.
 
-## Formatter gate
+## Deferred scope
 
-Pinned Ruff 0.16.10 formatted W8-009 files; temporary formatter was removed.
-Dedicated Windows CI and full regression remain pending; do not mark PASS.
+Only W8-010 will connect frozen UI-039/040/041 to the actual application,
+exercise GOLDEN-03 and lock final W8 regression. No UI redesign, schema
+change, ProjectState mutation or AAVC modification in W8-009.
+
+## Next exact task
+
+**S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure +
+Regression Lock — READY.** Wait for owner's next `lanjutkan`.

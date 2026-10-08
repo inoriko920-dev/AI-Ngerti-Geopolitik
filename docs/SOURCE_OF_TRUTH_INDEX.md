@@ -162,8 +162,8 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
 - W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
 - W8-008 Stale Result Hardening for W8 Background Jobs: **PASS**.
-- W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **IN_VERIFICATION**.
-- W8-010: **SERIAL_BLOCKED**.
+- W8-009 Structured Diagnostics + Redacted Diagnostic Bundle: **PASS**.
+- W8-010: **READY**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -191,7 +191,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-008 accepted code HEAD `6c35b70bd9122664473a69eff6635ed9b71da5cb`, Windows `37728798520` SUCCESS;
 - W8-008 targeted 12/12, full pytest 471/471, evidence 18/18, regression 27/27 PASS;
 - W8-008 evidence `docs/evidence/features/S11_W8_008_STALE_JOBS.md`;
-- exact next action: **SOL S11-W8-009 Structured Diagnostics + Redacted Diagnostic Bundle ONLY**.
+- W8-009 accepted code HEAD `6a4ec93d445e71dc037bcc4dc6edff2008894268` and Windows workflow `37730435314` SUCCESS;
+- W8-009 targeted 11/11, full pytest 482/482, redaction evidence 18/18, same-HEAD regression 27/27 SUCCESS;
+- W8-009 evidence `docs/evidence/features/S11_W8_009_DIAGNOSTIC_BUNDLE.md`;
+- exact next action: **SOL S11-W8-010 Frozen UI Wiring + GOLDEN-03 Closure ONLY**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
 
@@ -207,5 +210,6 @@ W8-008 accepted PASS at `6c35b70bd9122664473a69eff6635ed9b71da5cb` with source-s
 27/27 same-HEAD regression and no W8-009 implementation.
 W8-009 READY; W8-010 BLOCKED.
 
-W8-009: code/tests/strict ZIP evidence and dedicated Windows workflow committed;
-GATE IN_VERIFICATION pending same-HEAD regression. W8-010 BLOCKED.
+W8-009 accepted PASS at `6a4ec93d445e71dc037bcc4dc6edff2008894268`:
+11/11 targeted, 482/482 full pytest, 18/18 redacted ZIP proof, 27/27
+same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
