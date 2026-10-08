@@ -69,7 +69,7 @@ def export_still_frame_sequence(
             filename = f"frame_{frame:06d}.png"
             target = staging / filename
             phase = "save-png"
-            if not image.save(str(target), b"PNG"):
+            if not image.save(str(target)):
                 raise StillSequenceExportError("a preview frame could not be written")
             phase = "hash-png"
             file_size = target.stat().st_size
