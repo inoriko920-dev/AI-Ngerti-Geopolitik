@@ -60,8 +60,15 @@ def test_sequence_has_exact_scene_boundary_pixels_and_verified_manifest(tmp_path
     state, path = _project(tmp_path)
     target = tmp_path / "frames"
     args = [
-        "frames", "--project", str(path), "--start", "148",
-        "--count", "5", "--output", str(target),
+        "frames",
+        "--project",
+        str(path),
+        "--start",
+        "148",
+        "--count",
+        "5",
+        "--output",
+        str(target),
     ]
     assert scene_cli(args) == 0
     assert target.is_dir()
@@ -128,6 +135,4 @@ def test_manifest_and_golden_frame_deterministic_across_repeated_export(tmp_path
     first = export_still_frame_sequence(state, tmp_path / "first", start_frame=150, count=2)
     second = export_still_frame_sequence(state, tmp_path / "second", start_frame=150, count=2)
     assert (first / "manifest.json").read_bytes() == (second / "manifest.json").read_bytes()
-    assert (first / "frame_000150.png").read_bytes() == (
-        second / "frame_000150.png"
-    ).read_bytes()
+    assert (first / "frame_000150.png").read_bytes() == (second / "frame_000150.png").read_bytes()
