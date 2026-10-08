@@ -59,6 +59,7 @@
     - `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`
     - `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`
     - `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`
+    - `docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -157,7 +158,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-004 Batch Directory Relink Scan + Candidate Ranking: **PASS**.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
-- W8-007 Atomic Persistence Failure Injection + Remediation: **READY**.
+- W8-007 Atomic Persistence Failure Injection + Remediation: **IN_VERIFICATION**, not PASS.
 - W8-008..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
@@ -187,3 +188,6 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 W8-006 accepted PASS: 12 unit + 3 Qt tests, strict crash-marker
 and source-byte integrity evidence, 27/27 same-HEAD workflow lock.
 W8-007 READY; W8-008 BLOCKED.
+
+W8-007 has code/15 targeted tests/fault evidence runner and a Windows workflow
+committed. Gate IN_VERIFICATION; W8-008 BLOCKED.

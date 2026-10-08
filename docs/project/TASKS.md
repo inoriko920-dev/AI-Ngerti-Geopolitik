@@ -825,7 +825,7 @@ Serial contract:
 - [x] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS**
 - [x] **S11-W8-005 — Autosave Catalog + Retention Hardening — PASS**
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
-- [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY**
+- [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — IN_VERIFICATION**
 - [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — BLOCKED_BY_W8_007**
 - [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
 - [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
@@ -969,3 +969,8 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 **Exact next task:** S11-W8-007 Atomic Persistence Failure Injection +
 Remediation ONLY. W8-008 remains serial-blocked.
+
+**W8-007:** transient-save-failure remediation, precise stage projection,
+source/backup integrity, no orphan temp after recoverable faults, retry and
+session dirty guard. Tests and owned evidence committed; QA pending.
+W8-008 remains blocked.

@@ -2,7 +2,7 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..006 PASS / W8-007 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..006 PASS / W8-007 IN_VERIFICATION**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
@@ -86,6 +86,12 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 
 ## Exact next action
 
-**S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY.**
+**S11-W8-007 — Atomic Persistence Failure Injection + Remediation — IN_VERIFICATION.**
 W8-008..W8-010 remain serial-blocked. No W8-007 coding was started during
 W8-006 closure. W5 physical microphone and W6/W7 live Gemini remain provisional.
+
+## W8-007 active QA
+
+Existing source atomic save path minimally remedied for partial-write temp
+leak, with typed safe failure stages and 15 targeted fault-injection tests.
+Windows quality/full-regression/evidence gates pending. W8-008 BLOCKED.

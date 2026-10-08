@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — NEXT W8-007**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — W8-007 IN_VERIFICATION**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -76,3 +76,11 @@ Evidence: `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`.
 
 **Next:** SOL S11-W8-007 only, when owner says `lanjutkan`.
 W8-008 remains blocked; source `.angproj` and `.bak` are protected.
+
+## W8-007 — Atomic Persistence Fault Injection
+
+Real temporary-file leak under interrupted writes has been addressed within
+the existing persistence repository. Seven injected stages, typed actionable
+errors, exact source integrity, dirty-state/retry and deterministic evidence
+are undergoing Windows qualification. W8-008 is not started. See
+`docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`.

@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..006 PASS / W8-007 READY  
+**Status:** CONTRACT_LOCKED / W8-001..006 PASS / W8-007 IN_VERIFICATION  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -36,7 +36,7 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **PASS**
 5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
 6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
-7. W8-007 Atomic Persistence Failure Injection + Remediation — **READY**
+7. W8-007 Atomic Persistence Failure Injection + Remediation — **IN_VERIFICATION**
 8. W8-008 Stale Result Hardening — **BLOCKED**
 9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
 10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
@@ -94,3 +94,9 @@ W8-005 accepted:
 ## Exact next action
 
 On owner's **lanjutkan**, SOL S11-W8-007 only. W8-008 remains blocked.
+
+## W8-007 pending qualification
+
+Focused remediation to existing JsonProjectRepository temp cleanup; typed safe
+error projection; direct failure injection around create/write/sync/copy/replace.
+No broad persistence rewrite and no new UI owner. W8-008 BLOCKED.

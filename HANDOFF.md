@@ -7,7 +7,8 @@
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
-**Next exact task:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY
+**Current task:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — IN_VERIFICATION
+**Next exact action:** Finish W8-007 Windows fault injection, artifact and same-HEAD regression; W8-008 remains blocked
 
 ## Read-first constraints
 
@@ -102,3 +103,19 @@ W8-008 remains blocked. Do not implement W8-008 in the same turn.
 W5 microphone physical hardware and W6/W7 live Gemini network tests remain
 provisional; do not claim device/provider smoke results that were not run.
 
+
+## W8-007 active implementation (QA gate pending)
+
+W8-007 inspected existing `JsonProjectRepository._write` and found a real
+untracked temporary-file leak if payload write/flush/fsync fails. The existing
+atomic serializer is retained; remediation registers the temporary file as
+soon as it is opened and ensures owned temporary files are cleaned after
+failure. Failure stages are typed as `PersistenceError` in the application
+layer with a safe, actionable Indonesian projection. No source/schema/history
+changes or UI redesign. Tests inject temp/write/sync/backup-copy/backup-replace/
+source-replace faults, check exact source hash, backup validity, session dirty
+state, Save As and retry. Dedicated Windows workflow W8-007 exists.
+
+**Gate: IN_VERIFICATION (not PASS).** Evidence source:
+`docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`.
+Do not start W8-008 until W8-007 has a verified same-HEAD regression.
