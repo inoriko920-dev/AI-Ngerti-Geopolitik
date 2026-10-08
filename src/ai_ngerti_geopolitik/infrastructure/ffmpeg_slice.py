@@ -520,11 +520,14 @@ class FfmpegSliceMediaEngine:
             raise MediaToolError("EXPORT_SELECTION_REQUIRED")
         selection = request.selection
         preflight = ExportPreflightService(media_inspector, target_inspector)
-        options = {
-            "project_source_path": project_source_path,
-            "selection_qualified": True,
-        }
-        checked = preflight.check(state, request, session_id, toolchain, **options)
+        checked = preflight.check(
+            state,
+            request,
+            session_id,
+            toolchain,
+            project_source_path=project_source_path,
+            selection_qualified=True,
+        )
         if not checked.precheck_pass:
             reasons = ",".join(code.value for code in checked.failure_codes)
             raise MediaToolError(f"EXPORT_PREFLIGHT_REJECTED:{reasons}")
@@ -594,7 +597,14 @@ class FfmpegSliceMediaEngine:
             self._verify_h264_baseline(selected, state, expected_frames=frame_count)
             if cancellation is not None and cancellation.cancelled:
                 raise MediaOperationCancelled("EXPORT_CANCELLED")
-            again = preflight.check(state, request, session_id, toolchain, **options)
+            again = preflight.check(
+                state,
+                request,
+                session_id,
+                toolchain,
+                project_source_path=project_source_path,
+                selection_qualified=True,
+            )
             if not again.precheck_pass:
                 reasons = ",".join(code.value for code in again.failure_codes)
                 raise MediaToolError(f"EXPORT_POST_RENDER_REJECTED:{reasons}")
