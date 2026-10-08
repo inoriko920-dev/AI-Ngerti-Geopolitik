@@ -29,3 +29,13 @@ Run **37754131337**, pada commit implementasi `bfa20eb...`, berstatus **SUCCESS*
 - D2 cara distribusi portable final, D3 lisensi/third-party notices dan D4 pemilihan engine produksi masih PENDING.
 - Belum ada paket baru, encoder bundled, perubahan `MediaEnginePort.export`, revisi frozen UI, merge `main`, maupun rilis.
 - **Tugas berikutnya sesudah Pilot A disetujui:** SOL **INT-01B/B2** — runner bounded yang menguras stdout/stderr paralel, deadline monotonic, cancellation dan typed errors; lanjutkan B3 (Windows child tree), B4 (FFprobe timeout), B5 (adapter), dan B6 (real Windows FFmpeg) **secara serial**, tidak langsung dinyatakan PASS bersama.
+
+
+## B1 acceptance hardening — unexpected huge integer input, 2026-10-08 WIB
+
+- A code review found that `math.isfinite(value)` could raise **OverflowError** when `NativeProcessPolicy(timeout_seconds=10**1000)` or `terminate_grace_seconds=10**1000` is supplied, rather than returning the required typed fixed error code.
+- Corrected `_seconds_between` to call `math.isfinite` **only for float** values; ordinary int values use range comparison directly. This retains fail-closed behavior for bool, NaN/Infinity, negative and over-limit values.
+- Added parametrized regression tests for excessively large positive/negative integers in the timeout and termination grace, and 10**1000 into outcome counters. These tests verify rejection as `NativeProcessContractError`, not OverflowError or untrusted text.
+- Hardened implementation SHA `7b95beebc3c277590371e8499acca81616d99aa4`; Windows [37756572639](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37756572639) **SUCCESS**. Target B1 tests and complete repository pytest PASS; Ruff/mypy/architecture/security/source-of-truth/UI frozen all PASS.
+- The native runner **is not wired**, external FFmpeg **is not executed** by this new contract, and `can_start_product_render` stays False. Original B1 qualifications still hold; this is a stricter input validation edge-case gate only.
+- **Next B2 actual subprocess engine remains blocked on explicit owner Pilot A authorization**. No engine/license, native bundling, UI binding, main merge or release permission follows from this green result.

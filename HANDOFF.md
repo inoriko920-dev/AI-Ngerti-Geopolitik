@@ -338,3 +338,9 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - New pure application `native_process_contract.py` defines frozen `NativeProcessPolicy` (bounded timeout, stdout/stderr, polling, termination grace, argv sizes) and typed privacy-safe `NativeProcessOutcome`/status validated against existing `NativeIssueCode`. No stdout/stderr data exposed, product render permission False.
 - Evidence `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md`, Windows workflow `sol-int01b-b1-process-contract-windows.yml`, unit `test_sol_int01b_b1_process_contract.py`. **No subprocess, native execution, UI changes or FFmpeg packaging**.
 - **Owner Pilot A explicit approval remains pending.** B2 actual bounded native execution, B3 process-tree, B4 FFprobe, B5 adapter, B6 native real-media tests not started. Main unchanged, all PRs draft. Next after explicit approval: SOL INT-01B/B2 one task only.
+
+
+## SOL INT-01B/B1 hardening (2026-10-08 WIB)
+- Huge Python int timeout/grace previously raised OverflowError during math.isfinite; hardened pure validator to call math.isfinite only on floats. Tests for 10**1000 and -(10**1000), plus outcome large counter.
+- Code SHA 7b95beebc3c277590371e8499acca81616d99aa4, Windows [37756572639](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37756572639) SUCCESS targeted/full pytest + static/architecture/frozen UI. Evidence docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md updated.
+- B1 remains **PASS_PURE_CONTRACT**, B2 external/subprocess runner **OWNER_D1_BLOCKED**. No FFmpeg execution, UI wiring, native distribution, merge or release.

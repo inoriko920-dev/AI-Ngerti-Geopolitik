@@ -1208,3 +1208,8 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [ ] B3 Windows child-tree cleanup, B4 FFprobe bounded adapter, B5 FFmpeg engine wiring, B6 real native Windows smoke — NOT STARTED.
 - [ ] D2 final portable native policy, D3 LICENSE/notices, D4 production libopenshot strategy — PENDING.
 - No UI redesign, no MediaEnginePort change, no main merge or release.
+
+
+## SOL INT-01B/B1 hardened edge cases — 2026-10-08 WIB
+- [x] Test and fix timeout/grace `10**1000` int OverflowError; fixed-code fail-closed PASS Windows [37756572639](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37756572639).
+- [ ] B2 actual bounded subprocess process runner; **explicit Pilot A owner approval required**. No product render activation/FFmpeg binary bundling.
