@@ -63,9 +63,7 @@ def _save_real_project(tmp_path: Path):
 
 
 @pytest.mark.parametrize("frame", [0, 1, 149])
-def test_single_is_real_red_full_canvas_at_every_hold_frame(
-    tmp_path: Path, frame: int
-) -> None:
+def test_single_is_real_red_full_canvas_at_every_hold_frame(tmp_path: Path, frame: int) -> None:
     state = _save_real_project(tmp_path)
     image = render_still_frame(state, frame)
     assert (image.width(), image.height()) == (13, 8)
@@ -75,9 +73,7 @@ def test_single_is_real_red_full_canvas_at_every_hold_frame(
 
 
 @pytest.mark.parametrize("frame", [150, 151, 239])
-def test_double_is_real_green_left_blue_right_parallel(
-    tmp_path: Path, frame: int
-) -> None:
+def test_double_is_real_green_left_blue_right_parallel(tmp_path: Path, frame: int) -> None:
     image = render_still_frame(_save_real_project(tmp_path), frame)
     assert image.pixelColor(0, 2).name() == "#00ff00"
     assert image.pixelColor(5, 2).name() == "#00ff00"
@@ -104,8 +100,10 @@ def test_unapproved_transform_never_silently_ignored(tmp_path: Path) -> None:
     )
     modified = replace(
         state,
-        tracks=(replace(state.tracks[0], clips=(changed, *state.tracks[0].clips[1:])),
-                state.tracks[1]),
+        tracks=(
+            replace(state.tracks[0], clips=(changed, *state.tracks[0].clips[1:])),
+            state.tracks[1],
+        ),
     )
     with pytest.raises(StillFramePreviewError, match="effects"):
         render_still_frame(modified, 0)
