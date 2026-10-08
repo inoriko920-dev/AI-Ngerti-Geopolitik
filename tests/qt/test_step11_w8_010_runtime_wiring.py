@@ -8,6 +8,7 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QLabel, QListWidget, QPushButton, QTableWidget
 
+from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBatch
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import ProjectSession
@@ -25,6 +26,7 @@ from ai_ngerti_geopolitik.bootstrap.w8_controller import (
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
+from ai_ngerti_geopolitik.domain import Clip, FrameTime
 from ai_ngerti_geopolitik.presentation.main_window import create_main_window
 
 
@@ -70,6 +72,12 @@ def saved_project(tmp_path: Path):
     session = ProjectSession(repo)
     session.new_project("P-W8-010", "UI real data", 30)
     asset = MediaImportService(OwnedProbe()).import_path(session, video)
+    session.execute(
+        CommandBatch(
+            "W8-010-ADD-CLIP", "Place asset", "manual", session.state.revision,
+            (AddClipCommand(Clip("C001", asset, FrameTime(0, 30), FrameTime(0, 30), FrameTime(120, 30))),),
+        )
+    )
     session.save(path)
     return repo, path, video, asset
 
