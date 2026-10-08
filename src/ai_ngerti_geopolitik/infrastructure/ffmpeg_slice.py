@@ -540,7 +540,9 @@ class FfmpegSliceMediaEngine:
         frame_count = selection.end - selection.start
         # Workspace is unique, within the same filesystem as destination.
         # Neither full render nor selection transcode touches the user target.
-        with tempfile.TemporaryDirectory(prefix=".ang-range-", dir=request.output_path.parent) as work:
+        with tempfile.TemporaryDirectory(
+            prefix=".ang-range-", dir=request.output_path.parent
+        ) as work:
             folder = Path(work)
             full = folder / "composed.mp4"
             selected = folder / "selection.mp4"

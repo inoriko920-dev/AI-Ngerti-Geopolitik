@@ -30,7 +30,10 @@ from ai_ngerti_geopolitik.domain import (
 )
 from ai_ngerti_geopolitik.infrastructure.export_capability_probe import detect_export_toolchain
 from ai_ngerti_geopolitik.infrastructure.export_output_inspector import LocalExportOutputInspector
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfmpegSliceMediaEngine, FfprobeMediaProbe
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
+    FfmpegSliceMediaEngine,
+    FfprobeMediaProbe,
+)
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 
@@ -90,15 +93,11 @@ def main() -> int:
     subtitles = SubtitleTrack(
         source_ref="owned-fixture-manual",
         cues=(
-            SubtitleCue(
-                "S001", 1, FrameTime(30, 30), FrameTime(90, 30), "ACROSS SCENE BOUNDARY"
-            ),
+            SubtitleCue("S001", 1, FrameTime(30, 30), FrameTime(90, 30), "ACROSS SCENE BOUNDARY"),
             SubtitleCue("S002", 2, FrameTime(90, 30), FrameTime(120, 30), "FINAL SECTION"),
         ),
     )
-    narration_track = NarrationTrack(
-        "N001", narration_id, FrameTime(15, 30), gain_percent=100
-    )
+    narration_track = NarrationTrack("N001", narration_id, FrameTime(15, 30), gain_percent=100)
     session.bus.execute(
         CommandBatch(
             batch_id="SF12-T05-FIXTURE",
