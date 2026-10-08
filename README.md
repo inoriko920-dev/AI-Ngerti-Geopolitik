@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — W8-007 IN_VERIFICATION**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — W8-006 PASS — W8-007 PASS — NEXT W8-008**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -49,7 +49,7 @@ accepted. Full evidence: `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md
 
 Evidence: `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`.
 
-**Next:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — READY.
+**Next:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY.
 W8-007 remains BLOCKED. UI-001..UI-042 frozen, AAVC read-only.
 
 ## W8-006 accepted
@@ -77,10 +77,29 @@ Evidence: `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`.
 **Next:** SOL S11-W8-007 only, when owner says `lanjutkan`.
 W8-008 remains blocked; source `.angproj` and `.bak` are protected.
 
-## W8-007 — Atomic Persistence Fault Injection
+## W8-007 — Atomic Persistence Fault Injection — PASS
 
-Real temporary-file leak under interrupted writes has been addressed within
-the existing persistence repository. Seven injected stages, typed actionable
-errors, exact source integrity, dirty-state/retry and deterministic evidence
-are undergoing Windows qualification. W8-008 is not started. See
-`docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`.
+- Accepted W8-007 implementation + same-HEAD regression: `130407dc728b6417c30dbbc935ecd9b04d37ba43`.
+- [Windows atomic-persistence workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37727525574) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`; SHA-256 `5cf537b7ec5fcf7043c2a0fe640d3f7d9008d2e60209b712c0d81ca06a95be91`.
+- **15/15** targeted fault tests PASS; **459/459** full Python tests PASS;
+  **19/19** owned evidence checks PASS.
+- Ruff, mypy (80 source files), import-linter, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **28/28 same-HEAD workflow families SUCCESS, all attempt 1**,
+  including portable Windows foundation, UI shell, timeline and E2E.
+- Verified temporary create/write/sync, backup create/copy/replace and
+  source replacement fault injection; preexisting source bytes exact on
+  failed Save, backup always readable, orphan .tmp cleanup for recoverable
+  failures, Session dirty/Save As guards and successful retry with intended
+  canonical state. Snapshot save failure does not publish invalid recovery.
+- **Confirmed and fixed:** pre-W8-007 code registered temp filename only
+  after write/sync, leaving orphan temp on early failure. Existing repository
+  serializer and ownership remain unchanged; no schema/UI changes.
+- Typed `PersistenceError` stages and an actionable, redacted Indonesian
+  failure projection qualified. W8-008 not implemented.
+
+Evidence: `docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`.
+
+**Next:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs —
+READY. W8-009 remains blocked. UI-001..042 frozen and AAVC read-only.

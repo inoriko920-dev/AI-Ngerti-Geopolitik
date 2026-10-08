@@ -825,8 +825,8 @@ Serial contract:
 - [x] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS**
 - [x] **S11-W8-005 — Autosave Catalog + Retention Hardening — PASS**
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
-- [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — IN_VERIFICATION**
-- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — BLOCKED_BY_W8_007**
+- [x] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**
+- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY**
 - [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
 - [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
 
@@ -967,10 +967,27 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - UI-039 intent/projection qualification only; complete main-window wiring
   remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
 
-**Exact next task:** S11-W8-007 Atomic Persistence Failure Injection +
-Remediation ONLY. W8-008 remains serial-blocked.
+**W8-007 accepted qualification:**
 
-**W8-007:** transient-save-failure remediation, precise stage projection,
-source/backup integrity, no orphan temp after recoverable faults, retry and
-session dirty guard. Tests and owned evidence committed; QA pending.
-W8-008 remains blocked.
+- Accepted W8-007 implementation + same-HEAD regression: `130407dc728b6417c30dbbc935ecd9b04d37ba43`.
+- [Windows atomic-persistence workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37727525574) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`; SHA-256 `5cf537b7ec5fcf7043c2a0fe640d3f7d9008d2e60209b712c0d81ca06a95be91`.
+- **15/15** targeted fault tests PASS; **459/459** full Python tests PASS;
+  **19/19** owned evidence checks PASS.
+- Ruff, mypy (80 source files), import-linter, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **28/28 same-HEAD workflow families SUCCESS, all attempt 1**,
+  including portable Windows foundation, UI shell, timeline and E2E.
+- Verified temporary create/write/sync, backup create/copy/replace and
+  source replacement fault injection; preexisting source bytes exact on
+  failed Save, backup always readable, orphan .tmp cleanup for recoverable
+  failures, Session dirty/Save As guards and successful retry with intended
+  canonical state. Snapshot save failure does not publish invalid recovery.
+- **Confirmed and fixed:** pre-W8-007 code registered temp filename only
+  after write/sync, leaving orphan temp on early failure. Existing repository
+  serializer and ownership remain unchanged; no schema/UI changes.
+- Typed `PersistenceError` stages and an actionable, redacted Indonesian
+  failure projection qualified. W8-008 not implemented.
+
+**Exact next task:** S11-W8-008 Stale Result Hardening for W8 Background
+Jobs ONLY. W8-009 remains serial-blocked.

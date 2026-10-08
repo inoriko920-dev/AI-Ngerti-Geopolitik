@@ -158,8 +158,9 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-004 Batch Directory Relink Scan + Candidate Ranking: **PASS**.
 - W8-005 Autosave Catalog + Retention Hardening: **PASS**.
 - W8-006 Crash Marker + Startup Recovery Decision: **PASS**.
-- W8-007 Atomic Persistence Failure Injection + Remediation: **IN_VERIFICATION**, not PASS.
-- W8-008..W8-010: **SERIAL_BLOCKED**.
+- W8-007 Atomic Persistence Failure Injection + Remediation: **PASS**.
+- W8-008 Stale Result Hardening for W8 Background Jobs: **READY**.
+- W8-009..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -181,7 +182,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-006 accepted HEAD `5a975bb312714f84315b9b752deac75a33021fab`; Windows workflow `37726261665` SUCCESS;
 - W8-006 targeted 15/15, full pytest 444/444, crash evidence 12/12 and regression 27/27 PASS;
 - W8-006 evidence `docs/evidence/features/S11_W8_006_CRASH_RECOVERY.md`;
-- exact next action: **SOL S11-W8-007 Atomic Persistence Failure Injection + Remediation ONLY**.
+- W8-007 accepted HEAD `130407dc728b6417c30dbbc935ecd9b04d37ba43`, workflow `37727525574` SUCCESS;
+- W8-007 targeted 15/15, full pytest 459/459, evidence 19/19, regression 28/28 PASS;
+- W8-007 artifact `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`;
+- exact next action: **SOL S11-W8-008 Stale Result Hardening for W8 Background Jobs ONLY**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.
 
@@ -189,5 +193,6 @@ W8-006 accepted PASS: 12 unit + 3 Qt tests, strict crash-marker
 and source-byte integrity evidence, 27/27 same-HEAD workflow lock.
 W8-007 READY; W8-008 BLOCKED.
 
-W8-007 has code/15 targeted tests/fault evidence runner and a Windows workflow
-committed. Gate IN_VERIFICATION; W8-008 BLOCKED.
+W8-007 accepted PASS: full same-HEAD 28/28 regression, real
+fault-injection evidence and typed safe error projection. W8-008 READY;
+W8-009 BLOCKED.

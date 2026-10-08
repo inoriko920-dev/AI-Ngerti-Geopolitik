@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..006 PASS / W8-007 IN_VERIFICATION  
+**Status:** CONTRACT_LOCKED / W8-001..007 PASS / W8-008 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -36,8 +36,8 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **PASS**
 5. W8-005 Autosave Catalog + Retention Hardening — **PASS**
 6. W8-006 Crash Marker + Startup Recovery Decision — **PASS**
-7. W8-007 Atomic Persistence Failure Injection + Remediation — **IN_VERIFICATION**
-8. W8-008 Stale Result Hardening — **BLOCKED**
+7. W8-007 Atomic Persistence Failure Injection + Remediation — **PASS**
+8. W8-008 Stale Result Hardening — **READY**
 9. W8-009 Structured Diagnostics + Redacted Diagnostic Bundle — **BLOCKED**
 10. W8-010 Frozen UI Wiring + GOLDEN-03 Closure + Regression Lock — **BLOCKED**
 
@@ -56,47 +56,28 @@ rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review
 one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
 real-media validation. UI-040 projects intents; controller wiring remains W8-010.
 
-## Exact next action
+## W8-007 accepted
 
-W8-005 accepted:
-- W8-005 accepted implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
-- Windows qualification workflow: `37724812333` — SUCCESS.
-- Artifact: `ANG-S11-W8-005-Autosave-Catalog` ID `11526779061`;
-  SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
-- Targeted autosave tests **9/9 PASS**, full pytest **429/429 PASS**,
-  owned evidence verifier **12/12 PASS**, frozen UI **42/42 PASS**.
-- Ruff/mypy/imports/architecture/security/source-of-truth PASS.
-- Same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**.
-- Maximum 20 validated managed autosaves/project, legacy compatibility,
-  corrupt isolation and writer/unlink failure injection PASS.
-- Never prune source `.angproj`, `.bak`, or foreign project snapshots.
-
-## W8-006 accepted
-
-- Accepted W8-006 implementation and same-HEAD regression commit: `5a975bb312714f84315b9b752deac75a33021fab`.
-- [Dedicated Windows recovery workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37726261665): **SUCCESS**.
-- Artifact: `ANG-S11-W8-006-Crash-Recovery`, ID `11528226010`,
-  ZIP SHA-256 `adc9591b108a82f2b4e09d7f7bc3714133a6dd7ec839ed2216e7568351ad1165`.
-- Dedicated recovery tests **15/15 PASS** (12 unit + 3 Qt).
-- Full Python suite **444/444 PASS**; owned crash evidence verifier **12/12 PASS**.
-- Ruff, mypy (79 source files), import contracts, architecture, no-secrets,
+- Accepted W8-007 implementation + same-HEAD regression: `130407dc728b6417c30dbbc935ecd9b04d37ba43`.
+- [Windows atomic-persistence workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37727525574) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`; SHA-256 `5cf537b7ec5fcf7043c2a0fe640d3f7d9008d2e60209b712c0d81ca06a95be91`.
+- **15/15** targeted fault tests PASS; **459/459** full Python tests PASS;
+  **19/19** owned evidence checks PASS.
+- Ruff, mypy (80 source files), import-linter, architecture, no-secrets,
   source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
-- Same-HEAD regression **27/27 workflow families SUCCESS, attempt 1**,
-  including Windows portable foundation, UI shell, timeline, E2E, subtitle,
-  media and previous W8 qualification.
-- Proven: clean/unclean marker, valid newer-only snapshots, corrupt-newest
-  isolation, explicit Open Source / Recover Snapshot / Ignore choices,
-  stale snapshot/source rejection, exact project source bytes unchanged
-  during recovery, dirty working state until explicit Save, clean-close guard.
-- UI-039 intent/projection qualification only; complete main-window wiring
-  remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
+- **28/28 same-HEAD workflow families SUCCESS, all attempt 1**,
+  including portable Windows foundation, UI shell, timeline and E2E.
+- Verified temporary create/write/sync, backup create/copy/replace and
+  source replacement fault injection; preexisting source bytes exact on
+  failed Save, backup always readable, orphan .tmp cleanup for recoverable
+  failures, Session dirty/Save As guards and successful retry with intended
+  canonical state. Snapshot save failure does not publish invalid recovery.
+- **Confirmed and fixed:** pre-W8-007 code registered temp filename only
+  after write/sync, leaving orphan temp on early failure. Existing repository
+  serializer and ownership remain unchanged; no schema/UI changes.
+- Typed `PersistenceError` stages and an actionable, redacted Indonesian
+  failure projection qualified. W8-008 not implemented.
 
 ## Exact next action
 
-On owner's **lanjutkan**, SOL S11-W8-007 only. W8-008 remains blocked.
-
-## W8-007 pending qualification
-
-Focused remediation to existing JsonProjectRepository temp cleanup; typed safe
-error projection; direct failure injection around create/write/sync/copy/replace.
-No broad persistence rewrite and no new UI owner. W8-008 BLOCKED.
+On owner's `lanjutkan`, **SOL W8-008 only**, not W8-009.

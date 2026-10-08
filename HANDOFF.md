@@ -2,13 +2,13 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-006 — PASS  
-**Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
+**Last completed task:** S11-W8-007 — PASS  
+**Accepted implementation/regression HEAD:** `130407dc728b6417c30dbbc935ecd9b04d37ba43`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
-**Current task:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — IN_VERIFICATION
-**Next exact action:** Finish W8-007 Windows fault injection, artifact and same-HEAD regression; W8-008 remains blocked
+**Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
+**Next exact task:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — READY
 
 ## Read-first constraints
 
@@ -25,6 +25,7 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 - W8-004 batch directory relink scan + candidate ranking: PASS.
 - W8-005 autosave catalog + retention hardening: PASS.
 - W8-006 crash marker + explicit startup recovery: PASS.
+- W8-007 atomic persistence failure injection + remediation: PASS.
 
 ## W8-003 qualification
 
@@ -90,13 +91,34 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - UI-039 intent/projection qualification only; complete main-window wiring
   remains W8-010. W8-007 persistence-failure injection is a separate next STEP.
 
+## W8-007 acceptance
+
+- Accepted W8-007 implementation + same-HEAD regression: `130407dc728b6417c30dbbc935ecd9b04d37ba43`.
+- [Windows atomic-persistence workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37727525574) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-007-Atomic-Persistence`, ID `11528930146`; SHA-256 `5cf537b7ec5fcf7043c2a0fe640d3f7d9008d2e60209b712c0d81ca06a95be91`.
+- **15/15** targeted fault tests PASS; **459/459** full Python tests PASS;
+  **19/19** owned evidence checks PASS.
+- Ruff, mypy (80 source files), import-linter, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **28/28 same-HEAD workflow families SUCCESS, all attempt 1**,
+  including portable Windows foundation, UI shell, timeline and E2E.
+- Verified temporary create/write/sync, backup create/copy/replace and
+  source replacement fault injection; preexisting source bytes exact on
+  failed Save, backup always readable, orphan .tmp cleanup for recoverable
+  failures, Session dirty/Save As guards and successful retry with intended
+  canonical state. Snapshot save failure does not publish invalid recovery.
+- **Confirmed and fixed:** pre-W8-007 code registered temp filename only
+  after write/sync, leaving orphan temp on early failure. Existing repository
+  serializer and ownership remain unchanged; no schema/UI changes.
+- Typed `PersistenceError` stages and an actionable, redacted Indonesian
+  failure projection qualified. W8-008 not implemented.
+
 ## Next exact action
 
-On owner's explicit **lanjutkan**, execute **SOL S11-W8-007 only** using the
-locked ASTRA W8 planning. Inject failures around atomic persistence
-temp/write/replace, protect existing source bytes, verify retry behavior.
-Do not automatically rewrite JsonProjectRepository unless tests prove a defect.
-W8-008 remains blocked. Do not implement W8-008 in the same turn.
+When owner explicitly says **lanjutkan**, implement **SOL S11-W8-008
+Stale Result Hardening for W8 Background Jobs ONLY** under the locked
+ASTRA W8 planning. Keep W8-009 blocked and avoid unrelated source/UI
+changes. Do not implement W8-009 during W8-008.
 
 ## Provisional gates
 
@@ -104,18 +126,3 @@ W5 microphone physical hardware and W6/W7 live Gemini network tests remain
 provisional; do not claim device/provider smoke results that were not run.
 
 
-## W8-007 active implementation (QA gate pending)
-
-W8-007 inspected existing `JsonProjectRepository._write` and found a real
-untracked temporary-file leak if payload write/flush/fsync fails. The existing
-atomic serializer is retained; remediation registers the temporary file as
-soon as it is opened and ensures owned temporary files are cleaned after
-failure. Failure stages are typed as `PersistenceError` in the application
-layer with a safe, actionable Indonesian projection. No source/schema/history
-changes or UI redesign. Tests inject temp/write/sync/backup-copy/backup-replace/
-source-replace faults, check exact source hash, backup validity, session dirty
-state, Save As and retry. Dedicated Windows workflow W8-007 exists.
-
-**Gate: IN_VERIFICATION (not PASS).** Evidence source:
-`docs/evidence/features/S11_W8_007_ATOMIC_PERSISTENCE.md`.
-Do not start W8-008 until W8-007 has a verified same-HEAD regression.
