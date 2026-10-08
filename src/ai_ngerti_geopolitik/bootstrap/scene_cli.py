@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
             target.parent.mkdir(parents=True, exist_ok=True)
             if target.exists():
                 raise SceneImportReviewError("preview destination already exists")
-            if not image.save(str(target), "PNG"):
+            if not image.save(str(target), b"PNG"):
                 raise SceneImportReviewError("preview image could not be saved")
             print(f"Preview frame {args.frame} tersimpan sebagai PNG.")
             return 0
