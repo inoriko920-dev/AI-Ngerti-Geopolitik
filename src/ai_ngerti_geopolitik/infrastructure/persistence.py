@@ -9,6 +9,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from ai_ngerti_geopolitik.application.persistence_failure import (
+    PersistenceError,
+    PersistenceStage,
+)
 from ai_ngerti_geopolitik.domain import (
     Asset,
     AudioProperties,
@@ -47,16 +51,20 @@ class JsonProjectRepository:
 
     def _write(self, state: ProjectState, path: Path, *, backup_existing: bool) -> None:
         state.validate()
-        path = path.resolve()
-        path.parent.mkdir(parents=True, exist_ok=True)
         if path.suffix.lower() != ".angproj":
             raise ProjectFormatError("project file must use .angproj")
         data = state.semantic_dict(include_revision=True)
         payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
+        stage = PersistenceStage.PREPARE
         temp_path: Path | None = None
         backup_temp: Path | None = None
+        failed: PersistenceError | None = None
+        cause: OSError | None = None
         try:
+            path = path.resolve()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            stage = PersistenceStage.TEMP_CREATE
             with tempfile.NamedTemporaryFile(
                 "w",
                 encoding="utf-8",
@@ -66,13 +74,17 @@ class JsonProjectRepository:
                 suffix=".tmp",
                 delete=False,
             ) as handle:
+                # Register immediately: partial writes/fsync failures must not orphan .tmp.
+                temp_path = Path(handle.name)
+                stage = PersistenceStage.TEMP_WRITE
                 handle.write(payload)
                 handle.flush()
+                stage = PersistenceStage.TEMP_SYNC
                 os.fsync(handle.fileno())
-                temp_path = Path(handle.name)
 
             if backup_existing and path.exists():
                 backup_path = path.with_name(f"{path.name}.bak")
+                stage = PersistenceStage.BACKUP_CREATE
                 with tempfile.NamedTemporaryFile(
                     "wb",
                     dir=path.parent,
@@ -81,17 +93,32 @@ class JsonProjectRepository:
                     delete=False,
                 ) as backup_handle:
                     backup_temp = Path(backup_handle.name)
+                stage = PersistenceStage.BACKUP_COPY
                 shutil.copy2(path, backup_temp)
+                # Backup must be safely available before replacing the source.
+                stage = PersistenceStage.BACKUP_REPLACE
                 os.replace(backup_temp, backup_path)
                 backup_temp = None
 
+            stage = PersistenceStage.SOURCE_REPLACE
             os.replace(temp_path, path)
             temp_path = None
+        except OSError as exc:
+            failed = PersistenceError(stage)
+            cause = exc
         finally:
-            if temp_path is not None and temp_path.exists():
-                temp_path.unlink()
-            if backup_temp is not None and backup_temp.exists():
-                backup_temp.unlink()
+            for leftover in (temp_path, backup_temp):
+                if leftover is None:
+                    continue
+                try:
+                    leftover.unlink(missing_ok=True)
+                except OSError as exc:
+                    # Do not mask the original failure with secondary cleanup errors.
+                    if failed is None:
+                        failed = PersistenceError(PersistenceStage.CLEANUP)
+                        cause = exc
+        if failed is not None:
+            raise failed from cause
 
     def load(self, path: Path) -> ProjectState:
         try:
