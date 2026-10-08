@@ -274,3 +274,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `tests/unit/test_sf12_t04_export_h264.py`: fake runner unit contracts, wrong codec/FPS/audio, pre-cancel, source collision and racing output writer.
 - `.github/workflows/sf12-t04-h264-windows.yml`: Windows full static/pytest, Chocolatey external FFmpeg, owned deterministic fixture, real FFprobe, evidence artifact.
 - `docs/evidence/features/SF12_T04_H264_BASELINE.md`: Windows acceptance run 37737863469, artifact ID 11531514655 and 14-day retention; next T05.
+
+
+## SF12-T05 selection / audio narration and subtitle timeline parity — 2026-10-08 WIB
+
+- `src/ai_ngerti_geopolitik/application/export_preflight.py` — optional explicit `selection_qualified` flag, default False and render permission remains False.
+- `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_slice.py` — additive `export_h264_selection`, exact frame video and matched atrim audio after full canonical composition, temporary workspace, safe publication, count verification.
+- `tests/unit/test_sf12_t05_selection.py` — 0/middle/cross-clip/end ranges and failures/cancel/stale/outside bounds; `scripts/qualification/sf12_t05_selection_real_media.py` — real independent PSNR proof and FFprobe.
+- `.github/workflows/sf12-t05-selection-windows.yml`, `docs/evidence/features/SF12_T05_SELECTION_REAL_MEDIA.md` — accepted Windows run 37738941089 and artifact ID 11532743714.
+- T04 FULL path and frozen MediaEnginePort unchanged; T06 next; no UI render activation or release.

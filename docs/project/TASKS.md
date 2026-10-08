@@ -1072,3 +1072,16 @@ T03 code `7bee32aae7248ae9023afe4b9b62bf2caf357095`, Windows CI `37736630766` SU
 - [ ] SF12-T06..T10 — serial blocked.
 
 Evidence T04 Windows `37737863469` SUCCESS on SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42`, 1-second owned H264/AAC MP4; no-clobber, cancel, source and race negatives PASS; full pytest/static/source-of-truth/UI gates PASS. Draft PR #5 (stacked) remains unmerged. GUI render stays disabled until T08/T09 and further release gates.
+
+
+## SF12-T05 accepted — 2026-10-08 WIB
+
+- [x] SF12-T01 — Export capability truth-in-UI — PASS with native provisional.
+- [x] SF12-T02 — Typed ExportRequest additive contract — PASS.
+- [x] SF12-T03 — Safe preflight and capability negotiation — PASS contract.
+- [x] SF12-T04 — Safe full-project H264/AAC baseline — PASS real Windows.
+- [x] **SF12-T05 — FULL/SELECTION frame-accurate mapping including subtitle/narration — PASS real Windows** (engine-side two-pass qualification, not a UI capability).
+- [ ] **SF12-T06 — Codec/resolution/FPS matrix — NEXT, not started.**
+- [ ] SF12-T07..T10 — blocked serially.
+
+SF12-T05 code `9dca99397f3dcbac4d491d5d930cf8309d744271`, Windows workflow `37738941089` SUCCESS, synthetic 120f project with subtitle and narration, 3 selected intervals exactly 30f, video PSNR >=33dB, H264/AAC 1080p30. Full pytest/typing/arch/70 source docs/42 UI hashes PASS. Draft PR #6 stacked; not merged to main. Keep renderer UI disabled until T08/T09/T10 gates.

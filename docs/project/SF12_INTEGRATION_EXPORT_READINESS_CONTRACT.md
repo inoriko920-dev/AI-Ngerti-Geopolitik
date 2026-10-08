@@ -93,3 +93,8 @@ Do not use this review as evidence that T01 or any codec matrix testing has alre
 ## SF12-T04 acceptance (2026-10-08 WIB)
 
 T04 additive `FfmpegSliceMediaEngine.export_h264_baseline` performed real Windows H.264/1080p30 + AAC export with safe unique staging and atomic no-clobber publish. Same-code Windows run `37737863469`, code SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42` PASS. T09 owns full postflight, T08 worker, T10 packaged qualification; GUI remains disabled. Frozen `MediaEnginePort.export` unchanged. Next T05 selection frame mapping only; selection remains blocked until proven.
+
+
+## SF12-T05 acceptance — 2026-10-08 WIB
+
+T05 engine-side selection [start,end) is now qualified on Windows synthetic H264/AAC 1080p30 at 3 intervals (start/cross-clip/end) with subtitles and narration. Code SHA `9dca99397f3dcbac4d491d5d930cf8309d744271`, workflow `37738941089` SUCCESS. Two-pass full-composition-plus-trim preserves global cue/narration timeline but doubles encoding; not a final performance path. T03 default still rejects unqualified selection unless explicitly invoked by T05 method. No GUI render enablement, no codec/4K claims. T06 matrix is next serial task.
