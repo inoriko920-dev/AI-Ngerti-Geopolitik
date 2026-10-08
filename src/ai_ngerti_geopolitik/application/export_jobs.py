@@ -37,13 +37,15 @@ class ExportJobState(StrEnum):
     FAILED = "FAILED"
 
 
-TERMINAL = frozenset({
-    ExportJobState.SUCCESS,
-    ExportJobState.CANCELLED,
-    ExportJobState.TIMED_OUT,
-    ExportJobState.STALE,
-    ExportJobState.FAILED,
-})
+TERMINAL = frozenset(
+    {
+        ExportJobState.SUCCESS,
+        ExportJobState.CANCELLED,
+        ExportJobState.TIMED_OUT,
+        ExportJobState.STALE,
+        ExportJobState.FAILED,
+    }
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -167,9 +169,7 @@ class ExportJobService:
             self._stop(job, ExportJobState.TIMED_OUT, "EXPORT_TIMEOUT")
 
     @staticmethod
-    def _matches(
-        job: _Job, state: ProjectState | None, session_id: str | None
-    ) -> bool:
+    def _matches(job: _Job, state: ProjectState | None, session_id: str | None) -> bool:
         if state is None:
             return False
         try:
@@ -186,9 +186,7 @@ class ExportJobService:
         session_id: str,
         timeout_seconds: float = 600.0,
     ) -> ExportJobSnapshot:
-        if type(timeout_seconds) not in (float, int) or not (
-            0.001 <= timeout_seconds <= 14400.0
-        ):
+        if type(timeout_seconds) not in (float, int) or not (0.001 <= timeout_seconds <= 14400.0):
             raise ExportJobError("INVALID_EXPORT_TIMEOUT")
         try:
             request.assert_current(state, session_id)
@@ -225,9 +223,9 @@ class ExportJobService:
         try:
             if job.cancel.cancelled:
                 return
-            folder = Path(tempfile.mkdtemp(
-                prefix=".ang-export-job-", dir=job.request.output_path.parent
-            ))
+            folder = Path(
+                tempfile.mkdtemp(prefix=".ang-export-job-", dir=job.request.output_path.parent)
+            )
             staged = folder / "render.mp4"
             with self._lock:
                 if job.status is not ExportJobState.RUNNING:
@@ -316,9 +314,12 @@ class ExportJobService:
                 self._stop(job, ExportJobState.FAILED, "EXPORT_PUBLISH_FAILED")
                 raise ExportJobError("EXPORT_PUBLISH_FAILED") from None
             result = ExportResult(
-                job.result.project_revision, job.request.output_path,
-                job.result.duration_frames, job.result.width,
-                job.result.height, job.result.fps
+                job.result.project_revision,
+                job.request.output_path,
+                job.result.duration_frames,
+                job.result.width,
+                job.result.height,
+                job.result.fps,
             )
             job.status = ExportJobState.SUCCESS
             job.phase = "PUBLISHED"

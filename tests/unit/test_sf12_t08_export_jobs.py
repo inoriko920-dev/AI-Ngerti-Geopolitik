@@ -21,7 +21,9 @@ from ai_ngerti_geopolitik.infrastructure.export_job_adapters import AtomicExport
 
 
 class FakeRender:
-    def __init__(self, *, paused: bool = False, fail: bool = False, cooperative: bool = True) -> None:
+    def __init__(
+        self, *, paused: bool = False, fail: bool = False, cooperative: bool = True
+    ) -> None:
         self.entered = threading.Event()
         self.release = threading.Event()
         if not paused:
@@ -47,14 +49,12 @@ class FakeRender:
 def _case(tmp_path: Path) -> tuple[ProjectState, ExportRequest]:
     source = tmp_path / "source.mp4"
     source.write_bytes(b"untouched source")
-    asset = Asset(
-        "A001", str(source), "video", FrameTime(30, 30),
-        1920, 1080, True, "a" * 64
-    )
+    asset = Asset("A001", str(source), "video", FrameTime(30, 30), 1920, 1080, True, "a" * 64)
     clip = Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(30, 30))
     state = replace(
         ProjectState.create("P001", "T08"),
-        assets=(asset,), tracks=(Track("V1", "video", 0, (clip,)),),
+        assets=(asset,),
+        tracks=(Track("V1", "video", 0, (clip,)),),
     )
     request = ExportRequest.for_project(
         state,
@@ -73,9 +73,7 @@ def _wait(
 ) -> None:
     end = time.monotonic() + 8
     while time.monotonic() < end:
-        snap = jobs.snapshot(
-            request.request_id, state=state, session_id="T08-session"
-        )
+        snap = jobs.snapshot(request.request_id, state=state, session_id="T08-session")
         if snap.status is wanted:
             return
         if snap.terminal and snap.status is not wanted:
@@ -154,9 +152,10 @@ def test_revision_and_session_close_reject_ready_result(tmp_path: Path) -> None:
         jobs.submit(state, request, session_id="T08-session")
         _wait(jobs, request, state, ExportJobState.READY)
         edited = replace(state, name="same revision different semantics")
-        assert jobs.snapshot(
-            request.request_id, state=edited, session_id="T08-session"
-        ).status is ExportJobState.STALE
+        assert (
+            jobs.snapshot(request.request_id, state=edited, session_id="T08-session").status
+            is ExportJobState.STALE
+        )
         with pytest.raises(ExportJobError):
             jobs.accept(request.request_id, state=edited, session_id="T08-session")
         assert not request.output_path.exists()

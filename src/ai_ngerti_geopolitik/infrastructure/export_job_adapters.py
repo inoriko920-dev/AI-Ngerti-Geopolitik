@@ -78,7 +78,10 @@ class QualifiedStagedRender:
             raise ValueError("UNSUPPORTED_SELECTION_PROFILE")
 
         preflight = ExportPreflightService(self.inspector, self.targets).check(
-            state, request, request.session_id, self.toolchain,
+            state,
+            request,
+            request.session_id,
+            self.toolchain,
             project_source_path=self.project_source_path,
             selection_qualified=selection,
             matrix_candidate=matrix,
@@ -87,26 +90,46 @@ class QualifiedStagedRender:
         if not preflight.precheck_pass:
             raise ValueError("EXPORT_PREFLIGHT_REJECTED")
         staged_request = replace(request, output_path=stage_path)
-        opts = {
-            "session_id": request.session_id,
-            "media_inspector": self.inspector,
-            "target_inspector": self.targets,
-            "toolchain": self.toolchain,
-            "project_source_path": self.project_source_path,
-            "cancellation": cancellation,
-        }
         if selection:
-            return self.engine.export_h264_selection(state, staged_request, **opts)
+            return self.engine.export_h264_selection(
+                state, staged_request,
+                session_id=request.session_id,
+                media_inspector=self.inspector,
+                target_inspector=self.targets,
+                toolchain=self.toolchain,
+                project_source_path=self.project_source_path,
+                cancellation=cancellation,
+            )
         if not plain and matrix is not None and style is None:
             return FfmpegMatrixQualificationExporter(self.engine).export(
-                state, staged_request, **opts
+                state, staged_request,
+                session_id=request.session_id,
+                media_inspector=self.inspector,
+                target_inspector=self.targets,
+                toolchain=self.toolchain,
+                project_source_path=self.project_source_path,
+                cancellation=cancellation,
             )
         if not plain and style is not None:
             return FfmpegStyleQualificationExporter(self.engine).export(
-                state, staged_request, **opts
+                state, staged_request,
+                session_id=request.session_id,
+                media_inspector=self.inspector,
+                target_inspector=self.targets,
+                toolchain=self.toolchain,
+                project_source_path=self.project_source_path,
+                cancellation=cancellation,
             )
         if plain:
-            return self.engine.export_h264_baseline(state, staged_request, **opts)
+            return self.engine.export_h264_baseline(
+                state, staged_request,
+                session_id=request.session_id,
+                media_inspector=self.inspector,
+                target_inspector=self.targets,
+                toolchain=self.toolchain,
+                project_source_path=self.project_source_path,
+                cancellation=cancellation,
+            )
         raise ValueError("UNSUPPORTED_EXPORT_PROFILE")
 
 

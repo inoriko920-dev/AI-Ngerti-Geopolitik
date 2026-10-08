@@ -21,7 +21,10 @@ from ai_ngerti_geopolitik.infrastructure.export_job_adapters import (
     AtomicExportPublisher,
     QualifiedStagedRender,
 )
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfmpegSliceMediaEngine, FfprobeMediaProbe
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
+    FfmpegSliceMediaEngine,
+    FfprobeMediaProbe,
+)
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 
@@ -91,9 +94,12 @@ def main() -> int:
         )
         assert accepted.output_path == request.output_path
         assert accepted.duration_frames == 15
-        assert jobs.snapshot(
-            request.request_id, state=session.state, session_id="T08-real-session"
-        ).progress_percent == 100
+        assert (
+            jobs.snapshot(
+                request.request_id, state=session.state, session_id="T08-real-session"
+            ).progress_percent
+            == 100
+        )
     info = probe.raw_probe(request.output_path)
     video = next(x for x in info["streams"] if x.get("codec_type") == "video")
     audio = next(x for x in info["streams"] if x.get("codec_type") == "audio")
