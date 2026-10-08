@@ -103,3 +103,8 @@ T05 engine-side selection [start,end) is now qualified on Windows synthetic H264
 ## SF12-T06 qualified profile evidence (2026-10-08 WIB)
 
 Windows real-media run `37740103975`, accepted code `00761740666c66c8787aec4865d3e2184a13fe7d`, PASS for exactly **four H.264/H.265/1440p/4K/60fps combinations**: H264 1440p30, H264 4K30, H264 1080p60, H265 1080p30. Each MP4+Aac verified by FFprobe on 0.5s owned synthetic 1080p30 input. Output scaling/duplication does not increase source resolution/motion detail. T03 default deny persists; only the dedicated T06 qualification exporter can provide a typed allowlisted candidate; no UI/port replacement. Remaining matrix combinations still DENIED; full long-media performance, bundle/licenses and T08 worker/T09 postflight/T10 packaging remain provisional. Next T07 subtitle/narration/sharpen/quality policy.
+
+
+## SF12-T07 subtitle / narration / sharpen / quality evidence — 2026-10-08 WIB
+
+Windows CI run `37741355411` SUCCESS on code SHA `79b24e93d4574cff0fc8a1650a6bd569e7640965`. Six H.264/1080p30/AAC MP4 files truly rendered; subtitle burn-in/on vs OFF mean pixel diff 1.1399, sharpen light/crisp pixel diff 0.6486/1.0716, quality CRF28/21/18 and ultrafast/medium/slow exact FFmpeg flags, narration from frame15 proven by independent PCM diff (pre 4.2776 vs active 2399.3156). External native encoder only, no packaged binary. Additive T07 qualification and typed preflight opt-in preserve current W5 engine and 42 frozen UI assets. UI render still DISABLED until worker lifecycle T08, independent comprehensive postflight T09 and packaged E2E T10. Non-qualified combinations stay blocked. Next serial T08 only after user continuation.

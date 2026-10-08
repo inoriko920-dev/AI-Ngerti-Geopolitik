@@ -28,6 +28,11 @@ from ai_ngerti_geopolitik.application.export_request import (
     ExportSharpen,
     ExportSubtitles,
 )
+from ai_ngerti_geopolitik.application.export_style_policy import (
+    T07_STYLE_CANDIDATES,
+    StyleQualification,
+    style_for_request,
+)
 from ai_ngerti_geopolitik.application.validation import (
     MediaIntegrityInspectorPort,
     RealMediaIntegrityRule,
@@ -107,6 +112,7 @@ class ExportPreflightService:
         project_source_path: Path | None = None,
         selection_qualified: bool = False,
         matrix_candidate: MatrixProfile | None = None,
+        style_candidate: StyleQualification | None = None,
     ) -> ExportPreflightResult:
         """Read-only, deterministic reasons; output checks stay behind a port."""
 
@@ -167,13 +173,21 @@ class ExportPreflightService:
             and matrix_candidate in T06_CANDIDATE_PROFILES
             and matrix_candidate == candidate_for_request(request)
         )
+        qualified_style_candidate = (
+            style_candidate is not None
+            and type(style_candidate) is StyleQualification
+            and style_candidate in T07_STYLE_CANDIDATES
+            and style_candidate == style_for_request(request)
+        )
         if (
-            not (baseline or qualified_matrix_candidate)
-            or request.quality is not ExportQuality.HIGH
-            or request.sharpen is not ExportSharpen.NONE
-            or request.subtitles is not ExportSubtitles.BURN_IN
-            or request.audio is not ExportAudio.AAC
-        ):
+            not qualified_style_candidate
+            and (
+                not (baseline or qualified_matrix_candidate)
+                or request.quality is not ExportQuality.HIGH
+                or request.sharpen is not ExportSharpen.NONE
+                or request.subtitles is not ExportSubtitles.BURN_IN
+            )
+        ) or request.audio is not ExportAudio.AAC:
             add(ExportPreflightCode.UNSUPPORTED_PROFILE)
 
         duration_frames = (

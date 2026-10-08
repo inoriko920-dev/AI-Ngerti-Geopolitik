@@ -1099,3 +1099,18 @@ SF12-T05 code `9dca99397f3dcbac4d491d5d930cf8309d744271`, Windows workflow `3773
 - [ ] SF12-T08 job/cancellation, T09 full output postflight, T10 packaged Windows E2E — blocked serially.
 
 Run `37740103975` SUCCESS at code `00761740666c66c8787aec4865d3e2184a13fe7d`; full pytest, Ruff, mypy 92, architecture/source-of-truth70/UI42/secrets PASS. Test artifacts `ANG-SF12-T06-CodecMatrix-RealMedia` ID 11533866135. T06 PR #7 stacked and not merged; UI render remains disabled; H265 4K60 unqualified.
+
+
+## SF12-T07 style/narration actual Windows acceptance — 2026-10-08 WIB
+
+- [x] SF12-T01 – Capability truth-in-UI — PASS native provisional.
+- [x] SF12-T02 – Immutable request contract — PASS.
+- [x] SF12-T03 – Safe preflight — PASS.
+- [x] SF12-T04 – H264 full baseline — PASS real Windows.
+- [x] SF12-T05 – H264 selected frames including subtitle/audio — PASS real Windows.
+- [x] SF12-T06 – Four actual Windows codec/resolution/FPS cells — PASS.
+- [x] **SF12-T07 – Six individually qualified subtitle/quality/sharpen variants, with narration AAC — PASS actual Windows**.
+- [ ] **SF12-T08 – Nonblocking render worker/progress/cancel/timeout/close and stale guards — NEXT, NOT STARTED**.
+- [ ] SF12-T09 postflight and T10 packaged Windows E2E — blocked serially.
+
+T07 Windows run `37741355411` SUCCESS on implementation `79b24e93d4574cff0fc8a1650a6bd569e7640965`; six H264/AAC MP4s (2s each), subtitle gray on/off mean 1.1399, sharpen light/crisp means 0.6486/1.0716, narration PCM late pre 4.2776 / during 2399.3156. Full regression/architecture/docs/UI PASS, artifact ID 11533749234. Draft PR #8 stacked, not merged to main. GUI export remains disabled pending T08-T10; qualified cells are not a release claim.

@@ -292,3 +292,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_export_profiles.py` — synchronous dedicated T06 path, compose, upscale/fps/HEVC convert, verify via FFprobe, check output and atomic no-clobber publish.
 - `tests/unit/test_sf12_t06_export_profiles.py`, `scripts/qualification/sf12_t06_real_codec_matrix.py`, `.github/workflows/sf12-t06-windows-codec-matrix.yml` — target/full regressions + real Windows codec evidence.
 - `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md` — run 37740103975 PASS on code SHA 0076174, artifact ID 11533866135. Next T07, no product GUI enablement or shipped codec pack.
+
+
+## SF12-T07 real style / narration evidence (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/export_style_policy.py`: six exact subtitle/sharpen/quality candidates, conservative nonproduct authorization.
+- `src/ai_ngerti_geopolitik/application/export_preflight.py`: additive opt-in T07 style candidate while all default unsupported choices remain denied.
+- `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_export_style.py`: synchronous qualification path with immutable subtitle policy, W5 narration mixing, strict FFprobe, atomic no-clobber temp publish.
+- `tests/unit/test_sf12_t07_style.py`, `scripts/qualification/sf12_t07_real_style.py`, `.github/workflows/sf12-t07-windows-style.yml`: negative cases, real Windows golden pixel/PCM proofs.
+- `docs/evidence/features/SF12_T07_STYLE_REAL_MEDIA.md`: code SHA 79b24e9, Windows SUCCESS run 37741355411, artifact id 11533749234. **Next T08 async lifecycle**; product GUI disabled.
