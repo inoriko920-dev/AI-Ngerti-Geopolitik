@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
+from typing import Callable
 
 from ai_ngerti_geopolitik.application.commands import (
     AddClipCommand,
@@ -24,6 +25,7 @@ from ai_ngerti_geopolitik.application.scene_asset_bindings import (
     VerifiedSceneImageSet,
 )
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxPlan
+from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
 from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, Marker, ProjectState
 
 _MAX_TIMELINE_SECONDS = 24 * 60 * 60
@@ -263,3 +265,65 @@ def create_canonical_scene_image_project(
         )
     except (ValueError, RuntimeError):
         raise SceneImportReviewError("canonical scene project creation failed") from None
+
+
+def save_reviewed_scene_image_project(
+    docx: SceneDocxPlan,
+    docx_path: Path,
+    root: Path,
+    review: SceneTimelineReview,
+    baseline: VerifiedSceneImageSet,
+    target: Path,
+    *,
+    project_id: str,
+    project_name: str,
+    repository: ProjectRepositoryPort,
+    read_docx: Callable[[Path], SceneDocxPlan],
+    scan: Callable[[SceneDocxPlan, Path], SceneAssetInventory],
+    verify: Callable[[SceneAssetInventory], VerifiedSceneImageSet],
+) -> ProjectState:
+    """Save a new .angproj only after a fresh source + asset qualification.
+
+    Must run on a worker, never Qt's GUI thread. No active ProjectSession state
+    changes are made here. Refuse existing destinations rather than overwriting.
+    """
+    if target.suffix.lower() != ".angproj":
+        raise SceneImportReviewError("new project must use .angproj")
+    target = target.resolve()
+    if target.exists():
+        raise SceneImportReviewError("project destination already exists")
+    if not review.scenes or not baseline.images:
+        raise SceneImportReviewError("scene import review is incomplete")
+    try:
+        if read_docx(docx_path) != docx:
+            raise SceneImportReviewError("Scene DOCX changed since preflight")
+
+        qualified = scan(docx, root)
+        if not qualified.all_ready:
+            raise SceneImportReviewError("asset folder contains unresolved images")
+        current = verify(qualified)
+        if current != baseline:
+            raise SceneImportReviewError("scene images changed since preflight")
+
+        state = create_canonical_scene_image_project(
+            review, current, project_id=project_id, project_name=project_name
+        )
+
+        # A second fresh folder walk is essential: newly added duplicate Axxx
+        # names between the first scan and Save must not be silently ignored.
+        final_inventory = scan(docx, root)
+        if not final_inventory.all_ready or verify(final_inventory) != baseline:
+            raise SceneImportReviewError("scene images changed before project Save")
+        if target.exists():
+            raise SceneImportReviewError("project destination already exists")
+
+        repository.save(state, target)
+        loaded = repository.load(target)
+        if loaded.semantic_hash() != state.semantic_hash():
+            raise SceneImportReviewError("saved project verification failed")
+        return loaded
+    except SceneImportReviewError:
+        raise
+    except (OSError, RuntimeError, ValueError):
+        raise SceneImportReviewError("scene project could not be safely saved") from None
+
