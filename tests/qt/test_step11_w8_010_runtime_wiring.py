@@ -739,3 +739,155 @@ def test_duplicate_and_missing_assets_are_reported_without_project_creation(
     assert controller.window.window.property("ui_state") == "UI-003"
     controller.shutdown()
     controller.window.close()
+
+
+def _saved_still_scene_project(tmp_path: Path) -> Path:
+    from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
+    from ai_ngerti_geopolitik.application.scene_import_review import (
+        build_scene_timeline_review,
+        create_canonical_scene_image_project,
+    )
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        scan_scene_asset_folder,
+        verify_scene_image_media,
+    )
+
+    plan = parse_scene_docx_lines(
+        (
+            "Scene 1: 1",
+            "Asset 1: Red",
+            "Scene 2: 2",
+            "Asset 2: Green",
+            "Asset 3: Blue",
+        )
+    )
+    for number, rgb in ((1, 0xFFFF0000), (2, 0xFF00FF00), (3, 0xFF0000FF)):
+        image = QImage(8, 8, QImage.Format.Format_ARGB32)
+        image.fill(rgb)
+        assert image.save(str(tmp_path / f"A{number:03d}.png"), "PNG")
+    inventory = scan_scene_asset_folder(plan, tmp_path)
+    review = build_scene_timeline_review(plan, inventory, (150, 90), fps=30)
+    state = create_canonical_scene_image_project(
+        review,
+        verify_scene_image_media(inventory),
+        project_id="P-QT-PREVIEW",
+        project_name="Still Preview",
+    )
+    from dataclasses import replace
+
+    state = replace(state, settings=replace(state.settings, width=13, height=8))
+    path = tmp_path / "still-preview.angproj"
+    JsonProjectRepository().save(state, path)
+    return path
+
+
+def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_path: Path) -> None:
+    from PySide6.QtWidgets import QSlider
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    controller.request_still_preview(0)
+    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+    assert canvas.pixmap() is not None
+    first = canvas.pixmap().toImage()
+    assert first.pixelColor(first.width() // 2, first.height() // 2).name() == "#ff0000"
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("frame", "150"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    pixmap = canvas.pixmap()
+    assert pixmap is not None
+    image = pixmap.toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    assert image.pixelColor(3 * image.width() // 4, image.height() // 2).name() == "#0000ff"
+    slider = controller.window.window.findChild(QSlider, "timeline_scrubber")
+    assert slider is not None and slider.maximum() == 239 and slider.value() == 150
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("delta", "1"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 151, controller)
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert "belum didukung" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_rapid_still_seeks_only_display_newest_frame(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    from threading import Event
+
+    from ai_ngerti_geopolitik.bootstrap import w8_controller as controller_module
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, _router = setup(qtbot)
+    controller.session.open_project(source)
+    real_render = controller_module.render_still_frame
+    started = Event()
+    release = Event()
+    rendered: list[int] = []
+
+    def slow_first(state, frame):
+        rendered.append(frame)
+        if frame == 0:
+            started.set()
+            assert release.wait(5)
+        return real_render(state, frame)
+
+    monkeypatch.setattr(controller_module, "render_still_frame", slow_first)
+    controller.request_still_preview(0)
+    assert started.wait(3)
+    controller.request_still_preview(149)
+    controller.request_still_preview(150)
+    release.set()
+    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    assert rendered == [0, 150]
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_old_still_job_cannot_update_new_project(qtbot, tmp_path: Path, monkeypatch) -> None:
+    from threading import Event
+    from uuid import uuid4
+
+    from ai_ngerti_geopolitik.bootstrap import w8_controller as controller_module
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, _router = setup(qtbot)
+    controller.session.open_project(source)
+    real_render = controller_module.render_still_frame
+    started = Event()
+    release = Event()
+
+    def slow_first(state, frame):
+        if state.project_id == "P-QT-PREVIEW" and frame == 0:
+            started.set()
+            assert release.wait(5)
+        return real_render(state, frame)
+
+    monkeypatch.setattr(controller_module, "render_still_frame", slow_first)
+    controller.request_still_preview(0)
+    assert started.wait(3)
+
+    from dataclasses import replace
+
+    next_path = tmp_path / "next.angproj"
+    next_state = replace(controller.session.state, project_id="P-QT-NEXT")
+    JsonProjectRepository().save(next_state, next_path)
+    controller.session.open_project(next_path)
+    controller.session_id = uuid4().hex
+    controller.request_still_preview(150)
+    release.set()
+
+    canvas = controller.window.window.findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    assert controller.session.state.project_id == "P-QT-NEXT"
+    image = canvas.pixmap().toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    controller.shutdown()
+    controller.window.close()
+
