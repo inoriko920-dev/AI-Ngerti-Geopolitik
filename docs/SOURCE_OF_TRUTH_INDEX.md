@@ -357,3 +357,11 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `src/ai_ngerti_geopolitik/application/native_process_contract.py` — pure frozen bounds for future process runner, strict typed safe result, no native execution.
 - `tests/unit/test_sol_int01b_b1_process_contract.py` and `.github/workflows/sol-int01b-b1-process-contract-windows.yml` — Windows negative contract/full regression, native-execution denial and frozen UI hashes.
 - `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md` — tested implementation SHA bfa20eb, Windows success 37754131337, owner Pilot A gate pending, next B2 after explicit approval.
+
+
+## SOL INT-01B/B2 synthetic-only subprocess safety qualification (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/infrastructure/synthetic_process_qualification.py` — fully isolated Python child fixture; stdout/stderr reader threads and B1 caps, deadline/cancel, private outcome.
+- `tests/unit/test_sol_int01b_b2_synthetic_subprocess.py` — Windows synthetic pipe/timeout/cancellation/redaction negative coverage.
+- `.github/workflows/sol-int01b-b2-synthetic-windows.yml` — full source/tests/Qt reference integrity and no FFmpeg wiring gate.
+- `docs/evidence/features/SOL_INT01B_B2_SYNTHETIC_SUBPROCESS.md` — code SHA 7e36ccae, Windows CI 37755635788. Real FFmpeg execution/production integration still blocked.
