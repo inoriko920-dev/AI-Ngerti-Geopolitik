@@ -126,8 +126,21 @@ class JsonProjectRepository:
             if not isinstance(raw, dict):
                 raise TypeError("project root must be an object")
             return self._decode(raw)
-        except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
-            raise ProjectFormatError(f"invalid project file: {path}") from exc
+        except (
+            OSError,
+            json.JSONDecodeError,
+            KeyError,
+            TypeError,
+            ValueError,
+            AttributeError,
+            IndexError,
+            OverflowError,
+            RecursionError,
+        ):
+            # Malformed nested JSON and unreadable files must fail as a typed,
+            # privacy-safe load error. Never expose the user's path or parser
+            # exception details through the UI or ordinary error logs.
+            raise ProjectFormatError("invalid project file") from None
 
     def _decode(self, raw: dict[str, Any]) -> ProjectState:
         fps = int(raw["fps"])

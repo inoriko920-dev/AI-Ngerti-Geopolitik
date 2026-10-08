@@ -183,3 +183,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+## Post-W8 quality-only branch (2026-10-08 WIB)
+
+- Branch `fix/project-open-corrupt-json-fail-closed-20261008`: scoped project-open malformed nested JSON regression and privacy-safe typed failure. Verify same-head Windows CI and maintain one bugfix scope; keep `main` unchanged.
+- This branch is independent of stacked INT-01B Draft PR #19 and does NOT authorize native FFmpeg process work. Owner D1 remains pending; portable remains last.

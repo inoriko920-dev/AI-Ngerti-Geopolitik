@@ -170,3 +170,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+## Post-W8 quality fix — project-open malformed JSON (2026-10-08 WIB)
+
+- Branch `fix/project-open-corrupt-json-fail-closed-20261008` from unchanged `main`: non-native bugfix for `JsonProjectRepository.load`, safe handling of corrupt nested track records, fixed-path-free `ProjectFormatError`, and preservation of existing session on failed open.
+- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md` and dedicated Windows full regression. Status **PENDING CI** until exact latest branch commit is green. D1 Pilot A and product render unchanged; no portable or release.
