@@ -233,3 +233,14 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Production UI render stays DISABLED: T08 worker, T09 postflight, T10 packaged qualification remain outstanding. H.265/1440p/4K/60fps/selection also NOT QUALIFIED. Original source AAVC untouched.
 - Branch `feature/sf12-t04-h264-baseline` **draft PR #5**, stacked on #4/#3/#2/#1; NOT merged to main. W5 physical microphone, W6/W7 live Gemini provisional.
 - **Next exact task after user's next `lanjutkan`: SF12-T05 full/selection frame-accurate range mapping ONLY.** No engine port breaking change without ASTRA ADR; no STEP13/release.
+
+
+## SF12-T05 — Accepted 2026-10-08 WIB
+
+- **SF12-T05 Full/Selection Frame Mapping = PASS_REAL_MEDIA_SELECTION / UI_RENDER_DISABLED**. Accepted code SHA `9dca99397f3dcbac4d491d5d930cf8309d744271`. Windows [37738941089](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37738941089) **SUCCESS**.
+- New additive synchronous `FfmpegSliceMediaEngine.export_h264_selection` uses T02/T03 selection-specific opt-in, renders original full timeline with W5 subtitle and narration, trims video with exact half-open frame indices and mixed audio with matched timestamps, re-encodes H264+AAC. T04 full path and frozen `MediaEnginePort` unchanged.
+- Actual real-media Windows output: source project 4s/120f, 2 clips, subtitle 30–90 & 90–120, narration frame15. Selection [0,30), [45,75), [90,120) each produced **exact 30f/1.000000s**, H264/AAC 1080p30. Independent PSNR vs full global timeline 38.15/39.01/47.29dB, threshold 33dB. Source hashes unchanged.
+- T05 targeted pytest, full pytest, Ruff, mypy 90, import/architecture/secret gates, source-of-truth 70/70 and UI reference manifest 42/42 PASS. Evidence `docs/evidence/features/SF12_T05_SELECTION_REAL_MEDIA.md`; GitHub artifact `ANG-SF12-T05-Selection-RealMedia` ID 11532743714.
+- Negative tests: invalid ranges, default T03 rejection, wrong nb_frames, first/second-pass failure/cancel, existing output/no clobber. **Caveat**: 2-pass render uses full-project temporary output, not efficient for long timelines; audio alignment based on exact trim-time mapping, no independent sample-level correlation. UI remains disabled T08/T09.
+- Draft stacked **PR #6** on T04 #5 / #4 / #3 / #2 / #1. NOT merged into main; no direct main changes. AAVC/UI frozen refs untouched.
+- **Next exact serial task:** **SF12-T06 real codec/resolution/FPS matrix** after owner's next `lanjutkan`; one profile/cell per qualification and UI only enables proved cells after later rendering gates. ASTRA/ADR mandatory for engine switch, native dependencies/license impact or breaking port changes.

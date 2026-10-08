@@ -492,7 +492,138 @@ class FfmpegSliceMediaEngine:
             fps=30,
         )
 
-    def _verify_h264_baseline(self, staged: Path, state: ProjectState) -> None:
+    def export_h264_selection(
+        self,
+        state: ProjectState,
+        request: ExportRequest,
+        *,
+        session_id: str | None,
+        media_inspector: MediaIntegrityInspectorPort,
+        target_inspector: OutputTargetInspectorPort,
+        toolchain: ExportToolchain,
+        project_source_path: Path | None = None,
+        cancellation: CancellationToken | None = None,
+    ) -> ExportResult:
+        """T05 frame-accurate selection, staged AFTER full timeline composition.
+
+        The full project is first rendered with its canonical subtitle and
+        narration timeline. Trimming the composed result keeps cue timing,
+        narration offset, clip speed, overlays and fades on their original
+        timeline rather than re-timing source media incorrectly.
+
+        Qualification-only synchronous two-pass approach. T08 must move it
+        off the GUI thread; resource-efficient partial graph is later work.
+        """
+        from ai_ngerti_geopolitik.application.export_request import ExportScope
+
+        if request.scope is not ExportScope.SELECTION or request.selection is None:
+            raise MediaToolError("EXPORT_SELECTION_REQUIRED")
+        selection = request.selection
+        preflight = ExportPreflightService(media_inspector, target_inspector)
+        checked = preflight.check(
+            state,
+            request,
+            session_id,
+            toolchain,
+            project_source_path=project_source_path,
+            selection_qualified=True,
+        )
+        if not checked.precheck_pass:
+            reasons = ",".join(code.value for code in checked.failure_codes)
+            raise MediaToolError(f"EXPORT_PREFLIGHT_REJECTED:{reasons}")
+        if (
+            state.fps != 30
+            or (state.settings.width, state.settings.height) != (1920, 1080)
+            or state.timeline_end_frame <= 0
+        ):
+            raise MediaToolError("EXPORT_BASELINE_PROJECT_MISMATCH")
+        if cancellation is not None and cancellation.cancelled:
+            raise MediaOperationCancelled("EXPORT_CANCELLED")
+
+        frame_count = selection.end - selection.start
+        # Workspace is unique, within the same filesystem as destination.
+        # Neither full render nor selection transcode touches the user target.
+        with tempfile.TemporaryDirectory(
+            prefix=".ang-range-", dir=request.output_path.parent
+        ) as work:
+            folder = Path(work)
+            full = folder / "composed.mp4"
+            selected = folder / "selection.mp4"
+            self.export(state, full, cancellation)
+            self._verify_h264_baseline(full, state)
+            if cancellation is not None and cancellation.cancelled:
+                raise MediaOperationCancelled("EXPORT_CANCELLED")
+
+            start = _seconds_string(selection.start, state.fps)
+            end = _seconds_string(selection.end, state.fps)
+            filters = (
+                f"[0:v]trim=start_frame={selection.start}:end_frame={selection.end},"
+                "setpts=PTS-STARTPTS[vout];"
+                f"[0:a]atrim=start={start}:end={end},asetpts=PTS-STARTPTS[aout]"
+            )
+            command = [
+                self.ffmpeg,
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-i",
+                str(full),
+                "-filter_complex",
+                filters,
+                "-map",
+                "[vout]",
+                "-map",
+                "[aout]",
+                "-frames:v",
+                str(frame_count),
+                "-c:v",
+                "libx264",
+                "-preset",
+                "ultrafast",
+                "-crf",
+                "28",
+                "-pix_fmt",
+                "yuv420p",
+                "-c:a",
+                "aac",
+                "-b:a",
+                "96k",
+                "-movflags",
+                "+faststart",
+                str(selected),
+            ]
+            self.runner.run(command, cancellation)
+            self._verify_h264_baseline(selected, state, expected_frames=frame_count)
+            if cancellation is not None and cancellation.cancelled:
+                raise MediaOperationCancelled("EXPORT_CANCELLED")
+            again = preflight.check(
+                state,
+                request,
+                session_id,
+                toolchain,
+                project_source_path=project_source_path,
+                selection_qualified=True,
+            )
+            if not again.precheck_pass:
+                reasons = ",".join(code.value for code in again.failure_codes)
+                raise MediaToolError(f"EXPORT_POST_RENDER_REJECTED:{reasons}")
+            try:
+                os.link(selected, request.output_path)
+            except OSError:
+                raise MediaToolError("EXPORT_OUTPUT_PUBLISH_FAILED") from None
+        return ExportResult(
+            project_revision=state.revision,
+            output_path=request.output_path,
+            duration_frames=frame_count,
+            width=1920,
+            height=1080,
+            fps=30,
+        )
+
+    def _verify_h264_baseline(
+        self, staged: Path, state: ProjectState, *, expected_frames: int | None = None
+    ) -> None:
         """T04 minimal real-stream gate; comprehensive postflight is SF12-T09."""
         try:
             if not staged.is_file() or staged.stat().st_size == 0:
@@ -527,7 +658,11 @@ class FfmpegSliceMediaEngine:
             if "mp4" not in format_name.split(","):
                 raise ValueError("not an MP4")
             duration = float(fmt["duration"])
-            expected = state.timeline_end_frame / state.fps
+            frames = state.timeline_end_frame if expected_frames is None else expected_frames
+            actual_frames = stream.get("nb_frames")
+            if actual_frames is not None and int(actual_frames) != frames:
+                raise ValueError("wrong frame count")
+            expected = frames / state.fps
             if duration <= 0 or abs(duration - expected) > (2 / state.fps + 0.02):
                 raise ValueError("duration outside tolerance")
         except (ValueError, TypeError, KeyError, OSError, MediaToolError):

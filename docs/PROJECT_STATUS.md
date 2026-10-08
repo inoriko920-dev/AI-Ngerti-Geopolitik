@@ -215,3 +215,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Targeted/full pytest, Ruff, mypy90, import/architecture/secrets, source-of-truth 70/70, UI SHA42/42 PASS. Evidence `docs/evidence/features/SF12_T04_H264_BASELINE.md`, run artifact ID 11531514655.
 - Draft PR #5 on T03 #4 → T02 #3 → T01 #2 → planning #1; main remains untouched. No release, UI remains disabled, H.265/4K/60fps/selection not proven.
 - **Next serial task T05 range and selection mapping** after explicit owner continuation; T06–T10 blocked. Production distribution/native-license gate still provisional.
+
+
+## SF12-T05 — FULL/SELECTION REAL-MEDIA FRAMES / PASS (2026-10-08 WIB)
+
+- Accepted code SHA `9dca99397f3dcbac4d491d5d930cf8309d744271`; GitHub Windows `37738941089` SUCCESS.
+- T05 selection qualification: 4-sec 120f, 2 clips, timed subtitle/narration. Ranges [0,30), [45,75), [90,120) each exported exact 30 frames / 1s, H.264/AAC 1920x1080 30fps; PSNR vs matching full timeline 38.15/39.01/47.29 dB. Tests PASS, Ruff/mypy90/imports/arch/secrets/source-of-truth70/UI refs42 PASS.
+- Separate additive T05 engine entrypoint; existing MediaEnginePort, State/CommandBus schema, AAVC, and frozen UI unchanged. Original T03 rejects selections by default; T05 opt-in only; product UI render remains disabled (T08/T09). Two-pass output is safe no-clobber but storage-inefficient, further large-media and sample audio-sync proof needed.
+- Evidence `docs/evidence/features/SF12_T05_SELECTION_REAL_MEDIA.md`; GitHub artifact ID 11532743714. Draft stacked PR #6 on #5/#4/#3/#2/#1, not merged main.
+- **Next exact serial task SF12-T06 codec/resolution/FPS profiles**, after explicit user continuation. W5 mic, W6/W7 live Gemini provisional.
