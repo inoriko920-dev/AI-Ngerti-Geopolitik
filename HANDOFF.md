@@ -277,3 +277,9 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 
 - Extended existing scripts/import_scene_project.py bootstrap CLI with `preview --project film.angproj --frame 150 --output frame.png`. Uses qualified CPU/Qt image HOLD compositor to write an actual PNG for a selected frame; existing PNG destinations are refused. Real pixels tested from reloaded .angproj, including LEFT/RIGHT split.
 - This is an advanced-user screenshot/preflight command, not a replacement for interactive editor preview, MLT playback, or MP4 output. No frozen UI modification or native FFmpeg. Windows exact-head CI pending.
+
+
+## W8 UI-010 still-image preview integration — next handoff
+
+- Preview adapter: `infrastructure/still_frame_preview.py`. Runtime: `bootstrap/w8_controller.py` adds coalescing dedicated Qt worker on PLAYBACK_SEEK, handles PLAYBACK_PLAY fail-closed, and project-open triggers first still frame. Presentation uses `MainWindow.apply_still_frame_preview` on existing `preview_canvas` and active `timeline_scrubber`. The Qt golden tests use active stacked route canvases, not window-global duplicate widget names.
+- Verify same-head Windows CI for `tests/qt/test_step11_w8_010_runtime_wiring.py` and full pytest before PASS. No FFmpeg external Pilot A, continuous playback, scene timing UI changes, main merge or portable. Next qualification gate: worker/frame re-probe and real timed playback vs MLT producer/export parity; do not claim video MP4 exists.

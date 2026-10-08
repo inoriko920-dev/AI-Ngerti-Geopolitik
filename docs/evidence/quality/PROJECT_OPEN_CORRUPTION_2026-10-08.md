@@ -184,3 +184,9 @@ timeline, effect locks, audio mute state or captions when reopened.
 ## Depth-limit fail-closed hardening (8 Oct 2026 WIB)
 
 The Axxx folder walk previously silently truncated directory descent at `max_depth`. This could incorrectly report READY while hiding a second matching A001 deeper than the limit. The scanner now raises a typed, path-redacted scan-depth error on unvisited real directories. A regression verifies fail-closed behavior and duplicate detection once the limit is raised.
+
+
+## UI-010 existing canvas frame-seek qualification (8 Oct 2026 WIB)
+
+- Real image-HOLD frames are rendered by background worker and applied on GUI thread; concurrent rapid seek results are guarded by session+state semantic hash and latest frame, keeping stale previous-project results off the canvas.
+- Test evidence includes pixel-perfect red SINGLE / green-left blue-right DOUBLE on the actual active Qt editor widget, scrubber range/position and seek coalescing. Full current-head CI still pending; no render, native process, frozen UI changes or main merge.

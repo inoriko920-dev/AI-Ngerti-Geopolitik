@@ -271,3 +271,10 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - Extended existing scripts/import_scene_project.py bootstrap CLI with `preview --project film.angproj --frame 150 --output frame.png`. Uses qualified CPU/Qt image HOLD compositor to write an actual PNG for a selected frame; existing PNG destinations are refused. Real pixels tested from reloaded .angproj, including LEFT/RIGHT split.
 - This is an advanced-user screenshot/preflight command, not a replacement for interactive editor preview, MLT playback, or MP4 output. No frozen UI modification or native FFmpeg. Windows exact-head CI pending.
+
+
+## Live UI-010 still-image seek preview milestone (2026-10-08 WIB)
+
+- Existing approved UI-010 scrubber and previous/next frame intents now request **real Qt-rendered** SINGLE/DOUBLE image frames in a dedicated background worker. The current editor's existing preview_canvas receives QPixmap from QImage on the GUI thread; no new widgets, screenshot assets, native MLT/FFmpeg process or UI redesign. A video-only project continues to use its separate pathway.
+- Rapid seek requests coalesce (only latest frame displayed). Before accepting results, controller checks session identity, canonical semantic hash and current route; old project frames cannot overwrite the new project. Playback Play explicitly reports continuous playback not qualified.
+- Qt regression tests exercise real pixel colors for SINGLE (red), DOUBLE (green/blue), seek/clamping, latest-wins behavior and stale previous-project job rejection. Last-head Windows CI pending. Render MP4, animation, soundtrack/subtitle compositing, and native continuous playback remain unqualified; PR #20 stays Draft, main unchanged, portable last.
