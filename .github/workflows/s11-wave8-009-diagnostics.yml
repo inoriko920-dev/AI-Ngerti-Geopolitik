@@ -1,0 +1,61 @@
+name: S11 W8-009 Redacted Diagnostic Bundle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/ai_ngerti_geopolitik/application/diagnostics.py"
+      - "src/ai_ngerti_geopolitik/application/diagnostic_bundle.py"
+      - "src/ai_ngerti_geopolitik/infrastructure/diagnostic_bundle.py"
+      - "tests/unit/test_step11_w8_009_diagnostics.py"
+      - "scripts/run_step11_w8_009.py"
+      - "scripts/verify/verify_step11_w8_009_evidence.py"
+      - ".github/workflows/s11-wave8-009-diagnostics.yml"
+      - "docs/evidence/features/S11_W8_009_DIAGNOSTIC_BUNDLE.md"
+      - "docs/project/**"
+      - "HANDOFF.md"
+      - "docs/PROJECT_STATUS.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  w8-009:
+    runs-on: windows-latest
+    name: Redacted deterministic ZIP and safe async cancellation
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test --group package
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest -q tests/unit/test_step11_w8_009_diagnostics.py
+      - run: uv run pytest -q
+      - run: >
+          uv run python scripts/run_step11_w8_009.py
+          --evidence artifacts/step11/w8-009/evidence
+      - run: uv run python scripts/verify/verify_step11_w8_009_evidence.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-S11-W8-009-Redacted-Diagnostics
+          path: artifacts/step11/w8-009/evidence/**
+          retention-days: 14
+          if-no-files-found: error
