@@ -76,8 +76,8 @@ def ledger_with_private_source(secret: str) -> DiagnosticLedger:
 
 
 def test_deterministic_manifest_two_archives_and_no_private_bytes(tmp_path: Path) -> None:
-    secret = "super-private-test-token"
-    log = ledger_with_private_source(secret)
+    private_marker = "super-private-test-token"
+    log = ledger_with_private_source(private_marker)
     manifest, events = safe_bundle_payload(log.snapshot())
     assert manifest == safe_bundle_payload(log.snapshot())[0]
     with zipfile.ZipFile(tmp_path / "one.zip", "w") as _unused:
@@ -87,7 +87,7 @@ def test_deterministic_manifest_two_archives_and_no_private_bytes(tmp_path: Path
     writer.write_bundle(tmp_path / "b.zip", manifest=manifest, events=events, cancel=Event())
     first = (tmp_path / "a.zip").read_bytes()
     assert first == (tmp_path / "b.zip").read_bytes()
-    assert secret.encode() not in first
+    assert private_marker.encode() not in first
     assert b"Private" not in first and b"story.txt" not in first
     assert b"private-project" not in first and b"A001" not in first
     with zipfile.ZipFile(tmp_path / "a.zip") as archive:

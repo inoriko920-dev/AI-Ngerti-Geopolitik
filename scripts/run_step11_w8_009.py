@@ -51,24 +51,24 @@ def main() -> int:
     args = parser.parse_args()
     root = args.evidence.resolve()
     root.mkdir(parents=True, exist_ok=True)
-    secret = "private-marker-never-enter-bundle"
+    private_marker = "private-marker-never-enter-bundle"
     private_path = "C:\\Private\\nonpublic\\narration.txt"
     log = DiagnosticLedger(limit=2)
     issue = ValidationIssue(
         ValidationIssueCode.MEDIA_FILE_MISSING,
         ValidationSeverity.BLOCKER,
         ValidationScope.MEDIA,
-        f"Project issue: {secret}",
+        f"Project issue: {private_marker}",
         f"Missing media at {private_path}",
-        ("A001", "asset-ref-" + secret),
+        ("A001", "asset-ref-" + private_marker),
         ValidationAction.RELINK_MEDIA,
         9,
     )
-    result = ValidationResult("P-" + secret, 9, "b" * 64, (issue,))
+    result = ValidationResult("P-" + private_marker, 9, "b" * 64, (issue,))
     log.record(DiagnosticCode.PROJECT_OPEN, DiagnosticStatus.INFO)
     log.record_validation(result)
     error = PersistenceError(PersistenceStage.TEMP_WRITE)
-    error.__cause__ = OSError(f"{secret} {private_path}")
+    error.__cause__ = OSError(f"{private_marker} {private_path}")
     log.record_save_failure(error)
     # First event pruned from bounded memory; zero raw details ever serialized.
     assert log.snapshot().dropped_count == 1
@@ -96,7 +96,7 @@ def main() -> int:
         "manifest_event_count": manifest["event_count"] == 2,
         "dropped_event_count": manifest["dropped_count"] == 1,
         "strict_allowlist": manifest["redaction"] == "STRICT_ALLOWLIST",
-        "secret_absent": secret.encode() not in payload,
+        "secret_absent": private_marker.encode() not in payload,
         "path_absent": private_path.encode() not in payload,
         "project_identity_absent": b"asset-ref-" not in payload,
         "no_media_bytes": not any(
