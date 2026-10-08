@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from ai_ngerti_geopolitik.domain import ProjectState
 
+
 class ProjectJobError(RuntimeError):
     """Safe failure without private project contents or filesystem paths."""
 
