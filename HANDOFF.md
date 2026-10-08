@@ -2,14 +2,14 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-007 — PASS  
+**Last completed task:** S11-W8-008 — PASS  
 **Accepted implementation/regression HEAD:** `130407dc728b6417c30dbbc935ecd9b04d37ba43`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
 **Current implementation:** S11-W8-005 — PASS
 **Last implementation:** S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS
 **Last implementation:** S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS
-**Current task:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION
-**Next exact action:** complete W8-008 tests/evidence on formatted code; W8-009 remains blocked
+**Last implementation:** S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS
+**Next exact task:** S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY
 
 ## Read-first constraints
 
@@ -114,12 +114,31 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - Typed `PersistenceError` stages and an actionable, redacted Indonesian
   failure projection qualified. W8-008 not implemented.
 
+## W8-008 accepted qualification
+
+- Accepted W8-008 implementation/regression HEAD: `6c35b70bd9122664473a69eff6635ed9b71da5cb`.
+- [Windows W8-008 workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37728798520) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-008-Stale-Result-Jobs`, ID `11529365791`,
+  SHA-256 `3b622ad005a16951e040c1d590f63974304c583a13374aa87fa1bc2f6a0c1a5c`.
+- Dedicated concurrency tests **12/12 PASS**, full pytest **471/471 PASS**,
+  owned concurrency evidence **18/18 PASS**.
+- Ruff, mypy (81 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **27/27 same-HEAD regression workflows SUCCESS**, all attempt 1;
+  Windows portable foundation, media/speech/UI and E2E passed.
+- Verified manual edit while scan runs, closed session, new session with
+  identical revision/hash, different project, same-revision semantic swap,
+  cancellation with late worker completion, stale result discard and
+  zero automatic project mutation.
+- Existing CommandBus/ProjectRepository and frozen UI remain unchanged.
+  Actual main-window UI-039/040/041 wiring remains W8-010.
+
 ## Next exact action
 
-When owner explicitly says **lanjutkan**, implement **SOL S11-W8-008
-Stale Result Hardening for W8 Background Jobs ONLY** under the locked
-ASTRA W8 planning. Keep W8-009 blocked and avoid unrelated source/UI
-changes. Do not implement W8-009 during W8-008.
+When owner explicitly says `lanjutkan`, execute **SOL S11-W8-009 ONLY**
+under locked ASTRA W8 planning: structured diagnostics + bounded redacted
+ZIP manifest, private content/credentials never bundled by default.
+W8-010 remains blocked. Do not enter W8-010 within W8-009.
 
 ## Provisional gates
 
@@ -128,12 +147,3 @@ provisional; do not claim device/provider smoke results that were not run.
 
 
 
-## W8-008 — QA pending
-
-ProjectSession lifecycle session_id rotates on New/Open/Recover and clears on
-Close. Immutable ProjectJobToken validates project/session/revision/semantic
-hash. ReadOnlyProjectJobs executes validation and recovery inspection away
-from UI, never mutates canonical ProjectState, and discards stale/cancelled
-results. RelinkScanJobService adopts the same session-bound token. 12
-concurrency tests and strict owned evidence runner committed. Dedicated
-Windows CI still being qualified; do NOT claim PASS or begin W8-009.

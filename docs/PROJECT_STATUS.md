@@ -2,11 +2,11 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..007 PASS / W8-008 IN_VERIFICATION**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..008 PASS / W8-009 READY**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
-**Last completed task:** **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**  
+**Last completed task:** **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
 ## W8-003 proven
@@ -106,15 +106,28 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - Typed `PersistenceError` stages and an actionable, redacted Indonesian
   failure projection qualified. W8-008 not implemented.
 
+## W8-008 accepted qualification
+
+- Accepted W8-008 implementation/regression HEAD: `6c35b70bd9122664473a69eff6635ed9b71da5cb`.
+- [Windows W8-008 workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37728798520) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-008-Stale-Result-Jobs`, ID `11529365791`,
+  SHA-256 `3b622ad005a16951e040c1d590f63974304c583a13374aa87fa1bc2f6a0c1a5c`.
+- Dedicated concurrency tests **12/12 PASS**, full pytest **471/471 PASS**,
+  owned concurrency evidence **18/18 PASS**.
+- Ruff, mypy (81 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **27/27 same-HEAD regression workflows SUCCESS**, all attempt 1;
+  Windows portable foundation, media/speech/UI and E2E passed.
+- Verified manual edit while scan runs, closed session, new session with
+  identical revision/hash, different project, same-revision semantic swap,
+  cancellation with late worker completion, stale result discard and
+  zero automatic project mutation.
+- Existing CommandBus/ProjectRepository and frozen UI remain unchanged.
+  Actual main-window UI-039/040/041 wiring remains W8-010.
+
 ## Exact next action
 
-**S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION.**
-W8-009..010 remain blocked. W5 physical microphone and W6/W7 live Gemini
-network qualification remain provisional. No W8-008 coding was started here.
-
-## W8-008 active gate
-
-Shared lifecycle token, read-only validation/recovery worker and relink
-closed-session stale protection implemented. 12 targeted concurrency tests
-and strict no-mutation evidence committed; Windows CI acceptance pending.
-W8-009 remains SERIAL_BLOCKED.
+**S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY.**
+W8-010 remains serial-blocked. W5 physical microphone and W6/W7 live Gemini
+tests remain provisional; no physical/provider smoke success is invented.
+No W8-009 implementation was started during W8-008 closure.

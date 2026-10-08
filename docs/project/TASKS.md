@@ -826,8 +826,8 @@ Serial contract:
 - [x] **S11-W8-005 — Autosave Catalog + Retention Hardening — PASS**
 - [x] **S11-W8-006 — Crash Marker + Startup Recovery Decision — PASS**
 - [x] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — PASS**
-- [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — IN_VERIFICATION**
-- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — BLOCKED_BY_W8_008**
+- [x] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — PASS**
+- [ ] **S11-W8-009 — Structured Diagnostics + Redacted Diagnostic Bundle — READY**
 - [ ] **S11-W8-010 — Frozen UI Wiring + GOLDEN-03 Recovery/Relink Closure + Regression Lock — BLOCKED_BY_W8_009**
 
 Locked boundaries:
@@ -989,9 +989,24 @@ real-media validation. UI-040 projects intents; controller wiring remains W8-010
 - Typed `PersistenceError` stages and an actionable, redacted Indonesian
   failure projection qualified. W8-008 not implemented.
 
-**Exact next task:** S11-W8-008 Stale Result Hardening for W8 Background
-Jobs ONLY. W8-009 remains serial-blocked.
+## Accepted W8-008
 
-**W8-008:** lifecycle IDs, project/session/revision/semantic SHA-256 token,
-validation/recovery read-only worker, relink stale/cancel safety, 12 focused
-tests and evidence runner. **IN_VERIFICATION**, do not start W8-009.
+- Accepted W8-008 implementation/regression HEAD: `6c35b70bd9122664473a69eff6635ed9b71da5cb`.
+- [Windows W8-008 workflow](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37728798520) — **SUCCESS**.
+- Artifact: `ANG-S11-W8-008-Stale-Result-Jobs`, ID `11529365791`,
+  SHA-256 `3b622ad005a16951e040c1d590f63974304c583a13374aa87fa1bc2f6a0c1a5c`.
+- Dedicated concurrency tests **12/12 PASS**, full pytest **471/471 PASS**,
+  owned concurrency evidence **18/18 PASS**.
+- Ruff, mypy (81 source files), import contracts, architecture, no-secrets,
+  source-of-truth **70/70** and frozen UI references **42/42 SHA-256 PASS**.
+- **27/27 same-HEAD regression workflows SUCCESS**, all attempt 1;
+  Windows portable foundation, media/speech/UI and E2E passed.
+- Verified manual edit while scan runs, closed session, new session with
+  identical revision/hash, different project, same-revision semantic swap,
+  cancellation with late worker completion, stale result discard and
+  zero automatic project mutation.
+- Existing CommandBus/ProjectRepository and frozen UI remain unchanged.
+  Actual main-window UI-039/040/041 wiring remains W8-010.
+
+**Exact next task:** SOL S11-W8-009 Structured Diagnostics +
+Redacted Diagnostic Bundle ONLY. W8-010 remains serial-blocked.
