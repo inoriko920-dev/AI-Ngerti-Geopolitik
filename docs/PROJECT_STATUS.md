@@ -242,3 +242,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - T07 targeted/full pytest, Ruff/mypy **94**, import/architecture/secret, source-of-truth 70/70, frozen UI SHA42/42 PASS. Evidence `docs/evidence/features/SF12_T07_STYLE_REAL_MEDIA.md`, GitHub artifact ID 11533749234.
 - Additive style qualification and T03 opt-in only; original W5 render plans, ProjectState, AAVC and frozen MediaEnginePort/UI untouched. GUI render still disabled pending T08/T09/T10. Unlisted style permutations/audio OFF/sidecar SRT not qualified.
 - Draft stacked PR **#8** on PR #7/#6/#5/#4/#3/#2/#1; **not merged to main**. Next serial task **T08 async render job lifecycle** after owner continuation.
+
+
+## SF12-T08 — NONBLOCKING RENDER JOB LIFECYCLE / PASS_WINDOWS (2026-10-08 WIB)
+
+- Accepted code SHA `596a48db355878537227f193c6dee33d0ae3f24a`, Windows [37742882153](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37742882153) SUCCESS. Real worker 15f/0.5s H264 1920x1080 30fps + AAC file published only after owner accept, source unchanged, private staging cleaned.
+- Added worker service in application, qualification dispatcher/atomic publisher in infrastructure. Background render and T03 original destination preflight, phase/timeout/cancel/stale/close guards; Qt QTimer remains responsive with blocked test worker. No synthetic numeric progress during FFmpeg; phase-only until commit.
+- Target/full pytest, Ruff/mypy 96/import/architecture/secrets/source-of-truth70/UI refs42 PASS. Evidence `docs/evidence/features/SF12_T08_RENDER_JOB_LIFECYCLE.md`, artifact 11534776048.
+- Draft stacked PR #9 on #8/#7/#6/#5/#4/#3/#2/#1, main unchanged. Frozen MediaEnginePort/AAVC/UI unchanged; **production render NOT WIRED** until strict T09 and packaged T10.
+- **Next serial task SF12-T09 independent postflight + errors and publish gate**, after explicit user `lanjutkan` only.
