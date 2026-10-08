@@ -183,3 +183,12 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+
+## SF-STEP 12 readiness review — 2026-10-08 WIB
+
+- Current audit baseline: `c9154eef85f8b475630816a7c63f5e2b52bf1523` (W8-010 accepted code `45c3294...`).
+- **Readiness review complete; implementation not started.** Planning source `docs/planning/12_SF_STEP12_INTEGRATION_EXPORT_READINESS_2026-10-08.txt` and matching DOCX; implementation contract `docs/project/SF12_INTEGRATION_EXPORT_READINESS_CONTRACT.md`.
+- **P0:** frozen export UI advertises H.265/4K/60fps/sharpen, while `ffmpeg_slice.py` hardcodes H.264 ultrafast CRF28; `render_requested` is not a completed render pipeline. Do not claim export matrix done.
+- T01 only next: capability discovery, honest enabled/disabled UI, safe output default, foundation proofs; T02+ contract/port changes require ASTRA gate when breaking. W5 physical mic and W6/W7 live Gemini remain provisional.
+- **Gate:** current main CI plus ASTRA material-contract review must be verified before T01. No STEP13/14/15, no release and no coding in this review turn.
