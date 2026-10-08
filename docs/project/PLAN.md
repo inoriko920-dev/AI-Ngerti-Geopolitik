@@ -4,50 +4,36 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..002 PASS / W8-003 READY  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 READY  
 **Master Blueprint:** TECH-WAVE STEP 11
 
-## Accepted W8-001
-- typed/frozen deterministic validation contracts;
-- targeted 9/9 PASS;
-- full pytest 395/395 PASS;
-- evidence 22/22 PASS;
-- regression 27/27 SUCCESS, all attempt 1.
+## Accepted W8 tasks
 
-## Accepted W8-002
+- W8-001 — canonical deterministic validation; 9/9 targeted, 395/395 full,
+  evidence 22/22 and regression 27/27 PASS.
+- W8-002 — real media integrity + frozen UI-041; 7/7 targeted,
+  402/402 full, evidence 18/18 and regression 27/27 PASS.
+- W8-003 — canonical verified single-asset relink preserving exact identity.
 
-Implementation HEAD:
-`c73a38d8fd6d3796f988769ca43354185eb66a6d`
+W8-003 accepted implementation/regression HEAD:
+`25e5f6cefbbef5f554bd17e64d50a61db948bf13`
 
-Workflow:
-`37684517658` — SUCCESS.
+W8-003 workflow: [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS.
 
-Qualified:
-- real ffprobe media integrity;
-- missing / zero-byte / probe-failure typed issues;
-- type/fingerprint mismatch and duplicate health projection;
-- zero canonical mutation;
-- frozen UI-041 live projection;
-- stale issue action gating;
-- no relink mutation yet.
+W8-003 gates:
+- 9/9 targeted, 411/411 full pytest, 23/23 real-media evidence PASS;
+- exact Undo/Redo/save-reopen, type/fingerprint/metadata/path conflict rejection;
+- frozen UI 42/42, security, architecture, lint, mypy PASS;
+- regression 27/27 workflow families SUCCESS, all attempt 1.
 
-Gates:
-- targeted 7/7 PASS;
-- full pytest 402/402 PASS;
-- mypy 71 source files PASS;
-- import contracts 4/4 PASS;
-- source-of-truth 70/70 PASS;
-- UI references 42/42 PASS;
-- evidence 18/18 PASS;
-- regression 27/27 SUCCESS, all attempt 1;
-- S08/S09/S10/W0 and prior waves PASS.
+See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 
 ## Serial order
 
 1. W8-001 — **PASS**
 2. W8-002 — **PASS**
-3. W8-003 Single Asset Relink Command + Exact Identity Preservation — **READY**
-4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **BLOCKED**
+3. W8-003 — **PASS**
+4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **READY**
 5. W8-005 Autosave Catalog + Retention Hardening — **BLOCKED**
 6. W8-006 Crash Marker + Startup Recovery Decision — **BLOCKED**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **BLOCKED**
@@ -57,6 +43,5 @@ Gates:
 
 ## Exact next action
 
-Wait for a new owner `lanjutkan`, then execute **SOL S11-W8-003 only**.
-
-Do not begin W8-004 in the same turn.
+Wait for a new owner `lanjutkan`, then execute **SOL S11-W8-004 only**.
+Do not begin W8-005 in the same turn.

@@ -55,6 +55,7 @@
     - `docs/evidence/features/S11_W7_010_REAL_MEDIA_FAILURE_REGRESSION_CLOSURE.md`
     - `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`
     - `docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`
+    - `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -149,8 +150,9 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8 runtime implementation: **ACTIVE**.
 - W8-001 Canonical Validation Contracts + Baseline Rules: **PASS**.
 - W8-002 Real Media Integrity + Validation Center Projection: **PASS**.
-- W8-003 Single Asset Relink Command + Exact Identity Preservation: **READY**.
-- W8-004..W8-010: **SERIAL_BLOCKED**.
+- W8-003 Single Asset Relink Command + Exact Identity Preservation: **PASS**.
+- W8-004 Batch Directory Relink Scan + Candidate Ranking: **READY**.
+- W8-005..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
 - W8-001 evidence: `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`.
@@ -158,6 +160,10 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-002 real ffprobe media integrity + frozen UI-041 projection: **PASS**.
 - W8-002 evidence: `docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`.
 - W8-002 regression lock: **27/27 workflow families SUCCESS, all attempt 1**.
-- exact next action: **SOL S11-W8-003 only — Single Asset Relink Command + Exact Identity Preservation**.
+- W8-003 real relink, exact identity, undo/redo/save-reopen: **PASS**;
+- W8-003 targeted tests 9/9, full pytest 411/411, evidence 23/23: **PASS**;
+- W8-003 accepted HEAD `25e5f6cefbbef5f554bd17e64d50a61db948bf13`; workflow `37689420848`; regression 27/27 SUCCESS;
+- W8-003 evidence: `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`;
+- exact next action: **SOL S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

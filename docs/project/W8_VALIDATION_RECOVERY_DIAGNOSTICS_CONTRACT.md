@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..002 PASS / W8-003 READY / W8-004..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 READY / W8-005..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -24,8 +24,8 @@ It adds no new editing family and does not enter Master Blueprint STEP 12 export
 - `ProjectSession`: lifecycle/dirty/open/save/autosave owner.
 - `JsonProjectRepository`: atomic project persistence owner.
 - `ValidationService`: non-mutating typed issue aggregation — **qualified W8-001**.
-- planned `RelinkAssetCommand`: canonical relink mutation preserving asset_id.
-- planned `RelinkService`: candidate verification + command construction.
+- `RelinkAssetCommand`: qualified canonical relink mutation preserving asset_id (W8-003).
+- `RelinkService`: qualified verified candidate + canonical command construction (W8-003).
 - planned `RelinkScanJobService`: background scan/hash/probe with stale token.
 - planned `RecoveryCatalogService / RecoveryManager`: snapshot discovery/validation/retention/decision.
 - planned `DiagnosticBundleService`: redacted diagnostics orchestration.
@@ -104,8 +104,8 @@ No new UI image-generation gate:
 
 - **W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - **W8-002 — Real Media Integrity + Validation Center Projection — PASS**
-- **W8-003 — Single Asset Relink Command + Exact Identity Preservation — READY**
-- W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003
+- **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
+- W8-004 — Batch Directory Relink Scan + Candidate Ranking — READY
 - W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004
 - W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005
 - W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
@@ -129,6 +129,17 @@ Accepted W8-002:
 Evidence:
 `docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`.
 
-After owner says `lanjutkan`, execute **SOL S11-W8-003 only — Single Asset Relink Command + Exact Identity Preservation**.
+Accepted W8-003:
+- HEAD `25e5f6cefbbef5f554bd17e64d50a61db948bf13`;
+- workflow `37689420848` SUCCESS;
+- targeted 9/9 PASS; full pytest 411/411 PASS;
+- real relocated-media/Undo-Redo/save-reopen proof PASS; evidence 23/23 PASS;
+- regression 27/27 SUCCESS, all attempt 1;
+- artifact `ANG-S11-W8-003-Single-Asset-Relink` / ID `11513225118`.
 
-Do not start W8-004 in the same turn.
+Evidence:
+`docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
+
+After owner says `lanjutkan`, execute **SOL S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking**.
+
+Do not start W8-005 in the same turn.

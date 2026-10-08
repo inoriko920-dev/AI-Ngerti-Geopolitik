@@ -821,8 +821,8 @@ Master Blueprint mapping: **TECH-WAVE STEP 11**.
 Serial contract:
 - [x] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - [x] **S11-W8-002 — Real Media Integrity + Validation Center Projection — PASS**
-- [ ] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — READY**
-- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — BLOCKED_BY_W8_003**
+- [x] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
+- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — READY**
 - [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
 - [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005**
 - [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006**
@@ -896,4 +896,25 @@ W8-002 proof:
 - evidence 18/18 PASS;
 - regression 27/27 SUCCESS, all attempt 1.
 
-**Exact next task:** S11-W8-003 only — Single Asset Relink Command + Exact Identity Preservation.
+**Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`
+
+**W8-003 workflow:** `37689420848` — SUCCESS
+
+**W8-003 artifact:** `ANG-S11-W8-003-Single-Asset-Relink` / ID `11513225118`
+
+**W8-003 evidence:** `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`
+
+**W8-003 proof:**
+- validated manual single-asset relink through canonical CommandBatch / CommandBus;
+- exact Asset ID and clip references preserved;
+- wrong media type, fingerprint, duration, dimensions and audio metadata fail safely with zero mutation;
+- path already owned by another asset is rejected;
+- missing source -> renamed relocated media -> verified rebind -> validation clears;
+- one revision on apply, exact Undo and Redo, exact .angproj save/reopen;
+- no batch scan, ranking, recovery flow or frozen UI redesign in W8-003;
+- targeted tests **9/9 PASS**, full pytest **411/411 PASS**;
+- real-media evidence verifier **23/23 PASS**;
+- Windows CI lint, mypy, architecture, source-of-truth, secret and UI 42/42 gates PASS;
+- full main-HEAD regression **27/27 workflow families SUCCESS**, all attempt 1.
+
+**Exact next task:** S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking.
