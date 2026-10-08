@@ -15,6 +15,7 @@ from ai_ngerti_geopolitik.application.project_jobs import (
     ProjectJobState,
     ReadOnlyProjectJobs,
 )
+from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import (
     ProjectSession,
 )
@@ -51,6 +52,13 @@ from ai_ngerti_geopolitik.presentation.recovery import recovery_projection
 from ai_ngerti_geopolitik.presentation.validation_center import project_validation_center
 
 
+class _DeferredProbe:
+    """Resolve FFprobe only inside a real worker, never when starting the UI."""
+
+    def probe(self, path: Path) -> ProbeResult:
+        return FfprobeMediaProbe().probe(path)
+
+
 class W8IntentRouter:
     """Stable sink injected when the window and nested editor tabs are created."""
 
@@ -85,7 +93,7 @@ class W8RuntimeController:
             self.session.autosave_catalog,
             FileCrashMarkerStore(),
         )
-        probe = FfprobeMediaProbe()
+        probe = _DeferredProbe()
         self.validation = validation or ValidationService(
             (RealMediaIntegrityRule(LocalMediaIntegrityInspector(probe)),)
         )
