@@ -156,9 +156,7 @@ def run_synthetic_fixture(
     # The shared Windows command-shape guard is exercised by this fixed fixture.
     # It only validates syntax; it is NOT trust, identity or FFmpeg authorization.
     if sys.platform == "win32":
-        inspect_native_command_shape(
-            sys.executable, ("-I", "-c", _FIXTURE, fixture.value), policy
-        )
+        inspect_native_command_shape(sys.executable, ("-I", "-c", _FIXTURE, fixture.value), policy)
 
     start = time.monotonic()
     try:
@@ -231,4 +229,6 @@ def run_synthetic_fixture(
         return _outcome(NativeProcessStatus.SUCCESS, elapsed, stdout_count, stderr_count, 0)
     if process.returncode is None:
         return _outcome(NativeProcessStatus.TIMED_OUT, elapsed, stdout_count, stderr_count)
-    return _outcome(NativeProcessStatus.FAILED, elapsed, stdout_count, stderr_count, process.returncode)
+    return _outcome(
+        NativeProcessStatus.FAILED, elapsed, stdout_count, stderr_count, process.returncode
+    )
