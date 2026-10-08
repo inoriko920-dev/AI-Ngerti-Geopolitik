@@ -100,6 +100,7 @@ class ExportPreflightService:
         toolchain: ExportToolchain,
         *,
         project_source_path: Path | None = None,
+        selection_qualified: bool = False,
     ) -> ExportPreflightResult:
         """Read-only, deterministic reasons; output checks stay behind a port."""
 
@@ -145,7 +146,7 @@ class ExportPreflightService:
         # T03 deliberately negotiates only the original H.264/1080p/30
         # qualification profile. A declared encoder does not prove HEVC,
         # 4K, FPS conversions, sharpen or selection rendering.
-        if request.scope is ExportScope.SELECTION:
+        if request.scope is ExportScope.SELECTION and not selection_qualified:
             add(ExportPreflightCode.SELECTION_NOT_QUALIFIED)
         if (
             request.codec is not ExportCodec.H264
