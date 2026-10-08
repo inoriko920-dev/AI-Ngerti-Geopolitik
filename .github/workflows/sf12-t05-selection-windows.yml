@@ -25,6 +25,7 @@ jobs:
           version: "0.12.21"
           enable-cache: true
       - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --diff src/ai_ngerti_geopolitik/infrastructure/ffmpeg_slice.py src/ai_ngerti_geopolitik/application/export_preflight.py tests/unit/test_sf12_t05_selection.py scripts/qualification/sf12_t05_selection_real_media.py
       - run: uv run ruff format --check .
       - run: uv run ruff check .
       - run: uv run mypy
