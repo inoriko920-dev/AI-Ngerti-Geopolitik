@@ -134,7 +134,7 @@ class RelinkScanJobService:
         with self._lock:
             for record in self._jobs.values():
                 record.cancellation.cancel()
-        self._executor.shutdown(wait=True, cancel_futures=True)
+        self._executor.shutdown(wait=False, cancel_futures=True)
 
     def _record(self, job_id: str) -> _Record:
         try:

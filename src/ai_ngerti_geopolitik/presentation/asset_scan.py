@@ -141,11 +141,10 @@ def create_asset_scan_dialog(
             intent_sink(UiIntent(kind, payload))
 
     def request_apply() -> None:
-
         chosen = []
         for index, row in enumerate(projection.rows):
             item = table.item(index, 0)
-            if row.selectable and item.checkState() is Qt.CheckState.Checked:
+            if row.selectable and item is not None and item.checkState() is Qt.CheckState.Checked:
                 chosen.append((row.asset_id, row.candidate_path))
         if chosen:
             emit(

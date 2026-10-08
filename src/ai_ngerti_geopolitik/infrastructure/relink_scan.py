@@ -40,8 +40,12 @@ class LocalRelinkDirectoryScanner:
         if not root.is_dir():
             raise OSError("scan root unavailable")
         count = 0
+        visited_directories = 0
         for base, directories, filenames in os.walk(root, topdown=True, followlinks=False):
             if cancellation.cancelled:
+                return
+            visited_directories += 1
+            if visited_directories > max_files * 4:
                 return
             current = Path(base)
             depth = len(current.relative_to(root).parts)
