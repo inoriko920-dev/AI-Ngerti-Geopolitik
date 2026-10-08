@@ -174,4 +174,4 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## Post-W8 quality fix — project-open malformed JSON (2026-10-08 WIB)
 
 - Branch `fix/project-open-corrupt-json-fail-closed-20261008` from unchanged `main`: non-native bugfix for `JsonProjectRepository.load`, safe handling of corrupt nested track records, fixed-path-free `ProjectFormatError`, and preservation of existing session on failed open.
-- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md` and dedicated Windows full regression. Status **PENDING CI** until exact latest branch commit is green. D1 Pilot A and product render unchanged; no portable or release.
+- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md` and dedicated Windows full regression. Source commit `24af2d67` **PASS Windows** on [CI #37772403305](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37772403305): targeted/full pytest, Ruff, mypy, architecture, source-of-truth and UI manifest. Documentation update requires verification at its own HEAD. D1 Pilot A and product render unchanged; no portable or release.

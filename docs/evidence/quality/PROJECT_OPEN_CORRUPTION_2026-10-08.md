@@ -28,9 +28,9 @@ privacy-safe error conventions.
 
 ## Acceptance
 
-Run full GitHub Windows CI on the exact proposed branch SHA: Ruff formatting,
+Verified code SHA `24af2d6707a05fb3558911a62e91b8f43253b00c` at [Windows CI #37772403305](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37772403305) — **SUCCESS**. Verified: Ruff formatting,
 lint, mypy, architecture, source-of-truth, frozen UI manifest and both
-targeted/full pytest. Mark PASS only after CI verifies the updated SHA.
+targeted/full pytest. Targeted and full pytest passed. This documentation follow-up has no source changes; verify CI at the final branch SHA.
 `main` stays unchanged; no release/portable packaging.
 
 ## Boundaries
