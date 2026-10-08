@@ -95,9 +95,7 @@ class NativeProcessOutcome:
     def __post_init__(self) -> None:
         if type(self.status) is not NativeProcessStatus:
             raise NativeProcessContractError("INVALID_NATIVE_PROCESS_STATUS")
-        if self.exit_code is not None and not _bounded_int(
-            self.exit_code, -(2**31), 2**31 - 1
-        ):
+        if self.exit_code is not None and not _bounded_int(self.exit_code, -(2**31), 2**31 - 1):
             raise NativeProcessContractError("INVALID_NATIVE_EXIT_CODE")
         if not (
             _bounded_int(self.duration_ms, 0, 2**63 - 1)
