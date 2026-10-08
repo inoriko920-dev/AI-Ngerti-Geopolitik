@@ -10,6 +10,7 @@ from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
 from ai_ngerti_geopolitik.application.export_preflight import ExportPreflightService
 from ai_ngerti_geopolitik.application.export_profiles import candidate_for_request
 from ai_ngerti_geopolitik.application.export_request import (
+    ExportCodec,
     ExportQuality,
     ExportRequest,
     ExportScope,
@@ -61,6 +62,7 @@ class QualifiedStagedRender:
         # A default style is permitted via T04; nondefault is T07-only.
         plain = (
             request.scope is ExportScope.FULL
+            and request.codec is ExportCodec.H264
             and (request.width, request.height, request.fps) == (1920, 1080, 30)
             and request.quality is ExportQuality.HIGH
             and request.sharpen is ExportSharpen.NONE

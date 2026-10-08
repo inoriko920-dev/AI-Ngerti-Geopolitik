@@ -1130,3 +1130,19 @@ T07 Windows run `37741355411` SUCCESS on implementation `79b24e93d4574cff0fc8a16
 - [ ] SF12-T10 — packaged Windows E2E + UI regression — pending T09.
 
 Accepted SHA `596a48db355878537227f193c6dee33d0ae3f24a`; CI `37742882153` SUCCESS; all unit/Qt/full regression/static docs gates PASS, artifact 11534776048. Draft PR #9 stacked, unmerged; UI export still disabled, no packaged release.
+
+
+## SF12-T09 acceptance — 2026-10-08 WIB
+
+- [x] SF12-T01 capability truth-in-UI — PASS / native provisional.
+- [x] SF12-T02 immutable typed ExportRequest — PASS.
+- [x] SF12-T03 fail-closed preflight — PASS.
+- [x] SF12-T04 real FFmpeg H264/AAC full baseline — PASS.
+- [x] SF12-T05 selection frame mapping and subtitle/narration timing — PASS.
+- [x] SF12-T06 four native codec/resolution/FPS cells — PASS.
+- [x] SF12-T07 six individually qualified subtitle/sharpen/quality cells with narration — PASS.
+- [x] SF12-T08 single nonblocking background worker/phase/cancel/timeout/stale/close/atomic output — PASS.
+- [x] **SF12-T09 independent FFprobe + full FFmpeg decode, typed redacted errors, exact requested frames/codec/audio, SHA256 receipt and owner publish gate — PASS REAL WINDOWS**.
+- [ ] **SF12-T10 Windows packaged E2E, frozen UI regression, native codec/license decision and release gating — NEXT, NOT STARTED**.
+
+T09 Windows CI `37744843294` SUCCESS on code SHA `270fe789834354a7e2adb38fc5859023db93f547`. Five real MP4s, AAC, full decode; corrupted/truncated real MP4 rejected. T08 HEVC dispatch corrected. Target/full pytest, mypy 98, architecture/source-of-truth70/UI42/secrets PASS. Artifact 11535670942, draft stacked PR #10 still unmerged. **UI render stays disabled pending T10.**

@@ -9,10 +9,16 @@ from pathlib import Path
 from PySide6.QtCore import QTimer
 
 from ai_ngerti_geopolitik.application.export_jobs import ExportJobService, ExportJobState
+from ai_ngerti_geopolitik.application.export_postflight import PostflightReceipt
 from ai_ngerti_geopolitik.application.export_request import ExportRequest
 from ai_ngerti_geopolitik.application.ports import ExportResult
 from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.export_job_adapters import AtomicExportPublisher
+
+
+class FakePostflight:
+    def verify(self, stage_path, request, state, result, cancellation):
+        return PostflightReceipt.capture(stage_path, result.duration_frames)
 
 
 class BlockedRender:
@@ -38,7 +44,7 @@ def test_qtimer_continues_during_blocked_render_and_close(qtbot, tmp_path: Path)
         output_path=tmp_path / "must-not-create.mp4",
     )
     engine = BlockedRender()
-    with ExportJobService(engine, AtomicExportPublisher()) as jobs:
+    with ExportJobService(engine, AtomicExportPublisher(), postflight=FakePostflight()) as jobs:
         counter = [0]
         poll_states = []
         timer = QTimer()

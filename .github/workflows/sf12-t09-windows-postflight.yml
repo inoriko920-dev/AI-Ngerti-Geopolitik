@@ -1,0 +1,55 @@
+name: SF12 T09 Independent Export Postflight Windows
+
+on:
+  push:
+    branches: [feature/sf12-t09-strict-export-postflight]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  postflight:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/unit/test_sf12_t09_postflight.py tests/unit/test_sf12_t08_export_jobs.py tests/qt/test_sf12_t08_qt_responsiveness.py -q
+      - run: uv run pytest -q
+      - name: Install external native qualification FFmpeg
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - name: Create source-owned media
+        run: uv run python scripts/generate_step10_fixture.py --output artifacts/sf12-t09/owned_video.mp4
+      - name: Verify real files and reject corrupt / mismatched outputs
+        run: uv run python scripts/qualification/sf12_t09_real_postflight.py --fixture artifacts/sf12-t09/owned_video.mp4 --evidence artifacts/sf12-t09/evidence
+      - name: Independently inspect published output
+        shell: pwsh
+        run: |
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,avg_frame_rate,nb_frames -show_entries format=format_name,duration -of json artifacts/sf12-t09/evidence/h264_full.mp4
+          Get-FileHash artifacts/sf12-t09/evidence/h264_full.mp4 -Algorithm SHA256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ANG-SF12-T09-StrictPostflight-RealMedia
+          path: artifacts/sf12-t09/evidence/**
+          if-no-files-found: error
+          retention-days: 14
