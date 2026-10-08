@@ -266,3 +266,9 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 - Added scripts/import_scene_project.py with template (generates blank TXT timing rows) and create (parses DOCX, scans real PNG/JPEG/WebP Axxx folder, validates user frame durations, verifies image SHA-256, double-rescans and saves/reopens a real canonical .angproj). No frozen UI or native rendering change.
 - New Windows regression tests cover incomplete timing, reordered/duplicate frames, missing media, no overwrite and real .angproj persistence. Current-head CI PENDING.
 - This CLI bridge is not a completed UI-003 duration/review wizard, image preview or MP4 export. No pilot A, merge, or portable release.
+
+## Worker-only Qt still-image frame preview (2026-10-08 WIB)
+
+- Added infrastructure/still_frame_preview.py: reads the saved canonical image HOLD ProjectState and produces actual in-memory QImage pixels at an exact requested timeline frame. SINGLE V1 fills the frame; DOUBLE V1 left/V2 right uses deterministic even/odd pixel splitting and aspect-preserving center cover.
+- Fail closed on changed/missing media fingerprints, wrong image dimensions, non-default unqualified effects, gaps, extra/hidden tracks, audio/subtitles, and out-of-range frames. Fixed path-redacted error messages. Intended for background worker use only, **not** connected to frozen GUI or production MLT.
+- Added Qt real-image golden-pixel tests for boundary frames and all channels; Windows CI same-HEAD pending. MP4 render, MLT still producer, animated effects and UI preview remain unqualified. PR Draft, main unchanged, portable last.
