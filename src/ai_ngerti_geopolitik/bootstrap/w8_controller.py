@@ -383,10 +383,10 @@ class W8RuntimeController:
                     else:
                         self._decide(RecoveryChoice.OPEN_SOURCE)
         if self.scene_docx_future is not None and self.scene_docx_future.done():
-            future = self.scene_docx_future
+            docx_future = self.scene_docx_future
             self.scene_docx_future = None
             try:
-                parsed = future.result()
+                parsed = docx_future.result()
             except (SceneDocxFormatError, OSError, RuntimeError, ValueError):
                 self.scene_docx_plan = None
                 self._notify("Scene DOCX tidak sesuai format atau tidak dapat dibaca.")
