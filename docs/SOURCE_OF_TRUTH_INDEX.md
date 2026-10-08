@@ -56,6 +56,7 @@
     - `docs/evidence/features/S11_W8_001_CANONICAL_VALIDATION_CONTRACTS.md`
     - `docs/evidence/features/S11_W8_002_REAL_MEDIA_VALIDATION_CENTER.md`
     - `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`
+    - `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`
 12. current wave contract:
     - `docs/project/W8_VALIDATION_RECOVERY_DIAGNOSTICS_CONTRACT.md`
     - historical closed W7 contract: `docs/project/W7_AI_AUTO_EDIT_L2_CONTRACT.md`
@@ -151,7 +152,7 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-001 Canonical Validation Contracts + Baseline Rules: **PASS**.
 - W8-002 Real Media Integrity + Validation Center Projection: **PASS**.
 - W8-003 Single Asset Relink Command + Exact Identity Preservation: **PASS**.
-- W8-004 Batch Directory Relink Scan + Candidate Ranking: **READY**.
+- W8-004 Batch Directory Relink Scan + Candidate Ranking: **IN_VERIFICATION**, not yet PASS.
 - W8-005..W8-010: **SERIAL_BLOCKED**.
 - W8 reuses frozen UI-039 Recovery, UI-040 Asset Scan and UI-041 Validation Center; no new UI generation is required.
 - W8 preserves ProjectState/CommandBus/ProjectSession/JsonProjectRepository ownership and extends stale safety to W8 jobs.
@@ -164,6 +165,8 @@ DOCX planning/reference remains in repo; TXT is machine-readable fallback.
 - W8-003 targeted tests 9/9, full pytest 411/411, evidence 23/23: **PASS**;
 - W8-003 accepted HEAD `25e5f6cefbbef5f554bd17e64d50a61db948bf13`; workflow `37689420848`; regression 27/27 SUCCESS;
 - W8-003 evidence: `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`;
-- exact next action: **SOL S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking**.
+- W8-004 implementation code HEAD `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`; latest Windows run `37721840504` pending;
+- W8-004 9 unit/Qt tests and real-media runner committed; proof still pending, do not mark PASS;
+- exact next action: **finish SOL S11-W8-004 Windows CI, real-media and regression evidence only**.
 - 42-prompt UI regeneration: VOID / DO NOT USE.
 - AAVC repo: read-only.

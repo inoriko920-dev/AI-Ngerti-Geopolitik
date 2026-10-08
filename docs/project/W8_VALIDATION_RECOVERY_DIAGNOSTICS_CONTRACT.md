@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 READY / W8-005..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 IN_VERIFICATION / W8-005..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -105,7 +105,7 @@ No new UI image-generation gate:
 - **W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - **W8-002 — Real Media Integrity + Validation Center Projection — PASS**
 - **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
-- W8-004 — Batch Directory Relink Scan + Candidate Ranking — READY
+- W8-004 — Batch Directory Relink Scan + Candidate Ranking — IN_VERIFICATION
 - W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004
 - W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005
 - W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
@@ -140,6 +140,7 @@ Accepted W8-003:
 Evidence:
 `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 
-After owner says `lanjutkan`, execute **SOL S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking**.
-
-Do not start W8-005 in the same turn.
+W8-004 implementation commit `4988e84ca6bca1e64fc5a755ff0d3287802e70f8` is awaiting dedicated Windows CI
+`37721840504`. The scan/service/presentation/test implementation is present; the
+verified real-media artifact and regression lock remain pending. Continue W8-004
+QA only. **Do not start W8-005**.

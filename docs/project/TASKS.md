@@ -822,7 +822,7 @@ Serial contract:
 - [x] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - [x] **S11-W8-002 — Real Media Integrity + Validation Center Projection — PASS**
 - [x] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
-- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — READY**
+- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — IN_VERIFICATION**
 - [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
 - [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005**
 - [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006**
@@ -917,4 +917,14 @@ W8-002 proof:
 - Windows CI lint, mypy, architecture, source-of-truth, secret and UI 42/42 gates PASS;
 - full main-HEAD regression **27/27 workflow families SUCCESS**, all attempt 1.
 
-**Exact next task:** S11-W8-004 only — Batch Directory Relink Scan + Candidate Ranking.
+**W8-004 implementation HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`
+
+**W8-004 current gate:** IN_VERIFICATION — no PASS claim pending latest Windows CI.
+Implementation includes scan worker, deterministic candidate rank 1–4, manual verified
+batch, cancellation/stale/session guard, UI-040 projection and 9 targeted tests.
+The first real Qt run exposed a default weak-candidate checkbox, fixed on the
+current code HEAD. Dedicated CI run: `37721840504` — pending verification.
+Evidence log: `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`.
+
+**Exact next task:** finish W8-004 quality/real-media/regression lock only.
+W8-005 remains serial-blocked.

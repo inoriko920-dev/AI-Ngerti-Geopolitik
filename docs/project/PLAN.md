@@ -4,7 +4,7 @@
 
 ## W8 — Validation / Recovery / Diagnostics Hardening
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 READY  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 IN_VERIFICATION  
 **Master Blueprint:** TECH-WAVE STEP 11
 
 ## Accepted W8 tasks
@@ -33,7 +33,7 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 1. W8-001 — **PASS**
 2. W8-002 — **PASS**
 3. W8-003 — **PASS**
-4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **READY**
+4. W8-004 Batch Directory Relink Scan + Candidate Ranking — **IN_VERIFICATION**
 5. W8-005 Autosave Catalog + Retention Hardening — **BLOCKED**
 6. W8-006 Crash Marker + Startup Recovery Decision — **BLOCKED**
 7. W8-007 Atomic Persistence Failure Injection + Remediation — **BLOCKED**
@@ -43,5 +43,6 @@ See `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 
 ## Exact next action
 
-Wait for a new owner `lanjutkan`, then execute **SOL S11-W8-004 only**.
-Do not begin W8-005 in the same turn.
+Code `4988e84ca6bca1e64fc5a755ff0d3287802e70f8` implements W8-004 but the CI/evidence/regression gate has
+not been accepted. Dedicated latest Windows workflow: `37721840504` (pending).
+Finish W8-004 verification first; **do not start W8-005**.

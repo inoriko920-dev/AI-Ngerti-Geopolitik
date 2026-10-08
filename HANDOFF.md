@@ -5,7 +5,8 @@
 **Last completed task:** S11-W8-003 — PASS  
 **Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
-**Next exact task:** S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking
+**Current implementation:** S11-W8-004 — IN_VERIFICATION (not yet PASS)
+**Next exact task:** W8-004 Windows CI + real-media closure; W8-005 remains blocked
 
 ## Read-first constraints
 
@@ -40,10 +41,13 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 
 ## Next exact action
 
-On next owner `lanjutkan`, execute **SOL S11-W8-004 only** using the existing
-locked W8 planning TXT/DOCX. Implement directory scanning and deterministic candidate
-ranking as a bounded background-safe discovery function, not as unapproved auto-apply.
-Require explicit candidate choice, exact canonical mutation and stale safety.
+W8-004 implementation has landed on main (latest code HEAD `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`). Do not
+redo implementation. Wait for the verified latest-HEAD Windows W8-004 run
+[`37721840504`](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504), inspect failures,
+fix only W8-004, and then qualify real-media evidence plus all prior regression
+families before closing W8-004. The prior W8-004 attempt passed 8/9 targeted
+tests but exposed a default Qt checkbox on unverified candidates; this is fixed
+in the latest code, not yet re-qualified. **Never claim W8-004 PASS until CI succeeds.**
 Do not start W8-005 in the same turn.
 
 ## Provisional gates

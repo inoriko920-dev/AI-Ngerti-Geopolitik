@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — NEXT W8-004**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004 IN_VERIFICATION**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -31,6 +31,12 @@ Artifact: `ANG-S11-W8-003-Single-Asset-Relink` / ID `11513225118`.
 
 ## Next
 
-After owner says `lanjutkan`: **SOL S11-W8-004 only —
-Batch Directory Relink Scan + Candidate Ranking**. Do not start W8-005 in the
-same turn. UI-001..UI-042 remain frozen, and AAVC is read-only.
+W8-004 bounded asynchronous directory scan, deterministic proposal ranking,
+explicit-only verified batch relink, stale protection and UI-040 progress projection
+are implemented. Code: [`4988e84c`](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/commit/4988e84ca6bca1e64fc5a755ff0d3287802e70f8).
+**Gate: IN_VERIFICATION, not PASS**. Current dedicated Windows run:
+[`37721840504`](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504).
+See `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`.
+
+**Next:** finish W8-004 Windows tests, real-media evidence and regression closure.
+Do not start W8-005. UI-001..UI-042 remain frozen; AAVC is read-only.
