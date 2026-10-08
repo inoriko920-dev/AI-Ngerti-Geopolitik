@@ -38,7 +38,6 @@ def _media(folder: Path) -> None:
         assert image.save(str(folder / f"A{i:03d}.png"), "PNG")
 
 
-
 def _create(docx: Path, folder: Path, timing: Path, target: Path, name: str) -> int:
     args = [
         "create",
@@ -54,7 +53,6 @@ def _create(docx: Path, folder: Path, timing: Path, target: Path, name: str) -> 
         name,
     ]
     return main(args)
-
 
 
 def test_manifest_requires_exact_explicit_order_and_rejects_guesswork() -> None:
