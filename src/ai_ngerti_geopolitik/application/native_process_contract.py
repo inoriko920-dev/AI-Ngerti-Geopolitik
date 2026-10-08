@@ -39,9 +39,7 @@ _STATUS_ISSUE = {
 
 def _seconds_between(value: object, low: float, high: float) -> bool:
     return (
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(value)
+        (type(value) is int or (type(value) is float and math.isfinite(value)))
         and low <= value <= high
     )
 
