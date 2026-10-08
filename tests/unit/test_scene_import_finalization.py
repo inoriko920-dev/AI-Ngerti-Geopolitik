@@ -31,9 +31,7 @@ def _image(path: Path) -> None:
 
 
 def _docx(path: Path, lines: tuple[str, ...]) -> None:
-    body = "".join(
-        "<w:p><w:r><w:t>" + escape(line) + "</w:t></w:r></w:p>" for line in lines
-    )
+    body = "".join("<w:p><w:r><w:t>" + escape(line) + "</w:t></w:r></w:p>" for line in lines)
     xml = (
         '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
         "<w:body>" + body + "</w:body></w:document>"
@@ -65,8 +63,14 @@ def _prepare(tmp_path: Path):
     return docx, docx_path, root, review, verified, target
 
 
-def _save(prepared, *, repository=None, read_docx=read_scene_docx,
-          scan=scan_scene_asset_folder, verify=verify_scene_image_media):
+def _save(
+    prepared,
+    *,
+    repository=None,
+    read_docx=read_scene_docx,
+    scan=scan_scene_asset_folder,
+    verify=verify_scene_image_media,
+):
     docx, docx_path, root, review, verified, target = prepared
     return save_reviewed_scene_image_project(
         docx,

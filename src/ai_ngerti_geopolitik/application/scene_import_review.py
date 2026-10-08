@@ -326,4 +326,3 @@ def save_reviewed_scene_image_project(
         raise
     except (OSError, RuntimeError, ValueError):
         raise SceneImportReviewError("scene project could not be safely saved") from None
-
