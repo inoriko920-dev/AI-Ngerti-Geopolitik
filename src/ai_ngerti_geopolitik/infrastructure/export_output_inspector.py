@@ -36,9 +36,7 @@ class LocalExportOutputInspector:
                 return OutputTargetInspection(ExportPreflightCode.OUTPUT_EXISTS)
             if shutil.disk_usage(parent).free < min_free_bytes:
                 return OutputTargetInspection(ExportPreflightCode.INSUFFICIENT_DISK)
-            with tempfile.NamedTemporaryFile(
-                prefix=".ang-preflight-", suffix=".tmp", dir=parent
-            ):
+            with tempfile.NamedTemporaryFile(prefix=".ang-preflight-", suffix=".tmp", dir=parent):
                 pass
         except (OSError, ValueError):
             return OutputTargetInspection(ExportPreflightCode.OUTPUT_NOT_WRITABLE)

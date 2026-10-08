@@ -158,9 +158,7 @@ class ExportPreflightService:
             add(ExportPreflightCode.UNSUPPORTED_PROFILE)
 
         duration_frames = (
-            request.selection.end
-            if request.selection is not None
-            else state.timeline_end_frame
+            request.selection.end if request.selection is not None else state.timeline_end_frame
         )
         if request.selection is not None:
             duration_frames -= request.selection.start
@@ -174,9 +172,7 @@ class ExportPreflightService:
         if project_source_path is not None:
             protected += (project_source_path,)
         try:
-            inspection = self.target_inspector.inspect(
-                request.output_path, protected, min_bytes
-            )
+            inspection = self.target_inspector.inspect(request.output_path, protected, min_bytes)
             if inspection.issue is not None:
                 add(inspection.issue)
         except Exception:

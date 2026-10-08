@@ -169,9 +169,7 @@ def test_selection_remains_unqualified(tmp_path: Path) -> None:
     state = _state()
     result = ExportPreflightService(MediaInspector(), TargetInspector()).check(
         state,
-        _request(
-            state, tmp_path, scope=ExportScope.SELECTION, selection=ExportFrameRange(20, 80)
-        ),
+        _request(state, tmp_path, scope=ExportScope.SELECTION, selection=ExportFrameRange(20, 80)),
         "session-1",
         TOOLS,
     )
@@ -188,9 +186,7 @@ def test_selection_remains_unqualified(tmp_path: Path) -> None:
         Code.INSUFFICIENT_DISK,
     ],
 )
-def test_output_inspection_failure_is_returned(
-    tmp_path: Path, issue: Code
-) -> None:
+def test_output_inspection_failure_is_returned(tmp_path: Path, issue: Code) -> None:
     state = _state()
     result = ExportPreflightService(MediaInspector(), TargetInspector(issue)).check(
         state, _request(state, tmp_path), "session-1", TOOLS
