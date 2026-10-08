@@ -300,3 +300,13 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - `scripts/package/step10_media_smoke_entry.py` T10 opt-in flag, `scripts/package/smoke_sf12_t10_packaged.ps1`, extended legacy media packaging notices, `.github/workflows/sf12-t10-windows-package-ui-e2e.yml`, evidence `docs/evidence/packaging/SF12_T10_WINDOWS_PACKAGED_E2E.md`.
 - **Release blockers:** no unified product UI + media engine render path, no final native engine/FFmpeg GPL x264/x265/licensing/redistribution ADR, THIRD_PARTY_NOTICES foundation placeholder, no repo top-level LICENSE, no 27 workflow families rerun same T10 HEAD, no long-form/resource/hardware/Gemini proofs. Combined UI product NOT READY; do not merge/release blindly.
 - **Status SF12-T10: PASS_PACKAGED_SUBSYSTEMS / RELEASE_BLOCKED**. New draft stacked **PR #11** on #10/#9/…/#1, main c9154ee unchanged. **Exact next owner continuation: ASTRA ADR / native packaging + final UI render integration plan**, before SOL coding/GUI activation. Details: `docs/project/SF12_T10_RELEASE_BLOCKERS.md`.
+
+## ASTRA post-T10 proposal 2026-10-08 WIB: planning only
+- Draft ADR docs/project/ASTRA_ADR_2026_10_08_RENDER_NATIVE_PACKAGING_PROPOSAL.md and detailed serial INT-00..INT-09 plan in docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.md (.txt mirror). PROPOSED, NOT APPROVED.
+- T10 packaged technical PASS on 866464471e5926d7f9a782e56f2030ed2425e7a2 Windows 37746818497; still two ZIPs; Qt Render disabled. Main unchanged; all prior PRs draft. No code, no UI edit or release action this ASTRA step.
+- Recommendation only: pilot one onedir Qt/typed worker with externally provided, verified FFmpeg; no bundled libx264/265, no production libopenshot adoption or MediaEnginePort change. Needs explicit D1–D4 owner decisions; legal licensing/notice and 27/27 same-head CI still open. INT-00 after owner decision, stop before SOL.
+
+## ASTRA INT-00 pre-approval re-audit — 2026-10-08 WIB
+- Current GitHub main c9154eef; PR #1–#12 stacked, open and draft; T10 real packaged UI/media CI 37746818497 and ASTRA DOCX CI 37748230963 SUCCESS. 42 UI PNG files intact, DOCX 27582 bytes verified, no top-level LICENSE, incomplete THIRD_PARTY_NOTICES.
+- New audit `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md`. Gate **AUDIT PASS / APPROVAL BLOCKED**; no software code, Qt UI, native engine, port, merge or release changes.
+- D1 Pilot A external FFmpeg is only RECOMMENDED, NOT accepted by generic `lanjutkan`; D2 final packaging/D3 legal license/D4 production engine remain pending. **Next: explicit owner-scoped approval**; after acceptance create agreed pilot ADR gate and only then INT-01. No coding now.
