@@ -20,3 +20,9 @@ Ruff, mypy, imports, architecture, no-secret and 42/42 frozen UI references;
 targeted/full pytest; real-media evidence verifier; exact saved project,
 no silent overwrite; Windows portable; all previous workflow families
 on one code HEAD. No STEP 12 and no AAVC mutation.
+
+## Formatter qualification
+
+Pinned Ruff 0.16.10 auto-format completed successfully and the temporary
+format workflow was removed. The scoped Windows W8-010 quality, Qt and
+real GOLDEN-03 proof remains pending; this is NOT a PASS assertion.
