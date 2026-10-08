@@ -82,7 +82,7 @@ def test_internal_escaping_may_exceed_unescaped_limit() -> None:
 
 
 def test_windows_os_command_line_ceiling_enforced_despite_policy_32768() -> None:
-    length = 32_768 - len(_exe()) - 2
+    length = 32_768 - _expected_units((_exe(),)) - 2
     args = ("x" * length,)
     assert _expected_units((_exe(), *args)) + 1 == 32_768
     with pytest.raises(NativeProcessContractError, match="^INVALID_NATIVE_ARGV_LIMIT$"):
