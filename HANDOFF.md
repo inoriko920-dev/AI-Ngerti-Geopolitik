@@ -310,3 +310,8 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Current GitHub main c9154eef; PR #1–#12 stacked, open and draft; T10 real packaged UI/media CI 37746818497 and ASTRA DOCX CI 37748230963 SUCCESS. 42 UI PNG files intact, DOCX 27582 bytes verified, no top-level LICENSE, incomplete THIRD_PARTY_NOTICES.
 - New audit `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md`. Gate **AUDIT PASS / APPROVAL BLOCKED**; no software code, Qt UI, native engine, port, merge or release changes.
 - D1 Pilot A external FFmpeg is only RECOMMENDED, NOT accepted by generic `lanjutkan`; D2 final packaging/D3 legal license/D4 production engine remain pending. **Next: explicit owner-scoped approval**; after acceptance create agreed pilot ADR gate and only then INT-01. No coding now.
+
+## ASTRA INT-01 design-only — 2026-10-08 WIB
+- Identified bounded native process/path risks in export_capability_probe.py and ffmpeg_slice.py (PATH spoof/mismatch, encoder text cannot qualify actual encode, ffprobe no timeout, blocked subprocess pipes, incomplete cancellation). No runtime exploit claim.
+- Detailed design + P01–P16 tests, immutable identity/typed code and subtask SOL 01A–F: `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.docx` with MD/TXT mirrors. Risk review docs/evidence/planning/ASTRA_INT01_NATIVE_TOOLCHAIN_DESIGN_REVIEW_2026-10-08.md.
+- **DESIGN_PASS / PILOT_A_OWNER_APPROVAL_PENDING / SOL_CODE_BLOCKED**. No code/engine/UI/release edits. Explicit D1 first, then SOL INT-01A only.

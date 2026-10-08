@@ -333,3 +333,7 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 
 ## ASTRA INT-00 pre-approval audit (2026-10-08 WIB)
 - `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md` — read-only GitHub branch/PR/CI/document checks and explicit D1–D4 decision gate; no code authorization. Follows full DOCX, MD and TXT in `docs/planning/13_ASTRA_POST_T10_INTEGRATION_AND_NATIVE_LICENSE_PLAN_2026-10-08.*` and proposed ADR under `docs/project/`.
+
+## ASTRA INT-01 native-toolchain risk design (2026-10-08 WIB)
+- `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.md` / .txt / .docx: pre-implementation pilot A proposal, typed security contracts, P01–P16 test matrix and 01A–F serial SOL tasks, owner D1 pending.
+- `docs/evidence/planning/ASTRA_INT01_NATIVE_TOOLCHAIN_DESIGN_REVIEW_2026-10-08.md`: read-only audit of existing process/path risks; no production capability approval.

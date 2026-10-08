@@ -277,3 +277,6 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## ASTRA INT-00 pre-approval readiness audit — 2026-10-08 WIB
 - Rechecked 12 stacked Draft PRs open, main unchanged c9154eef, T10 Windows 37746818497 SUCCESS and ASTRA DOCX 37748230963 SUCCESS; Word planning DOCX 27582B, 42 frozen PNG intact. No top-level LICENSE and notices incomplete. All D1–D4 unresolved.
 - Status **READINESS_AUDIT_PASS / OWNER_DECISION_BLOCKED / SOL_NOT_STARTED**. Audit: `docs/evidence/planning/ASTRA_INT00_PREAPPROVAL_READINESS_AUDIT_2026-10-08.md`. One pilot opt-in could be recorded as D1 without authorizing final release or codec bundling. No code or UI changes.
+
+## ASTRA INT-01 external FFmpeg threat model 2026-10-08 WIB
+- Planning-only typed runtime trust design, bounded subprocess and 16 Windows tests drafted; owner Pilot A approval missing. Existing native detection remains unchanged and not production-authorized. See `docs/planning/14_ASTRA_INT01_EXTERNAL_FFMPEG_SECURITY_DESIGN_2026-10-08.md`, DOCX, TXT and risk review. Status **DESIGN_READY / CODING_BLOCKED**.
