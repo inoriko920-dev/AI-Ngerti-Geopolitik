@@ -146,7 +146,6 @@ def build_scene_timeline_review(
     return SceneTimelineReview(fps, tuple(scenes), current_frame, len(ordered_assets))
 
 
-
 def create_canonical_scene_image_project(
     review: SceneTimelineReview,
     verified: VerifiedSceneImageSet,
