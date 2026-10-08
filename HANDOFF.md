@@ -212,3 +212,13 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Evidence: `docs/evidence/features/SF12_T02_EXPORT_REQUEST_CONTRACT.md`.
 - Branch/PR: `feature/sf12-t02-export-request-contract` / draft PR #3, stacked on T01 PR #2 then planning PR #1; none merged to main.
 - **Next exact task** on new owner continuation: **SF12-T03 preflight/capability negotiation only**. No STEP13, release, native engine changes or frozen UI redesign. ASTRA/ADR mandatory for breaking MediaEnginePort changes. W5 microphone and W6/W7 live Gemini remain provisional.
+
+
+## SF12-T03 accepted — 2026-10-08 WIB
+
+- **SF12-T03 Preflight & Capability Negotiation = PASS_CONTRACT_ONLY**. Code SHA `7bee32aae7248ae9023afe4b9b62bf2caf357095`; Windows [37736630766](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37736630766) **SUCCESS**.
+- Tests: targeted SF12-T03 PASS, full pytest PASS; Ruff, mypy 90 files, lint-imports, architecture, no secrets, source-of-truth **70/70**, UI SHA manifest **42/42** all PASS. Evidence: `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`.
+- Files: `application/export_preflight.py`, `infrastructure/export_output_inspector.py`, `tests/unit/test_sf12_t03_export_preflight.py`, dedicated Windows workflow. W8 real-media validation reuse; conservative H264/1080p/30/AAC profile; protected output and disk/write probe, no output overwrite, stale checks.
+- `precheck_pass` **does not authorize render**. `can_start_render=False` remains deliberate; no real FFmpeg codec-matrix/HEVC/4K proof, no engine port breaking changes, no changed UI-001..042, no AAVC writes.
+- Branch `feature/sf12-t03-export-preflight` / draft PR **#4**, stacked on T02 #3, T01 #2, planning #1; **not merged into main**. Keep ownership serial to avoid collision with other agents.
+- **Next exact task** on owner's next `lanjutkan`: **SF12-T04 H.264 Baseline Export Pipeline only**, real media and output safety tests, no T05+ work, no release. ASTRA/ADR mandatory for frozen port signature/native architecture changes. W5 physical mic and W6/W7 live Gemini provisional.
