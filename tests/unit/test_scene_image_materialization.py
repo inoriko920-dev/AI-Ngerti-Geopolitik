@@ -89,6 +89,4 @@ def test_materializer_rejects_gapped_scene_timing(tmp_path: Path) -> None:
     gapped = replace(review.scenes[1], start_frame=151)
     broken = replace(review, scenes=(review.scenes[0], gapped))
     with pytest.raises(SceneImportReviewError, match="timing"):
-        create_canonical_scene_image_project(
-            broken, verified, project_id="P1", project_name="Gap"
-        )
+        create_canonical_scene_image_project(broken, verified, project_id="P1", project_name="Gap")
