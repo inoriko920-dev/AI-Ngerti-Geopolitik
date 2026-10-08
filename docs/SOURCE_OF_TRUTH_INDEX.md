@@ -239,3 +239,11 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - Contract/readiness: `docs/project/SF12_INTEGRATION_EXPORT_READINESS_CONTRACT.md`.
 - Distinguish SF-STEP12 external integrations from TECH-WAVE STEP12 export matrix; not separate permissions to skip gates.
 - Status: readiness review only, NO STEP12 coding or full export-matrix qualification. T01 next after gate.
+
+
+## SF12-T01 accepted source-of-truth
+
+- Implementation evidence: `docs/evidence/features/SF12_T01_EXPORT_CAPABILITY_TRUTH_IN_UI.md`.
+- Stacked draft PR: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/pull/2 (PR #1 contains STEP12 planning prerequisites).
+- Windows verification: https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37734750417 (SUCCESS on `b0edecb` before documentation closure).
+- Status: PASS_WITH_PROVISIONAL_NATIVE_ENCODER_INVENTORY; next SF12-T02 ASTRA port contract review.
