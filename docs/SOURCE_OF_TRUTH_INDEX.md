@@ -350,3 +350,10 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 ## ASTRA INT-01B native subprocess safety planning (2026-10-08 WIB)
 - `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.md`, .txt and .docx — bounded process and privacy-safe design, 20 Windows tests, B1–B6 subtasks, owner approval prerequisite.
 - `docs/evidence/planning/ASTRA_INT01B_PROCESS_RISK_AUDIT_2026-10-08.md` — read-only audit evidence, not permission to wire or execute FFmpeg.
+
+
+## SOL INT-01B/B1 — Bounded policy and private-safe outcome (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/native_process_contract.py` — pure frozen bounds for future process runner, strict typed safe result, no native execution.
+- `tests/unit/test_sol_int01b_b1_process_contract.py` and `.github/workflows/sol-int01b-b1-process-contract-windows.yml` — Windows negative contract/full regression, native-execution denial and frozen UI hashes.
+- `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md` — tested implementation SHA bfa20eb, Windows success 37754131337, owner Pilot A gate pending, next B2 after explicit approval.

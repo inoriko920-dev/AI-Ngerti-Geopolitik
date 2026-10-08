@@ -292,3 +292,14 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## ASTRA INT-01B bounded process runner planning — 2026-10-08 WIB
 - Scope: exact source inspection and architecture-neutral B1–B6/Windows B01–B20 acceptance matrix for native child stdout/stderr, timeout/cancel/tree-cleanup/privacy. Planning-only; FFmpeg runner/Qt unchanged.
 - `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.md`; `docs/evidence/planning/ASTRA_INT01B_PROCESS_RISK_AUDIT_2026-10-08.md`. Gate: DESIGN READY, owner D1 Pilot A pending, all final legal D2–D4 pending.
+
+
+## SOL INT-01B/B1 immutable process contract — PASS (2026-10-08 WIB)
+
+- Code SHA `bfa20eb942ddda10d6daf9ab34b1265991356e42`; Windows CI `37754131337` SUCCESS with mypy100, frozen UI42/42, source-of-truth70/70, targeted and full pytest. Draft PR #16 stacked on PR #15; main still c9154eef.
+- Added pure `NativeProcessPolicy` and privacy-safe `NativeProcessOutcome` plus negative tests. Enforces hard caps and fail-closed typed issue/status agreement, but launches NO subprocess and cannot enable production render. Evidence `docs/evidence/features/SOL_INT01B_B1_PROCESS_CONTRACT.md`.
+- D1 Pilot A approval pending. The actual FFmpeg/FFprobe bounded runner, cancellation, child process cleanup and Qt integration remain BLOCKED. D2–D4 license, native packaging and production engine unresolved.
+
+
+## SOL INT-01B/B1 extreme-input hardening — 2026-10-08 WIB
+- Fixed pure validator overlarge Python integer causing `math.isfinite` OverflowError; typed fail-closed now applies to timeout and grace inputs. Code SHA 7b95beeb; Windows CI 37756572639 SUCCESS full regression/UI42/architecture. No production process execution. INT-01B/B2 still blocked until explicit Pilot A approval.
