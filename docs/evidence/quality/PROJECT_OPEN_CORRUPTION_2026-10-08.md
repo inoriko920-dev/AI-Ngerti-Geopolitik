@@ -67,3 +67,11 @@ timeline, effect locks, audio mute state or captions when reopened.
 - `ProjectSession.open_project` computes the hash and builds a new bus before altering `_bus`, `_session_id`, path, or saved hash; even an alternate repository that returns an unhashable state cannot partially swap an active project.
 - New tests exercise escaped lone surrogates in project name, track name and subtitle cue text, confirm the previous project and bytes remain intact, and simulate a non-JSON repository returning an invalid state.
 - Current source and tests require **new same-HEAD Windows CI PASS**; no FFmpeg external execution, UI rework, codec bundling, main merge, or portable release.
+
+## Save As and autosave recovery atomicity (2026-10-08 WIB)
+
+- The session previously invoked `repository.save()` and changed `current_path` **before** computing `state.semantic_hash()`. For an alternate adapter that wrote unhashable state, a failed hash could leave a newly written file and a rebound project path. Now canonical hashing happens **before** any repository write and the resulting hash is reused after a successful save.
+- `recover_snapshot()` previously validated two domain models and immediately replaced the current session without checking semantic-hash encodability. Both source and restored state are now hashed **before** the recovered session is accepted; its new command bus is also built before mutation.
+- Two synthetic, deterministic regression tests use a repository adapter returning malformed Unicode or capable of prematurely writing. They verify no accidental save target, no active-session replacement, no altered source bytes, and no false clean state.
+- Changes keep the existing project v1 schema, file format, UI, and source-of-truth permissions. Real external FFmpeg and portable release are outside this change.
+- The new exact-head Windows CI must pass targeted and full pytest, Ruff, mypy, architecture, secrets and frozen UI reference checks before this follow-up is accepted.

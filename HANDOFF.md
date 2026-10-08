@@ -197,3 +197,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 Unicode project-load follow-up (8 Oct 2026 WIB)
 
 - Inspect exact current-head Windows CI for unpaired-surrogate malformed JSON, safe exception mapping and project-session atomicity; prior `a3bebefa` PASS is not evidence for new changes. Keep PR Draft, no main merge. Pilot A remains pending.
+
+## PR #20 subsequent Save As / recovery atomicity regression (2026-10-08 WIB)
+
+- Verify same-head Windows CI for the pre-write hash guard and pre-recovery adoption validation. Tests must prove invalid repository responses cannot change the project path, project session or existing source bytes. Keep Draft; D1 Pilot A FFmpeg still pending; no portable, no main merge.

@@ -185,3 +185,8 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 
 - Unpaired Unicode surrogate escapes in a valid JSON file could pass decode then fail `semantic_hash` after `ProjectSession.open_project` began replacing the active session. Validate canonical hashing inside repository load and hash before session mutation; add synthetic-invalid-repository and valid-existing-project regression tests. Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`.
 - **PENDING current-head Windows CI**, source schema/UI/main/FFmpeg execution unchanged; PR #20 remains Draft, portable last.
+
+## PR #20 — Save As / autosave recovery atomicity check (2026-10-08 WIB)
+
+- `ProjectSession.save` now computes semantic identity before any repository write or path rebind; `recover_snapshot` verifies source/snapshot semantic identities before adopting a recovered session. Regression tests simulate a returning-invalid repository and a saving adapter that would write before hash validation. No project schema change, UI change, native FFmpeg execution, release or main merge.
+- Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. **Current-head Windows CI pending**; earlier PR #20 CI alone does not qualify this change.

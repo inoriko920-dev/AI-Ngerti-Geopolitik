@@ -236,3 +236,63 @@ def test_even_non_json_repository_cannot_replace_session_with_unhashable_state(
     assert session.current_path == active_path
     assert session.session_id == old_id
     assert session.state.semantic_hash() == old_hash
+
+
+def test_invalid_recovery_snapshot_never_replaces_active_project(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-SNAPSHOT", "Original project", 30)
+    current_path = session.save(tmp_path / "current.angproj")
+    source_bytes = current_path.read_bytes()
+    source_state = session.state
+    original_id = session.session_id
+    original_hash = source_state.semantic_hash()
+    selected = tmp_path / "corrupt.autosave.angproj"
+    invalid_snapshot = replace(source_state, name="\ud800", revision=1)
+
+    def fake_load(path: Path) -> ProjectState:
+        return invalid_snapshot if path == selected else source_state
+
+    monkeypatch.setattr(repository, "load", fake_load)
+    with pytest.raises(UnicodeEncodeError):
+        session.recover_snapshot(current_path, selected)
+
+    assert session.is_open and not session.dirty
+    assert session.current_path == current_path
+    assert session.session_id == original_id
+    assert session.state.semantic_hash() == original_hash
+    assert current_path.read_bytes() == source_bytes
+
+
+def test_save_as_invalid_state_never_invokes_repo_or_changes_project_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-SAVE-AS", "Original project", 30)
+    current_path = session.save(tmp_path / "original.angproj")
+    old_bytes = current_path.read_bytes()
+    original_id = session.session_id
+    original_saved_hash = session._saved_hash
+    # Simulate bad state handed to a repository adapter after canonical checks.
+    poisoned = replace(session.state, name="\ud800")
+    session.bus.replace_loaded_state(poisoned)
+    destination = tmp_path / "save-as.angproj"
+    called = []
+
+    def unsafe_save(state: ProjectState, path: Path) -> None:
+        called.append(path)
+        path.write_text("premature write", encoding="utf-8")
+
+    monkeypatch.setattr(repository, "save", unsafe_save)
+    with pytest.raises(UnicodeEncodeError):
+        session.save_as(destination)
+
+    assert called == []
+    assert not destination.exists()
+    assert session.session_id == original_id
+    assert session.current_path == current_path
+    assert session._saved_hash == original_saved_hash
+    assert current_path.read_bytes() == old_bytes
