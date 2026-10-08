@@ -1,6 +1,6 @@
 # AI Ngerti Geopolitik
 
-> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004 PASS — NEXT W8-005**
+> **STATUS: SF-STEP 11 ACTIVE — W7 CLOSED PROVISIONAL LIVE GEMINI — W8-001..003 PASS — W8-004..005 PASS — NEXT W8-006**
 
 Repository resmi aplikasi **AI Ngerti Geopolitik**.
 
@@ -12,7 +12,8 @@ Completed:
 - W8-001 Canonical Validation Contracts + Baseline Rules = **PASS**;
 - W8-002 Real Media Integrity + Validation Center Projection = **PASS**;
 - W8-003 Single Asset Relink Command + Exact Identity Preservation = **PASS**;
-- W8-004 Batch Directory Relink Scan + Candidate Ranking = **PASS**.
+- W8-004 Batch Directory Relink Scan + Candidate Ranking = **PASS**;
+- W8-005 Autosave Catalog + Retention Hardening = **PASS**.
 
 Verified W8-003 implementation/regression:
 `25e5f6cefbbef5f554bd17e64d50a61db948bf13`
@@ -32,20 +33,21 @@ Artifact: `ANG-S11-W8-003-Single-Asset-Relink` / ID `11513225118`.
 
 ## W8-004 accepted
 
-**Accepted W8-004 implementation/regression HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`  
-**Dedicated Windows workflow:** [37721840504](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504) — SUCCESS  
-**Artifact:** `ANG-S11-W8-004-Batch-Directory-Relink`, ID `11525753140`  
-**Artifact SHA-256:** `75f33b72c4cf147d37b151e17bb7ae6bddc84982941f9f0aa8847c97d4fe4fb4`  
-**Tests:** targeted 9/9 PASS; full pytest 420/420 PASS; real-media evidence 14/14 PASS  
-**Gates:** Ruff, mypy (75 modules), import contracts, architecture, no-secret, source-of-truth 70/70, UI SHA 42/42 PASS  
-**Full same-HEAD regression:** 27/27 workflow families SUCCESS, all attempt 1.
+W8-004 validated scanner, verified explicit relink and UI-040 projection remain
+accepted. Full evidence: `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`.
 
-Verified: bounded worker scan, cancellation, stale project/session/revision/hash safety,
-rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review,
-one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
-real-media validation. UI-040 projects intents; controller wiring remains W8-010.
+## W8-005 accepted
 
-Evidence: `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`.
+- Accepted W8-005 implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
+- Windows autosave qualification: [37724812333](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37724812333) **SUCCESS**.
+- Artifact `ANG-S11-W8-005-Autosave-Catalog`, ID `11526779061`; ZIP SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
+- Dedicated catalog tests **9/9 PASS**; full pytest **429/429 PASS**; owned evidence **12/12 PASS**.
+- Ruff, mypy (76 files), lint-imports, architecture, no-secrets, source-of-truth **70/70**, frozen UI **42/42 SHA-256 PASS**.
+- Full same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**; Windows portable foundation PASS.
+- New and legacy autosave filename compatibility, deterministic timestamp ordering, validated per-project catalog, maximum **20** managed valid snapshots, corrupt/foreign isolation and write/unlink failure guards qualified.
+- Source `.angproj` and `.bak` are never retention/prune targets; source bytes unchanged in evidence. UI-039 recovery is deferred to W8-006.
 
-**Next:** S11-W8-005 Autosave Catalog + Retention Hardening — READY.
-UI-001..UI-042 remain frozen; AAVC is read-only.
+Evidence: `docs/evidence/features/S11_W8_005_AUTOSAVE_CATALOG.md`.
+
+**Next:** S11-W8-006 — Crash Marker + Startup Recovery Decision — READY.
+W8-007 remains BLOCKED. UI-001..UI-042 frozen, AAVC read-only.

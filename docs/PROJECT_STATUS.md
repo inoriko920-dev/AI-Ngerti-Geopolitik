@@ -2,11 +2,11 @@
 
 **Current STEP:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** **W8 — Validation / Recovery / Diagnostics Hardening**  
-**W8 status:** **CONTRACT_LOCKED / W8-001..004 PASS / W8-005 READY**  
+**W8 status:** **CONTRACT_LOCKED / W8-001..005 PASS / W8-006 READY**  
 **W8 runtime:** **ACTIVE**  
 **Accepted W8-003 implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** `37689420848` — SUCCESS  
-**Next exact task:** **S11-W8-005 — Autosave Catalog + Retention Hardening**  
+**Next exact task:** **S11-W8-006 — Crash Marker + Startup Recovery Decision**  
 **Master Blueprint mapping:** **TECH-WAVE STEP 11**
 
 ## W8-003 proven
@@ -53,7 +53,20 @@ rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review
 one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
 real-media validation. UI-040 projects intents; controller wiring remains W8-010.
 
+## Accepted W8-005
+
+- Accepted W8-005 implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
+- Windows autosave qualification: [37724812333](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37724812333) **SUCCESS**.
+- Artifact `ANG-S11-W8-005-Autosave-Catalog`, ID `11526779061`; ZIP SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
+- Dedicated catalog tests **9/9 PASS**; full pytest **429/429 PASS**; owned evidence **12/12 PASS**.
+- Ruff, mypy (76 files), lint-imports, architecture, no-secrets, source-of-truth **70/70**, frozen UI **42/42 SHA-256 PASS**.
+- Full same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**; Windows portable foundation PASS.
+- New and legacy autosave filename compatibility, deterministic timestamp ordering, validated per-project catalog, maximum **20** managed valid snapshots, corrupt/foreign isolation and write/unlink failure guards qualified.
+- Source `.angproj` and `.bak` are never retention/prune targets; source bytes unchanged in evidence. UI-039 recovery is deferred to W8-006.
+
 ## Exact next action
 
-S11-W8-005 — Autosave Catalog + Retention Hardening — READY.
-W8-006 remains blocked. No recovery UI/diagnostics are included in W8-005.
+**S11-W8-006 — Crash Marker + Startup Recovery Decision — READY.**
+W8-007..010 remain serial-blocked. No W8-006 implementation was started in
+the W8-005 completion turn. Live Gemini and physical-microphone qualification
+retain their earlier provisional status.

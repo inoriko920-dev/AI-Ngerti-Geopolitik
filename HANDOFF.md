@@ -2,11 +2,11 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-004 — PASS  
+**Last completed task:** S11-W8-005 — PASS  
 **Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
-**Current implementation:** S11-W8-004 — PASS
-**Next exact task:** S11-W8-005 — Autosave Catalog + Retention Hardening — READY
+**Current implementation:** S11-W8-005 — PASS
+**Next exact task:** S11-W8-006 — Crash Marker + Startup Recovery Decision — READY
 
 ## Read-first constraints
 
@@ -21,6 +21,7 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 - W8-002 real media integrity + frozen UI-041 validation projection: PASS.
 - W8-003 verified single asset relink: PASS.
 - W8-004 batch directory relink scan + candidate ranking: PASS.
+- W8-005 autosave catalog + retention hardening: PASS.
 
 ## W8-003 qualification
 
@@ -55,12 +56,25 @@ rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review
 one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
 real-media validation. UI-040 projects intents; controller wiring remains W8-010.
 
+## Accepted W8-005 qualification
+
+- Accepted W8-005 implementation/regression HEAD: `43cb1d04b5d519c26f843714c4b7cd9793054fe9`.
+- Windows autosave qualification: [37724812333](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37724812333) **SUCCESS**.
+- Artifact `ANG-S11-W8-005-Autosave-Catalog`, ID `11526779061`; ZIP SHA-256 `c9a305ccc6cee9744e271e7520df4722192fa27a2a44544cf8ab68c717cf556c`.
+- Dedicated catalog tests **9/9 PASS**; full pytest **429/429 PASS**; owned evidence **12/12 PASS**.
+- Ruff, mypy (76 files), lint-imports, architecture, no-secrets, source-of-truth **70/70**, frozen UI **42/42 SHA-256 PASS**.
+- Full same-HEAD regression **27/27 workflow families SUCCESS, all attempt 1**; Windows portable foundation PASS.
+- New and legacy autosave filename compatibility, deterministic timestamp ordering, validated per-project catalog, maximum **20** managed valid snapshots, corrupt/foreign isolation and write/unlink failure guards qualified.
+- Source `.angproj` and `.bak` are never retention/prune targets; source bytes unchanged in evidence. UI-039 recovery is deferred to W8-006.
+
 ## Next exact action
 
-On the next owner's `lanjutkan`, implement **SOL W8-005 only** using the locked
-ASTRA W8 planning. Never prune `.angproj`, source `.bak` or unrelated projects;
-catalog must validate snapshot content and isolate corrupt records. W8-006 remains
-blocked until W8-005 passes all gates.
+On next owner's explicit **lanjutkan**, execute **SOL S11-W8-006 only**:
+Crash Marker + Startup Recovery Decision, strictly following locked W8 ASTRA planning.
+W8-007 remains blocked. Preserve source/.bak; recovery must be explicitly chosen
+and must never silently overwrite source. Continue using the existing
+ProjectSession / JsonProjectRepository as single ownership. Do not implement
+W8-007 in the same turn.
 
 ## Provisional gates
 
