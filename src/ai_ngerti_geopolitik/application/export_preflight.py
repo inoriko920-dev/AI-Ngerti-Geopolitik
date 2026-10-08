@@ -13,6 +13,11 @@ from pathlib import Path
 from typing import Protocol
 
 from ai_ngerti_geopolitik.application.export_capabilities import ExportToolchain
+from ai_ngerti_geopolitik.application.export_profiles import (
+    T06_CANDIDATE_PROFILES,
+    MatrixProfile,
+    candidate_for_request,
+)
 from ai_ngerti_geopolitik.application.export_request import (
     ExportAudio,
     ExportCodec,
@@ -101,6 +106,7 @@ class ExportPreflightService:
         *,
         project_source_path: Path | None = None,
         selection_qualified: bool = False,
+        matrix_candidate: MatrixProfile | None = None,
     ) -> ExportPreflightResult:
         """Read-only, deterministic reasons; output checks stay behind a port."""
 
@@ -142,15 +148,27 @@ class ExportPreflightService:
 
         if not toolchain.baseline_detected:
             add(ExportPreflightCode.ENCODER_UNAVAILABLE)
+        if request.codec is ExportCodec.H265 and not toolchain.h265_encoder_found:
+            add(ExportPreflightCode.ENCODER_UNAVAILABLE)
 
         # T03 deliberately negotiates only the original H.264/1080p/30
         # qualification profile. A declared encoder does not prove HEVC,
         # 4K, FPS conversions, sharpen or selection rendering.
         if request.scope is ExportScope.SELECTION and not selection_qualified:
             add(ExportPreflightCode.SELECTION_NOT_QUALIFIED)
+        baseline = request.codec is ExportCodec.H264 and (
+            request.width,
+            request.height,
+            request.fps,
+        ) == (1920, 1080, 30)
+        qualified_matrix_candidate = (
+            matrix_candidate is not None
+            and type(matrix_candidate) is MatrixProfile
+            and matrix_candidate in T06_CANDIDATE_PROFILES
+            and matrix_candidate == candidate_for_request(request)
+        )
         if (
-            request.codec is not ExportCodec.H264
-            or (request.width, request.height, request.fps) != (1920, 1080, 30)
+            not (baseline or qualified_matrix_candidate)
             or request.quality is not ExportQuality.HIGH
             or request.sharpen is not ExportSharpen.NONE
             or request.subtitles is not ExportSubtitles.BURN_IN

@@ -1085,3 +1085,17 @@ Evidence T04 Windows `37737863469` SUCCESS on SHA `96cf5a46ecfeea6cdb9ff767414a6
 - [ ] SF12-T07..T10 — blocked serially.
 
 SF12-T05 code `9dca99397f3dcbac4d491d5d930cf8309d744271`, Windows workflow `37738941089` SUCCESS, synthetic 120f project with subtitle and narration, 3 selected intervals exactly 30f, video PSNR >=33dB, H264/AAC 1080p30. Full pytest/typing/arch/70 source docs/42 UI hashes PASS. Draft PR #6 stacked; not merged to main. Keep renderer UI disabled until T08/T09/T10 gates.
+
+
+## SF12-T06 Windows codec/fps/resolution matrix — 2026-10-08 WIB
+
+- [x] SF12-T01 — Capability truth in UI — PASS / native provisional.
+- [x] SF12-T02 — Typed immutable request — PASS contract.
+- [x] SF12-T03 — Safe preflight — PASS contract.
+- [x] SF12-T04 — H264/AAC 1080p30 full export — PASS real Windows.
+- [x] SF12-T05 — Full/selection frame mapping — PASS real Windows.
+- [x] **SF12-T06 — Four selected codec/resolution/FPS cells — PASS real Windows MP4**: H264 1440p30, H264 4K30, H264 1080p60, H265 1080p30; output is scaled/converted from 1080p30, 0.5s fixture, not native detail or final product qualification.
+- [ ] **SF12-T07 — Subtitle, narration, sharpen and quality binding — NEXT not started.**
+- [ ] SF12-T08 job/cancellation, T09 full output postflight, T10 packaged Windows E2E — blocked serially.
+
+Run `37740103975` SUCCESS at code `00761740666c66c8787aec4865d3e2184a13fe7d`; full pytest, Ruff, mypy 92, architecture/source-of-truth70/UI42/secrets PASS. Test artifacts `ANG-SF12-T06-CodecMatrix-RealMedia` ID 11533866135. T06 PR #7 stacked and not merged; UI render remains disabled; H265 4K60 unqualified.

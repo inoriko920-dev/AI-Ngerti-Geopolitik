@@ -224,3 +224,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Separate additive T05 engine entrypoint; existing MediaEnginePort, State/CommandBus schema, AAVC, and frozen UI unchanged. Original T03 rejects selections by default; T05 opt-in only; product UI render remains disabled (T08/T09). Two-pass output is safe no-clobber but storage-inefficient, further large-media and sample audio-sync proof needed.
 - Evidence `docs/evidence/features/SF12_T05_SELECTION_REAL_MEDIA.md`; GitHub artifact ID 11532743714. Draft stacked PR #6 on #5/#4/#3/#2/#1, not merged main.
 - **Next exact serial task SF12-T06 codec/resolution/FPS profiles**, after explicit user continuation. W5 mic, W6/W7 live Gemini provisional.
+
+
+## SF12-T06 CODEC / RESOLUTION / FPS WINDOWS MATRIX — PASS_FOUR_REAL_MEDIA_CELLS (2026-10-08 WIB)
+
+- Accepted code SHA `00761740666c66c8787aec4865d3e2184a13fe7d`, Windows run **37740103975 SUCCESS**. Four independently FFprobe-verified synthetic 0.5-second MP4s, AAC: H264 1440p30, H264 4K30, H264 1080p60, H265/HEVC 1080p30; exact expected frame counts 15/15/30/15.
+- Original 1080p detail upscaled and 30fps duplicated; not native 4K/new-motion capture. H265 4K60 and all unlisted combinations remain unsupported; UI render disabled pending T08/T09/T10.
+- Dedicated candidate list + fail-closed T03 allowlist + additive safe FFmpeg qualification exporter; frozen engine port, Qt UI references, ProjectState and original AAVC untouched. No native binary bundled.
+- Complete pytest and T06 target PASS; Ruff, mypy 92, lint-imports, architecture, secret checks, source-of-truth 70/70, UI SHA refs 42/42 PASS. Evidence `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md`, GitHub artifact ID 11533866135.
+- Draft PR #7 stacked on PR #6/#5/#4/#3/#2/#1, **not merged to main**. Next **SF12-T07 Subtitle/Narration/Sharpen/Quality binding**, only after explicit `lanjutkan`.

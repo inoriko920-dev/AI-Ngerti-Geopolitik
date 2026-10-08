@@ -283,3 +283,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `tests/unit/test_sf12_t05_selection.py` — 0/middle/cross-clip/end ranges and failures/cancel/stale/outside bounds; `scripts/qualification/sf12_t05_selection_real_media.py` — real independent PSNR proof and FFprobe.
 - `.github/workflows/sf12-t05-selection-windows.yml`, `docs/evidence/features/SF12_T05_SELECTION_REAL_MEDIA.md` — accepted Windows run 37738941089 and artifact ID 11532743714.
 - T04 FULL path and frozen MediaEnginePort unchanged; T06 next; no UI render activation or release.
+
+
+## SF12-T06 — Four-profile codec matrix on actual Windows MP4 (2026-10-08 WIB)
+
+- `src/ai_ngerti_geopolitik/application/export_profiles.py` — four explicit MatrixCell/MatrixProfile test candidates, no wildcard enablement.
+- `src/ai_ngerti_geopolitik/application/export_preflight.py` — exact allowlist injection only and H265 toolchain-specific fail-closed; T03 default unchanged, `can_start_render=False`.
+- `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_export_profiles.py` — synchronous dedicated T06 path, compose, upscale/fps/HEVC convert, verify via FFprobe, check output and atomic no-clobber publish.
+- `tests/unit/test_sf12_t06_export_profiles.py`, `scripts/qualification/sf12_t06_real_codec_matrix.py`, `.github/workflows/sf12-t06-windows-codec-matrix.yml` — target/full regressions + real Windows codec evidence.
+- `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md` — run 37740103975 PASS on code SHA 0076174, artifact ID 11533866135. Next T07, no product GUI enablement or shipped codec pack.

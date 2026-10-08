@@ -98,3 +98,8 @@ T04 additive `FfmpegSliceMediaEngine.export_h264_baseline` performed real Window
 ## SF12-T05 acceptance — 2026-10-08 WIB
 
 T05 engine-side selection [start,end) is now qualified on Windows synthetic H264/AAC 1080p30 at 3 intervals (start/cross-clip/end) with subtitles and narration. Code SHA `9dca99397f3dcbac4d491d5d930cf8309d744271`, workflow `37738941089` SUCCESS. Two-pass full-composition-plus-trim preserves global cue/narration timeline but doubles encoding; not a final performance path. T03 default still rejects unqualified selection unless explicitly invoked by T05 method. No GUI render enablement, no codec/4K claims. T06 matrix is next serial task.
+
+
+## SF12-T06 qualified profile evidence (2026-10-08 WIB)
+
+Windows real-media run `37740103975`, accepted code `00761740666c66c8787aec4865d3e2184a13fe7d`, PASS for exactly **four H.264/H.265/1440p/4K/60fps combinations**: H264 1440p30, H264 4K30, H264 1080p60, H265 1080p30. Each MP4+Aac verified by FFprobe on 0.5s owned synthetic 1080p30 input. Output scaling/duplication does not increase source resolution/motion detail. T03 default deny persists; only the dedicated T06 qualification exporter can provide a typed allowlisted candidate; no UI/port replacement. Remaining matrix combinations still DENIED; full long-media performance, bundle/licenses and T08 worker/T09 postflight/T10 packaging remain provisional. Next T07 subtitle/narration/sharpen/quality policy.

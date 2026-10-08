@@ -244,3 +244,15 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Negative tests: invalid ranges, default T03 rejection, wrong nb_frames, first/second-pass failure/cancel, existing output/no clobber. **Caveat**: 2-pass render uses full-project temporary output, not efficient for long timelines; audio alignment based on exact trim-time mapping, no independent sample-level correlation. UI remains disabled T08/T09.
 - Draft stacked **PR #6** on T04 #5 / #4 / #3 / #2 / #1. NOT merged into main; no direct main changes. AAVC/UI frozen refs untouched.
 - **Next exact serial task:** **SF12-T06 real codec/resolution/FPS matrix** after owner's next `lanjutkan`; one profile/cell per qualification and UI only enables proved cells after later rendering gates. ASTRA/ADR mandatory for engine switch, native dependencies/license impact or breaking port changes.
+
+
+## SF12-T06 — Accepted 2026-10-08 WIB
+
+- Gate **PASS_FOUR_REAL_MEDIA_CELLS / PRODUCT_UI_STILL_DISABLED**. Code SHA `00761740666c66c8787aec4865d3e2184a13fe7d`; Windows [37740103975](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37740103975) **SUCCESS**.
+- Explicit T06 candidate matrix PASS with independently verified actual Windows FFprobe: H264 2560×1440 30fps (15f), H264 3840×2160 30fps (15f), H264 1920×1080 60fps (30f), H265/HEVC 1920×1080 30fps (15f); each 0.500000s, MP4, AAC. Source fixture unchanged.
+- Additive `application/export_profiles.py`, typed matrix-candidate gate in T03 preflight (default DENY), separate `infrastructure/ffmpeg_export_profiles.py`: safe full-project compose then single conversion, strict FFprobe, postflight precheck, same-volume temporary staging, atomic no-clobber. Frozen MediaEnginePort, ProjectState, UI refs and AAVC unchanged.
+- Real outputs are **upscaled 1080p→1440p/4K**, 30→60 duplicates frames. No native 4K detail, temporal detail, long-video resource or production-package HEVC claim; H265 4K60/H265 1440p30/H264 4K60 & unlisted options DENIED. UI render still disabled until T08/T09/T10.
+- Dedicated T06 targeted and full pytest, Ruff, mypy **92 files**, import/architecture/secrets, source-of-truth **70/70**, frozen UI refs **42/42** PASS.
+- Evidence `docs/evidence/features/SF12_T06_CODEC_MATRIX_REAL_MEDIA.md`; artifact `ANG-SF12-T06-CodecMatrix-RealMedia` ID **11533866135**, ZIP digest `04fea1ca343b133cedb838fe3a4924d50763cc01a63c67e0292080155468d1fd` (14-day retention).
+- Draft stacked **PR #7**, base `feature/sf12-t05-selection-frame-mapping` / PR #6, other T01-T05 still open; **main not changed**.
+- **Exact next serial task after user's next `lanjutkan`: SF12-T07 — Subtitle, Narration, Sharpen & Quality Binding ONLY.** Do not broaden to T08+ in same step. External FFmpeg licensing/package architecture changes require ASTRA/ADR; W5 physical microphone, W6/W7 live Gemini stay provisional.
