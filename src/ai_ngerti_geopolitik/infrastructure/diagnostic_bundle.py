@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import io
-from contextlib import suppress
 import os
 import tempfile
 import zipfile
+from contextlib import suppress
 from pathlib import Path
 from threading import Event
 
