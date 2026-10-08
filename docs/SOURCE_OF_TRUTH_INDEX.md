@@ -301,3 +301,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_export_style.py`: synchronous qualification path with immutable subtitle policy, W5 narration mixing, strict FFprobe, atomic no-clobber temp publish.
 - `tests/unit/test_sf12_t07_style.py`, `scripts/qualification/sf12_t07_real_style.py`, `.github/workflows/sf12-t07-windows-style.yml`: negative cases, real Windows golden pixel/PCM proofs.
 - `docs/evidence/features/SF12_T07_STYLE_REAL_MEDIA.md`: code SHA 79b24e9, Windows SUCCESS run 37741355411, artifact id 11533749234. **Next T08 async lifecycle**; product GUI disabled.
+
+
+## SF12-T08 Background worker qualification — 2026-10-08 WIB
+
+- `src/ai_ngerti_geopolitik/application/export_jobs.py` — typed one-worker asynchronous render, staged output, phase-only honest progress, cancel/timeout/stale/window-close guard, owner-thread acceptance.
+- `src/ai_ngerti_geopolitik/infrastructure/export_job_adapters.py` — T03 and T04–T07 qualifying dispatch, private staging, atomic output publisher preventing original media/.angproj/competing target overwrite.
+- `tests/unit/test_sf12_t08_export_jobs.py`, `tests/qt/test_sf12_t08_qt_responsiveness.py` — cancellation, timeout, stale/same-revision semantic, double click, close, frozen Qt event-loop heartbeat.
+- `scripts/qualification/sf12_t08_worker_real_media.py`, `.github/workflows/sf12-t08-windows-render-jobs.yml` — Windows real H264/AAC worker and full static/pytest/Qt checks.
+- `docs/evidence/features/SF12_T08_RENDER_JOB_LIFECYCLE.md` — code SHA 596a48d, Windows SUCCESS run 37742882153, artifact ID 11534776048. Next T09 strict postflight. No UI activation/release.

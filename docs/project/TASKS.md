@@ -1114,3 +1114,19 @@ Run `37740103975` SUCCESS at code `00761740666c66c8787aec4865d3e2184a13fe7d`; fu
 - [ ] SF12-T09 postflight and T10 packaged Windows E2E — blocked serially.
 
 T07 Windows run `37741355411` SUCCESS on implementation `79b24e93d4574cff0fc8a1650a6bd569e7640965`; six H264/AAC MP4s (2s each), subtitle gray on/off mean 1.1399, sharpen light/crisp means 0.6486/1.0716, narration PCM late pre 4.2776 / during 2399.3156. Full regression/architecture/docs/UI PASS, artifact ID 11533749234. Draft PR #8 stacked, not merged to main. GUI export remains disabled pending T08-T10; qualified cells are not a release claim.
+
+
+## SF12-T08 background export job acceptance — 2026-10-08 WIB
+
+- [x] SF12-T01 — Capability truth-in-UI — PASS, native provisional.
+- [x] SF12-T02 — Immutable typed request — PASS.
+- [x] SF12-T03 — Safe preflight — PASS.
+- [x] SF12-T04 — Baseline H264+AAC real export — PASS Windows.
+- [x] SF12-T05 — Full/selection frame mapping — PASS real media.
+- [x] SF12-T06 — Four codec/resolution/FPS matrix cells — PASS Windows.
+- [x] SF12-T07 — Six quality/sharpen/subtitle style variants + narration — PASS Windows.
+- [x] **SF12-T08 — Nonblocking render worker, cancel, timeout, stale/close guard and owner-only commit — PASS Windows lifecycle + real H264 output; phase progress only; UI not wired**.
+- [ ] **SF12-T09 — Independent postflight / typed errors / exact request comparison — NEXT, NOT STARTED.**
+- [ ] SF12-T10 — packaged Windows E2E + UI regression — pending T09.
+
+Accepted SHA `596a48db355878537227f193c6dee33d0ae3f24a`; CI `37742882153` SUCCESS; all unit/Qt/full regression/static docs gates PASS, artifact 11534776048. Draft PR #9 stacked, unmerged; UI export still disabled, no packaged release.
