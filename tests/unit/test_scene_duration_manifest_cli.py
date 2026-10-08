@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 from PySide6.QtGui import QImage
+
 from ai_ngerti_geopolitik.application.scene_import_review import (
     SceneImportReviewError,
     parse_scene_duration_manifest,
