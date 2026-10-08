@@ -141,6 +141,9 @@ class FfmpegMatrixQualificationExporter:
                 raise ValueError("empty")
             info = self.engine.probe.raw_probe(path)
             streams = info["streams"]
+            fmt = info["format"]
+            if not isinstance(streams, list) or not isinstance(fmt, dict):
+                raise ValueError("missing metadata")
             video = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "video"]
             audio = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "audio"]
             if len(video) != 1 or len(audio) != 1:
@@ -152,13 +155,13 @@ class FfmpegMatrixQualificationExporter:
                 or int(stream.get("height", 0)) != profile.height
                 or Fraction(str(stream.get("avg_frame_rate", "0/1"))) != Fraction(profile.fps)
                 or audio[0].get("codec_name") != "aac"
-                or "mp4" not in str(info["format"]["format_name"]).split(",")
+                or "mp4" not in str(fmt["format_name"]).split(",")
             ):
                 raise ValueError("stream mismatch")
             count = input_frames * profile.fps // 30
             if int(stream["nb_frames"]) != count:
                 raise ValueError("frame count mismatch")
-            duration = float(info["format"]["duration"])
+            duration = float(fmt["duration"])
             if abs(duration - (count / profile.fps)) > (1 / profile.fps + 0.04):
                 raise ValueError("duration mismatch")
         except (OSError, TypeError, ValueError, KeyError, ZeroDivisionError, OverflowError):
