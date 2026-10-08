@@ -39,6 +39,8 @@ class VerifiedStillSequence:
     height: int
     png_bytes: int
     frame_files: tuple[Path, ...]
+    frame_sha256: tuple[str, ...]
+    frame_bytes: tuple[int, ...]
 
 
 def _load_json(path: Path, limit: int) -> tuple[dict[str, object], bytes]:
@@ -127,6 +129,8 @@ def _verify(state: ProjectState, root: Path) -> VerifiedStillSequence:
 
     expected_root = {"manifest.json"}
     ordered: list[Path] = []
+    digests: list[str] = []
+    sizes: list[int] = []
     cursor = 0
     total_bytes = 0
     dimensions = (state.settings.width, state.settings.height)
@@ -188,8 +192,11 @@ def _verify(state: ProjectState, root: Path) -> VerifiedStillSequence:
             if total_bytes > _MAX_PNG_BYTES:
                 raise ValueError("frame bytes exceed limits")
             path = batch_dir / filename
-            _verify_png(path, _digest(entry.get("sha256")), frame_bytes, dimensions)
+            frame_hash = _digest(entry.get("sha256"))
+            _verify_png(path, frame_hash, frame_bytes, dimensions)
             ordered.append(path)
+            digests.append(frame_hash)
+            sizes.append(frame_bytes)
         if {p.name for p in batch_dir.iterdir()} != expected_batch:
             raise ValueError("unexpected batch contents")
         cursor = end
@@ -213,6 +220,8 @@ def _verify(state: ProjectState, root: Path) -> VerifiedStillSequence:
         height=dimensions[1],
         png_bytes=total_bytes,
         frame_files=tuple(ordered),
+        frame_sha256=tuple(digests),
+        frame_bytes=tuple(sizes),
     )
 
 
