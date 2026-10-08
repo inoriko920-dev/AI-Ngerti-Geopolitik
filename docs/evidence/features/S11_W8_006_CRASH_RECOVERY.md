@@ -31,3 +31,8 @@
 Ruff, mypy, import/architecture/security gates, 15 dedicated tests, full
 pytest, owned crash evidence and same-HEAD regression must pass. **Do not
 start W8-007 before W8-006 is formally accepted.**
+
+## Formatting qualification
+
+Pinned Ruff 0.16.10 formatting completed and temporary formatter removed.
+Dedicated Windows QA and same-code regression are still pending; this note is NOT a PASS.
