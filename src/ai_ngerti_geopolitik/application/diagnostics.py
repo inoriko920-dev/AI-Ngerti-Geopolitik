@@ -2,6 +2,7 @@
 
 Only fixed enum labels and bounded numeric counters enter an exported record.
 No free-text messages, paths, project IDs, media, exception args or credentials.
+The optional support ZIP contains only aggregate event types and bounded counts.
 """
 
 from __future__ import annotations
