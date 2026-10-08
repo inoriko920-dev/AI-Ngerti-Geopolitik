@@ -283,3 +283,7 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 
 - Preview adapter: `infrastructure/still_frame_preview.py`. Runtime: `bootstrap/w8_controller.py` adds coalescing dedicated Qt worker on PLAYBACK_SEEK, handles PLAYBACK_PLAY fail-closed, and project-open triggers first still frame. Presentation uses `MainWindow.apply_still_frame_preview` on existing `preview_canvas` and active `timeline_scrubber`. The Qt golden tests use active stacked route canvases, not window-global duplicate widget names.
 - Verify same-head Windows CI for `tests/qt/test_step11_w8_010_runtime_wiring.py` and full pytest before PASS. No FFmpeg external Pilot A, continuous playback, scene timing UI changes, main merge or portable. Next qualification gate: worker/frame re-probe and real timed playback vs MLT producer/export parity; do not claim video MP4 exists.
+
+## Playback transport next gate (8 October 2026 WIB)
+
+- W8RuntimeController now uses existing UI-010 Play/Pause transport and wall-clock monotonic frames, with worker coalescing, seek reanchor, last-frame automatic stop and stale identity rejection. Qt tests added. Run all targeted and full Windows regression at exact latest HEAD before PASS. Non-image video playback and external FFmpeg remain unchanged; native render/mixed composition not authorized. No new UI controls, no merge, portable last.

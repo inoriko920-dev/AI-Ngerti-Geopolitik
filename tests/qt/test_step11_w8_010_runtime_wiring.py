@@ -817,7 +817,9 @@ def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_pat
     router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("delta", "1"),)))
     pump(qtbot, lambda: canvas.property("still_timeline_frame") == 151, controller)
     router(UiIntent(UiIntentType.PLAYBACK_PLAY))
-    assert "belum didukung" in controller.last_error
+    assert controller.still_playing
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    assert not controller.still_playing
     controller.shutdown()
     controller.window.close()
 
@@ -897,3 +899,99 @@ def test_w8_old_still_job_cannot_update_new_project(qtbot, tmp_path: Path, monke
     assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
     controller.shutdown()
     controller.window.close()
+
+
+def test_w8_still_play_uses_wall_clock_then_pause_resume_without_rewinding(
+    qtbot, tmp_path: Path
+) -> None:
+    path = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(path)
+    clock = [500.0]
+    controller.still_play_clock = lambda: clock[0]
+    controller.request_still_preview(0)
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    assert controller.timer.interval() == 33
+    clock[0] += 5.0
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    pixmap = canvas.pixmap()
+    assert pixmap is not None
+    image = pixmap.toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    assert image.pixelColor(3 * image.width() // 4, image.height() // 2).name() == "#0000ff"
+
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    clock[0] += 8.0
+    controller.poll()
+    assert controller.still_preview_frame == 150
+
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    clock[0] += 1.0
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 180, controller)
+    assert controller.still_playing
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("frame", "60"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 60, controller)
+    assert controller.still_playing
+    clock[0] += 0.5
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 75, controller)
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_still_play_stops_at_last_frame_and_can_restart(
+    qtbot, tmp_path: Path
+) -> None:
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    clock = [20.0]
+    controller.still_play_clock = lambda: clock[0]
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    clock[0] += 30.0
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 239, controller)
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_still_play_stops_when_project_identity_changes(
+    qtbot, tmp_path: Path
+) -> None:
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    clock = [100.0]
+    controller.still_play_clock = lambda: clock[0]
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+
+    from dataclasses import replace
+
+    newer_path = tmp_path / "newer.angproj"
+    newer = replace(controller.session.state, project_id="P-DIFFERENT")
+    JsonProjectRepository().save(newer, newer_path)
+    controller.session.open_project(newer_path)
+    clock[0] += 10.0
+    controller.poll()
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    assert controller.still_preview_desired is None
+    controller.shutdown()
+    controller.window.close()
+

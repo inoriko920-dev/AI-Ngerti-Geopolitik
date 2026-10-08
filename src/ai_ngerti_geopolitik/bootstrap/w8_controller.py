@@ -9,6 +9,7 @@ from __future__ import annotations
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from pathlib import Path
+from time import monotonic
 from uuid import uuid4
 
 from PySide6.QtGui import QImage
@@ -134,6 +135,11 @@ class W8RuntimeController:
         self.still_preview_inflight: tuple[str, str, int] | None = None
         self.still_preview_desired: tuple[str, str, int] | None = None
         self.still_preview_frame = 0
+        self.still_playing = False
+        self.still_play_started_at = 0.0
+        self.still_play_start_frame = 0
+        self.still_play_token: tuple[str, str] | None = None
+        self.still_play_clock = monotonic
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -157,6 +163,7 @@ class W8RuntimeController:
             self.recovery.close_clean(self.session, self.session.current_path, self.active_marker)
         else:
             self.session.close()
+        self._stop_still_playback()
         self.active_marker = None
         self.session_id = uuid4().hex
         self.still_preview_desired = None
@@ -240,6 +247,7 @@ class W8RuntimeController:
             return
 
         self._cancel_project_jobs()
+        self._stop_still_playback()
         self.session = candidate_session
         self.active_marker = decision.active_marker
         self.offer = None
@@ -258,6 +266,59 @@ class W8RuntimeController:
             for track in self.session.state.tracks
             for clip in track.clips
         )
+
+    def _stop_still_playback(self) -> None:
+        """Stop the wall-clock transport, preserving the final requested frame."""
+        self.still_playing = False
+        self.still_play_token = None
+        self.timer.setInterval(150)
+
+    def _start_still_playback(self) -> None:
+        """Transport is wall-clock based; slow PNG decoding may skip frames."""
+        if self.still_playing or not self.session.is_open or not self._has_still_clips():
+            return
+        if self.window.window.property("ui_state") != "UI-010":
+            self._notify("Buka editor untuk memutar scene gambar.")
+            return
+        state = self.session.state
+        if state.timeline_end_frame <= 0:
+            self._notify("Timeline gambar masih kosong.")
+            return
+        if self.still_preview_frame >= state.timeline_end_frame - 1:
+            self.request_still_preview(0)
+        self.still_play_token = (self.session_id, state.semantic_hash())
+        self.still_play_started_at = self.still_play_clock()
+        self.still_play_start_frame = self.still_preview_frame
+        self.still_playing = True
+        self.timer.setInterval(16 if state.fps == 60 else 33)
+        self._notify("Memutar scene gambar. Audio dan efek belum didukung.")
+
+    def _tick_still_playback(self) -> None:
+        if not self.still_playing:
+            return
+        if (
+            not self.session.is_open
+            or not self._has_still_clips()
+            or self.window.window.property("ui_state") != "UI-010"
+            or self.still_play_token
+            != (self.session_id, self.session.state.semantic_hash())
+        ):
+            self._stop_still_playback()
+            return
+        state = self.session.state
+        elapsed = max(0.0, self.still_play_clock() - self.still_play_started_at)
+        candidate = self.still_play_start_frame + int(elapsed * state.fps)
+        frame = max(self.still_preview_frame, min(candidate, state.timeline_end_frame - 1))
+        if frame != self.still_preview_frame:
+            self.request_still_preview(frame)
+        if frame == state.timeline_end_frame - 1:
+            self._stop_still_playback()
+            self._notify("Pemutaran scene gambar selesai.")
+
+    def _reanchor_still_playback(self, frame: int) -> None:
+        if self.still_playing:
+            self.still_play_start_frame = frame
+            self.still_play_started_at = self.still_play_clock()
 
     def request_still_preview(self, frame: int) -> None:
         """Coalesce exact-frame seeks; discard stale project/revision results."""
@@ -303,6 +364,7 @@ class W8RuntimeController:
         except (StillFramePreviewError, OSError, RuntimeError, ValueError):
             if token == self.still_preview_desired:
                 self.still_preview_desired = None
+                self._stop_still_playback()
                 self._notify("Preview gambar gagal. Periksa media atau efek.")
         else:
             if (
@@ -466,8 +528,14 @@ class W8RuntimeController:
             else:
                 frame = max(0, min(frame, self.session.state.timeline_end_frame - 1))
                 self.request_still_preview(frame)
+                self._reanchor_still_playback(frame)
         elif kind is UiIntentType.PLAYBACK_PLAY and self._has_still_clips():
-            self._notify("Seek gambar tersedia; playback berkelanjutan belum didukung.")
+            self._start_still_playback()
+        elif kind is UiIntentType.PLAYBACK_PAUSE and self._has_still_clips():
+            if self.still_playing:
+                self._tick_still_playback()
+                self._stop_still_playback()
+                self._notify("Pemutaran gambar dijeda.")
         elif kind is UiIntentType.SAVE_PROJECT and self.session.is_open:
             try:
                 self.session.save()
@@ -554,6 +622,7 @@ class W8RuntimeController:
                             f"Folder aset: {ready}/{total} READY. "
                             f"Perbaiki {issues}. Project belum dibuat."
                         )
+        self._tick_still_playback()
         self._poll_still_preview()
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
@@ -585,6 +654,7 @@ class W8RuntimeController:
         if self._closed:
             return
         self._closed = True
+        self._stop_still_playback()
         self.timer.stop()
         self._cancel_project_jobs()
         self.validation_jobs.shutdown()
