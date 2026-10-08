@@ -82,9 +82,7 @@ TOOLS = ExportToolchain(True, True, True, False, True)
 def _setup(tmp_path: Path) -> tuple[ProjectState, ExportRequest]:
     source = tmp_path / "source.mp4"
     source.write_bytes(b"synthetic")
-    asset = Asset(
-        "A001", str(source), "video", FrameTime(30, 30), 1920, 1080, True, "a" * 64
-    )
+    asset = Asset("A001", str(source), "video", FrameTime(30, 30), 1920, 1080, True, "a" * 64)
     clip = Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(30, 30))
     state = replace(
         ProjectState.create("P001", "Export"),

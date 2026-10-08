@@ -503,11 +503,13 @@ class FfmpegSliceMediaEngine:
             if not isinstance(streams, list) or not isinstance(fmt, dict):
                 raise ValueError("missing streams")
             video = [
-                item for item in streams
+                item
+                for item in streams
                 if isinstance(item, dict) and item.get("codec_type") == "video"
             ]
             audio = [
-                item for item in streams
+                item
+                for item in streams
                 if isinstance(item, dict) and item.get("codec_type") == "audio"
             ]
             if len(video) != 1 or len(audio) < 1:

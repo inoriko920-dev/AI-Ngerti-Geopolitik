@@ -78,9 +78,7 @@ def main() -> int:
     )
     assert result.output_path == output
     assert result.project_revision == session.state.revision
-    assert (result.width, result.height, result.fps, result.duration_frames) == (
-        1920, 1080, 30, 30
-    )
+    assert (result.width, result.height, result.fps, result.duration_frames) == (1920, 1080, 30, 30)
     raw = probe.raw_probe(output)
     streams = raw["streams"]
     assert isinstance(streams, list)
