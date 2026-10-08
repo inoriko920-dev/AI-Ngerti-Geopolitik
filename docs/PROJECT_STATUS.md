@@ -197,3 +197,7 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 ## PR #20 — Qt staged project replacement (2026-10-08 WIB)
 
 - Cross-project switch now stages final RecoveryManager source/snapshot decision and crash marker on a temporary candidate session BEFORE retiring the current live project. Stale offers and failed marker write cannot remove the active editor state; successful candidate promotion closes the prior session and marker. New Qt tests: staleness, marker denial, successful switch. **Current-head Windows CI PENDING**; no UI structural change, Pilot A D1 still pending, no main merge/release.
+
+## PR #20 — Guard crash-marker close before in-memory session release (2026-10-08 WIB)
+
+- Fix `RecoveryManager.close_clean` ordering: validate dirty-state, persist clean marker, then release memory; if marker write fails, original project remains open. An unexpected close failure attempts marker rollback. New unit+Qt fault-injection tests; current-head Windows CI pending. No new visual UI, `main` merge or FFmpeg pilot authority.

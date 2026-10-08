@@ -208,3 +208,7 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 ## PR #20 staged recovery acceptance (2026-10-08 WIB)
 
 - Audit exact-head Windows CI of the staged `W8RuntimeController._decide` replacement, including Qt stale/marker-failure/valid-switch regressions, before PASS. `main` must remain unchanged; owner D1 Pilot A remains pending. Do not claim complete rollback if prior close_clean fails after session.close.
+
+## PR #20 — previous clean-marker close fault gate (2026-10-08 WIB)
+
+- Check exact current-head Windows CI for marker-write denial preserving previous editor, dirty guard rejecting clean marker, unexpected close rollback, and Qt old/candidate marker ownership. Keep PR Draft; D1 Pilot A still pending; portable remains last.

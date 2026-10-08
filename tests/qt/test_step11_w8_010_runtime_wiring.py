@@ -445,3 +445,47 @@ def test_valid_switch_opens_staged_session_and_cleans_old_marker(qtbot, tmp_path
         assert controller.recovery.markers.read(opened, old_marker.project_id).status == "clean"
     controller.shutdown()
     controller.window.close()
+
+
+def test_denied_old_clean_marker_write_does_not_drop_open_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    old_bytes = opened.read_bytes()
+    next_path = tmp_path / "next-safely-denied.angproj"
+    repo.save(ProjectState.create("P-NEW", "Next", 30), next_path)
+    controller.offer = controller.recovery.inspect(next_path)
+    marker_store = controller.recovery.markers
+    original_write = marker_store.write
+
+    def deny_previous_marker_close(source: Path, marker) -> None:
+        if source == opened and marker.status == "clean":
+            raise PermissionError("old marker cannot be saved")
+        original_write(source, marker)
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(marker_store, "write", deny_previous_marker_close)
+        controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.session_id == old_id
+    assert controller.session.current_path == opened
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert opened.read_bytes() == old_bytes
+    assert old_marker is not None
+    assert marker_store.read(opened, old_marker.project_id) == old_marker
+    assert marker_store.read(next_path, "P-NEW").status == "clean"
+    assert "Tidak dapat menutup" in controller.last_error
+    controller.shutdown()
+    controller.window.close()

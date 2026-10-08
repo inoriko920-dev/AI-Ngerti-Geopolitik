@@ -92,3 +92,13 @@ timeline, effect locks, audio mute state or captions when reopened.
 - On failure to close the previous session, the staged candidate is never promoted and its marker receives a best-effort clean close. This does not guarantee rollback if the *old* `close_clean` itself closed the session before its marker failed; that separate pre-existing failure mode is not claimed resolved.
 - Three Qt regression tests cover (1) staleness between inspect and decision, (2) candidate marker-write failure, and (3) successful switch with the previous marker cleaned and source files unchanged.
 - **Gate:** Windows same-HEAD Ruff/mypy/security/architecture/42 UI-manifest checks, targeted unit+Qt, and full pytest. PASS must not be claimed until verified. Scope remains project lifecycle, no production FFmpeg, UI redesign, main merge, or portable.
+
+## Crash-marker close failure: preserve active session (2026-10-08 WIB)
+
+**Confirmed defect:** `RecoveryManager.close_clean` previously cleared the live `ProjectSession` before attempting to atomically write the `clean` crash marker. If that marker write failed (for example, access denied), the controller refused to switch but the previous valid editor state had already been erased.
+
+**Scoped correction:** Check the unsaved-changes guard before marker mutation; write the clean marker while the saved or explicitly discarded session remains intact; release the in-memory session only after successful marker persistence. This is safe in the synchronous Qt decision path, where no edit can intervene between the guard and close. For unexpected in-memory close exceptions, attempt to restore the prior `unclean` marker and propagate the failure. This does not promise a crash-consistent multi-file transaction or rollback when *both* closing and marker restoration fail.
+
+**Regression:** Add two fault-injection unit tests (clean-marker write rejection and unexpected close failure) and one Qt staged-switch test (old marker write rejected, candidate marker cleaned, original session/bytes preserved). The Windows workflow now runs both W8-006 unit recovery and W8-010 Qt targeted tests plus full pytest/Ruff/mypy/security/architecture/UI checks.
+
+**Acceptance:** PENDING same-HEAD Windows CI for this commit; `main` remains unchanged, PR #20 remains Draft; no native FFmpeg integration, UI design change, or portable package.

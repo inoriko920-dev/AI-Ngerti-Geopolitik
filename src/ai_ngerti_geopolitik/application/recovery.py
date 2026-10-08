@@ -18,7 +18,7 @@ from ai_ngerti_geopolitik.application.autosave_catalog import (
     AutosaveRecord,
 )
 from ai_ngerti_geopolitik.application.ports import ProjectRepositoryPort
-from ai_ngerti_geopolitik.application.project_session import ProjectSession
+from ai_ngerti_geopolitik.application.project_session import ProjectSession, UnsavedChangesError
 from ai_ngerti_geopolitik.domain import ProjectState
 
 
@@ -207,8 +207,10 @@ class RecoveryManager:
         current = self.markers.read(source, active_marker.project_id)
         if current != active_marker or active_marker.status != "unclean":
             raise RecoveryError("active session marker mismatch")
-        # Only a successful normal close permits changing the marker to clean.
-        session.close(discard_unsaved=discard_unsaved)
+        # Enforce the unsaved-work guard BEFORE writing a clean marker.
+        # A rejected marker write must never destroy the still-active session.
+        if session.dirty and not discard_unsaved:
+            raise UnsavedChangesError("project has unsaved changes")
         self.markers.write(
             source,
             CrashMarker(
@@ -219,3 +221,12 @@ class RecoveryManager:
                 revision=active_marker.revision,
             ),
         )
+        # With a validated clean (or explicitly discarded) session, closing
+        # is an in-memory operation; no more fallible disk writes follow it.
+        try:
+            session.close(discard_unsaved=discard_unsaved)
+        except (OSError, RuntimeError, ValueError):
+            # Defensive rollback for an unexpected close failure. The ordinary
+            # Qt path is single-threaded and cannot change dirty state here.
+            self.markers.write(source, active_marker)
+            raise
