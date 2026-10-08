@@ -156,10 +156,13 @@ def test_plan_rejects_geometry_the_rgb24_stream_cannot_decode(
     state, _, root = _fixture(tmp_path)
     verified = plan_silent_h264_mp4(state, root, tmp_path / "accepted.mp4").verified_frames
     unsafe = replace(verified, width=width, height=height)
-    with patch(
-        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
-        return_value=unsafe,
-    ), pytest.raises(SilentH264PlanError):
+    with (
+        patch(
+            "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+            return_value=unsafe,
+        ),
+        pytest.raises(SilentH264PlanError),
+    ):
         plan_silent_h264_mp4(state, root, tmp_path / "rejected.mp4")
     assert not (tmp_path / "rejected.mp4").exists()
 
@@ -171,10 +174,13 @@ def test_plan_rejects_png_exceeding_rgb24_reader_limit(tmp_path: Path) -> None:
         verified,
         frame_bytes=(128 * 1024 * 1024 + 1, *verified.frame_bytes[1:]),
     )
-    with patch(
-        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
-        return_value=oversized,
-    ), pytest.raises(SilentH264PlanError):
+    with (
+        patch(
+            "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+            return_value=oversized,
+        ),
+        pytest.raises(SilentH264PlanError),
+    ):
         plan_silent_h264_mp4(state, root, tmp_path / "oversized.mp4")
     assert not (tmp_path / "oversized.mp4").exists()
 
@@ -183,9 +189,12 @@ def test_plan_rejects_frame_digest_count_inconsistent_with_reader(tmp_path: Path
     state, _, root = _fixture(tmp_path)
     verified = plan_silent_h264_mp4(state, root, tmp_path / "accepted.mp4").verified_frames
     invalid = replace(verified, frame_sha256=verified.frame_sha256[:-1])
-    with patch(
-        "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
-        return_value=invalid,
-    ), pytest.raises(SilentH264PlanError):
+    with (
+        patch(
+            "ai_ngerti_geopolitik.infrastructure.still_h264_plan.verify_complete_still_sequence",
+            return_value=invalid,
+        ),
+        pytest.raises(SilentH264PlanError),
+    ):
         plan_silent_h264_mp4(state, root, tmp_path / "invalid.mp4")
     assert not (tmp_path / "invalid.mp4").exists()
