@@ -16,7 +16,7 @@ import time
 from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import BinaryIO
+from typing import IO
 
 from ai_ngerti_geopolitik.application.native_process_contract import (
     NativeProcessOutcome,
@@ -62,14 +62,14 @@ else:
 
 @dataclass(slots=True)
 class _PipeCounter:
-    stream: BinaryIO
+    stream: IO[bytes]
     maximum: int
     total: int = 0
     exceeded: bool = False
 
     def drain(self) -> None:
         try:
-            while data := self.stream.read1(16_384):
+            while data := self.stream.read(16_384):
                 self.total += len(data)
                 if self.total > self.maximum:
                     self.exceeded = True
