@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+import re
 from enum import StrEnum
 from pathlib import Path
 
@@ -29,6 +30,7 @@ from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxPlan
 from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, Marker, ProjectState
 
 _MAX_TIMELINE_SECONDS = 24 * 60 * 60
+_SCENE_DURATION_LINE = re.compile(r"Scene\s+([1-9]\d*)\s*:\s*([1-9]\d*)\s+frames", re.I)
 
 
 class SceneImportReviewError(ValueError):
@@ -72,6 +74,33 @@ class SceneTimelineReview:
     scenes: tuple[SceneTimelineEntry, ...]
     total_frames: int
     asset_count: int
+
+
+def parse_scene_duration_manifest(text: str, *, scene_count: int) -> tuple[int, ...]:
+    """Read explicit duration frames, never seconds or a synthetic default.
+
+    Format: Scene 1: 150 frames. # comments and blank lines are allowed.
+    All scene numbers must appear once in ascending order.
+    """
+    if not 1 <= scene_count <= 1000 or len(text) > 128_000:
+        raise SceneImportReviewError("scene duration manifest is outside supported limits")
+    result: list[int] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        match = _SCENE_DURATION_LINE.fullmatch(line)
+        if match is None or int(match.group(1)) != len(result) + 1:
+            raise SceneImportReviewError("scene duration numbering or syntax is invalid")
+        frames = int(match.group(2))
+        if frames > 86400 * 60:
+            raise SceneImportReviewError("scene duration exceeds safe frame limit")
+        result.append(frames)
+        if len(result) > scene_count:
+            raise SceneImportReviewError("too many scene durations supplied")
+    if len(result) != scene_count:
+        raise SceneImportReviewError("every scene requires an explicit duration")
+    return tuple(result)
 
 
 def build_scene_timeline_review(
