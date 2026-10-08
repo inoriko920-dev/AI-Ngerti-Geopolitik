@@ -139,6 +139,7 @@ def test_hostile_sink_fails_closed_without_path_leak(tmp_path: Path, bad_sink) -
 def test_late_png_change_detected_before_next_frame(tmp_path: Path) -> None:
     plan = _plan(tmp_path)
     sink = MemorySink()
+
     def update_file(done: int, total: int) -> None:
         if done == 2:
             plan.verified_frames.frame_files[2].write_bytes(b"tampered frame")
