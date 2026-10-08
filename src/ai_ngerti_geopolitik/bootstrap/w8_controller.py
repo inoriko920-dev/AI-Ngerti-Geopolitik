@@ -7,6 +7,7 @@ project truth, typed validation, verified relink and crash recovery.
 from __future__ import annotations
 
 from concurrent.futures import Future, ThreadPoolExecutor
+from contextlib import suppress
 from pathlib import Path
 from uuid import uuid4
 
@@ -345,7 +346,5 @@ class W8RuntimeController:
         self.recovery_worker.shutdown(wait=False, cancel_futures=True)
         # Never pretend clean shutdown when unsaved work still exists.
         if self.session.is_open and not self.session.dirty:
-            try:
+            with suppress(OSError, RuntimeError, ValueError):
                 self._finish_current_session()
-            except (OSError, RuntimeError, ValueError):
-                pass

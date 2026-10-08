@@ -142,7 +142,6 @@ def test_golden03_missing_scan_manual_relink_validate_and_save(qtbot, tmp_path: 
     media.rename(candidate)
     controller.request_validation()
     pump(qtbot, lambda: controller.validation_job_id is None, controller)
-    before = controller.session.state.semantic_hash()
     blocker = controller.window._active_dialog.findChild(
         QPushButton, "btn_validation_issue_0_0_action"
     )
