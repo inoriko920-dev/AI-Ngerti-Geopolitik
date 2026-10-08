@@ -59,24 +59,114 @@ def verify_sf12_t10_packaged(fixture: Path, output_dir: Path) -> int:
     verifier = IndependentMp4Postflight(probe, ffmpeg=engine.ffmpeg)
     publisher = AtomicExportPublisher()
     profiles = [
-        ("h264_1080p30", ExportCodec.H264, 1920, 1080, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("h264_selection", ExportCodec.H264, 1920, 1080, 30, ExportScope.SELECTION,
-         ExportFrameRange(5, 10), ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("h264_1440p30", ExportCodec.H264, 2560, 1440, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("h264_4k30", ExportCodec.H264, 3840, 2160, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("h264_1080p60", ExportCodec.H264, 1920, 1080, 60, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("h265_1080p30", ExportCodec.H265, 1920, 1080, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("subtitle_off", ExportCodec.H264, 1920, 1080, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.OFF),
-        ("quality_crisp", ExportCodec.H264, 1920, 1080, 30, ExportScope.FULL,
-         None, ExportQuality.DOCUMENTARY_CRISP, ExportSharpen.NONE, ExportSubtitles.BURN_IN),
-        ("sharpen_light", ExportCodec.H264, 1920, 1080, 30, ExportScope.FULL,
-         None, ExportQuality.HIGH, ExportSharpen.LIGHT, ExportSubtitles.BURN_IN),
+        (
+            "h264_1080p30",
+            ExportCodec.H264,
+            1920,
+            1080,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "h264_selection",
+            ExportCodec.H264,
+            1920,
+            1080,
+            30,
+            ExportScope.SELECTION,
+            ExportFrameRange(5, 10),
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "h264_1440p30",
+            ExportCodec.H264,
+            2560,
+            1440,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "h264_4k30",
+            ExportCodec.H264,
+            3840,
+            2160,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "h264_1080p60",
+            ExportCodec.H264,
+            1920,
+            1080,
+            60,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "h265_1080p30",
+            ExportCodec.H265,
+            1920,
+            1080,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "subtitle_off",
+            ExportCodec.H264,
+            1920,
+            1080,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.NONE,
+            ExportSubtitles.OFF,
+        ),
+        (
+            "quality_crisp",
+            ExportCodec.H264,
+            1920,
+            1080,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.DOCUMENTARY_CRISP,
+            ExportSharpen.NONE,
+            ExportSubtitles.BURN_IN,
+        ),
+        (
+            "sharpen_light",
+            ExportCodec.H264,
+            1920,
+            1080,
+            30,
+            ExportScope.FULL,
+            None,
+            ExportQuality.HIGH,
+            ExportSharpen.LIGHT,
+            ExportSubtitles.BURN_IN,
+        ),
     ]
     results: list[dict[str, object]] = []
     for idx, item in enumerate(profiles):
@@ -97,12 +187,14 @@ def verify_sf12_t10_packaged(fixture: Path, output_dir: Path) -> int:
             subtitles=subtitles,
         )
         with ExportJobService(dispatcher, publisher, postflight=verifier) as jobs:
-            jobs.submit(session.state, request, session_id="t10-packaged-session",
-                        timeout_seconds=300.0)
+            jobs.submit(
+                session.state, request, session_id="t10-packaged-session", timeout_seconds=300.0
+            )
             deadline = time.monotonic() + 250.0
             while time.monotonic() < deadline:
-                status = jobs.snapshot(request.request_id, state=session.state,
-                                       session_id="t10-packaged-session")
+                status = jobs.snapshot(
+                    request.request_id, state=session.state, session_id="t10-packaged-session"
+                )
                 if status.status is ExportJobState.READY:
                     break
                 if status.terminal:
@@ -111,8 +203,9 @@ def verify_sf12_t10_packaged(fixture: Path, output_dir: Path) -> int:
             else:
                 raise RuntimeError(f"T10_PACKAGED_PROFILE_TIMED_OUT:{name}")
             assert not request.output_path.exists(), "worker published before explicit accept"
-            result = jobs.accept(request.request_id, state=session.state,
-                                 session_id="t10-packaged-session")
+            result = jobs.accept(
+                request.request_id, state=session.state, session_id="t10-packaged-session"
+            )
             assert result.output_path.is_file()
         video_info = probe.raw_probe(request.output_path)
         stream = next(x for x in video_info["streams"] if x.get("codec_type") == "video")
