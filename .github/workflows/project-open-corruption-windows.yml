@@ -43,6 +43,7 @@ jobs:
       - run: uv run pytest tests/unit/test_scene_duration_manifest_cli.py -q
       - run: uv run pytest tests/unit/test_still_frame_preview.py -q
       - run: uv run pytest tests/unit/test_still_frame_sequence.py -q
+      - run: uv run pytest tests/unit/test_complete_still_sequence.py -q
       - run: uv run pytest tests/unit/test_project_open_corruption_regression.py -q
       - run: uv run pytest tests/unit/test_step11_w8_006_recovery.py -q
       - run: uv run pytest tests/qt/test_step11_w8_010_runtime_wiring.py -q

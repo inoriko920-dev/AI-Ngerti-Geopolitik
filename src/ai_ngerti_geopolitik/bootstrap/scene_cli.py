@@ -27,6 +27,7 @@ from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
 )
 from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import (
     StillSequenceExportError,
+    export_complete_still_sequence,
     export_still_frame_sequence,
 )
 
@@ -62,8 +63,25 @@ def main(argv: list[str] | None = None) -> int:
     frame_parser.add_argument("--count", required=True, type=int)
     frame_parser.add_argument("--output", required=True)
 
+    full_parser = modes.add_parser(
+        "frames-all", help="Ekspor seluruh timeline gambar sebagai batch PNG, bukan MP4."
+    )
+    full_parser.add_argument("--project", required=True)
+    full_parser.add_argument("--output", required=True)
+    full_parser.add_argument("--batch-size", type=int, default=300)
+
     args = parser.parse_args(argv)
     try:
+        if args.action == "frames-all":
+            state = JsonProjectRepository().load(Path(args.project))
+            export_complete_still_sequence(
+                state, Path(args.output), batch_size=args.batch_size
+            )
+            print(
+                f"Berhasil ekspor {state.timeline_end_frame} frame PNG "
+                "dalam batch. Ini bukan MP4 dan tidak memuat audio."
+            )
+            return 0
         if args.action == "frames":
             state = JsonProjectRepository().load(Path(args.project))
             export_still_frame_sequence(

@@ -294,3 +294,10 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 - Publishing a new output directory happens only after every frame and manifest succeeds. Stale/corrupt media, out-of-range requests, oversized output and pre-existing targets fail closed; incomplete staging is cleaned up. No process execution or GUI-thread operation. The CLI adds `frames --project movie.angproj --start 148 --count 5 --output frames`.
 - Tests render real 13x8 red SINGLE followed by green-left/blue-right DOUBLE pixels at frame 150, verify all manifest digests, no overwrite, deterministic repeated output and rollback when media becomes corrupt mid-sequence. Windows CI same-head verification pending.
 - This is an **intermediate silent PNG sequence**, not final MP4, audio/subtitle/transition rendering or an approved FFmpeg/MLT engine integration. UI-001–UI-042 remain frozen, PR #20 Draft, `main` unchanged and portable last.
+
+## Full-timeline still PNG export in bounded batches (2026-10-08 WIB)
+
+- The existing `infrastructure/still_frame_sequence.py` owner now includes `export_complete_still_sequence`, which splits a full image-only canonical timeline into 1–300-frame batches with SHA-256 manifest references and a top-level exact-frame manifest. Maximum 18,000 frames and 8 GiB of encoded PNG. Publication of the outer folder is atomic after all batches succeed, with rollback on failure and no overwrite.
+- Final source re-verification at all scene clip start frames detects previously exported images that changed mid-process. The CLI adds `frames-all --project film.angproj --output frames --batch-size 300`. It never invokes external native engines.
+- New Windows tests cover real SINGLE/DOUBLE pixel boundaries, master-batch checksum coverage, output preservation, failure rollback, hard range limit and CLI. Same-head CI pending.
+- This is still a silent image sequence, **NOT** encoded MP4, soundtrack/subtitle/effects parity, or native FFmpeg approval. PR #20 Draft, `main` untouched, UI frozen, portable last.
