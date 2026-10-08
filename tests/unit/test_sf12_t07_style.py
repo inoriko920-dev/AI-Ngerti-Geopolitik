@@ -21,10 +21,7 @@ from ai_ngerti_geopolitik.application.export_request import (
     ExportSharpen,
     ExportSubtitles,
 )
-from ai_ngerti_geopolitik.application.export_style_policy import (
-    T07_STYLE_CANDIDATES,
-    style_for_request,
-)
+from ai_ngerti_geopolitik.application.export_style_policy import T07_STYLE_CANDIDATES
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.validation import (
     MediaIntegrityObservation,

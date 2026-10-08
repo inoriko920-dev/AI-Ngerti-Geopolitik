@@ -18,11 +18,6 @@ from ai_ngerti_geopolitik.application.export_profiles import (
     MatrixProfile,
     candidate_for_request,
 )
-from ai_ngerti_geopolitik.application.export_style_policy import (
-    T07_STYLE_CANDIDATES,
-    StyleQualification,
-    style_for_request,
-)
 from ai_ngerti_geopolitik.application.export_request import (
     ExportAudio,
     ExportCodec,
@@ -32,6 +27,11 @@ from ai_ngerti_geopolitik.application.export_request import (
     ExportScope,
     ExportSharpen,
     ExportSubtitles,
+)
+from ai_ngerti_geopolitik.application.export_style_policy import (
+    T07_STYLE_CANDIDATES,
+    StyleQualification,
+    style_for_request,
 )
 from ai_ngerti_geopolitik.application.validation import (
     MediaIntegrityInspectorPort,
