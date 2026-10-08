@@ -222,3 +222,14 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - `precheck_pass` **does not authorize render**. `can_start_render=False` remains deliberate; no real FFmpeg codec-matrix/HEVC/4K proof, no engine port breaking changes, no changed UI-001..042, no AAVC writes.
 - Branch `feature/sf12-t03-export-preflight` / draft PR **#4**, stacked on T02 #3, T01 #2, planning #1; **not merged into main**. Keep ownership serial to avoid collision with other agents.
 - **Next exact task** on owner's next `lanjutkan`: **SF12-T04 H.264 Baseline Export Pipeline only**, real media and output safety tests, no T05+ work, no release. ASTRA/ADR mandatory for frozen port signature/native architecture changes. W5 physical mic and W6/W7 live Gemini provisional.
+
+
+## SF12-T04 H.264 Baseline Export — accepted 2026-10-08 WIB
+
+- T04 **PASS_REAL_MEDIA_BASELINE_WITH_PROVISIONAL_PRODUCTION_GATE**. Code SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42`; Windows CI [37737863469](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37737863469) **SUCCESS**; actual H.264+AAC 1920x1080 30fps/30 frames, 1.000000 second verified by independent FFprobe.
+- Existing FFmpeg adapter gained **additive** `export_h264_baseline` with T02/T03 preflight, unique temp workspace, baseline stream check, revalidation and atomic link no-clobber; legacy port is UNCHANGED. Dedicated race test proves no overwrite of last-moment competing file.
+- Entire Python suite and T04 tests PASS; Ruff, mypy 90, imports, architecture, secret checks, source-of-truth 70/70, frozen UI 42/42 PASS.
+- Evidence: `docs/evidence/features/SF12_T04_H264_BASELINE.md`, GitHub artifact ANG-SF12-T04-H264-RealMedia ID 11531514655, ZIP digest `695a450672aee1962a42b961d0eccfcf8dd55f017e3d20264a6657a4ee3363e3`; MP4 SHA `fcd8f698188f5e92cf10b0b94d5cf4e8602fc53d1bbcd233cfa9523788bc32c0`.
+- Production UI render stays DISABLED: T08 worker, T09 postflight, T10 packaged qualification remain outstanding. H.265/1440p/4K/60fps/selection also NOT QUALIFIED. Original source AAVC untouched.
+- Branch `feature/sf12-t04-h264-baseline` **draft PR #5**, stacked on #4/#3/#2/#1; NOT merged to main. W5 physical microphone, W6/W7 live Gemini provisional.
+- **Next exact task after user's next `lanjutkan`: SF12-T05 full/selection frame-accurate range mapping ONLY.** No engine port breaking change without ASTRA ADR; no STEP13/release.

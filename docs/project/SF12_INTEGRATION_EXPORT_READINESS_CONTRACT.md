@@ -88,3 +88,8 @@ Do not use this review as evidence that T01 or any codec matrix testing has alre
 - `ExportRequestMediaPort` is a *prospective additive protocol only*, not an adopted production MediaEnginePort change. Current frozen `MediaEnginePort.export(state, path, cancellation)` is unchanged. ASTRA/ADR review is required before replacing/breaking its signature or choosing native dependencies.
 - Valid DTO represents intent, **not qualified encoder availability, GUI enablement, render success or verified receipt**. T03 preflight and T09 postflight own those gates; T02 does not start a worker or write an MP4.
 - Selection bounds validate against current timeline; selection frame policy needs T05 real-media qualification.
+
+
+## SF12-T04 acceptance (2026-10-08 WIB)
+
+T04 additive `FfmpegSliceMediaEngine.export_h264_baseline` performed real Windows H.264/1080p30 + AAC export with safe unique staging and atomic no-clobber publish. Same-code Windows run `37737863469`, code SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42` PASS. T09 owns full postflight, T08 worker, T10 packaged qualification; GUI remains disabled. Frozen `MediaEnginePort.export` unchanged. Next T05 selection frame mapping only; selection remains blocked until proven.

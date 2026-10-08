@@ -1060,3 +1060,15 @@ T02 GitHub Actions workflow 37735699709 SUCCESS for code SHA 9e12498; targeted 2
 - [ ] SF12-T05..T10 — serial blocked pending prior gates.
 
 T03 code `7bee32aae7248ae9023afe4b9b62bf2caf357095`, Windows CI `37736630766` SUCCESS, new targeted+full pytest pass; Ruff, mypy(90), architecture/import contracts/secrets, 70 source-of-truth, UI 42/42 SHA PASS. No real codec render, no GUI render enablement or frozen MediaEnginePort change. See `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`. Draft stacked PR #4 not merged.
+
+
+## SF12-T04 H264 real-media acceptance — 2026-10-08 WIB
+
+- [x] SF12-T01 Capability truth in UI — PASS/provisional native.
+- [x] SF12-T02 Typed request & additive boundary — PASS contracts.
+- [x] SF12-T03 Preflight and conservative capability negotiation — PASS contracts.
+- [x] **SF12-T04 H.264 1080p30 AAC baseline, safe publish — PASS real Windows output**, with production GUI/packaging still provisional.
+- [ ] **SF12-T05 Frame-accurate FULL/SELECTION mapping — NEXT; not started.**
+- [ ] SF12-T06..T10 — serial blocked.
+
+Evidence T04 Windows `37737863469` SUCCESS on SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42`, 1-second owned H264/AAC MP4; no-clobber, cancel, source and race negatives PASS; full pytest/static/source-of-truth/UI gates PASS. Draft PR #5 (stacked) remains unmerged. GUI render stays disabled until T08/T09 and further release gates.
