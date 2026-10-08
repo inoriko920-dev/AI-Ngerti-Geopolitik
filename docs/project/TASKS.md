@@ -822,8 +822,8 @@ Serial contract:
 - [x] **S11-W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - [x] **S11-W8-002 — Real Media Integrity + Validation Center Projection — PASS**
 - [x] **S11-W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
-- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — IN_VERIFICATION**
-- [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004**
+- [ ] **S11-W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS**
+- [ ] **S11-W8-005 — Autosave Catalog + Retention Hardening — READY**
 - [ ] **S11-W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005**
 - [ ] **S11-W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006**
 - [ ] **S11-W8-008 — Stale Result Hardening for W8 Background Jobs — BLOCKED_BY_W8_007**
@@ -919,12 +919,20 @@ W8-002 proof:
 
 **W8-004 implementation HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`
 
-**W8-004 current gate:** IN_VERIFICATION — no PASS claim pending latest Windows CI.
-Implementation includes scan worker, deterministic candidate rank 1–4, manual verified
-batch, cancellation/stale/session guard, UI-040 projection and 9 targeted tests.
-The first real Qt run exposed a default weak-candidate checkbox, fixed on the
-current code HEAD. Dedicated CI run: `37721840504` — pending verification.
-Evidence log: `docs/evidence/features/S11_W8_004_BATCH_RELINK_SCAN.md`.
+**W8-004 accepted — PASS**
 
-**Exact next task:** finish W8-004 quality/real-media/regression lock only.
-W8-005 remains serial-blocked.
+**Accepted W8-004 implementation/regression HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`  
+**Dedicated Windows workflow:** [37721840504](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504) — SUCCESS  
+**Artifact:** `ANG-S11-W8-004-Batch-Directory-Relink`, ID `11525753140`  
+**Artifact SHA-256:** `75f33b72c4cf147d37b151e17bb7ae6bddc84982941f9f0aa8847c97d4fe4fb4`  
+**Tests:** targeted 9/9 PASS; full pytest 420/420 PASS; real-media evidence 14/14 PASS  
+**Gates:** Ruff, mypy (75 modules), import contracts, architecture, no-secret, source-of-truth 70/70, UI SHA 42/42 PASS  
+**Full same-HEAD regression:** 27/27 workflow families SUCCESS, all attempt 1.
+
+Verified: bounded worker scan, cancellation, stale project/session/revision/hash safety,
+rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review,
+one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
+real-media validation. UI-040 projects intents; controller wiring remains W8-010.
+
+**Exact next task:** S11-W8-005 Autosave Catalog + Retention Hardening ONLY.
+W8-006 remains serial-blocked.

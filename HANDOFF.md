@@ -2,11 +2,11 @@
 
 **Current phase:** SF-STEP 11 — Feature Implementation Waves  
 **Current wave:** W8 — Validation / Recovery / Diagnostics Hardening  
-**Last completed task:** S11-W8-003 — PASS  
+**Last completed task:** S11-W8-004 — PASS  
 **Accepted implementation/regression HEAD:** `25e5f6cefbbef5f554bd17e64d50a61db948bf13`  
 **Accepted W8-003 workflow:** [37689420848](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37689420848) — SUCCESS  
-**Current implementation:** S11-W8-004 — IN_VERIFICATION (not yet PASS)
-**Next exact task:** W8-004 Windows CI + real-media closure; W8-005 remains blocked
+**Current implementation:** S11-W8-004 — PASS
+**Next exact task:** S11-W8-005 — Autosave Catalog + Retention Hardening — READY
 
 ## Read-first constraints
 
@@ -20,6 +20,7 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 - W8-001 canonical deterministic validation: PASS.
 - W8-002 real media integrity + frozen UI-041 validation projection: PASS.
 - W8-003 verified single asset relink: PASS.
+- W8-004 batch directory relink scan + candidate ranking: PASS.
 
 ## W8-003 qualification
 
@@ -39,16 +40,27 @@ presentation-to-infrastructure shortcuts. One serial W8 task per continuation.
 **Artifact:** `ANG-S11-W8-003-Single-Asset-Relink` / ID `11513225118`  
 **Long-lived evidence:** `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 
+## W8-004 accepted evidence
+
+**Accepted W8-004 implementation/regression HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`  
+**Dedicated Windows workflow:** [37721840504](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504) — SUCCESS  
+**Artifact:** `ANG-S11-W8-004-Batch-Directory-Relink`, ID `11525753140`  
+**Artifact SHA-256:** `75f33b72c4cf147d37b151e17bb7ae6bddc84982941f9f0aa8847c97d4fe4fb4`  
+**Tests:** targeted 9/9 PASS; full pytest 420/420 PASS; real-media evidence 14/14 PASS  
+**Gates:** Ruff, mypy (75 modules), import contracts, architecture, no-secret, source-of-truth 70/70, UI SHA 42/42 PASS  
+**Full same-HEAD regression:** 27/27 workflow families SUCCESS, all attempt 1.
+
+Verified: bounded worker scan, cancellation, stale project/session/revision/hash safety,
+rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review,
+one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
+real-media validation. UI-040 projects intents; controller wiring remains W8-010.
+
 ## Next exact action
 
-W8-004 implementation has landed on main (latest code HEAD `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`). Do not
-redo implementation. Wait for the verified latest-HEAD Windows W8-004 run
-[`37721840504`](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504), inspect failures,
-fix only W8-004, and then qualify real-media evidence plus all prior regression
-families before closing W8-004. The prior W8-004 attempt passed 8/9 targeted
-tests but exposed a default Qt checkbox on unverified candidates; this is fixed
-in the latest code, not yet re-qualified. **Never claim W8-004 PASS until CI succeeds.**
-Do not start W8-005 in the same turn.
+On the next owner's `lanjutkan`, implement **SOL W8-005 only** using the locked
+ASTRA W8 planning. Never prune `.angproj`, source `.bak` or unrelated projects;
+catalog must validate snapshot content and isolate corrupt records. W8-006 remains
+blocked until W8-005 passes all gates.
 
 ## Provisional gates
 

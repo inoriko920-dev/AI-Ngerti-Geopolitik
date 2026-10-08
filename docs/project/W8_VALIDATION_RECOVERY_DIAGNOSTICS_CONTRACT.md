@@ -1,6 +1,6 @@
 # W8 — VALIDATION / RECOVERY / DIAGNOSTICS HARDENING CONTRACT
 
-**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 IN_VERIFICATION / W8-005..010 SERIAL_BLOCKED  
+**Status:** CONTRACT_LOCKED / W8-001..003 PASS / W8-004 PASS / W8-005 READY / W8-006..010 SERIAL_BLOCKED  
 **Runtime:** ACTIVE  
 **Master Blueprint mapping:** TECH-WAVE STEP 11  
 **Planning date:** 2026-10-08  
@@ -105,8 +105,8 @@ No new UI image-generation gate:
 - **W8-001 — Canonical Validation Contracts + Baseline Rules — PASS**
 - **W8-002 — Real Media Integrity + Validation Center Projection — PASS**
 - **W8-003 — Single Asset Relink Command + Exact Identity Preservation — PASS**
-- W8-004 — Batch Directory Relink Scan + Candidate Ranking — IN_VERIFICATION
-- W8-005 — Autosave Catalog + Retention Hardening — BLOCKED_BY_W8_004
+- W8-004 — Batch Directory Relink Scan + Candidate Ranking — PASS
+- W8-005 — Autosave Catalog + Retention Hardening — READY
 - W8-006 — Crash Marker + Startup Recovery Decision — BLOCKED_BY_W8_005
 - W8-007 — Atomic Persistence Failure Injection + Remediation — BLOCKED_BY_W8_006
 - W8-008 — Stale Result Hardening for Validation/Relink/Recovery Jobs — BLOCKED_BY_W8_007
@@ -140,7 +140,19 @@ Accepted W8-003:
 Evidence:
 `docs/evidence/features/S11_W8_003_SINGLE_ASSET_RELINK.md`.
 
-W8-004 implementation commit `4988e84ca6bca1e64fc5a755ff0d3287802e70f8` is awaiting dedicated Windows CI
-`37721840504`. The scan/service/presentation/test implementation is present; the
-verified real-media artifact and regression lock remain pending. Continue W8-004
-QA only. **Do not start W8-005**.
+Accepted W8-004:
+
+**Accepted W8-004 implementation/regression HEAD:** `4988e84ca6bca1e64fc5a755ff0d3287802e70f8`  
+**Dedicated Windows workflow:** [37721840504](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37721840504) — SUCCESS  
+**Artifact:** `ANG-S11-W8-004-Batch-Directory-Relink`, ID `11525753140`  
+**Artifact SHA-256:** `75f33b72c4cf147d37b151e17bb7ae6bddc84982941f9f0aa8847c97d4fe4fb4`  
+**Tests:** targeted 9/9 PASS; full pytest 420/420 PASS; real-media evidence 14/14 PASS  
+**Gates:** Ruff, mypy (75 modules), import contracts, architecture, no-secret, source-of-truth 70/70, UI SHA 42/42 PASS  
+**Full same-HEAD regression:** 27/27 workflow families SUCCESS, all attempt 1.
+
+Verified: bounded worker scan, cancellation, stale project/session/revision/hash safety,
+rank 1–4, SHA-256 verified explicit selection only, ambiguous candidate review,
+one atomic CommandBatch, stable asset/clip IDs, exact Undo/Redo, save/reopen and
+real-media validation. UI-040 projects intents; controller wiring remains W8-010.
+
+Next: **SOL S11-W8-005 only**. W8-006 remains blocked.
