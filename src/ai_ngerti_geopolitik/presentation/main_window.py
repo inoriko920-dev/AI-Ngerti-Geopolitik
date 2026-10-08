@@ -476,6 +476,39 @@ class MainWindow:
         canvas.setProperty("step10_project_revision", result.project_revision)
         canvas.setProperty("step10_timeline_frame", result.timeline_frame)
 
+    def apply_still_frame_preview(
+        self, image: Any, frame: int, revision: int, total_frames: int
+    ) -> None:
+        """Render real QImage pixels on the existing UI-010 canvas; no new widgets."""
+        from PySide6.QtCore import Qt
+        from PySide6.QtGui import QPixmap
+        from PySide6.QtWidgets import QLabel, QSlider
+
+        current = self.stack.currentWidget()
+        canvas = current.findChild(QLabel, "preview_canvas")
+        if canvas is None or image.isNull():
+            raise RuntimeError("still preview canvas unavailable")
+        pixmap = QPixmap.fromImage(image)
+        if pixmap.isNull():
+            raise RuntimeError("still preview pixels unavailable")
+        canvas.setPixmap(
+            pixmap.scaled(
+                canvas.size(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+        )
+        canvas.setProperty("still_project_revision", revision)
+        canvas.setProperty("still_timeline_frame", frame)
+        scrubber = current.findChild(QSlider, "timeline_scrubber")
+        if scrubber is not None:
+            scrubber.blockSignals(True)
+            try:
+                scrubber.setRange(0, total_frames - 1)
+                scrubber.setValue(frame)
+            finally:
+                scrubber.blockSignals(False)
+
     def show(self) -> None:
         self.window.show()
 
