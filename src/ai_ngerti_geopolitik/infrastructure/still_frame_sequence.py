@@ -55,6 +55,7 @@ def export_still_frame_sequence(
         raise StillSequenceExportError("frame sequence destination already exists")
 
     staging: Path | None = None
+    phase = "prepare"
     try:
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists() or destination.is_symlink():
@@ -63,11 +64,14 @@ def export_still_frame_sequence(
         entries: list[dict[str, object]] = []
         total_bytes = 0
         for frame in range(start_frame, start_frame + count):
+            phase = "render"
             image = render_still_frame(state, frame)
             filename = f"frame_{frame:06d}.png"
             target = staging / filename
+            phase = "save-png"
             if not image.save(str(target), b"PNG"):
                 raise StillSequenceExportError("a preview frame could not be written")
+            phase = "hash-png"
             file_size = target.stat().st_size
             total_bytes += file_size
             if total_bytes > _MAX_BATCH_BYTES:
@@ -81,6 +85,7 @@ def export_still_frame_sequence(
                 }
             )
 
+        phase = "manifest"
         manifest = {
             "format": "ang-still-sequence-v1",
             "project_id": state.project_id,
@@ -97,13 +102,16 @@ def export_still_frame_sequence(
         )
         if destination.exists() or destination.is_symlink():
             raise StillSequenceExportError("frame sequence destination already exists")
+        phase = "publish"
         os.rename(staging, destination)
         staging = None
         return destination
     except StillSequenceExportError:
         raise
-    except (StillFramePreviewError, OSError, RuntimeError, ValueError):
-        raise StillSequenceExportError("frame sequence could not be safely exported") from None
+    except (StillFramePreviewError, OSError, RuntimeError, ValueError) as error:
+        raise StillSequenceExportError(
+            f"frame sequence could not be safely exported ({phase}: {type(error).__name__})"
+        ) from None
     finally:
         if staging is not None:
             shutil.rmtree(staging, ignore_errors=True)
