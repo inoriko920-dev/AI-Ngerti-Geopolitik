@@ -1192,3 +1192,10 @@ T10 SHA `c945d9a4d0079c4b6c1ba40cd19a2326c03fa268`, full source/test/Qt/architec
 - [ ] INT-01C exact-path resolver/hash/revalidation; INT-01D actual codec encode/probe, INT-01E bootstrap wiring, INT-01F Windows negative suite — NOT STARTED.
 - [ ] D1 Pilot A explicit approval; D2 final packaging; D3 legal notices; D4 production libopenshot engine — pending.
 - Implementation SHA 51a51eb8 / CI 37750580743 SUCCESS, mypy99, docs70/70, frozen UI42/42. Source files untouched except new pure application module; Draft PR #14 stacked on #13, main unmerged.
+
+
+## ASTRA INT-01B safe planning only (2026-10-08 WIB)
+- [x] Inspect native FFmpeg subprocess and FFprobe to document unbounded pipe/deadline/cancellation/privacy risks.
+- [x] Define bounded runner design, typed diagnostic, Windows B01–B20 cases and SOL serialized tasks B1–B6.
+- [ ] Require explicit owner approval of external FFmpeg Pilot A before changing native executor production code.
+- [ ] SOL B1 typed policy after approval, then B2–B6 one task/gate per continuation. UI render disabled, no bundled codec.

@@ -324,3 +324,9 @@ W8-010 READY only on owner's next explicit `lanjutkan`.
 - Tests `tests/unit/test_sol_int01a_native_identity.py`, workflow `.github/workflows/sol-int01a-native-identity-windows.yml` full pytest, Ruff, mypy 99, lint-imports/architecture/secrets, source-of-truth70/UI42 PASS.
 - Full evidence `docs/evidence/features/SOL_INT01A_NATIVE_IDENTITY_CONTRACT.md`. Draft stacked **PR #14** on ASTRA design PR #13, all others unmerged to main; Qt render disabled, source/engine unchanged.
 - **RISK OPEN:** No real process identity hash, PATH/canonicalization protection, bounded runner or actual encoder qualification yet. Approval D1 Pilot A and final legal D2–D4 remain pending; next only after scoped owner authorization **INT-01B bounded native process runner**. No bundled FFmpeg or release.
+
+
+## ASTRA INT-01B runner risk blueprint — 2026-10-08 WIB
+- Read-only risk review of FfmpegProcessRunner poll-before-communicate + no deadline, unbounded/raw FFprobe subprocess, cancellation/child cleanup and stderr path leaks. Not proven runtime incidents, **no production code changes**.
+- Detailed B1–B6 serial tasks + 20 Windows tests in `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.md` and TXT (DOCX pending verification). Risk audit `docs/evidence/planning/ASTRA_INT01B_PROCESS_RISK_AUDIT_2026-10-08.md`.
+- Gate `DESIGN_READY / OWNER_PILOT_A_NOT_APPROVED / SOL_INT01B_BLOCKED`; all UI-001..042, MediaEnginePort, main and native distribution unchanged. Next: explicit Pilot A consent, then B1 only.

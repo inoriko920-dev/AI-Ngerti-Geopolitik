@@ -345,3 +345,8 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `tests/unit/test_sol_int01a_native_identity.py`: type, digests, encoder claims, privacy, enum and immutable projection negative tests.
 - `.github/workflows/sol-int01a-native-identity-windows.yml`: native-free Windows test full gates and UI freeze.
 - `docs/evidence/features/SOL_INT01A_NATIVE_IDENTITY_CONTRACT.md`: accepted code SHA 51a51eb8, Windows SUCCESS 37750580743, release/owner decision still blocked.
+
+
+## ASTRA INT-01B native subprocess safety planning (2026-10-08 WIB)
+- `docs/planning/15_ASTRA_INT01B_BOUNDED_PROCESS_RUNNER_2026-10-08.md`, .txt and .docx — bounded process and privacy-safe design, 20 Windows tests, B1–B6 subtasks, owner approval prerequisite.
+- `docs/evidence/planning/ASTRA_INT01B_PROCESS_RISK_AUDIT_2026-10-08.md` — read-only audit evidence, not permission to wire or execute FFmpeg.
