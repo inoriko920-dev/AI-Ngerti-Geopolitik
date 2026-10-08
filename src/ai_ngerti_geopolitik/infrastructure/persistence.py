@@ -1,4 +1,4 @@
-"""Atomic .angproj JSON persistence with W1 backup and autosave support."""
+"""Atomic .angproj JSON persistence with W1 backup and W8-007 safe cleanup."""
 
 from __future__ import annotations
 
