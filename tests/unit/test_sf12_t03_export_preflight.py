@@ -244,3 +244,65 @@ def test_missing_project_timeline_blocks(tmp_path: Path) -> None:
         state, request, "session-1", TOOLS
     )
     assert Code.EMPTY_TIMELINE in result.failure_codes
+
+
+def test_real_target_disk_margin_is_enforced(tmp_path: Path, monkeypatch) -> None:
+    class LowDisk:
+        free = 0
+
+    monkeypatch.setattr(
+        "ai_ngerti_geopolitik.infrastructure.export_output_inspector.shutil.disk_usage",
+        lambda _path: LowDisk(),
+    )
+    before = set(tmp_path.iterdir())
+    result = LocalExportOutputInspector().inspect(tmp_path / "new.mp4", (), 256 * 1024 * 1024)
+    assert result.issue is Code.INSUFFICIENT_DISK
+    assert set(tmp_path.iterdir()) == before
+
+
+def test_real_target_permission_failure_is_redacted(tmp_path: Path, monkeypatch) -> None:
+    def reject(**_kwargs: object) -> None:
+        raise PermissionError("private machine directory")
+
+    monkeypatch.setattr(
+        "ai_ngerti_geopolitik.infrastructure.export_output_inspector.tempfile.NamedTemporaryFile",
+        reject,
+    )
+    result = LocalExportOutputInspector().inspect(tmp_path / "new.mp4", (), 1)
+    assert result.issue is Code.OUTPUT_NOT_WRITABLE
+    assert "private" not in str(result)
+    assert not list(tmp_path.iterdir())
+
+
+def test_unreferenced_missing_media_is_not_export_blocker(tmp_path: Path) -> None:
+    state = _state()
+    extra = Asset(
+        "A002",
+        "unused.mp4",
+        "video",
+        FrameTime(90, 30),
+        1920,
+        1080,
+        True,
+        "a" * 64,
+        availability="missing",
+    )
+    state = replace(state, assets=(*state.assets, extra))
+    result = ExportPreflightService(MediaInspector(), TargetInspector()).check(
+        state, _request(state, tmp_path), "session-1", TOOLS
+    )
+    assert result.precheck_pass
+    assert not result.can_start_render
+
+
+def test_target_directory_probe_failure_is_safe(tmp_path: Path, monkeypatch) -> None:
+    def deny(_path: Path) -> None:
+        raise OSError("private drive identifier")
+
+    monkeypatch.setattr(
+        "ai_ngerti_geopolitik.infrastructure.export_output_inspector.shutil.disk_usage",
+        deny,
+    )
+    result = LocalExportOutputInspector().inspect(tmp_path / "new.mp4", (), 1)
+    assert result.issue is Code.OUTPUT_NOT_WRITABLE
+    assert "private" not in str(result)
