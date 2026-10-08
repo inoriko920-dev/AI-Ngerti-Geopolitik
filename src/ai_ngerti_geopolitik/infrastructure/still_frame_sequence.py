@@ -66,7 +66,7 @@ def export_still_frame_sequence(
             image = render_still_frame(state, frame)
             filename = f"frame_{frame:06d}.png"
             target = staging / filename
-            if not image.save(str(target), "PNG"):
+            if not image.save(str(target), b"PNG"):
                 raise StillSequenceExportError("a preview frame could not be written")
             file_size = target.stat().st_size
             total_bytes += file_size

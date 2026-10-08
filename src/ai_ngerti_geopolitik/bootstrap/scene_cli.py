@@ -54,11 +54,11 @@ def main(argv: list[str] | None = None) -> int:
     preview.add_argument("--frame", type=int, required=True)
     preview.add_argument("--output", required=True)
 
-    frames = modes.add_parser("frames", help="Ekspor PNG frame sequence dan manifest, bukan MP4.")
-    frames.add_argument("--project", required=True)
-    frames.add_argument("--start", required=True, type=int)
-    frames.add_argument("--count", required=True, type=int)
-    frames.add_argument("--output", required=True)
+    frame_parser = modes.add_parser("frames", help="Ekspor PNG frame sequence dan manifest, bukan MP4.")
+    frame_parser.add_argument("--project", required=True)
+    frame_parser.add_argument("--start", required=True, type=int)
+    frame_parser.add_argument("--count", required=True, type=int)
+    frame_parser.add_argument("--output", required=True)
 
     args = parser.parse_args(argv)
     try:
