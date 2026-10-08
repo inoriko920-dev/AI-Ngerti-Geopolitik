@@ -103,6 +103,7 @@ def main() -> int:
     blocker = dialog.findChild(QPushButton, "btn_validation_issue_0_0_action")
     assert blocker is not None and blocker.isEnabled()
     assert blocker.text() == "Relink"
+    blocker_label_verified = blocker.text() == "Relink"
     assert "BLOCKER" in dialog.findChild(
         QLabel, "label_validation_issue_0_0"
     ).text()
@@ -137,6 +138,7 @@ def main() -> int:
         QTableWidget, "table_asset_scan_candidates"
     )
     assert table is not None and table.rowCount() == 1
+    candidate_row_verified = table.rowCount() == 1
     selectable = table.item(0, 0)
     assert selectable is not None and bool(
         selectable.flags() & Qt.ItemFlag.ItemIsUserCheckable
@@ -235,8 +237,8 @@ def main() -> int:
     )
     report = {
         "status": "PASS",
-        "validation_blocker_shown": blocker.text() == "Relink",
-        "asset_scan_real_candidate": table.rowCount() == 1,
+        "validation_blocker_shown": blocker_label_verified,
+        "asset_scan_real_candidate": candidate_row_verified,
         "candidate_not_auto_applied": no_auto_relink,
         "identity_exact": exact_identity,
         "validation_cleared": cleared,
