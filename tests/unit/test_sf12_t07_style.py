@@ -14,6 +14,7 @@ from ai_ngerti_geopolitik.application.export_preflight import (
 )
 from ai_ngerti_geopolitik.application.export_request import (
     ExportAudio,
+    ExportFrameRange,
     ExportQuality,
     ExportRequest,
     ExportScope,
@@ -206,7 +207,7 @@ def test_default_preflight_still_rejects_style_options(tmp_path: Path) -> None:
         {"quality": ExportQuality.DOCUMENTARY_CRISP, "sharpen": ExportSharpen.CRISP},
         {"sharpen": ExportSharpen.LIGHT, "subtitles": ExportSubtitles.OFF},
         {"audio": ExportAudio.OFF},
-        {"scope": ExportScope.SELECTION},
+        {"scope": ExportScope.SELECTION, "selection": ExportFrameRange(0, 10)},
     ],
 )
 def test_non_allowlisted_combinations_fail_before_ffmpeg(

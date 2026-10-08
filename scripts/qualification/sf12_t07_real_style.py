@@ -61,7 +61,7 @@ def gray_frame(ffmpeg: str, path: Path, at: str) -> bytes:
             "rawvideo",
             "-pix_fmt",
             "gray",
-            "-"
+            "-",
         ]
     ).stdout
     assert len(data) == 1920 * 1080
@@ -87,7 +87,7 @@ def pcm_audio(ffmpeg: str, path: Path) -> tuple[int, ...]:
             "s16le",
             "-acodec",
             "pcm_s16le",
-            "-"
+            "-",
         ]
     ).stdout
     assert len(raw) >= 48000 * 2
