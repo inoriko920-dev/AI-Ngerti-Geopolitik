@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QBuffer, QIODevice, QRect, QSize, Qt
+from PySide6.QtCore import QBuffer, QByteArray, QIODevice, QRect, QSize, Qt
 from PySide6.QtGui import QImage, QImageReader, QPainter
 
 from ai_ngerti_geopolitik.domain import Asset, Clip, ProjectState
