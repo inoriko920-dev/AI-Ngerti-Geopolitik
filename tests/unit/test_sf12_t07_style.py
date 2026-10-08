@@ -83,7 +83,9 @@ class FakeProbe:
                 },
                 {
                     "codec_type": "audio",
-                    "codec_name": "mp3" if path.name == "styled.mp4" and self.wrong_audio else "aac",
+                    "codec_name": "mp3"
+                    if path.name == "styled.mp4" and self.wrong_audio
+                    else "aac",
                 },
             ],
             "format": {"format_name": "mov,mp4,m4a,3gp,3g2,mj2", "duration": str(frames / 30)},
@@ -165,9 +167,7 @@ def _run(
 
 
 @pytest.mark.parametrize("option", range(6))
-def test_exact_styles_map_to_real_arguments_and_do_not_mutate(
-    tmp_path: Path, option: int
-) -> None:
+def test_exact_styles_map_to_real_arguments_and_do_not_mutate(tmp_path: Path, option: int) -> None:
     state = _state(tmp_path)
     request = _request(state, tmp_path, option=option)
     before = state.semantic_json(include_revision=True)
@@ -221,9 +221,7 @@ def test_non_allowlisted_combinations_fail_before_ffmpeg(
 
 
 @pytest.mark.parametrize(("bad_audio", "bad_frames"), [(True, False), (False, True)])
-def test_invalid_result_never_published(
-    tmp_path: Path, bad_audio: bool, bad_frames: bool
-) -> None:
+def test_invalid_result_never_published(tmp_path: Path, bad_audio: bool, bad_frames: bool) -> None:
     state = _state(tmp_path)
     request = _request(state, tmp_path)
     with pytest.raises(MediaToolError, match="T07_STREAM_VERIFICATION_FAILED"):

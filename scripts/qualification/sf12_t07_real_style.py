@@ -24,7 +24,10 @@ from ai_ngerti_geopolitik.domain import FrameTime, NarrationTrack, SubtitleCue, 
 from ai_ngerti_geopolitik.infrastructure.export_capability_probe import detect_export_toolchain
 from ai_ngerti_geopolitik.infrastructure.export_output_inspector import LocalExportOutputInspector
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_export_style import FfmpegStyleQualificationExporter
-from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfmpegSliceMediaEngine, FfprobeMediaProbe
+from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import (
+    FfmpegSliceMediaEngine,
+    FfprobeMediaProbe,
+)
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 
@@ -44,8 +47,21 @@ def execute(argv: list[str]) -> subprocess.CompletedProcess[bytes]:
 def gray_frame(ffmpeg: str, path: Path, at: str) -> bytes:
     data = execute(
         [
-            ffmpeg, "-hide_banner", "-loglevel", "error", "-ss", at, "-i", str(path),
-            "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "gray", "-"
+            ffmpeg,
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-ss",
+            at,
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "gray",
+            "-"
         ]
     ).stdout
     assert len(data) == 1920 * 1080
@@ -55,9 +71,23 @@ def gray_frame(ffmpeg: str, path: Path, at: str) -> bytes:
 def pcm_audio(ffmpeg: str, path: Path) -> tuple[int, ...]:
     raw = execute(
         [
-            ffmpeg, "-hide_banner", "-loglevel", "error", "-i", str(path),
-            "-map", "0:a:0", "-ac", "1", "-ar", "48000",
-            "-f", "s16le", "-acodec", "pcm_s16le", "-"
+            ffmpeg,
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-i",
+            str(path),
+            "-map",
+            "0:a:0",
+            "-ac",
+            "1",
+            "-ar",
+            "48000",
+            "-f",
+            "s16le",
+            "-acodec",
+            "pcm_s16le",
+            "-"
         ]
     ).stdout
     assert len(raw) >= 48000 * 2
@@ -90,9 +120,20 @@ def main() -> int:
     narration = evidence.parent / "narration_440hz.wav"
     execute(
         [
-            ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
-            "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000",
-            "-t", "2", "-c:a", "pcm_s16le", str(narration)
+            ffmpeg,
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            "sine=frequency=440:sample_rate=48000",
+            "-t",
+            "2",
+            "-c:a",
+            "pcm_s16le",
+            str(narration),
         ]
     )
     probe = FfprobeMediaProbe()
@@ -162,17 +203,19 @@ def main() -> int:
         assert abs(float(raw["format"]["duration"]) - 2.0) < 0.06
         assert result.duration_frames == 60
         files.append(target)
-        records.append({
-            "style": index,
-            "quality": style.quality.value,
-            "sharpen": style.sharpen.value,
-            "subtitles": style.subtitles.value,
-            "preset": style.preset,
-            "crf": style.crf,
-            "video_filter": style.video_filter,
-            "size_bytes": target.stat().st_size,
-            "sha256": sha(target),
-        })
+        records.append(
+            {
+                "style": index,
+                "quality": style.quality.value,
+                "sharpen": style.sharpen.value,
+                "subtitles": style.subtitles.value,
+                "preset": style.preset,
+                "crf": style.crf,
+                "video_filter": style.video_filter,
+                "size_bytes": target.stat().st_size,
+                "sha256": sha(target),
+            }
+        )
 
     # Text is active at frame 30. Gray-frame differences verify on/off;
     # no pixel equality expected after separate lossy re-encodes.

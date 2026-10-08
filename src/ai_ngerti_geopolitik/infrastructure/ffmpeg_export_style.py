@@ -144,12 +144,8 @@ class FfmpegStyleQualificationExporter:
             fmt = info["format"]
             if not isinstance(streams, list) or not isinstance(fmt, dict):
                 raise ValueError("malformed metadata")
-            videos = [
-                s for s in streams if isinstance(s, dict) and s.get("codec_type") == "video"
-            ]
-            audios = [
-                s for s in streams if isinstance(s, dict) and s.get("codec_type") == "audio"
-            ]
+            videos = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "video"]
+            audios = [s for s in streams if isinstance(s, dict) and s.get("codec_type") == "audio"]
             if len(videos) != 1 or len(audios) != 1:
                 raise ValueError("invalid stream count")
             video = videos[0]

@@ -180,17 +180,14 @@ class ExportPreflightService:
             and style_candidate == style_for_request(request)
         )
         if (
-            (
-                not qualified_style_candidate
-                and (
-                    not (baseline or qualified_matrix_candidate)
-                    or request.quality is not ExportQuality.HIGH
-                    or request.sharpen is not ExportSharpen.NONE
-                    or request.subtitles is not ExportSubtitles.BURN_IN
-                )
+            not qualified_style_candidate
+            and (
+                not (baseline or qualified_matrix_candidate)
+                or request.quality is not ExportQuality.HIGH
+                or request.sharpen is not ExportSharpen.NONE
+                or request.subtitles is not ExportSubtitles.BURN_IN
             )
-            or request.audio is not ExportAudio.AAC
-        ):
+        ) or request.audio is not ExportAudio.AAC:
             add(ExportPreflightCode.UNSUPPORTED_PROFILE)
 
         duration_frames = (

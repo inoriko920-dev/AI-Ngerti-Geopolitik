@@ -37,20 +37,36 @@ T07_STYLE_CANDIDATES: tuple[StyleQualification, ...] = (
         ExportQuality.HIGH, ExportSharpen.NONE, ExportSubtitles.OFF, "ultrafast", 28, "null"
     ),
     StyleQualification(
-        ExportQuality.YOUTUBE_CLEAN, ExportSharpen.NONE, ExportSubtitles.BURN_IN,
-        "medium", 21, "null"
+        ExportQuality.YOUTUBE_CLEAN,
+        ExportSharpen.NONE,
+        ExportSubtitles.BURN_IN,
+        "medium",
+        21,
+        "null",
     ),
     StyleQualification(
-        ExportQuality.DOCUMENTARY_CRISP, ExportSharpen.NONE, ExportSubtitles.BURN_IN,
-        "slow", 18, "null"
+        ExportQuality.DOCUMENTARY_CRISP,
+        ExportSharpen.NONE,
+        ExportSubtitles.BURN_IN,
+        "slow",
+        18,
+        "null",
     ),
     StyleQualification(
-        ExportQuality.HIGH, ExportSharpen.LIGHT, ExportSubtitles.BURN_IN,
-        "ultrafast", 28, "unsharp=5:5:0.6:3:3:0.0"
+        ExportQuality.HIGH,
+        ExportSharpen.LIGHT,
+        ExportSubtitles.BURN_IN,
+        "ultrafast",
+        28,
+        "unsharp=5:5:0.6:3:3:0.0",
     ),
     StyleQualification(
-        ExportQuality.HIGH, ExportSharpen.CRISP, ExportSubtitles.BURN_IN,
-        "ultrafast", 28, "unsharp=5:5:1.2:3:3:0.0"
+        ExportQuality.HIGH,
+        ExportSharpen.CRISP,
+        ExportSubtitles.BURN_IN,
+        "ultrafast",
+        28,
+        "unsharp=5:5:1.2:3:3:0.0",
     ),
 )
 
