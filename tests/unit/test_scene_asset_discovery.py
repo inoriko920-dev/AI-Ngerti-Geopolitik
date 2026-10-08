@@ -112,7 +112,6 @@ def test_invalid_folder_and_limits_are_fixed_privacy_safe_errors(tmp_path: Path)
         assert "SECRET_PRIVATE" not in str(exc.value)
 
 
-
 def test_verified_images_have_real_hash_and_dimensions(tmp_path: Path) -> None:
     import hashlib
 
