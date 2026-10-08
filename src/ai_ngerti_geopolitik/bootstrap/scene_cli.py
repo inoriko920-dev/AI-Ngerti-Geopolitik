@@ -21,6 +21,10 @@ from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
     verify_scene_image_media,
 )
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
+from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
+    StillFramePreviewError,
+    render_still_frame,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -41,8 +45,28 @@ def main(argv: list[str] | None = None) -> int:
     create.add_argument("--name", required=True)
     create.add_argument("--fps", type=int, choices=(30, 60), default=30)
 
+    preview = modes.add_parser("preview", help="Simpan satu frame preview gambar sebagai PNG.")
+    preview.add_argument("--project", required=True)
+    preview.add_argument("--frame", type=int, required=True)
+    preview.add_argument("--output", required=True)
+
     args = parser.parse_args(argv)
     try:
+        if args.action == "preview":
+            target = Path(args.output)
+            if target.suffix.lower() != ".png":
+                raise SceneImportReviewError("preview output must be PNG")
+            if target.exists():
+                raise SceneImportReviewError("preview destination already exists")
+            state = JsonProjectRepository().load(Path(args.project))
+            image = render_still_frame(state, args.frame)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():
+                raise SceneImportReviewError("preview destination already exists")
+            if not image.save(str(target), "PNG"):
+                raise SceneImportReviewError("preview image could not be saved")
+            print(f"Preview frame {args.frame} tersimpan sebagai PNG.")
+            return 0
         source = Path(args.docx)
         docx = read_scene_docx(source)
         if args.action == "template":
@@ -82,13 +106,14 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(
             f"Project tersimpan: {len(review.scenes)} scene, {len(project.assets)} aset, "
-            f"{review.total_frames} frame. Preview/render gambar belum dikualifikasi."
+            f"{review.total_frames} frame. Frame preview tersedia; animasi dan MP4 belum dikualifikasi."
         )
         return 0
     except (
         SceneDocxFormatError,
         SceneImportReviewError,
         SceneAssetScanError,
+        StillFramePreviewError,
         OSError,
         ValueError,
     ) as err:

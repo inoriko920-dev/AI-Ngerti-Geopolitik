@@ -272,3 +272,8 @@ Current tested functionality: create_canonical_scene_image_project() consumes an
 - Added infrastructure/still_frame_preview.py: reads the saved canonical image HOLD ProjectState and produces actual in-memory QImage pixels at an exact requested timeline frame. SINGLE V1 fills the frame; DOUBLE V1 left/V2 right uses deterministic even/odd pixel splitting and aspect-preserving center cover.
 - Fail closed on changed/missing media fingerprints, wrong image dimensions, non-default unqualified effects, gaps, extra/hidden tracks, audio/subtitles, and out-of-range frames. Fixed path-redacted error messages. Intended for background worker use only, **not** connected to frozen GUI or production MLT.
 - Added Qt real-image golden-pixel tests for boundary frames and all channels; Windows CI same-HEAD pending. MP4 render, MLT still producer, animated effects and UI preview remain unqualified. PR Draft, main unchanged, portable last.
+
+## Optional CLI still preview PNG (2026-10-08 WIB)
+
+- Extended existing scripts/import_scene_project.py bootstrap CLI with `preview --project film.angproj --frame 150 --output frame.png`. Uses qualified CPU/Qt image HOLD compositor to write an actual PNG for a selected frame; existing PNG destinations are refused. Real pixels tested from reloaded .angproj, including LEFT/RIGHT split.
+- This is an advanced-user screenshot/preflight command, not a replacement for interactive editor preview, MLT playback, or MP4 output. No frozen UI modification or native FFmpeg. Windows exact-head CI pending.

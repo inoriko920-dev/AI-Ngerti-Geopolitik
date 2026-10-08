@@ -9,6 +9,7 @@ import pytest
 from PySide6.QtGui import QImage
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
+from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
     create_canonical_scene_image_project,
@@ -129,3 +130,24 @@ def test_image_intrinsic_frame_stays_one_across_hold(tmp_path: Path) -> None:
     state = _save_real_project(tmp_path)
     assert state.clip("SCENE-0001-A001").source_frame_at_timeline_offset(149) == 0
     assert state.asset("A001").duration == FrameTime(1, 30)
+
+
+def test_cli_outputs_real_preview_png_and_refuses_overwrite(tmp_path: Path) -> None:
+    state = _save_real_project(tmp_path)
+    project = tmp_path / "preview.angproj"
+    output = tmp_path / "frame_150.png"
+    assert state.timeline_end_frame == 240
+    args = ["preview", "--project", str(project), "--frame", "150", "--output", str(output)]
+    assert import_cli_main(args) == 0
+    saved = QImage(str(output))
+    assert not saved.isNull()
+    assert (saved.width(), saved.height()) == (13, 8)
+    assert saved.pixelColor(0, 1).name() == "#00ff00"
+    assert saved.pixelColor(12, 1).name() == "#0000ff"
+    assert import_cli_main(args) == 1
+    assert import_cli_main(
+        ["preview", "--project", str(project), "--frame", "240", "--output",
+         str(tmp_path / "outside.png")]
+    ) == 1
+    assert not (tmp_path / "outside.png").exists()
+
