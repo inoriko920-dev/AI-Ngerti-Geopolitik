@@ -20,9 +20,7 @@ from ai_ngerti_geopolitik.domain import Asset, Clip, FrameTime, ProjectState, Tr
 
 
 def _state() -> ProjectState:
-    asset = Asset(
-        "A001", "source.mp4", "video", FrameTime(90, 30), 1920, 1080, True
-    )
+    asset = Asset("A001", "source.mp4", "video", FrameTime(90, 30), 1920, 1080, True)
     clip = Clip("C001", "A001", FrameTime(0, 30), FrameTime(0, 30), FrameTime(90, 30))
     return replace(
         ProjectState.create("P001", "Export contracts"),
@@ -58,9 +56,7 @@ def test_frozen_snapshot_does_not_mutate_project(tmp_path: Path) -> None:
 
 
 def test_selection_half_open_bounds_and_identity(tmp_path: Path) -> None:
-    request = _request(
-        tmp_path, scope=ExportScope.SELECTION, selection=ExportFrameRange(30, 90)
-    )
+    request = _request(tmp_path, scope=ExportScope.SELECTION, selection=ExportFrameRange(30, 90))
     assert request.selection == ExportFrameRange(30, 90)
     request.assert_current(_state(), "session-1")
     with pytest.raises(ExportContractError, match="INVALID_SELECTION_BOUNDS"):

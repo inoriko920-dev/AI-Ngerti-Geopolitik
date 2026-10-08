@@ -124,8 +124,7 @@ class ExportRequest:
         if (
             type(self.width) is not int
             or type(self.height) is not int
-            or (self.width, self.height)
-            not in {(1920, 1080), (2560, 1440), (3840, 2160)}
+            or (self.width, self.height) not in {(1920, 1080), (2560, 1440), (3840, 2160)}
         ):
             raise ExportContractError("INVALID_RESOLUTION")
         if type(self.fps) is not int or self.fps not in (30, 60):
