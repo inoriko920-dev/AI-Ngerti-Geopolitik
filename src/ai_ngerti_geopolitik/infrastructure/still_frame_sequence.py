@@ -185,11 +185,7 @@ def export_complete_still_sequence(
         # A source file could change after an earlier batch was generated.
         # Recheck every scene boundary once more before publishing output.
         phase = "final-source-verification"
-        starts = {
-            clip.timeline_start.frames
-            for track in state.tracks
-            for clip in track.clips
-        }
+        starts = {clip.timeline_start.frames for track in state.tracks for clip in track.clips}
         for frame in sorted(starts):
             render_still_frame(state, frame)
 
@@ -225,4 +221,3 @@ def export_complete_still_sequence(
     finally:
         if staging is not None:
             shutil.rmtree(staging, ignore_errors=True)
-

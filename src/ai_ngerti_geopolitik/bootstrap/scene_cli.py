@@ -74,9 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.action == "frames-all":
             state = JsonProjectRepository().load(Path(args.project))
-            export_complete_still_sequence(
-                state, Path(args.output), batch_size=args.batch_size
-            )
+            export_complete_still_sequence(state, Path(args.output), batch_size=args.batch_size)
             print(
                 f"Berhasil ekspor {state.timeline_end_frame} frame PNG "
                 "dalam batch. Ini bukan MP4 dan tidak memuat audio."
