@@ -265,3 +265,12 @@ same-HEAD workflow regression. W8-010 READY; STEP 12 not started.
 - `tests/unit/test_sf12_t03_export_preflight.py`, `.github/workflows/sf12-t03-windows-preflight.yml`.
 - `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`: accepted Windows run 37736630766 / code 7bee32a, gate results and T04 handoff.
 - No project schema, MediaEnginePort, frozen UI-001..042, or AAVC mutation. No encoder/render/export acceptance claimed.
+
+
+## SF12-T04 Real H264 baseline — accepted 2026-10-08 WIB
+
+- `src/ai_ngerti_geopolitik/infrastructure/ffmpeg_slice.py`: additive H264/AAC staging + verified MP4 + atomic no-clobber safe publisher, with frozen `MediaEnginePort` retained.
+- `scripts/qualification/sf12_t04_h264_real_media.py`: real owned-fixture Windows MP4 render with codec/duration/hash and negative checks.
+- `tests/unit/test_sf12_t04_export_h264.py`: fake runner unit contracts, wrong codec/FPS/audio, pre-cancel, source collision and racing output writer.
+- `.github/workflows/sf12-t04-h264-windows.yml`: Windows full static/pytest, Chocolatey external FFmpeg, owned deterministic fixture, real FFprobe, evidence artifact.
+- `docs/evidence/features/SF12_T04_H264_BASELINE.md`: Windows acceptance run 37737863469, artifact ID 11531514655 and 14-day retention; next T05.

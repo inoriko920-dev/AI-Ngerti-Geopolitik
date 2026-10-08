@@ -206,3 +206,12 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - Targeted and complete pytest PASS; Ruff/mypy 90 files, architecture/imports, secret gate, 70/70 source-of-truth, UI 42/42 PASS. This is not evidence of production media export.
 - Draft PR #4 stacked above PR #3/#2/#1, not merged into main. T04 H264 baseline pipeline is READY after owner's next `lanjutkan`; T05–T10 remain serial blocked. No breaking MediaEnginePort change or AAVC/UI redesign.
 - Evidence: `docs/evidence/features/SF12_T03_EXPORT_PREFLIGHT.md`. W5 mic and W6/W7 Gemini live provisional.
+
+
+## SF12-T04 — REAL H.264 BASELINE / PASS_REAL_MEDIA_BASELINE_WITH_PROVISIONAL_PRODUCTION_GATE (2026-10-08 WIB)
+
+- Accepted implementation SHA `96cf5a46ecfeea6cdb9ff767414a6dde828a2a42`; Windows run `37737863469` SUCCESS. Independent FFprobe proved 1920×1080 30fps H.264 + AAC MP4, 30 frames/1 second on synthetic owned fixture.
+- New additive FFmpeg method uses T02 request and T03 safety contract with guarded staging, recheck and atomic no-overwrite publish. Race-injected conflicting output is preserved. Existing frozen MediaEnginePort and UI 42 references unchanged.
+- Targeted/full pytest, Ruff, mypy90, import/architecture/secrets, source-of-truth 70/70, UI SHA42/42 PASS. Evidence `docs/evidence/features/SF12_T04_H264_BASELINE.md`, run artifact ID 11531514655.
+- Draft PR #5 on T03 #4 → T02 #3 → T01 #2 → planning #1; main remains untouched. No release, UI remains disabled, H.265/4K/60fps/selection not proven.
+- **Next serial task T05 range and selection mapping** after explicit owner continuation; T06–T10 blocked. Production distribution/native-license gate still provisional.
