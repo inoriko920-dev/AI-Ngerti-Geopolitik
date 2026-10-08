@@ -990,3 +990,120 @@ def test_still_play_stops_when_project_identity_changes(qtbot, tmp_path: Path) -
     assert controller.still_preview_desired is None
     controller.shutdown()
     controller.window.close()
+
+
+def test_wizard_second_continue_creates_and_opens_real_image_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Historical map</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w", zipfile.ZIP_DEFLATED) as output:
+        output.writestr("word/document.xml", xml)
+    assets = tmp_path / "images"
+    assets.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_ARGB32)
+    image.fill(0xFFCC4422)
+    assert image.save(str(assets / "A001.png"), "PNG")
+    timing = tmp_path / "timing.txt"
+    timing.write_text("# FPS project: 30\nScene 1: 150 frames\n", encoding="utf-8")
+    project = tmp_path / "historical.angproj"
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(assets))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda *a, **kw: (str(timing), "TXT Durasi (*.txt)")
+    )
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda *a, **kw: (str(project), "Project (*.angproj)")
+    )
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(document)))
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+    assert not controller.session.is_open
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open
+        and controller.window.window.property("ui_state") == "UI-010",
+        controller,
+    )
+    assert project.exists()
+    assert controller.session.current_path == project.resolve()
+    assert controller.session.state.assets[0].media_type == "image"
+    assert controller.session.state.tracks[0].clips[0].image_hold_frames == 150
+    assert controller.session.state.timeline_end_frame == 150
+    assert not controller.session.dirty
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_bad_duration_does_not_write_or_replace_active_session(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Flag</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as output:
+        output.writestr("word/document.xml", xml)
+    folder = tmp_path / "assets"
+    folder.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_RGB32)
+    image.fill(0x00114488)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    invalid_timing = tmp_path / "bad.txt"
+    invalid_timing.write_text(
+        "# FPS project: 30\nScene 1: ____ frames\n", encoding="utf-8"
+    )
+    target = tmp_path / "should-not-exist.angproj"
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(folder))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda *a, **kw: (str(invalid_timing), "TXT (*.txt)")
+    )
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda *a, **kw: (str(target), "Project (*.angproj)")
+    )
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(document)))
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: controller.scene_save_future is None,
+        controller,
+    )
+    assert not controller.session.is_open
+    assert not target.exists()
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "gagal dibuat" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+

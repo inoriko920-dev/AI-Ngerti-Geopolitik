@@ -44,12 +44,13 @@ from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntentSink,
     UiIntentType,
 )
-from ai_ngerti_geopolitik.bootstrap.scene_cli import create_scene_project_from_wizard
 from ai_ngerti_geopolitik.application.validation import (
     RealMediaIntegrityRule,
     ValidationResult,
     ValidationService,
 )
+from ai_ngerti_geopolitik.bootstrap.scene_cli import create_scene_project_from_wizard
+from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.crash_marker import FileCrashMarkerStore
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfprobeMediaProbe
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
@@ -58,7 +59,6 @@ from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepositor
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
-from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
     StillFramePreviewError,
     render_still_frame,
@@ -694,7 +694,7 @@ class W8RuntimeController:
                     if inventory.all_ready:
                         self._notify(
                             f"Folder aset: {ready}/{total} READY. "
-                            "Siapkan TXT durasi, lalu klik Lanjut lagi."
+                            "Project belum dibuat. Siapkan TXT durasi, lalu klik Lanjut lagi."
                         )
                     else:
                         issues = ", ".join(
