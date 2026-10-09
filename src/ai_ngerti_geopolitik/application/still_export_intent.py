@@ -58,9 +58,15 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
         raise StillExportIntentError("Pilihan subtitle tidak dikenali.")
     if want_subtitles != bool(state.subtitle is not None and state.subtitle.enabled):
         raise StillExportIntentError("Subtitle project wajib sesuai dengan pilihan ekspor.")
-    if want_subtitles and state.subtitle is not None:
-        if state.subtitle.animation.preset != "none" or state.subtitle.style.font_family != "Arial":
-            raise StillExportIntentError("Hanya subtitle statis Arial yang didukung Pilot A.")
+    if (
+        want_subtitles
+        and state.subtitle is not None
+        and (
+            state.subtitle.animation.preset != "none"
+            or state.subtitle.style.font_family != "Arial"
+        )
+    ):
+        raise StillExportIntentError("Hanya subtitle statis Arial yang didukung Pilot A.")
     if not state.tracks or not any(track.clips for track in state.tracks):
         raise StillExportIntentError("Project belum mempunyai scene gambar untuk diekspor.")
     if any(

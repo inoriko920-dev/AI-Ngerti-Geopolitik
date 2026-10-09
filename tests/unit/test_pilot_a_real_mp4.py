@@ -22,6 +22,7 @@ from ai_ngerti_geopolitik.application.scene_import_review import (
     create_canonical_scene_image_project,
 )
 from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
+from ai_ngerti_geopolitik.bootstrap.w8_controller import W8IntentRouter, W8RuntimeController
 from ai_ngerti_geopolitik.domain import (
     Asset,
     FrameTime,
@@ -30,7 +31,6 @@ from ai_ngerti_geopolitik.domain import (
     SubtitleStyle,
     SubtitleTrack,
 )
-from ai_ngerti_geopolitik.bootstrap.w8_controller import W8IntentRouter, W8RuntimeController
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
     PilotAError,
