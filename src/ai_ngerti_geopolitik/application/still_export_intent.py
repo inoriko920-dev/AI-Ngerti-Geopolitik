@@ -54,9 +54,7 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
     if payload["sharpen"] != "Normal":
         raise StillExportIntentError("Ketajaman pilihan ini belum didukung oleh Pilot A.")
     want_subtitles = payload["subtitle"] == "Sertakan Subtitle (Burn-in ke Video)"
-    if payload["subtitle"] not in {
-        "Tanpa Subtitle", "Sertakan Subtitle (Burn-in ke Video)"
-    }:
+    if payload["subtitle"] not in {"Tanpa Subtitle", "Sertakan Subtitle (Burn-in ke Video)"}:
         raise StillExportIntentError("Pilihan subtitle tidak dikenali.")
     if want_subtitles != bool(state.subtitle is not None and state.subtitle.enabled):
         raise StillExportIntentError("Subtitle project wajib sesuai dengan pilihan ekspor.")
@@ -66,12 +64,16 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
     if not state.tracks or not any(track.clips for track in state.tracks):
         raise StillExportIntentError("Project belum mempunyai scene gambar untuk diekspor.")
     if any(
-        asset.media_type not in {"image", "audio"} or
-        (asset.media_type == "image" and asset.has_audio) or
-        (asset.media_type == "audio" and (
-            state.narration is None or asset.asset_id != state.narration.asset_id or
-            Path(asset.path_ref).suffix.lower() != ".wav"
-        ))
+        asset.media_type not in {"image", "audio"}
+        or (asset.media_type == "image" and asset.has_audio)
+        or (
+            asset.media_type == "audio"
+            and (
+                state.narration is None
+                or asset.asset_id != state.narration.asset_id
+                or Path(asset.path_ref).suffix.lower() != ".wav"
+            )
+        )
         for asset in state.assets
     ):
         raise StillExportIntentError("Pilot A hanya mendukung gambar dan narasi WAV tunggal.")

@@ -16,6 +16,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QComboBox, QLineEdit, QPushButton
 
+from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
+from ai_ngerti_geopolitik.application.scene_import_review import (
+    build_scene_timeline_review,
+    create_canonical_scene_image_project,
+)
+from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
 from ai_ngerti_geopolitik.domain import (
     Asset,
     FrameTime,
@@ -24,12 +30,6 @@ from ai_ngerti_geopolitik.domain import (
     SubtitleStyle,
     SubtitleTrack,
 )
-from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
-from ai_ngerti_geopolitik.application.scene_import_review import (
-    build_scene_timeline_review,
-    create_canonical_scene_image_project,
-)
-from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
 from ai_ngerti_geopolitik.bootstrap.w8_controller import W8IntentRouter, W8RuntimeController
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
@@ -330,7 +330,6 @@ def test_real_frozen_gui_export_button_produces_verified_mp4(
         window.close()
 
 
-
 def _audio_state(tmp_path: Path, *, with_subtitles: bool):
     _fixture(tmp_path)
     state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
@@ -383,9 +382,17 @@ def _audio_state(tmp_path: Path, *, with_subtitles: bool):
 def _probe_av(destination: Path, tool: Path) -> dict:
     result = subprocess.run(
         [
-            str(tool), "-v", "error", "-count_frames",
-            "-show_entries", "stream=codec_type,codec_name,nb_read_frames",
-            "-show_entries", "format=duration", "-of", "json", str(destination),
+            str(tool),
+            "-v",
+            "error",
+            "-count_frames",
+            "-show_entries",
+            "stream=codec_type,codec_name,nb_read_frames",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "json",
+            str(destination),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
@@ -398,9 +405,7 @@ def _probe_av(destination: Path, tool: Path) -> dict:
 
 
 @pytest.mark.parametrize("subtitles", [False, True])
-def test_real_wav_narration_and_optional_burned_subtitle(
-    tmp_path: Path, subtitles: bool
-) -> None:
+def test_real_wav_narration_and_optional_burned_subtitle(tmp_path: Path, subtitles: bool) -> None:
     from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import export_still_project_mp4
 
     state = _audio_state(tmp_path, with_subtitles=subtitles)

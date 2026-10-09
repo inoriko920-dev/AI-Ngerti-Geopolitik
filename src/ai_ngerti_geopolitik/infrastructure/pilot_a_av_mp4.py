@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import os
 import re
 import subprocess
@@ -110,8 +109,16 @@ def compose_narration_subtitle_pilot_a(
         duration = state.timeline_end_frame / state.fps
         with tempfile.TemporaryDirectory(prefix=".ang-av-", dir=output.parent) as folder:
             staged = Path(folder) / "av.mp4"
-            args = [str(ffmpeg_path), "-nostdin", "-hide_banner", "-v", "error",
-                    "-xerror", "-i", str(silent.path)]
+            args = [
+                str(ffmpeg_path),
+                "-nostdin",
+                "-hide_banner",
+                "-v",
+                "error",
+                "-xerror",
+                "-i",
+                str(silent.path),
+            ]
             if narration is not None:
                 args.extend(("-i", str(narration)))
             if subtitles is not None:
@@ -123,36 +130,57 @@ def compose_narration_subtitle_pilot_a(
                 audio_plan = build_narration_render_plan(state)
                 if audio_plan is None:
                     raise PilotAError("narration plan is missing")
-                audio_filter = ",".join((
-                    *audio_plan.filters,
-                    "apad",
-                    f"atrim=end={duration:.6f}",
-                ))
+                audio_filter = ",".join(
+                    (
+                        *audio_plan.filters,
+                        "apad",
+                        f"atrim=end={duration:.6f}",
+                    )
+                )
                 args.extend(("-map", "1:a:0", "-af", audio_filter))
             if subtitles is None:
                 args.extend(("-c:v", "copy"))
             else:
-                args.extend(("-c:v", "libx264", "-preset", "medium", "-crf", "18",
-                             "-pix_fmt", "yuv420p"))
+                args.extend(
+                    ("-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p")
+                )
             if narration is not None:
                 args.extend(("-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2"))
-            args.extend(("-t", f"{duration:.6f}", "-movflags", "+faststart",
-                         "-f", "mp4", "-y", str(staged)))
+            args.extend(
+                ("-t", f"{duration:.6f}", "-movflags", "+faststart", "-f", "mp4", "-y", str(staged))
+            )
             finished = subprocess.run(
                 args,
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL, shell=False, timeout=120, check=False,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=False,
+                timeout=120,
+                check=False,
             )
             if finished.returncode != 0 or not staged.is_file() or staged.stat().st_size <= 0:
                 raise PilotAError("native audiovisual compose failed")
             with tempfile.TemporaryFile() as manifest:
                 verified = subprocess.run(
-                    [str(ffprobe_path), "-v", "error", "-count_frames",
-                     "-show_entries",
-                     "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate",
-                     "-show_entries", "format=duration", "-of", "json", str(staged)],
-                    stdin=subprocess.DEVNULL, stdout=manifest,
-                    stderr=subprocess.DEVNULL, shell=False, timeout=20, check=False,
+                    [
+                        str(ffprobe_path),
+                        "-v",
+                        "error",
+                        "-count_frames",
+                        "-show_entries",
+                        "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate",
+                        "-show_entries",
+                        "format=duration",
+                        "-of",
+                        "json",
+                        str(staged),
+                    ],
+                    stdin=subprocess.DEVNULL,
+                    stdout=manifest,
+                    stderr=subprocess.DEVNULL,
+                    shell=False,
+                    timeout=20,
+                    check=False,
                 )
                 if verified.returncode != 0 or manifest.tell() > 65536:
                     raise PilotAError("audiovisual postflight failed")
@@ -174,10 +202,24 @@ def compose_narration_subtitle_pilot_a(
             ):
                 raise PilotAError("audiovisual stream mismatch")
             decoded = subprocess.run(
-                [str(ffmpeg_path), "-nostdin", "-v", "error", "-xerror", "-i", str(staged),
-                 "-f", "null", "-"],
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL, shell=False, timeout=40, check=False,
+                [
+                    str(ffmpeg_path),
+                    "-nostdin",
+                    "-v",
+                    "error",
+                    "-xerror",
+                    "-i",
+                    str(staged),
+                    "-f",
+                    "null",
+                    "-",
+                ],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=False,
+                timeout=40,
+                check=False,
             )
             if decoded.returncode != 0:
                 raise PilotAError("audiovisual full decode failed")
@@ -190,11 +232,23 @@ def compose_narration_subtitle_pilot_a(
             # Exclusive publish: an existing output cannot be overwritten.
             os.link(staged, output)
             return PilotAResult(
-                path=output, sha256=digest.hexdigest(), file_bytes=output.stat().st_size,
-                frame_count=silent.frame_count, fps=silent.fps, width=silent.width,
-                height=silent.height, duration_seconds=duration,
+                path=output,
+                sha256=digest.hexdigest(),
+                file_bytes=output.stat().st_size,
+                frame_count=silent.frame_count,
+                fps=silent.fps,
+                width=silent.width,
+                height=silent.height,
+                duration_seconds=duration,
                 rgb24_sha256=silent.rgb24_sha256,
             )
-    except (OSError, ValueError, TypeError, RuntimeError, KeyError, OverflowError,
-            subprocess.TimeoutExpired):
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        RuntimeError,
+        KeyError,
+        OverflowError,
+        subprocess.TimeoutExpired,
+    ):
         raise PilotAError("native audiovisual Pilot A failed without publishing output") from None
