@@ -10,8 +10,8 @@ import hashlib
 import json
 import os
 import subprocess
-import unicodedata
 import tempfile
+import unicodedata
 from collections.abc import Callable
 from pathlib import Path
 

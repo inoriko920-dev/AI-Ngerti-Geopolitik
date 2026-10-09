@@ -589,8 +589,8 @@ def test_real_unicode_burned_subtitle_appears_only_in_cue_window(tmp_path: Path)
         return raw[frame * frame_bytes : (frame + 1) * frame_bytes]
 
     before, during, after = pixels(0), pixels(12), pixels(28)
-    changed_during = sum(abs(x - y) > 25 for x, y in zip(before, during))
-    changed_after = sum(abs(x - y) > 25 for x, y in zip(before, after))
+    changed_during = sum(abs(x - y) > 25 for x, y in zip(before, during, strict=True))
+    changed_after = sum(abs(x - y) > 25 for x, y in zip(before, after, strict=True))
     assert changed_during > 30
     assert changed_after < changed_during // 2
 
