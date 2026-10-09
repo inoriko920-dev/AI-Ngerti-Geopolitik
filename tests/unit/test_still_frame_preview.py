@@ -559,3 +559,110 @@ def test_w4_drift_rejects_double_lane_and_transition(tmp_path: Path) -> None:
     )
     with pytest.raises(StillFramePreviewError, match="effects"):
         render_still_frame(invalid, 0)
+
+
+
+def test_w4_rise_moves_vertical_pixels_in_out_without_exposed_borders(tmp_path: Path) -> None:
+    state = _drift_pattern_state(tmp_path)
+    clip = state.tracks[0].clips[0]
+    moved = replace(
+        clip,
+        properties=replace(
+            clip.properties,
+            effects=EffectProperties(enter_effect="Rise", exit_effect="Rise"),
+        ),
+    )
+    project = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(moved, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    project.validate()
+    images = [render_still_frame(project, index) for index in (0, 4, 18, 147, 149)]
+    assert all((image.width(), image.height()) == (128, 72) for image in images)
+
+    def pixels(image: QImage) -> tuple[int, ...]:
+        return tuple(
+            component
+            for x, y in ((15, 14), (64, 36), (105, 56))
+            for component in (
+                image.pixelColor(x, y).red(),
+                image.pixelColor(x, y).green(),
+                image.pixelColor(x, y).blue(),
+            )
+        )
+
+    start, entering, middle, leaving, end = (pixels(image) for image in images)
+
+    def deviation(a: tuple[int, ...], b: tuple[int, ...]) -> int:
+        return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+
+    assert deviation(start, middle) > 35
+    assert deviation(entering, middle) > 10
+    assert deviation(leaving, middle) > 10
+    assert deviation(end, middle) > 35
+    for image in images:
+        assert image.pixelColor(0, 0).alpha() == 255
+        assert image.pixelColor(127, 71).alpha() == 255
+
+
+@pytest.mark.parametrize(("enter", "exit"), [("Rise", "Pan"), ("Drift", "Rise"), ("Fade", "Rise")])
+def test_w4_rise_mixed_effects_fail_closed(
+    tmp_path: Path, enter: str, exit: str
+) -> None:
+    state = _drift_pattern_state(tmp_path)
+    first = state.tracks[0].clips[0]
+    bad = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect=enter, exit_effect=exit),
+        ),
+    )
+    invalid = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(bad, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(invalid, 0)
+
+
+def test_w4_rise_rejects_double_lane_and_fade_black_transition(tmp_path: Path) -> None:
+    state = _drift_pattern_state(tmp_path)
+    second = state.tracks[0].clips[1]
+    animated = replace(
+        second,
+        properties=replace(second.properties, effects=EffectProperties(enter_effect="Rise")),
+    )
+    double = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(state.tracks[0].clips[0], animated)),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="single V1"):
+        render_still_frame(double, 151)
+    first = state.tracks[0].clips[0]
+    combined = replace(
+        first,
+        properties=replace(
+            first.properties,
+            transition=TransitionProperties("fade_black", 8),
+            effects=EffectProperties(enter_effect="Rise"),
+        ),
+    )
+    invalid = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(combined, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(invalid, 0)

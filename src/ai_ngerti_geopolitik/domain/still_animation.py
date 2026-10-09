@@ -5,6 +5,7 @@ Native Pilot A can render a single active V1 image HOLD with one of:
 - W4 Fade enter and/or Fade exit effect;
 - W4 Pan enter and/or Pan exit effect (bounded horizontal motion);
 - W4 Drift enter and/or Drift exit effect (bounded diagonal motion).
+- W4 Rise enter and/or Rise exit effect (bounded vertical motion).
 All use canonical clip duration. Unsupported combinations fail closed.
 """
 
@@ -88,12 +89,48 @@ def qualified_still_drift(clip: Clip, timeline_frame: int) -> float | None:
     return max(-1.0, min(1.0, entering + leaving))
 
 
+def qualified_still_rise(clip: Clip, timeline_frame: int) -> float | None:
+    """Bounded vertical W4 Rise displacement: down on IN and OUT, centered midclip.
+
+    W4's Rise uses an 8% positive Y overlay excursion, quarter-second
+    timing, and full-intensity single-effect qualification. Source cropping
+    must cover the canvas throughout rather than exposing empty borders.
+    """
+    if clip.properties == ClipProperties():
+        return None
+    props = clip.properties
+    effects = props.effects
+    qualified = (
+        clip.image_hold_frames is not None
+        and props.transition.preset == "none"
+        and effects.enter_effect in {"None", "Rise"}
+        and effects.exit_effect in {"None", "Rise"}
+        and (effects.enter_effect == "Rise" or effects.exit_effect == "Rise")
+        and effects.intensity_percent == 100
+        and replace(props, effects=EffectProperties()) == ClipProperties()
+    )
+    if not qualified:
+        return None
+    offset = timeline_frame - clip.timeline_start.frames
+    if not 0 <= offset < clip.duration_frames:
+        raise ValueError("rise frame outside clip")
+    window = max(1.0, min(0.25 * clip.timeline_start.fps, clip.duration_frames / 2.0))
+    entering = max(0.0, 1.0 - offset / window) if effects.enter_effect == "Rise" else 0.0
+    leaving = (
+        max(0.0, 1.0 - (clip.duration_frames - offset) / window)
+        if effects.exit_effect == "Rise"
+        else 0.0
+    )
+    return max(0.0, min(1.0, entering + leaving))
+
+
 def qualified_still_visibility(clip: Clip, timeline_frame: int) -> float | None:
     """Return 0..1 image visibility, None for unmodified clips; reject others."""
     if (
         clip.properties == ClipProperties()
         or qualified_still_pan(clip, timeline_frame) is not None
         or qualified_still_drift(clip, timeline_frame) is not None
+        or qualified_still_rise(clip, timeline_frame) is not None
     ):
         return None
     if clip.image_hold_frames is None:

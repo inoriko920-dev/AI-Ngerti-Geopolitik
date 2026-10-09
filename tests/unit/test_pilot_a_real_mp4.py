@@ -1504,3 +1504,109 @@ def test_native_h264_w4_drift_moves_actual_pixels_diagonally(tmp_path: Path) -> 
         (directory / "W4-Drift-SHA256.txt").write_text(
             f"{result.sha256}  {filename}\n", encoding="utf-8"
         )
+
+
+
+def test_native_h264_w4_rise_has_real_vertical_pixel_motion(tmp_path: Path) -> None:
+    """Decode a genuine native H264 MP4 and verify the W4 vertical Rise IN/OUT."""
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    image = QImage(64, 48, QImage.Format.Format_RGB32)
+    for x in range(64):
+        for y in range(48):
+            image.setPixelColor(
+                x,
+                y,
+                QColor(
+                    (x * 2 + y * 5 + 30) % 256,
+                    (x * 3 + y * 7 + 40) % 256,
+                    (x * 4 + y * 9 + 50) % 256,
+                ),
+            )
+    source = tmp_path / "A001.png"
+    assert image.save(str(source), "PNG")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    assets = tuple(
+        replace(asset, file_size=source.stat().st_size, fingerprint_sha256=digest)
+        if asset.asset_id == "A001"
+        else asset
+        for asset in state.assets
+    )
+    first = state.tracks[0].clips[0]
+    animated = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Rise", exit_effect="Rise"),
+        ),
+    )
+    state = replace(
+        state,
+        assets=assets,
+        tracks=(
+            replace(state.tracks[0], clips=(animated, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    target = tmp_path / "w4-rise-native.mp4"
+    result = export_still_project_mp4(state, target, batch_size=15, **_tools())
+    assert result.frame_count == 60
+    assert result.sha256 == hashlib.sha256(target.read_bytes()).hexdigest()
+    frame_bytes = result.width * result.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        ffmpeg = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(target),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=decoded,
+            stderr=subprocess.DEVNULL,
+            timeout=40,
+            check=False,
+        )
+        assert ffmpeg.returncode == 0
+        assert decoded.tell() == result.frame_count * frame_bytes
+
+        def samples(frame: int) -> bytes:
+            return b"".join(
+                _read_rgb_sample(decoded, frame, y, x, result.width, frame_bytes)
+                for x, y in ((15, 14), (64, 36), (105, 56))
+            )
+
+        opening, entering, middle, leaving, ending = (
+            samples(frame) for frame in (0, 4, 18, 27, 29)
+        )
+
+        def difference(a: bytes, b: bytes) -> int:
+            return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+
+        assert difference(opening, middle) > 55
+        assert difference(entering, middle) > 15
+        assert difference(leaving, middle) > 15
+        assert difference(ending, middle) > 55
+        decoded.seek(30 * frame_bytes)
+        following = decoded.read(3)
+        assert len(following) == 3 and following[1] > 160 and following[0] < 90
+    root = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if root:
+        directory = Path(root)
+        directory.mkdir(parents=True, exist_ok=True)
+        filename = "ANG-Pilot-A-W4-Rise-Vertical.mp4"
+        shutil.copy2(target, directory / filename)
+        (directory / "W4-Rise-SHA256.txt").write_text(
+            f"{result.sha256}  {filename}\n", encoding="utf-8"
+        )
