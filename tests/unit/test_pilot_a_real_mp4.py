@@ -31,10 +31,10 @@ from ai_ngerti_geopolitik.domain import (
     Asset,
     FrameTime,
     NarrationTrack,
-    TransitionProperties,
     SubtitleCue,
     SubtitleStyle,
     SubtitleTrack,
+    TransitionProperties,
 )
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.pilot_a_av_mp4 import _run_bounded_compose

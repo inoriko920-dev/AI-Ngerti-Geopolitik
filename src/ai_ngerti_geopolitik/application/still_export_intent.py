@@ -91,8 +91,9 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                 fade = qualified_fade_black_visibility(clip, clip.timeline_start.frames)
             except ValueError:
                 raise StillExportIntentError("Efek gambar belum didukung oleh Pilot A.") from None
-            if fade is not None:
-                if track.track_id != "V1" or any(
+            if fade is not None and (
+                track.track_id != "V1"
+                or any(
                     other.track_id != "V1"
                     and any(
                         other_clip.timeline_start.frames < clip.timeline_end_frame
@@ -100,10 +101,11 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                         for other_clip in other.clips
                     )
                     for other in state.tracks
-                ):
-                    raise StillExportIntentError(
-                        "Fade-through-black hanya tersedia untuk satu gambar di V1."
-                    )
+                )
+            ):
+                raise StillExportIntentError(
+                    "Fade-through-black hanya tersedia untuk satu gambar di V1."
+                )
     selected = _RESOLUTIONS.get(payload["resolution"])
     if selected != (state.settings.width, state.settings.height):
         raise StillExportIntentError(
