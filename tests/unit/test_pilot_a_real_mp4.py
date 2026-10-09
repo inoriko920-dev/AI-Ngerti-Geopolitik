@@ -1611,7 +1611,6 @@ def test_native_h264_w4_rise_has_real_vertical_pixel_motion(tmp_path: Path) -> N
         )
 
 
-
 def test_native_h264_w4_breathe_has_real_centered_scale_motion(tmp_path: Path) -> None:
     """A genuine H264 MP4 must contain measurable 0.98→1.00→0.98 pixel scale."""
     _fixture(tmp_path)
@@ -1701,9 +1700,7 @@ def test_native_h264_w4_breathe_has_real_centered_scale_motion(tmp_path: Path) -
                 for x in (20, 54, 105, 160, 222)
             )
 
-        initial, entering, middle, leaving, ending = (
-            pixels(index) for index in (0, 4, 17, 27, 29)
-        )
+        initial, entering, middle, leaving, ending = (pixels(index) for index in (0, 4, 17, 27, 29))
 
         def diff(a: bytes, b: bytes) -> int:
             return sum(abs(x - y) for x, y in zip(a, b, strict=True))

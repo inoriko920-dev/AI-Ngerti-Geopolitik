@@ -150,9 +150,7 @@ def qualified_still_breathe(clip: Clip, timeline_frame: int) -> float | None:
     if not 0 <= offset < clip.duration_frames:
         raise ValueError("breathe frame outside clip")
     window = max(1.0, min(0.25 * clip.timeline_start.fps, clip.duration_frames / 2.0))
-    entering = (
-        max(0.0, 1.0 - offset / window) if effects.enter_effect == "Breathe" else 0.0
-    )
+    entering = max(0.0, 1.0 - offset / window) if effects.enter_effect == "Breathe" else 0.0
     leaving = (
         max(0.0, 1.0 - (clip.duration_frames - offset) / window)
         if effects.exit_effect == "Breathe"

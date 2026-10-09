@@ -666,7 +666,6 @@ def test_w4_rise_rejects_double_lane_and_fade_black_transition(tmp_path: Path) -
         render_still_frame(invalid, 0)
 
 
-
 def test_w4_breathe_uses_exact_scale_window_and_real_qt_pixels(tmp_path: Path) -> None:
     state = _drift_pattern_state(tmp_path)
     first = state.tracks[0].clips[0]
