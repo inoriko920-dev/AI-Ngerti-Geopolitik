@@ -604,3 +604,152 @@ def test_rejects_control_character_caption_without_final_mp4(tmp_path: Path) -> 
     with pytest.raises(StillProjectMP4Error):
         export_still_project_mp4(invalid, output, include_subtitles=True, **_tools())
     assert not output.exists()
+
+
+
+def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
+    """12s real FFmpeg render: SRT cue windows and 1s delayed VBR MP3 narration."""
+    from ai_ngerti_geopolitik.application.subtitle_import import build_subtitle_track
+    from ai_ngerti_geopolitik.infrastructure.srt import Utf8SrtParser
+
+    state = _audio_state(tmp_path, with_subtitles=False)
+    assert state.narration is not None
+    # Extend the last image HOLD: preserve original image identities and content hashes.
+    track = state.tracks[0]
+    assert track.clips
+    extended = replace(track.clips[-1], image_hold_frames=330)
+    state = replace(
+        state,
+        tracks=(replace(track, clips=(*track.clips[:-1], extended)),),
+    )
+    assert state.timeline_end_frame == 360
+    native = _tools()
+    source_mp3 = tmp_path / "narration-vbr.mp3"
+    cmd = [
+        str(native["ffmpeg_path"]),
+        "-nostdin",
+        "-v",
+        "error",
+        "-i",
+        str(tmp_path / "narration.wav"),
+        "-c:a",
+        "libmp3lame",
+        "-q:a",
+        "5",
+        "-y",
+        str(source_mp3),
+    ]
+    encoded = subprocess.run(
+        cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL, timeout=20, check=False
+    )
+    assert encoded.returncode == 0 and source_mp3.is_file()
+    audio_asset = replace(
+        state.asset("A004"),
+        path_ref=str(source_mp3.resolve()),
+        file_size=source_mp3.stat().st_size,
+        fingerprint_sha256=hashlib.sha256(source_mp3.read_bytes()).hexdigest(),
+    )
+    state = replace(
+        state,
+        assets=tuple(audio_asset if a.asset_id == "A004" else a for a in state.assets),
+        narration=replace(state.narration, timeline_start=FrameTime(30, 30)),
+    )
+    text = (
+        "\ufeff1\r\n00:00:00,500 --> 00:00:01,500\r\nCafé\r\n\r\n"
+        "2\r\n00:00:04,000 --> 00:00:05,000\r\nIndonesia 2026\r\n\r\n"
+        "3\r\n00:00:10,000 --> 00:00:11,000\r\n日本\r\n"
+    )
+    source_srt = tmp_path / "narration-multi.srt"
+    source_srt.write_bytes(text.encode("utf-8"))
+    original_digest = hashlib.sha256(source_srt.read_bytes()).hexdigest()
+    subtitle = build_subtitle_track(
+        state, source_srt, Utf8SrtParser().parse(source_srt)
+    )
+    state = replace(
+        state,
+        subtitle=replace(
+            subtitle,
+            style=SubtitleStyle(font_family="Arial", font_size=16, margin_v=8),
+        ),
+    )
+    state.validate()
+    result_path = tmp_path / "long-vbr-and-srt.mp4"
+    result = export_still_project_mp4(
+        state, result_path, batch_size=60, include_subtitles=True, **native
+    )
+    assert result.frame_count == 360
+    assert abs(result.duration_seconds - 12.0) <= 1 / 30
+    assert hashlib.sha256(source_srt.read_bytes()).hexdigest() == original_digest
+    verified = _probe_av(result_path, native["ffprobe_path"])
+    streams = verified["streams"]
+    assert next(s["nb_read_frames"] for s in streams if s["codec_name"] == "h264") == "360"
+    assert sum(s["codec_name"] == "aac" for s in streams) == 1
+    audio = subprocess.run(
+        [
+            str(native["ffmpeg_path"]), "-nostdin", "-v", "error",
+            "-i", str(result_path), "-map", "0:a:0", "-ar", "8000",
+            "-ac", "1", "-f", "s16le", "-",
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=35,
+        check=True,
+    ).stdout
+    samples = array("h")
+    samples.frombytes(audio)
+    assert len(samples) >= 88000
+    assert max(abs(x) for x in samples[1600:4000]) < 500
+    assert max(abs(x) for x in samples[12000:14400]) > 1000
+    assert max(abs(x) for x in samples[72000:76000]) < 500
+
+    # Decode just 6 frames, avoiding huge frame buffers; check 3 separated SRT cues.
+    frames: list[bytes] = []
+    for frame_index in (1, 30, 90, 135, 285, 315):
+        image_bytes = subprocess.run(
+            [
+                str(native["ffmpeg_path"]), "-nostdin", "-v", "error",
+                "-i", str(result_path), "-vf",
+                f"select=eq(n\\,{frame_index})", "-vsync", "0",
+                "-frames:v", "1", "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=25,
+            check=True,
+        ).stdout
+        assert len(image_bytes) == result.width * result.height * 3
+        frames.append(image_bytes)
+    # Still background alternates by source HOLD; compare only adjacent
+    # frames within the same clip when testing a subtitle's presence.
+    assert len(frames) == 6
+    assert frames[0] != frames[1]
+    assert frames[2] != frames[3]
+    assert frames[4] != frames[5]
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    target = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if target:
+        directory = Path(target)
+        directory.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(result_path, directory / "ANG-Pilot-A-12s-VBR-MultiSRT.mp4")
+        (directory / "12S-SHA256.txt").write_text(
+            f"{result.sha256}  ANG-Pilot-A-12s-VBR-MultiSRT.mp4\n",
+            encoding="utf-8",
+        )
+
+
+def test_native_narration_metadata_mismatch_never_publishes(tmp_path: Path) -> None:
+    state = _audio_state(tmp_path, with_subtitles=False)
+    incorrect = replace(state.asset("A004"), sample_rate=44100)
+    state = replace(
+        state,
+        assets=tuple(incorrect if a.asset_id == "A004" else a for a in state.assets),
+    )
+    state.validate()
+    output = tmp_path / "invalid-audio-metadata.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(state, output, **_tools())
+    assert not output.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import subprocess
 import tempfile
@@ -67,8 +68,10 @@ def _narration_source(state: ProjectState) -> Path | None:
     return source
 
 
-def _probe_narration(source: Path, ffprobe: Path) -> None:
-    """Require one real stream matching declared WAV/MP3 extension before mux."""
+def _probe_narration(
+    source: Path, ffprobe: Path, *, sample_rate: int, duration_seconds: float
+) -> None:
+    """Verify declared audio metadata against a real decoded-source probe."""
     with tempfile.TemporaryFile() as sink:
         try:
             result = subprocess.run(
@@ -77,7 +80,9 @@ def _probe_narration(source: Path, ffprobe: Path) -> None:
                     "-v",
                     "error",
                     "-show_entries",
-                    "stream=codec_type,codec_name,sample_rate",
+                    "stream=codec_type,codec_name,sample_rate,channels",
+                    "-show_entries",
+                    "format=duration",
                     "-of",
                     "json",
                     str(source),
@@ -100,9 +105,17 @@ def _probe_narration(source: Path, ffprobe: Path) -> None:
                 or len(streams) != 1
                 or streams[0].get("codec_type") != "audio"
                 or streams[0].get("codec_name") != expected
-                or int(streams[0]["sample_rate"]) not in (16000, 24000, 44100, 48000)
+                or int(streams[0]["sample_rate"]) != sample_rate
+                or not 1 <= int(streams[0]["channels"]) <= 2
             ):
                 raise PilotAError("audio source codec is not qualified")
+            probed_duration = float(metadata["format"]["duration"])
+            if (
+                not math.isfinite(probed_duration)
+                or probed_duration <= 0
+                or abs(probed_duration - duration_seconds) > 0.25
+            ):
+                raise PilotAError("audio source duration disagrees with canonical project")
         except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
             raise PilotAError("audio source codec verification failed") from None
 
@@ -156,7 +169,16 @@ def compose_narration_subtitle_pilot_a(
             raise PilotAError("native postcompose input invalid")
         narration = _narration_source(state)
         if narration is not None:
-            _probe_narration(narration, ffprobe_path)
+            narration_track = state.narration
+            if narration_track is None:
+                raise PilotAError("canonical narration track is missing")
+            narration_asset = state.asset(narration_track.asset_id)
+            _probe_narration(
+                narration,
+                ffprobe_path,
+                sample_rate=narration_asset.sample_rate,
+                duration_seconds=narration_asset.duration.frames / state.fps,
+            )
         subtitles = _subtitles(state, include_subtitles)
         if narration is None and subtitles is None:
             raise PilotAError("no secondary track required")
