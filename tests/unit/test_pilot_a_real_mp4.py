@@ -1220,7 +1220,6 @@ def test_real_native_mp4_has_fade_black_pixels_at_exact_scene_frames(
         )
 
 
-
 def test_real_native_mp4_w4_fade_effect_in_and_out_at_exact_frames(
     tmp_path: Path,
 ) -> None:

@@ -223,7 +223,6 @@ def test_fade_in_double_scene_and_other_motion_effects_reject_without_fake_pixel
         render_still_frame(unsupported_state, 0)
 
 
-
 def test_w4_fade_enter_exit_uses_frame_exact_alpha_not_static_image(tmp_path: Path) -> None:
     state = _save_real_project(tmp_path)
     first = state.tracks[0].clips[0]
