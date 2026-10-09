@@ -347,7 +347,6 @@ def test_real_project_source_vanishes_after_some_frames_fails_closed(tmp_path: P
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
 
 
-
 def test_complete_manifest_cancel_after_write_prevents_publish(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -375,9 +374,7 @@ def test_complete_manifest_cancel_after_write_prevents_publish(
     monkeypatch.setattr(Path, "write_text", flag_cancellation)
     output = tmp_path / "cancel-on-manifest.mp4"
     with pytest.raises(StillProjectMP4Error):
-        export_still_project_mp4(
-            state, output, batch_size=1, should_cancel=stop.is_set, **_tools()
-        )
+        export_still_project_mp4(state, output, batch_size=1, should_cancel=stop.is_set, **_tools())
     assert master_written == 1
     assert stop.is_set()
     assert not output.exists()
