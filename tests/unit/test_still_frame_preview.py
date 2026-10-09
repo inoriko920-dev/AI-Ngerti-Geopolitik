@@ -561,7 +561,6 @@ def test_w4_drift_rejects_double_lane_and_transition(tmp_path: Path) -> None:
         render_still_frame(invalid, 0)
 
 
-
 def test_w4_rise_moves_vertical_pixels_in_out_without_exposed_borders(tmp_path: Path) -> None:
     state = _drift_pattern_state(tmp_path)
     clip = state.tracks[0].clips[0]
@@ -609,9 +608,7 @@ def test_w4_rise_moves_vertical_pixels_in_out_without_exposed_borders(tmp_path: 
 
 
 @pytest.mark.parametrize(("enter", "exit"), [("Rise", "Pan"), ("Drift", "Rise"), ("Fade", "Rise")])
-def test_w4_rise_mixed_effects_fail_closed(
-    tmp_path: Path, enter: str, exit: str
-) -> None:
+def test_w4_rise_mixed_effects_fail_closed(tmp_path: Path, enter: str, exit: str) -> None:
     state = _drift_pattern_state(tmp_path)
     first = state.tracks[0].clips[0]
     bad = replace(
