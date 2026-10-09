@@ -751,11 +751,8 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     # Still background alternates by source HOLD; compare only adjacent
     # frames within the same clip when testing a subtitle's presence.
     assert len(frames) == 6
-    for before, during in ((frames[0], frames[1]), (frames[2], frames[3]),
-                           (frames[4], frames[5])):
-        changed = sum(
-            abs(a - b) > 25 for a, b in zip(before, during, strict=True)
-        )
+    for before, during in ((frames[0], frames[1]), (frames[2], frames[3]), (frames[4], frames[5])):
+        changed = sum(abs(a - b) > 25 for a, b in zip(before, during, strict=True))
         assert changed > 30
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
     target = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
