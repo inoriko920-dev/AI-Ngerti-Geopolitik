@@ -16,6 +16,7 @@ from ai_ngerti_geopolitik.application.scene_import_review import (
 )
 from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.domain import FrameTime
+from ai_ngerti_geopolitik.domain.still_animation import qualified_still_breathe
 from ai_ngerti_geopolitik.domain.properties import (
     ClipProperties,
     EffectProperties,
@@ -658,6 +659,116 @@ def test_w4_rise_rejects_double_lane_and_fade_black_transition(tmp_path: Path) -
         state,
         tracks=(
             replace(state.tracks[0], clips=(combined, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(invalid, 0)
+
+
+
+def test_w4_breathe_uses_exact_scale_window_and_real_qt_pixels(tmp_path: Path) -> None:
+    state = _drift_pattern_state(tmp_path)
+    first = state.tracks[0].clips[0]
+    altered = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Breathe", exit_effect="Breathe"),
+        ),
+    )
+    assert qualified_still_breathe(altered, 0) == pytest.approx(0.98)
+    assert qualified_still_breathe(altered, 4) == pytest.approx(0.98 + 0.02 * 4 / 7.5)
+    assert qualified_still_breathe(altered, 18) == pytest.approx(1.0)
+    assert qualified_still_breathe(altered, 147) == pytest.approx(1 - 0.02 * (1 - 3 / 7.5))
+    assert qualified_still_breathe(altered, 149) == pytest.approx(1 - 0.02 * (1 - 1 / 7.5))
+    project = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(altered, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    project.validate()
+    frames = [render_still_frame(project, number) for number in (0, 4, 18, 147, 149)]
+    assert all((frame.width(), frame.height()) == (128, 72) for frame in frames)
+
+    def samples(frame: QImage) -> tuple[int, ...]:
+        return tuple(
+            value
+            for y in (14, 29, 44, 57)
+            for x in (15, 32, 53, 77, 105)
+            for color in (frame.pixelColor(x, y),)
+            for value in (color.red(), color.green(), color.blue())
+        )
+
+    opening, entering, middle, leaving, ending = [samples(frame) for frame in frames]
+
+    def difference(a: tuple[int, ...], b: tuple[int, ...]) -> int:
+        return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+
+    assert difference(opening, middle) > 45
+    assert difference(entering, middle) > 15
+    assert difference(leaving, middle) > 15
+    assert difference(ending, middle) > 45
+    for frame in frames:
+        assert frame.pixelColor(0, 0).alpha() == 255
+        assert frame.pixelColor(127, 71).alpha() == 255
+
+
+@pytest.mark.parametrize(
+    ("enter", "exit"),
+    [("Breathe", "Fade"), ("Breathe", "Rise"), ("Pan", "Breathe")],
+)
+def test_w4_breathe_mixed_effects_fail_closed(tmp_path: Path, enter: str, exit: str) -> None:
+    state = _drift_pattern_state(tmp_path)
+    first = state.tracks[0].clips[0]
+    bad = replace(
+        first,
+        properties=replace(
+            first.properties, effects=EffectProperties(enter_effect=enter, exit_effect=exit)
+        ),
+    )
+    invalid = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(bad, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(invalid, 0)
+
+
+def test_w4_breathe_rejects_double_lane_and_fade_black(tmp_path: Path) -> None:
+    state = _drift_pattern_state(tmp_path)
+    second = state.tracks[0].clips[1]
+    moved = replace(
+        second,
+        properties=replace(second.properties, effects=EffectProperties(enter_effect="Breathe")),
+    )
+    double = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(state.tracks[0].clips[0], moved)),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="single V1"):
+        render_still_frame(double, 151)
+    first = state.tracks[0].clips[0]
+    mixed = replace(
+        first,
+        properties=replace(
+            first.properties,
+            transition=TransitionProperties("fade_black", 8),
+            effects=EffectProperties(enter_effect="Breathe"),
+        ),
+    )
+    invalid = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(mixed, *state.tracks[0].clips[1:])),
             *state.tracks[1:],
         ),
     )
