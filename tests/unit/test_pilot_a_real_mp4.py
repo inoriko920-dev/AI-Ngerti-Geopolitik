@@ -10,7 +10,9 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage
+from PySide6.QtWidgets import QComboBox, QLineEdit, QPushButton
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
 from ai_ngerti_geopolitik.application.scene_import_review import (
@@ -18,6 +20,7 @@ from ai_ngerti_geopolitik.application.scene_import_review import (
     create_canonical_scene_image_project,
 )
 from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
+from ai_ngerti_geopolitik.bootstrap.w8_controller import W8IntentRouter, W8RuntimeController
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
     PilotAError,
@@ -34,6 +37,8 @@ from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
     StillProjectMP4Error,
     export_still_project_mp4,
 )
+from ai_ngerti_geopolitik.presentation.main_window import create_main_window
+from ai_ngerti_geopolitik.presentation.navigation import UiRoute
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("ANG_PILOT_A_FFMPEG") != "1",
@@ -229,3 +234,87 @@ def test_cli_missing_project_fails_closed(
     assert result == 1
     assert not (tmp_path / "missing.mp4").exists()
     assert "GAGAL" in capsys.readouterr().err
+
+
+def test_real_frozen_gui_export_button_produces_verified_mp4(
+    qtbot: object, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Complete Windows UI click → native FFmpeg → verified full-HD MP4."""
+    docx = parse_scene_docx_lines(("Scene 1: 1", "Asset 1: Red"))
+    img = QImage(64, 48, QImage.Format.Format_ARGB32)
+    img.fill(0xFFFF0000)
+    assert img.save(str(tmp_path / "A001.png"), "PNG")
+    inventory = scan_scene_asset_folder(docx, tmp_path)
+    review = build_scene_timeline_review(docx, inventory, (1,), fps=30)
+    state = create_canonical_scene_image_project(
+        review,
+        verify_scene_image_media(inventory),
+        project_id="P-GUI-NATIVE-PILOT",
+        project_name="Real UI native MP4 test",
+    )
+    assert (state.settings.width, state.settings.height) == (1920, 1080)
+    project = tmp_path / "gui-real.angproj"
+    JsonProjectRepository().save(state, project)
+    monkeypatch.setenv("ANG_PILOT_A_FFMPEG", "1")
+    router = W8IntentRouter()
+    window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
+    qtbot.addWidget(window.window)
+    controller = W8RuntimeController(window, timer_enabled=False)
+    router.delegate = controller.handle
+    controller.session.open_project(project)
+    window.show()
+    window.show_route(UiRoute.EXPORT_SETTINGS)
+    dialog = window._active_dialog
+    assert dialog is not None
+    folder = dialog.findChild(QLineEdit, "field_export_directory")
+    filename = dialog.findChild(QLineEdit, "field_export_name")
+    assert folder is not None and filename is not None
+    folder.setText(str(tmp_path))
+    filename.setText("gui-native-verified")
+    boxes = dialog.findChildren(QComboBox)
+    assert len(boxes) == 6
+    boxes[-1].setCurrentText("Tanpa Subtitle")
+    button = dialog.findChild(QPushButton, "btn_export_render")
+    assert button is not None
+    qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+
+    def done() -> bool:
+        controller.poll()
+        return controller.export_future is None
+
+    try:
+        qtbot.waitUntil(done, timeout=90000)
+        assert "terverifikasi" in controller.last_error
+        actual = tmp_path / "gui-native-verified.mp4"
+        assert actual.is_file() and actual.stat().st_size > 0
+        probe = subprocess.run(
+            [
+                str(_tools()["ffprobe_path"]),
+                "-v",
+                "error",
+                "-show_entries",
+                "stream=codec_name,width,height",
+                "-of",
+                "default=nokey=1:noprint_wrappers=1",
+                str(actual),
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=20,
+            check=True,
+            text=True,
+        )
+        assert probe.stdout.splitlines() == ["h264", "1920", "1080"]
+        output_dir = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+        if output_dir:
+            target = Path(output_dir)
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(actual, target / "ANG-Pilot-A-GUI-Real-H264.mp4")
+            digest = hashlib.sha256(actual.read_bytes()).hexdigest()
+            (target / "GUI-SHA256.txt").write_text(
+                f"{digest}  ANG-Pilot-A-GUI-Real-H264.mp4\n", encoding="utf-8"
+            )
+    finally:
+        controller.shutdown()
+        window.close()
