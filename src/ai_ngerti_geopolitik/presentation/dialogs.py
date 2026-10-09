@@ -14,10 +14,10 @@ def create_export_dialog(
     default_directory: str = r"D:\Video Projects\Liburan ke Bromo\Hasil Akhir",
     default_name: str = "Liburan ke Bromo - Final",
 ) -> Any:
-    """AAVC-parity STEP 09 export shell.
+    """Frozen AAVC UI-042 export form; emit full explicit Pilot A choices.
 
-    This intentionally mirrors the AAVC reference-era dialog. It emits only a
-    presentation intent; real rendering belongs to later Software Factory steps.
+    The layout and defaults are identical to the approved screenshot contract.
+    Unsupported controls remain visible but are rejected by the application.
     """
 
     from PySide6.QtCore import Qt
@@ -112,8 +112,15 @@ def create_export_dialog(
                     UiIntentType.OPEN_EXPORT,
                     (
                         ("action", "render_requested"),
+                        ("output_directory", output_path.text()),
+                        ("output_name", output_name.text()),
                         ("format", format_box.currentText()),
                         ("preset", preset.currentText()),
+                        ("resolution", resolution.currentText()),
+                        ("fps", fps.currentText()),
+                        ("quality", str(quality.value())),
+                        ("sharpen", sharpen.currentText()),
+                        ("subtitle", subtitle.currentText()),
                     ),
                 )
             )

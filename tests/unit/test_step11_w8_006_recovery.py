@@ -8,7 +8,12 @@ import pytest
 
 from ai_ngerti_geopolitik.application.autosave_catalog import AutosaveCatalogService
 from ai_ngerti_geopolitik.application.project_session import ProjectSession, UnsavedChangesError
-from ai_ngerti_geopolitik.application.recovery import RecoveryChoice, RecoveryError, RecoveryManager
+from ai_ngerti_geopolitik.application.recovery import (
+    CrashMarker,
+    RecoveryChoice,
+    RecoveryError,
+    RecoveryManager,
+)
 from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.crash_marker import FileCrashMarkerStore
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
@@ -218,3 +223,62 @@ def test_old_marker_cannot_mark_new_session_clean(tmp_path: Path) -> None:
     assert session.is_open
     assert markers.read(source, state.project_id) == new.active_marker
     assert source.read_bytes() == before
+
+
+def test_close_marker_write_failure_retains_previous_project_session(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, _catalog, markers, manager, source, state, before = fixture(tmp_path)
+    session = ProjectSession(repo)
+    chosen = manager.decide(manager.inspect(source), RecoveryChoice.OPEN_SOURCE, session)
+    marker = chosen.active_marker
+    assert marker is not None
+    session_id = session.session_id
+    semantic_hash = session.state.semantic_hash()
+    original_write = markers.write
+
+    def deny_clean(path: Path, updated_marker: CrashMarker) -> None:
+        if updated_marker.status == "clean":
+            raise PermissionError("injected marker write rejection")
+        original_write(path, updated_marker)
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(markers, "write", deny_clean)
+        with pytest.raises(PermissionError, match="marker write rejection"):
+            manager.close_clean(session, source, marker)
+
+    assert session.is_open and not session.dirty
+    assert session.current_path == source
+    assert session.session_id == session_id
+    assert session.state.semantic_hash() == semantic_hash
+    assert markers.read(source, state.project_id) == marker
+    assert source.read_bytes() == before
+    manager.close_clean(session, source, marker)
+    assert not session.is_open
+    assert markers.read(source, state.project_id).status == "clean"
+
+
+def test_close_failure_attempts_restore_unclean_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, _catalog, markers, manager, source, state, before = fixture(tmp_path)
+    session = ProjectSession(repo)
+    chosen = manager.decide(manager.inspect(source), RecoveryChoice.OPEN_SOURCE, session)
+    marker = chosen.active_marker
+    assert marker is not None
+    old_id = session.session_id
+
+    def refuse_close(*, discard_unsaved: bool = False) -> None:
+        raise RuntimeError("injected in-memory close failure")
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(session, "close", refuse_close)
+        with pytest.raises(RuntimeError, match="in-memory close failure"):
+            manager.close_clean(session, source, marker)
+
+    assert session.is_open
+    assert session.session_id == old_id
+    assert markers.read(source, state.project_id) == marker
+    assert source.read_bytes() == before
+    manager.close_clean(session, source, marker)
+    assert not session.is_open

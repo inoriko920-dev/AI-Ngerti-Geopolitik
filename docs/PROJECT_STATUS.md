@@ -170,3 +170,139 @@ W5 physical microphone and W6/W7 live Gemini remain provisional.
 - W5 physical microphone and W6/W7 live Gemini qualification remain provisional, not claimed as PASS.
 
 **Next exact action:** SF-STEP 12 planning/contract readiness review only, after the owner's next `lanjutkan`. Do not implement STEP 12 in this W8-010 turn.
+
+## Post-W8 quality fix — project-open malformed JSON (2026-10-08 WIB)
+
+- Branch `fix/project-open-corrupt-json-fail-closed-20261008` from unchanged `main`: non-native bugfix for `JsonProjectRepository.load`, safe handling of corrupt nested track records, fixed-path-free `ProjectFormatError`, and preservation of existing session on failed open.
+- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md` and dedicated Windows full regression. Source commit `24af2d67` **PASS Windows** on [CI #37772403305](https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik/actions/runs/37772403305): targeted/full pytest, Ruff, mypy, architecture, source-of-truth and UI manifest. Documentation update requires verification at its own HEAD. D1 Pilot A and product render unchanged; no portable or release.
+
+## Project reopen integrity follow-up — strict JSON booleans (2026-10-08 WIB)
+
+- On Draft PR #20, ensure invalid JSON strings/numbers/null cannot silently flip enabled/muted/locked/visible flags on reopen; source-of-truth v1 schema and frozen UI unchanged.
+- Evidence: `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. Windows CI on new HEAD pending before PASS. No native FFmpeg or portable work.
+
+## PR #20 — Project load Unicode/atomicity hardening (8 Oct 2026 WIB)
+
+- Unpaired Unicode surrogate escapes in a valid JSON file could pass decode then fail `semantic_hash` after `ProjectSession.open_project` began replacing the active session. Validate canonical hashing inside repository load and hash before session mutation; add synthetic-invalid-repository and valid-existing-project regression tests. Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`.
+- **PENDING current-head Windows CI**, source schema/UI/main/FFmpeg execution unchanged; PR #20 remains Draft, portable last.
+
+## PR #20 — Save As / autosave recovery atomicity check (2026-10-08 WIB)
+
+- `ProjectSession.save` now computes semantic identity before any repository write or path rebind; `recover_snapshot` verifies source/snapshot semantic identities before adopting a recovered session. Regression tests simulate a returning-invalid repository and a saving adapter that would write before hash validation. No project schema change, UI change, native FFmpeg execution, release or main merge.
+- Evidence in `docs/evidence/quality/PROJECT_OPEN_CORRUPTION_2026-10-08.md`. **Current-head Windows CI pending**; earlier PR #20 CI alone does not qualify this change.
+
+## Post-W8 GUI open preinspection regression (2026-10-08 WIB)
+
+- Existing saved editor project no longer closes before asynchronous recovery inspection of another chosen `.angproj`. Malformed/missing targets leave the active session/marker intact; duplicate open of same path ignored. Qt targeted+full Windows tests added on PR #20; status **PENDING latest-head CI**. No visual UI change; Pilot A D1 pending, no main merge or portable.
+## PR #20 — Qt staged project replacement (2026-10-08 WIB)
+
+- Cross-project switch now stages final RecoveryManager source/snapshot decision and crash marker on a temporary candidate session BEFORE retiring the current live project. Stale offers and failed marker write cannot remove the active editor state; successful candidate promotion closes the prior session and marker. New Qt tests: staleness, marker denial, successful switch. **Current-head Windows CI PENDING**; no UI structural change, Pilot A D1 still pending, no main merge/release.
+
+## PR #20 — Guard crash-marker close before in-memory session release (2026-10-08 WIB)
+
+- Fix `RecoveryManager.close_clean` ordering: validate dirty-state, persist clean marker, then release memory; if marker write fails, original project remains open. An unexpected close failure attempts marker rollback. New unit+Qt fault-injection tests; current-head Windows CI pending. No new visual UI, `main` merge or FFmpeg pilot authority.
+
+## W8 project opening from Home navigates into existing editor (2026-10-08 WIB)
+
+- PR #20 corrects the successful `.angproj` open/recovery flow to enter existing Editor Overview `UI-010`. Failed opens remain on `UI-002`. Two Qt regression tests cover success/failure without changing any frozen UI art/layout. **New-head CI PENDING**; `main` untouched and no Pilot A FFmpeg production work.
+
+## PR #20 — Prevent phantom project creation through UI-003 wizard (2026-10-08 WIB)
+
+- UI-003 Continue previously navigated to editor while runtime ignored the `NEW_PROJECT` intent. It now passes a selected DOCX path to runtime and refuses to open a fictitious editor session until a true DOCX scene/asset importer is built. Status is explicit and file-project state remains intact. Two Qt regressions added. **Current-HEAD Windows CI pending**; no design/engine/main changes.
+## Scene DOCX import contract vertical slice (8 Oct 2026 WIB)
+
+- Implemented non-mutating DOCX WordprocessingML reader plus strict scene/asset ID parser, mapping the Master Blueprint's `Tampilan Scene N: 1/2` to `A001` global references and preserving scene quote/context. No file writes or canonical timeline claims. Targeted fixture/hostile-ZIP tests included.
+- **Latest-head Windows CI PENDING**. Folder-asset binding, project state mapping, UI wizard 2/3, atomic save and engine/render remain future milestones; Pilot A D1 not approved, `main` untouched.
+## UI-003 Scene DOCX parser worker integration (2026-10-08 WIB)
+
+- Continue runs bounded Scene DOCX preflight in a worker, reports scene/asset counts without faking a canonical project. Corrupt DOCX returns a safe error; no editor navigation until folder binding + atomic project save exist. Qt regressions added. **Current-HEAD Windows CI pending.** No native FFmpeg / main merge / portable.
+## New Project asset-folder Axxx lookup (8 Oct 2026 WIB)
+
+- Added bounded read-only discovery of canonical filenames A001–Axxx, case insensitive and safely nested. READY/MISSING/DUPLICATE/CORRUPT/UNSUPPORTED status report fails on ambiguous/partial scans and never constructs ProjectState. Unit regressions added, **Windows CI current-head pending**. UI-003 picker hookup, import review and atomic .angproj save still pending. No native Pilot A, no merge or portable.
+## UI-003 folder-asset preflight integrated (8 Oct 2026 WIB)
+
+- After valid Scene DOCX parse, native folder selection triggers background exact Axxx image discovery, with inventory/status and blocked asset ID feedback. No canonical project generated, no UI artwork modified. Qt tests added; **latest-head CI pending**. Main/FFmpeg/portable unchanged.
+## Scene DOCX-to-timeline deterministic review (2026-10-08 WIB)
+
+- Added immutable frame-exact SceneTimelineReview with explicit per-scene duration requirement and SINGLE(FULL)/DOUBLE(LEFT+RIGHT concurrent) lane plan. All-READY exact Axxx inventory required; missing/duplicate/invalid media blocks creation. This is NOT yet canonical ProjectState: existing model rejects image-backed timeline Clips. Windows latest-head CI pending. No UI/MLT/FFmpeg native alterations, merge or portable.
+
+
+## Image media evidence + schema gate (8 Oct 2026 WIB)
+
+- Added read-only per-Axxx PNG/JPEG/WebP media fingerprint verification (SHA-256, size, decoded width and height), plus recheck that rejects changed, missing, corrupt and oversized files without leaking private file paths. These are transient verification DTOs, not persisted ProjectState.
+- ASTRA ADR proposed at docs/project/ASTRA_ADR_2026_10_08_IMAGE_SCENE_CANONICAL_PROPOSAL.md. Explicit image HOLD semantics, SINGLE/DOUBLE canonical scene metadata, preview/export parity and backward-compatible schema must be reviewed **before** altering ProjectState, persistence, CommandBus or the media engine.
+- No native FFmpeg Pilot A authority is inferred. No valid .angproj scene import/playback/export is claimed. No merge, UI redesign or portable package.
+- Current-head Windows CI verification pending.
+
+
+## G-IMAGE-01 canonical image HOLD domain milestone — 2026-10-08 WIB
+
+- User's 'sesuai saranmu kerjakan' directs prioritizing the image timeline; the recommended explicit HOLD-duration approach is the limited schema decision. Implemented optional image_hold_frames on Clip and strict JSON reader; legacy video JSON retains its semantic shape, and image media source remains a single intrinsic frame. Semantic commands use HOLD for duration/trim/split; speed editing incompatible with stills is rejected. Actual editor import/preview/export remain out of this milestone. Same-head Windows CI PENDING; no main merge/FFmpeg execution/portable.
+
+
+## Scene-to-Project milestone — 2026-10-08 WIB
+
+- Limited owner go-ahead for image HOLD semantics; optional Clip.image_hold_frames is now in ProjectState and strict JSON persistence, with unchanged legacy video serialization. Canonical Set Duration/Split/Trim and undo/redo honor still-image hold; speed change on stills is blocked.
+- SceneTimelineReview + VerifiedSceneImageSet now yields a genuine canonical image-backed ProjectState through one CommandBatch: Axxx image assets, SINGLE (V1) and DOUBLE simultaneous (V1/V2) clips, exact frame holds and scene note/context markers.
+- JsonProjectRepository successfully saves and reloads the result as .angproj in an automated Windows end-to-end unit integration. PASS on commit f6bfd1ae8472bed6f3823a07342d09e08b2329dd, Windows CI #37791083403 (full pytest and targeted tests, Ruff/mypy/architecture/source-of-truth/42 UI checks).
+- This builder remains at the application/test level: GUI UI-003 has NO approved explicit timing/review/save integration; no Save-time re-scan/atomic activation wired; MLT/FFmpeg still does not play/render image projects. Do not imply shipping or rendered MP4. Native FFmpeg Pilot A D1 still needs separate explicit approval; main unchanged, PR #20 Draft, Windows portable last.
+
+
+## Scene pre-save rescan and .angproj finalization (2026-10-08 WIB)
+
+- Extended canonical Scene import application owner with save_reviewed_scene_image_project(): validates original DOCX again, checks exact Axxx inventory and SHA-256/dimensions against preflight baseline, constructs one canonical CommandBatch, re-scans for late duplicates, then saves and re-opens .angproj through ProjectRepositoryPort. Existing destinations rejected. No ProjectSession mutation, no GUI-thread work allowed.
+- Regression fixtures simulate changed/corrupt files, newly introduced duplicate Axxx, DOCX change, delayed duplicate during second scan, stale metadata, overwrite and real persisted/reopened project. **Current-head Windows CI pending**.
+- No per-scene duration input is approved on UI-003. This worker-only finalization cannot be triggered from the existing Continue control until a reviewed timing/review flow exists. Playback/render still gated. No FFmpeg external Pilot A/merge/portable.
+
+## Explicit TXT timing to real .angproj bridge (2026-10-08 WIB)
+
+- Added strict per-scene frame timing parser in the existing scene import owner: every Scene N must have an explicit positive integer frame count. No generated default durations.
+- Added scripts/import_scene_project.py with template (generates blank TXT timing rows) and create (parses DOCX, scans real PNG/JPEG/WebP Axxx folder, validates user frame durations, verifies image SHA-256, double-rescans and saves/reopens a real canonical .angproj). No frozen UI or native rendering change.
+- New Windows regression tests cover incomplete timing, reordered/duplicate frames, missing media, no overwrite and real .angproj persistence. Current-head CI PENDING.
+- This CLI bridge is not a completed UI-003 duration/review wizard, image preview or MP4 export. No pilot A, merge, or portable release.
+
+## Worker-only Qt still-image frame preview (2026-10-08 WIB)
+
+- Added infrastructure/still_frame_preview.py: reads the saved canonical image HOLD ProjectState and produces actual in-memory QImage pixels at an exact requested timeline frame. SINGLE V1 fills the frame; DOUBLE V1 left/V2 right uses deterministic even/odd pixel splitting and aspect-preserving center cover.
+- Fail closed on changed/missing media fingerprints, wrong image dimensions, non-default unqualified effects, gaps, extra/hidden tracks, audio/subtitles, and out-of-range frames. Fixed path-redacted error messages. Intended for background worker use only, **not** connected to frozen GUI or production MLT.
+- Added Qt real-image golden-pixel tests for boundary frames and all channels; Windows CI same-HEAD pending. MP4 render, MLT still producer, animated effects and UI preview remain unqualified. PR Draft, main unchanged, portable last.
+
+## Optional CLI still preview PNG (2026-10-08 WIB)
+
+- Extended existing scripts/import_scene_project.py bootstrap CLI with `preview --project film.angproj --frame 150 --output frame.png`. Uses qualified CPU/Qt image HOLD compositor to write an actual PNG for a selected frame; existing PNG destinations are refused. Real pixels tested from reloaded .angproj, including LEFT/RIGHT split.
+- This is an advanced-user screenshot/preflight command, not a replacement for interactive editor preview, MLT playback, or MP4 output. No frozen UI modification or native FFmpeg. Windows exact-head CI pending.
+
+
+## Live UI-010 still-image seek preview milestone (2026-10-08 WIB)
+
+- Existing approved UI-010 scrubber and previous/next frame intents now request **real Qt-rendered** SINGLE/DOUBLE image frames in a dedicated background worker. The current editor's existing preview_canvas receives QPixmap from QImage on the GUI thread; no new widgets, screenshot assets, native MLT/FFmpeg process or UI redesign. A video-only project continues to use its separate pathway.
+- Rapid seek requests coalesce (only latest frame displayed). Before accepting results, controller checks session identity, canonical semantic hash and current route; old project frames cannot overwrite the new project. Playback Play explicitly reports continuous playback not qualified.
+- Qt regression tests exercise real pixel colors for SINGLE (red), DOUBLE (green/blue), seek/clamping, latest-wins behavior and stale previous-project job rejection. Last-head Windows CI pending. Render MP4, animation, soundtrack/subtitle compositing, and native continuous playback remain unqualified; PR #20 stays Draft, main unchanged, portable last.
+
+## W8 UI-010 timed still-frame playback (8 October 2026 WIB)
+
+- Existing approved UI-010 Play and Pause buttons now own a clock-anchored QTimer still-image transport. The seek worker renders exact monotonic-time target frames, coalescing if PNG decoding is slower than the frame cadence (no busy-wait). FPS is read from canonical ProjectState. Seeking during playback reanchors clock; Pause preserves position; last frame stops and Play restarts from zero.
+- Stale project/session/hash or route changes stop the clock, and current image-render failure also stops rather than silently continuing. Qt regression includes actual frame colors, pause/resume, mid-play seek, end/replay and stale project identity. This is **silent preview of image HOLD scenes only**. No soundtrack, subtitles, effects, video mix, qualified MLT producer, native FFmpeg or MP4 export is claimed. Current-head Windows CI PENDING; PR #20 remains Draft.
+
+## Frame-exact Qt still-frame sequence export (8 October 2026 WIB)
+
+- Added bounded, read-only `still_frame_sequence.py` reusing the already qualified canonical still-frame preview compositor (no duplicate render owner). Exports 1–300 exact-timestamp frame PNGs into a staged directory, SHA-256 records for every PNG and a deterministic `manifest.json` with canonical project identity, fps and half-open frame interval.
+- Publishing a new output directory happens only after every frame and manifest succeeds. Stale/corrupt media, out-of-range requests, oversized output and pre-existing targets fail closed; incomplete staging is cleaned up. No process execution or GUI-thread operation. The CLI adds `frames --project movie.angproj --start 148 --count 5 --output frames`.
+- Tests render real 13x8 red SINGLE followed by green-left/blue-right DOUBLE pixels at frame 150, verify all manifest digests, no overwrite, deterministic repeated output and rollback when media becomes corrupt mid-sequence. Windows CI same-head verification pending.
+- This is an **intermediate silent PNG sequence**, not final MP4, audio/subtitle/transition rendering or an approved FFmpeg/MLT engine integration. UI-001–UI-042 remain frozen, PR #20 Draft, `main` unchanged and portable last.
+
+## Full-timeline still PNG export in bounded batches (2026-10-08 WIB)
+
+- The existing `infrastructure/still_frame_sequence.py` owner now includes `export_complete_still_sequence`, which splits a full image-only canonical timeline into 1–300-frame batches with SHA-256 manifest references and a top-level exact-frame manifest. Maximum 18,000 frames and 8 GiB of encoded PNG. Publication of the outer folder is atomic after all batches succeed, with rollback on failure and no overwrite.
+- Final source re-verification at all scene clip start frames detects previously exported images that changed mid-process. The CLI adds `frames-all --project film.angproj --output frames --batch-size 300`. It never invokes external native engines.
+- New Windows tests cover real SINGLE/DOUBLE pixel boundaries, master-batch checksum coverage, output preservation, failure rollback, hard range limit and CLI. Same-head CI pending.
+- This is still a silent image sequence, **NOT** encoded MP4, soundtrack/subtitle/effects parity, or native FFmpeg approval. PR #20 Draft, `main` untouched, UI frozen, portable last.
+
+
+## GUI-003 import through existing Continue (2026-10-08 WIB)
+
+- Added a two-stage **existing UI-003 Continue button** flow without editing frozen screen layouts: DOCX + native folder picker first; when Axxx inventory is all READY, Continue again opens Windows-native TXT timing picker and Save As `.angproj` destination chooser.
+- Reuses the worker-only `create_scene_project_from_wizard` bootstrap coordinator; duration TXT requires an explicit `# FPS project: 30` or `60` header and exactly one positive `Scene N: X frames` row per scene. No guessing or false default duration is introduced.
+- Worker invokes canonical save_reviewed_scene_image_project including fresh DOCX read, repeated Axxx folder scan, file hashing and persisted-project identity check. On success existing request_open/recovery mechanism adopts saved project and routes to UI-010. Dirty old sessions, invalid timing, changed inputs, cancelled dialogs and stale route/session are guarded.
+- Real Windows Qt tests cover create/save/open of genuine image HOLD scene project, invalid timing leaves no file, and unsaved existing project cannot be replaced. **CI latest-head still to be verified** for this documentation commit. Rendering MP4 remains unimplemented and external FFmpeg Pilot A separately gated.
+- PR #20 remains Draft, `main` unchanged, no artwork/new widgets or portable packaging.

@@ -3,15 +3,26 @@
 from __future__ import annotations
 
 import hashlib
+import zipfile
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QLabel, QListWidget, QPushButton, QTableWidget
+from PySide6.QtGui import QImage
+from PySide6.QtWidgets import (
+    QDialog,
+    QFileDialog,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QPushButton,
+    QTableWidget,
+)
 
 from ai_ngerti_geopolitik.application.commands import AddClipCommand, CommandBatch
 from ai_ngerti_geopolitik.application.media_import import MediaImportService
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_session import ProjectSession
+from ai_ngerti_geopolitik.application.recovery import RecoveryChoice
 from ai_ngerti_geopolitik.application.relink_scan import RelinkScanJobService, ScanState
 from ai_ngerti_geopolitik.application.ui_intents import UiIntent, UiIntentType
 from ai_ngerti_geopolitik.application.validation import (
@@ -22,11 +33,12 @@ from ai_ngerti_geopolitik.bootstrap.w8_controller import (
     W8IntentRouter,
     W8RuntimeController,
 )
-from ai_ngerti_geopolitik.domain import Clip, FrameTime
+from ai_ngerti_geopolitik.domain import Clip, FrameTime, ProjectState
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.presentation.main_window import create_main_window
+from ai_ngerti_geopolitik.presentation.navigation import UiRoute
 
 
 class OwnedProbe:
@@ -47,9 +59,9 @@ class OwnedProbe:
         )
 
 
-def setup(qtbot, repo: JsonProjectRepository | None = None):
+def setup(qtbot, repo: JsonProjectRepository | None = None, *, initial_route: str = "UI-010"):
     router = W8IntentRouter()
-    window = create_main_window("UI-010", fixture_mode=True, intent_sink=router)
+    window = create_main_window(initial_route, fixture_mode=True, intent_sink=router)
     qtbot.addWidget(window.window)
     probe = OwnedProbe()
     session = ProjectSession(repo or JsonProjectRepository())
@@ -72,7 +84,16 @@ def pump(qtbot, predicate, controller: W8RuntimeController) -> None:
         controller.poll()
         return bool(predicate())
 
-    qtbot.waitUntil(update, timeout=8000)
+    try:
+        qtbot.waitUntil(update, timeout=8000)
+    except Exception as exc:
+        raise AssertionError(
+            f"Poll timeout: {controller.last_error!r}, "
+            f"preview requested={controller.still_preview_desired!r}, "
+            f"inflight={controller.still_preview_inflight!r}, "
+            f"future={controller.still_preview_future!r}, "
+            f"route={controller.window.window.property('ui_state')!r}"
+        ) from exc
 
 
 def saved_project(tmp_path: Path):
@@ -288,5 +309,851 @@ def test_stale_background_validation_is_never_projected(qtbot, tmp_path: Path) -
     controller.poll()
     assert controller.validation_job_id is None
     assert controller.session.dirty
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_invalid_new_project_inspection_keeps_existing_open_project(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    original_session = controller.session.session_id
+    original_marker = controller.active_marker
+    original_hash = controller.session.state.semantic_hash()
+    original_bytes = opened.read_bytes()
+
+    invalid = tmp_path / "BROKEN_PROJECT.angproj"
+    invalid.write_text("{invalid-json", encoding="utf-8")
+    controller.request_open(invalid)
+    pump(qtbot, lambda: controller.recovery_future is None, controller)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == original_session
+    assert controller.active_marker == original_marker
+    assert controller.session.state.semantic_hash() == original_hash
+    assert opened.read_bytes() == original_bytes
+    assert "Tidak dapat memeriksa" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_reopening_current_file_does_not_invalidate_active_session(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    before_id = controller.session.session_id
+    before_marker = controller.active_marker
+
+    controller.request_open(opened)
+
+    assert controller.recovery_future is None
+    assert controller.session.is_open
+    assert controller.session.session_id == before_id
+    assert controller.session.current_path == opened
+    assert controller.active_marker == before_marker
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_stale_recovery_offer_does_not_close_active_project(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    old_bytes = opened.read_bytes()
+    new_path = tmp_path / "candidate.angproj"
+    repo.save(ProjectState.create("P-CANDIDATE", "Candidate", 30), new_path)
+    controller.offer = controller.recovery.inspect(new_path)
+    new_path.write_text("{corrupted after inspection", encoding="utf-8")
+
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == old_id
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert opened.read_bytes() == old_bytes
+    assert "Pemulihan gagal" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_failed_candidate_marker_write_preserves_active_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    next_path = tmp_path / "next.angproj"
+    repo.save(ProjectState.create("P-NEXT", "Next", 30), next_path)
+    controller.offer = controller.recovery.inspect(next_path)
+    marker_store = controller.recovery.markers
+    original_write = marker_store.write
+
+    def reject_next_marker(source: Path, marker) -> None:
+        if source == next_path:
+            raise PermissionError("marker write denied")
+        original_write(source, marker)
+
+    monkeypatch.setattr(marker_store, "write", reject_next_marker)
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == opened
+    assert controller.session.session_id == old_id
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert "Pemulihan gagal" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_valid_switch_opens_staged_session_and_cleans_old_marker(qtbot, tmp_path: Path) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_marker = controller.active_marker
+    old_id = controller.session.session_id
+    old_bytes = opened.read_bytes()
+    next_path = tmp_path / "valid-next.angproj"
+    repo.save(ProjectState.create("P-NEXT", "Next", 30), next_path)
+    next_bytes = next_path.read_bytes()
+    controller.offer = controller.recovery.inspect(next_path)
+
+    controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.current_path == next_path
+    assert controller.session.session_id != old_id
+    assert controller.active_marker is not None
+    assert controller.session.state.project_id == "P-NEXT"
+    assert opened.read_bytes() == old_bytes
+    assert next_path.read_bytes() == next_bytes
+    if old_marker is not None:
+        assert controller.recovery.markers.read(opened, old_marker.project_id).status == "clean"
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_denied_old_clean_marker_write_does_not_drop_open_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    repo, opened, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(opened)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    old_id = controller.session.session_id
+    old_marker = controller.active_marker
+    old_hash = controller.session.state.semantic_hash()
+    old_bytes = opened.read_bytes()
+    next_path = tmp_path / "next-safely-denied.angproj"
+    repo.save(ProjectState.create("P-NEW", "Next", 30), next_path)
+    controller.offer = controller.recovery.inspect(next_path)
+    marker_store = controller.recovery.markers
+    original_write = marker_store.write
+
+    def deny_previous_marker_close(source: Path, marker) -> None:
+        if source == opened and marker.status == "clean":
+            raise PermissionError("old marker cannot be saved")
+        original_write(source, marker)
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(marker_store, "write", deny_previous_marker_close)
+        controller._decide(RecoveryChoice.OPEN_SOURCE)
+
+    assert controller.session.is_open
+    assert controller.session.session_id == old_id
+    assert controller.session.current_path == opened
+    assert controller.active_marker == old_marker
+    assert controller.session.state.semantic_hash() == old_hash
+    assert opened.read_bytes() == old_bytes
+    assert old_marker is not None
+    assert marker_store.read(opened, old_marker.project_id) == old_marker
+    assert marker_store.read(next_path, "P-NEW").status == "clean"
+    assert "Tidak dapat menutup" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_open_saved_project_from_home_switches_to_real_editor(qtbot, tmp_path: Path) -> None:
+    repo, project, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo, initial_route="UI-002")
+    assert controller.window.window.property("ui_state") == "UI-002"
+    assert not controller.session.is_open
+
+    controller.request_open(project)
+    pump(
+        qtbot,
+        lambda: (
+            controller.session.is_open
+            and controller.validation_job_id is None
+            and controller.window.window.property("ui_state") == "UI-010"
+        ),
+        controller,
+    )
+
+    assert controller.session.current_path == project
+    assert controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-010"
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_corrupt_project_from_home_does_not_navigate_to_editor(qtbot, tmp_path: Path) -> None:
+    repo = JsonProjectRepository()
+    invalid = tmp_path / "invalid-home-open.angproj"
+    invalid.write_text("{broken-json", encoding="utf-8")
+    controller, _router = setup(qtbot, repo, initial_route="UI-002")
+    assert controller.window.window.property("ui_state") == "UI-002"
+
+    controller.request_open(invalid)
+    pump(qtbot, lambda: controller.recovery_future is None, controller)
+
+    assert controller.window.window.property("ui_state") == "UI-002"
+    assert not controller.session.is_open
+    assert "Tidak dapat memeriksa" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_continue_does_not_open_phantom_project(qtbot, tmp_path: Path, monkeypatch) -> None:
+    controller, _router = setup(qtbot, initial_route="UI-002")
+    controller.window.show_route(UiRoute.NEW_PROJECT_DOCX)
+    root = controller.window.window
+    docx = tmp_path / "scene_asset_mapping.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Peta sejarah</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(docx, "w", zipfile.ZIP_DEFLATED) as out:
+        out.writestr("word/document.xml", xml)
+
+    monkeypatch.setattr(
+        QFileDialog,
+        "getOpenFileName",
+        lambda *args, **kwargs: (str(docx), "DOCX (*.docx)"),
+    )
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
+    browse = root.findChild(QPushButton, "btn_pick_docx")
+    continue_button = root.findChild(QPushButton, "btn_continue_new_project")
+    docx_field = root.findChild(QLineEdit, "field_scene_docx")
+    assert browse is not None and continue_button is not None and docx_field is not None
+    assert not continue_button.isEnabled()
+    qtbot.mouseClick(browse, Qt.MouseButton.LeftButton)
+    assert docx_field.text() == str(docx)
+    assert continue_button.isEnabled()
+
+    qtbot.mouseClick(continue_button, Qt.MouseButton.LeftButton)
+    pump(qtbot, lambda: controller.scene_docx_future is None, controller)
+
+    assert not controller.session.is_open
+    assert root.property("ui_state") == "UI-003"
+    assert controller.scene_docx_plan is not None
+    assert controller.scene_docx_plan.asset_count == 1
+    assert controller.scene_docx_plan.scenes[0].assets[0].canonical_id == "A001"
+    assert "1 scene, 1 aset" in controller.last_error
+    assert "project belum dibuat" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_missing_docx_does_not_replace_active_project(qtbot, tmp_path: Path) -> None:
+    repo, project, _media, _asset = saved_project(tmp_path)
+    controller, _router = setup(qtbot, repo)
+    controller.request_open(project)
+    pump(
+        qtbot,
+        lambda: controller.session.is_open and controller.validation_job_id is None,
+        controller,
+    )
+    active_id = controller.session.session_id
+    current_hash = controller.session.state.semantic_hash()
+    source_bytes = project.read_bytes()
+
+    missing = tmp_path / "not-found.docx"
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(missing))),
+        )
+    )
+
+    assert controller.session.is_open
+    assert controller.session.current_path == project
+    assert controller.session.session_id == active_id
+    assert controller.session.state.semantic_hash() == current_hash
+    assert project.read_bytes() == source_bytes
+    assert "tidak tersedia" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_corrupt_existing_docx_is_rejected_by_worker_without_creating_project(
+    qtbot, tmp_path: Path
+) -> None:
+    bad = tmp_path / "invalid-existing.docx"
+    bad.write_bytes(b"not a ZIP/DOCX document")
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(bad))),
+        )
+    )
+    pump(qtbot, lambda: controller.scene_docx_future is None, controller)
+
+    assert controller.scene_docx_plan is None
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "tidak sesuai format" in controller.last_error
+    assert str(bad) not in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_valid_docx_then_folder_scan_reports_ready_without_fake_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scenes.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Map visual</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as out:
+        out.writestr("word/document.xml", xml)
+    folder = tmp_path / "images"
+    folder.mkdir()
+    image = QImage(4, 4, QImage.Format.Format_RGB32)
+    image.fill(0x00228844)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: str(folder))
+    controller, _router = setup(qtbot, initial_route="UI-003")
+
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(document))),
+        )
+    )
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+
+    assert controller.scene_asset_inventory is not None
+    assert controller.scene_asset_inventory.all_ready
+    assert controller.scene_asset_inventory.ready_count == 1
+    assert controller.scene_asset_inventory.bindings[0].asset_id == "A001"
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "1/1 READY" in controller.last_error
+    assert "Project belum dibuat" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_duplicate_and_missing_assets_are_reported_without_project_creation(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "double-scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 2</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: First visual</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 2: Second visual</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as out:
+        out.writestr("word/document.xml", xml)
+    folder = tmp_path / "images"
+    subfolder = folder / "duplicate"
+    subfolder.mkdir(parents=True)
+    image = QImage(4, 4, QImage.Format.Format_RGB32)
+    image.fill(0x00228844)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    assert image.save(str(subfolder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: str(folder))
+    controller, _router = setup(qtbot, initial_route="UI-003")
+
+    controller.handle(
+        UiIntent(
+            UiIntentType.NEW_PROJECT,
+            (("action", "continue_wizard"), ("path", str(document))),
+        )
+    )
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+
+    assert controller.scene_asset_inventory is not None
+    assert not controller.scene_asset_inventory.all_ready
+    assert [(x.asset_id, x.status.value) for x in controller.scene_asset_inventory.blockers] == [
+        ("A001", "DUPLICATE"),
+        ("A002", "MISSING"),
+    ]
+    assert "A001:DUPLICATE" in controller.last_error
+    assert "A002:MISSING" in controller.last_error
+    assert not controller.session.is_open
+    assert controller.window.window.property("ui_state") == "UI-003"
+    controller.shutdown()
+    controller.window.close()
+
+
+def _saved_still_scene_project(tmp_path: Path) -> Path:
+    from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
+    from ai_ngerti_geopolitik.application.scene_import_review import (
+        build_scene_timeline_review,
+        create_canonical_scene_image_project,
+    )
+    from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
+        scan_scene_asset_folder,
+        verify_scene_image_media,
+    )
+
+    plan = parse_scene_docx_lines(
+        (
+            "Scene 1: 1",
+            "Asset 1: Red",
+            "Scene 2: 2",
+            "Asset 2: Green",
+            "Asset 3: Blue",
+        )
+    )
+    for number, rgb in ((1, 0xFFFF0000), (2, 0xFF00FF00), (3, 0xFF0000FF)):
+        image = QImage(8, 8, QImage.Format.Format_ARGB32)
+        image.fill(rgb)
+        assert image.save(str(tmp_path / f"A{number:03d}.png"), "PNG")
+    inventory = scan_scene_asset_folder(plan, tmp_path)
+    review = build_scene_timeline_review(plan, inventory, (150, 90), fps=30)
+    state = create_canonical_scene_image_project(
+        review,
+        verify_scene_image_media(inventory),
+        project_id="P-QT-PREVIEW",
+        project_name="Still Preview",
+    )
+    from dataclasses import replace
+
+    state = replace(state, settings=replace(state.settings, width=13, height=8))
+    path = tmp_path / "still-preview.angproj"
+    JsonProjectRepository().save(state, path)
+    return path
+
+
+def test_w8_editor_seek_uses_real_still_pixels_on_existing_canvas(qtbot, tmp_path: Path) -> None:
+    from PySide6.QtWidgets import QSlider
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    controller.request_still_preview(0)
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+    assert canvas.pixmap() is not None
+    first = canvas.pixmap().toImage()
+    assert first.pixelColor(first.width() // 2, first.height() // 2).name() == "#ff0000"
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("frame", "150"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    pixmap = canvas.pixmap()
+    assert pixmap is not None
+    image = pixmap.toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    assert image.pixelColor(3 * image.width() // 4, image.height() // 2).name() == "#0000ff"
+    slider = controller.window.stack.currentWidget().findChild(QSlider, "timeline_scrubber")
+    assert slider is not None and slider.maximum() == 239 and slider.value() == 150
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("delta", "1"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 151, controller)
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    assert not controller.still_playing
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_rapid_still_seeks_only_display_newest_frame(qtbot, tmp_path: Path, monkeypatch) -> None:
+    from threading import Event
+
+    from ai_ngerti_geopolitik.bootstrap import w8_controller as controller_module
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, _router = setup(qtbot)
+    controller.session.open_project(source)
+    real_render = controller_module.render_still_frame
+    started = Event()
+    release = Event()
+    rendered: list[int] = []
+
+    def slow_first(state, frame):
+        rendered.append(frame)
+        if frame == 0:
+            started.set()
+            assert release.wait(5)
+        return real_render(state, frame)
+
+    monkeypatch.setattr(controller_module, "render_still_frame", slow_first)
+    controller.request_still_preview(0)
+    assert started.wait(3)
+    controller.request_still_preview(149)
+    controller.request_still_preview(150)
+    release.set()
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    assert rendered == [0, 150]
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_old_still_job_cannot_update_new_project(qtbot, tmp_path: Path, monkeypatch) -> None:
+    from threading import Event
+    from uuid import uuid4
+
+    from ai_ngerti_geopolitik.bootstrap import w8_controller as controller_module
+
+    source = _saved_still_scene_project(tmp_path)
+    controller, _router = setup(qtbot)
+    controller.session.open_project(source)
+    real_render = controller_module.render_still_frame
+    started = Event()
+    release = Event()
+
+    def slow_first(state, frame):
+        if state.project_id == "P-QT-PREVIEW" and frame == 0:
+            started.set()
+            assert release.wait(5)
+        return real_render(state, frame)
+
+    monkeypatch.setattr(controller_module, "render_still_frame", slow_first)
+    controller.request_still_preview(0)
+    assert started.wait(3)
+
+    from dataclasses import replace
+
+    next_path = tmp_path / "next.angproj"
+    next_state = replace(controller.session.state, project_id="P-QT-NEXT")
+    JsonProjectRepository().save(next_state, next_path)
+    controller.session.open_project(next_path)
+    controller.session_id = uuid4().hex
+    controller.request_still_preview(150)
+    release.set()
+
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    assert controller.session.state.project_id == "P-QT-NEXT"
+    image = canvas.pixmap().toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_still_play_uses_wall_clock_then_pause_resume_without_rewinding(
+    qtbot, tmp_path: Path
+) -> None:
+    path = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(path)
+    clock = [500.0]
+    controller.still_play_clock = lambda: clock[0]
+    controller.request_still_preview(0)
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    assert controller.timer.interval() == 33
+    clock[0] += 5.0
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 150, controller)
+    pixmap = canvas.pixmap()
+    assert pixmap is not None
+    image = pixmap.toImage()
+    assert image.pixelColor(image.width() // 4, image.height() // 2).name() == "#00ff00"
+    assert image.pixelColor(3 * image.width() // 4, image.height() // 2).name() == "#0000ff"
+
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    clock[0] += 8.0
+    controller.poll()
+    assert controller.still_preview_frame == 150
+
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    clock[0] += 1.0
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 180, controller)
+    assert controller.still_playing
+
+    router(UiIntent(UiIntentType.PLAYBACK_SEEK, (("frame", "60"),)))
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 60, controller)
+    assert controller.still_playing
+    clock[0] += 0.5
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 75, controller)
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_w8_still_play_stops_at_last_frame_and_can_restart(qtbot, tmp_path: Path) -> None:
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    clock = [20.0]
+    controller.still_play_clock = lambda: clock[0]
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    clock[0] += 30.0
+    canvas = controller.window.stack.currentWidget().findChild(QLabel, "preview_canvas")
+    assert canvas is not None
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 239, controller)
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+    pump(qtbot, lambda: canvas.property("still_timeline_frame") == 0, controller)
+    router(UiIntent(UiIntentType.PLAYBACK_PAUSE))
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_still_play_stops_when_project_identity_changes(qtbot, tmp_path: Path) -> None:
+    source = _saved_still_scene_project(tmp_path)
+    controller, router = setup(qtbot)
+    controller.session.open_project(source)
+    clock = [100.0]
+    controller.still_play_clock = lambda: clock[0]
+    router(UiIntent(UiIntentType.PLAYBACK_PLAY))
+    assert controller.still_playing
+
+    from dataclasses import replace
+
+    newer_path = tmp_path / "newer.angproj"
+    newer = replace(controller.session.state, project_id="P-DIFFERENT")
+    JsonProjectRepository().save(newer, newer_path)
+    controller.session.open_project(newer_path)
+    clock[0] += 10.0
+    controller.poll()
+    assert not controller.still_playing
+    assert controller.timer.interval() == 150
+    assert controller.still_preview_desired is None
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_second_continue_creates_and_opens_real_image_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Historical map</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w", zipfile.ZIP_DEFLATED) as output:
+        output.writestr("word/document.xml", xml)
+    assets = tmp_path / "images"
+    assets.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_ARGB32)
+    image.fill(0xFFCC4422)
+    assert image.save(str(assets / "A001.png"), "PNG")
+    timing = tmp_path / "timing.txt"
+    timing.write_text("# FPS project: 30\nScene 1: 150 frames\n", encoding="utf-8")
+    project = tmp_path / "historical.angproj"
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(assets))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda *a, **kw: (str(timing), "TXT Durasi (*.txt)")
+    )
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda *a, **kw: (str(project), "Project (*.angproj)")
+    )
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(document)))
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+    assert not controller.session.is_open
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.session.is_open and controller.window.window.property("ui_state") == "UI-010"
+        ),
+        controller,
+    )
+    assert project.exists()
+    assert controller.session.current_path == project.resolve()
+    assert controller.session.state.assets[0].media_type == "image"
+    assert controller.session.state.tracks[0].clips[0].image_hold_frames == 150
+    assert controller.session.state.timeline_end_frame == 150
+    assert not controller.session.dirty
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_wizard_bad_duration_does_not_write_or_replace_active_session(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    document = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Flag</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(document, "w") as output:
+        output.writestr("word/document.xml", xml)
+    folder = tmp_path / "assets"
+    folder.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_RGB32)
+    image.fill(0x00114488)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    invalid_timing = tmp_path / "bad.txt"
+    invalid_timing.write_text("# FPS project: 30\nScene 1: ____ frames\n", encoding="utf-8")
+    target = tmp_path / "should-not-exist.angproj"
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(folder))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda *a, **kw: (str(invalid_timing), "TXT (*.txt)")
+    )
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda *a, **kw: (str(target), "Project (*.angproj)")
+    )
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(document)))
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: controller.scene_save_future is None,
+        controller,
+    )
+    assert not controller.session.is_open
+    assert not target.exists()
+    assert controller.window.window.property("ui_state") == "UI-003"
+    assert "gagal dibuat" in controller.last_error
+    controller.shutdown()
+    controller.window.close()
+
+
+def test_dirty_session_stays_open_before_timing_dialog_for_new_scene_project(
+    qtbot, tmp_path: Path, monkeypatch
+) -> None:
+    docx = tmp_path / "scene.docx"
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        "<w:body><w:p><w:r><w:t>Scene 1: 1</w:t></w:r></w:p>"
+        "<w:p><w:r><w:t>Asset 1: Red</w:t></w:r></w:p>"
+        "</w:body></w:document>"
+    )
+    with zipfile.ZipFile(docx, "w") as archive:
+        archive.writestr("word/document.xml", xml)
+    folder = tmp_path / "assets"
+    folder.mkdir()
+    image = QImage(8, 8, QImage.Format.Format_RGB32)
+    image.fill(0x00112233)
+    assert image.save(str(folder / "A001.png"), "PNG")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **kw: str(folder))
+
+    def no_dialog(*_args, **_kwargs):
+        raise AssertionError("dirty project must block another file dialog")
+
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", no_dialog)
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", no_dialog)
+    controller, _router = setup(qtbot, initial_route="UI-003")
+    controller.session.new_project("UNSAVED", "Existing unfinished project", 30)
+    identity = controller.session.session_id
+    current = controller.session.state.semantic_hash()
+    assert controller.session.dirty
+    intent = UiIntent(
+        UiIntentType.NEW_PROJECT, (("action", "continue_wizard"), ("path", str(docx)))
+    )
+    controller.handle(intent)
+    pump(
+        qtbot,
+        lambda: (
+            controller.scene_docx_future is None
+            and controller.scene_asset_future is None
+            and controller.scene_asset_inventory is not None
+        ),
+        controller,
+    )
+    controller.handle(intent)
+    assert controller.scene_save_future is None
+    assert controller.session.session_id == identity
+    assert controller.session.state.semantic_hash() == current
+    assert controller.session.dirty
+    assert "Simpan perubahan" in controller.last_error
     controller.shutdown()
     controller.window.close()

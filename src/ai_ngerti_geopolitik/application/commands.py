@@ -400,14 +400,17 @@ class SetClipDurationCommand:
                     continue
                 _require_track_editable(track)
                 asset = state.asset(clip.asset_id)
-                source_duration = clip.timeline_frames_to_source_frames(self.duration_frames)
-                new_source_out = clip.source_in.frames + source_duration
-                if new_source_out > asset.duration.frames:
-                    raise CommandError("clip duration exceeds source media")
-                updated = replace(
-                    clip,
-                    source_out=FrameTime(new_source_out, state.fps),
-                )
+                if asset.media_type == "image":
+                    updated = replace(clip, image_hold_frames=self.duration_frames)
+                else:
+                    source_duration = clip.timeline_frames_to_source_frames(self.duration_frames)
+                    new_source_out = clip.source_in.frames + source_duration
+                    if new_source_out > asset.duration.frames:
+                        raise CommandError("clip duration exceeds source media")
+                    updated = replace(
+                        clip,
+                        source_out=FrameTime(new_source_out, state.fps),
+                    )
                 if updated.duration_frames != self.duration_frames:
                     raise CommandError(
                         "requested duration is not exactly representable at current speed"
@@ -490,6 +493,16 @@ class SplitClipCommand:
                 if not start < self.split_timeline_frame < end:
                     raise CommandError("split point must be inside clip")
                 offset = self.split_timeline_frame - start
+                if clip.image_hold_frames is not None:
+                    left = replace(clip, image_hold_frames=offset)
+                    right = replace(
+                        clip,
+                        clip_id=self.right_clip_id,
+                        timeline_start=FrameTime(self.split_timeline_frame, state.fps),
+                        image_hold_frames=clip.duration_frames - offset,
+                    )
+                    clips = (*track.clips[:index], left, right, *track.clips[index + 1 :])
+                    return _replace_track(state, replace(track, clips=clips))
                 source_offset = clip.timeline_frames_to_source_frames(offset)
                 split_source_frame = clip.source_in.frames + source_offset
                 if split_source_frame >= clip.source_out.frames:
@@ -534,6 +547,28 @@ class TrimClipCommand:
                 _require_track_editable(track)
                 if self.trim_frames >= clip.duration_frames:
                     raise CommandError("trim would remove entire clip")
+                if clip.image_hold_frames is not None:
+                    trimmed = replace(
+                        clip,
+                        image_hold_frames=clip.duration_frames - self.trim_frames,
+                        timeline_start=FrameTime(
+                            clip.timeline_start.frames
+                            + (self.trim_frames if self.edge == "left" else 0),
+                            state.fps,
+                        ),
+                    )
+                    ordered[index] = trimmed
+                    if self.ripple and self.edge == "right":
+                        for later_index in range(index + 1, len(ordered)):
+                            later = ordered[later_index]
+                            ordered[later_index] = replace(
+                                later,
+                                timeline_start=FrameTime(
+                                    later.timeline_start.frames - self.trim_frames,
+                                    state.fps,
+                                ),
+                            )
+                    return _replace_track(state, replace(track, clips=tuple(ordered)))
                 source_trim = clip.timeline_frames_to_source_frames(self.trim_frames)
                 if source_trim >= clip.source_duration_frames:
                     raise CommandError("trim would remove entire source clip")
@@ -610,6 +645,8 @@ class SetClipSpeedCommand:
     def apply(self, state: ProjectState) -> ProjectState:
         track, clip = _find_clip_location(state, self.clip_id)
         _require_track_editable(track)
+        if clip.image_hold_frames is not None and self.rate_percent != 100:
+            raise CommandError("image HOLD duration is independent of playback speed")
         speed = SpeedProperties(self.rate_percent)
         properties = replace(clip.properties, speed=speed)
         updated = replace(clip, properties=properties)

@@ -6,10 +6,16 @@ project truth, typed validation, verified relink and crash recovery.
 
 from __future__ import annotations
 
+import os
+import shutil
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from pathlib import Path
+from threading import Event
+from time import monotonic
 from uuid import uuid4
+
+from PySide6.QtGui import QImage
 
 from ai_ngerti_geopolitik.application.ports import ProbeResult
 from ai_ngerti_geopolitik.application.project_jobs import (
@@ -30,6 +36,16 @@ from ai_ngerti_geopolitik.application.relink_scan import (
     RelinkScanSnapshot,
     ScanState,
 )
+from ai_ngerti_geopolitik.application.scene_asset_bindings import (
+    SceneAssetInventory,
+    SceneAssetScanError,
+)
+from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
+from ai_ngerti_geopolitik.application.scene_import_review import SceneImportReviewError
+from ai_ngerti_geopolitik.application.still_export_intent import (
+    StillExportIntentError,
+    validate_still_export_intent,
+)
 from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntent,
     UiIntentSink,
@@ -40,14 +56,28 @@ from ai_ngerti_geopolitik.application.validation import (
     ValidationResult,
     ValidationService,
 )
+from ai_ngerti_geopolitik.bootstrap.scene_cli import create_scene_project_from_wizard
+from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.crash_marker import FileCrashMarkerStore
 from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfprobeMediaProbe
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.media_status import LocalMediaAvailability
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
+from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
+    PilotAResult,
+    sha256_executable,
+)
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
+from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
+from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
+from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
+    StillFramePreviewError,
+    render_still_frame,
+)
+from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import export_still_project_mp4
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
+from ai_ngerti_geopolitik.presentation.navigation import UiRoute
 from ai_ngerti_geopolitik.presentation.recovery import recovery_projection
 from ai_ngerti_geopolitik.presentation.validation_center import project_validation_center
 
@@ -57,6 +87,31 @@ class _DeferredProbe:
 
     def probe(self, path: Path) -> ProbeResult:
         return FfprobeMediaProbe().probe(path)
+
+
+def _run_pilot_gui_export(
+    state: ProjectState, output: Path, cancel: Event, include_subtitles: bool
+) -> PilotAResult:
+    """Off-Qt worker: resolve, SHA-pin and run external tools only in Pilot A."""
+    if os.environ.get("ANG_PILOT_A_FFMPEG") != "1" or cancel.is_set():
+        raise RuntimeError("Pilot A is disabled or cancelled")
+    ffmpeg_value = shutil.which("ffmpeg")
+    ffprobe_value = shutil.which("ffprobe")
+    if ffmpeg_value is None or ffprobe_value is None:
+        raise RuntimeError("native FFmpeg or FFprobe is unavailable")
+    ffmpeg = Path(ffmpeg_value).resolve(strict=True)
+    ffprobe = Path(ffprobe_value).resolve(strict=True)
+    return export_still_project_mp4(
+        state,
+        output,
+        ffmpeg_path=ffmpeg,
+        ffmpeg_sha256=sha256_executable(ffmpeg),
+        ffprobe_path=ffprobe,
+        ffprobe_sha256=sha256_executable(ffprobe),
+        timeout_seconds=900,
+        should_cancel=cancel.is_set,
+        include_subtitles=include_subtitles,
+    )
 
 
 class W8IntentRouter:
@@ -109,6 +164,31 @@ class W8RuntimeController:
         self.offer: RecoveryOffer | None = None
         self.recovery_future: Future[RecoveryOffer] | None = None
         self.recovery_path: Path | None = None
+        self.scene_docx_future: Future[SceneDocxPlan] | None = None
+        self.scene_docx_plan: SceneDocxPlan | None = None
+        self.scene_asset_future: Future[SceneAssetInventory] | None = None
+        self.scene_asset_inventory: SceneAssetInventory | None = None
+        self.scene_docx_path: Path | None = None
+        self.scene_asset_root: Path | None = None
+        self.scene_save_future: Future[ProjectState] | None = None
+        self.scene_save_target: Path | None = None
+        self.scene_save_token: str | None = None
+        self.still_preview_worker = ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="ang-still"
+        )
+        self.still_preview_future: Future[QImage] | None = None
+        self.still_preview_inflight: tuple[str, str, int] | None = None
+        self.still_preview_desired: tuple[str, str, int] | None = None
+        self.still_preview_frame = 0
+        self.still_playing = False
+        self.still_play_started_at = 0.0
+        self.still_play_start_frame = 0
+        self.still_play_token: tuple[str, str] | None = None
+        self.still_play_clock = monotonic
+        self.export_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ang-mp4")
+        self.export_future: Future[PilotAResult] | None = None
+        self.export_cancel = Event()
+        self.export_token: tuple[str, str] | None = None
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -122,6 +202,67 @@ class W8RuntimeController:
         self.last_error = message
         self.window.window.statusBar().showMessage(message, 7500)
 
+    def _request_still_export(self, data: dict[str, str]) -> None:
+        """Start exactly one qualified render without blocking the GUI thread."""
+        if self.export_future is not None:
+            self._notify("Render sebelumnya masih berjalan. Tunggu atau tutup aplikasi.")
+            return
+        if (
+            not self.session.is_open
+            or self.session.current_path is None
+            or self.session.dirty
+            or self.recovery_future is not None
+        ):
+            self._notify("Buka dan simpan project sebelum ekspor MP4.")
+            return
+        if os.environ.get("ANG_PILOT_A_FFMPEG") != "1":
+            self._notify("Ekspor MP4 masih dibatasi Pilot A di build pengembangan.")
+            return
+        if self.window.window.property("ui_state") != UiRoute.EXPORT_SETTINGS.value:
+            self._notify("Buka dialog Ekspor Video untuk memilih pengaturan.")
+            return
+        try:
+            destination = validate_still_export_intent(data, self.session.state)
+        except StillExportIntentError as error:
+            # Reuse the frozen dialog; no widget insertion or screen redesign.
+            self._notify(str(error))
+            dialog = self.window._active_dialog
+            if dialog is not None:
+                dialog.setWindowTitle(f"Ekspor Video — {error}")
+            return
+        self.export_cancel = Event()
+        self.export_token = (self.session_id, self.session.state.semantic_hash())
+        self.export_future = self.export_worker.submit(
+            _run_pilot_gui_export,
+            self.session.state,
+            destination,
+            self.export_cancel,
+            data["subtitle"] == "Sertakan Subtitle (Burn-in ke Video)",
+        )
+        self.window.show_route(UiRoute.EDITOR)
+        self._notify("Membuat MP4 H.264 dan memverifikasi semua track yang dipilih...")
+
+    def _poll_still_export(self) -> None:
+        future = self.export_future
+        if future is None or not future.done():
+            return
+        token = self.export_token
+        self.export_future = None
+        self.export_token = None
+        try:
+            result = future.result()
+        except (OSError, RuntimeError, ValueError):
+            if token is not None and token[0] == self.session_id and not self._closed:
+                self._notify("Ekspor MP4 gagal/dibatalkan; tidak ada hasil final yang disahkan.")
+            return
+        if (
+            token is not None
+            and self.session.is_open
+            and token == (self.session_id, self.session.state.semantic_hash())
+            and not self._closed
+        ):
+            self._notify(f"MP4 H.264 terverifikasi: {result.frame_count} frame, {result.fps} FPS.")
+
     def _finish_current_session(self) -> bool:
         if not self.session.is_open:
             return True
@@ -132,25 +273,36 @@ class W8RuntimeController:
             self.recovery.close_clean(self.session, self.session.current_path, self.active_marker)
         else:
             self.session.close()
+        self._stop_still_playback()
         self.active_marker = None
         self.session_id = uuid4().hex
+        self.still_preview_desired = None
+        self.still_preview_frame = 0
         return True
 
     def request_open(self, source: Path) -> None:
         """Asynchronous catalog inspection; never perform disk probing on GUI thread."""
         if self._closed or self.recovery_future is not None:
             return
-        if not self._finish_current_session():
+        # Do not discard a valid open project until the candidate has passed
+        # asynchronous recovery inspection. A corrupt/missing destination is
+        # not a reason to close the currently active project.
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project belum disimpan. Simpan sebelum membuka project lain.")
             return
-        self._cancel_project_jobs()
+        candidate = source.resolve()
+        if self.session.is_open and self.session.current_path == candidate:
+            self._notify("Project ini sudah terbuka.")
+            return
         self.offer = None
-        self.recovery_path = source.resolve()
+        self.recovery_path = candidate
         self.recovery_future = self.recovery_worker.submit(
             self.recovery.inspect, self.recovery_path
         )
         self._notify("Memeriksa autosave dan status pemulihan project…")
 
     def _cancel_project_jobs(self) -> None:
+        self.export_cancel.set()
         if self.validation_job_id is not None:
             self.validation_jobs.cancel(self.validation_job_id)
             self.validation_job_id = None
@@ -163,23 +315,184 @@ class W8RuntimeController:
         if self.offer is None:
             self._notify("Pilihan pemulihan tidak tersedia.")
             return
-        try:
-            decision = self.recovery.decide(
-                self.offer, choice, self.session, selected_path=selected
-            )
-        except (OSError, RuntimeError, ValueError):
-            self._notify("Pemulihan gagal atau sudah usang. Buka project kembali.")
-            return
         if choice is RecoveryChoice.IGNORE:
             self.offer = None
             self.window._close_active_dialog()
             return
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project belum disimpan. Simpan sebelum membuka project lain.")
+            return
+
+        # Stage on a temporary session: RecoveryManager verifies the latest
+        # source/snapshot and starts its marker BEFORE the active editor changes.
+        # This is not a second live project store; it becomes the sole session
+        # only after the previous session has been closed successfully.
+        candidate_session = ProjectSession(
+            self.session.repository, autosave_catalog=self.session.autosave_catalog
+        )
+        offer = self.offer
+        try:
+            decision = self.recovery.decide(
+                offer, choice, candidate_session, selected_path=selected
+            )
+        except (OSError, RuntimeError, ValueError):
+            self._notify("Pemulihan gagal atau sudah usang. Buka project kembali.")
+            return
+
+        try:
+            finished = self._finish_current_session()
+        except (OSError, RuntimeError, ValueError):
+            finished = False
+        if not finished:
+            # Candidate never becomes the active project. Make a best-effort
+            # clean marker for a stage that was never accepted into the editor.
+            if decision.active_marker is not None:
+                with suppress(OSError, RuntimeError, ValueError):
+                    self.recovery.close_clean(
+                        candidate_session,
+                        offer.source,
+                        decision.active_marker,
+                        discard_unsaved=True,
+                    )
+            self._notify("Tidak dapat menutup project sebelumnya. Project baru belum dibuka.")
+            return
+
+        self._cancel_project_jobs()
+        self._stop_still_playback()
+        self.session = candidate_session
         self.active_marker = decision.active_marker
         self.offer = None
         self.session_id = uuid4().hex
-        self.window._close_active_dialog()
+        # The successful OPEN/RECOVER action must activate the existing editor
+        # route. Previously the project loaded but Home remained visible.
+        self.window.show_route(UiRoute.EDITOR)
         self._notify("Project dibuka. Periksa media dan simpan perubahan secara manual.")
+        if self._has_still_clips():
+            self.request_still_preview(0)
         self.request_validation()
+
+    def _has_still_clips(self) -> bool:
+        return self.session.is_open and any(
+            clip.image_hold_frames is not None
+            for track in self.session.state.tracks
+            for clip in track.clips
+        )
+
+    def _stop_still_playback(self) -> None:
+        """Stop the wall-clock transport, preserving the final requested frame."""
+        self.still_playing = False
+        self.still_play_token = None
+        self.timer.setInterval(150)
+
+    def _start_still_playback(self) -> None:
+        """Transport is wall-clock based; slow PNG decoding may skip frames."""
+        if self.still_playing or not self.session.is_open or not self._has_still_clips():
+            return
+        if self.window.window.property("ui_state") != "UI-010":
+            self._notify("Buka editor untuk memutar scene gambar.")
+            return
+        state = self.session.state
+        if state.timeline_end_frame <= 0:
+            self._notify("Timeline gambar masih kosong.")
+            return
+        if self.still_preview_frame >= state.timeline_end_frame - 1:
+            self.request_still_preview(0)
+        self.still_play_token = (self.session_id, state.semantic_hash())
+        self.still_play_started_at = self.still_play_clock()
+        self.still_play_start_frame = self.still_preview_frame
+        self.still_playing = True
+        self.timer.setInterval(16 if state.fps == 60 else 33)
+        self._notify("Memutar scene gambar. Audio dan efek belum didukung.")
+
+    def _tick_still_playback(self) -> None:
+        if not self.still_playing:
+            return
+        if (
+            not self.session.is_open
+            or not self._has_still_clips()
+            or self.window.window.property("ui_state") != "UI-010"
+            or self.still_play_token != (self.session_id, self.session.state.semantic_hash())
+        ):
+            self._stop_still_playback()
+            return
+        state = self.session.state
+        elapsed = max(0.0, self.still_play_clock() - self.still_play_started_at)
+        candidate = self.still_play_start_frame + int(elapsed * state.fps)
+        frame = max(self.still_preview_frame, min(candidate, state.timeline_end_frame - 1))
+        if frame != self.still_preview_frame:
+            self.request_still_preview(frame)
+        if frame == state.timeline_end_frame - 1:
+            self._stop_still_playback()
+            self._notify("Pemutaran scene gambar selesai.")
+
+    def _reanchor_still_playback(self, frame: int) -> None:
+        if self.still_playing:
+            self.still_play_start_frame = frame
+            self.still_play_started_at = self.still_play_clock()
+
+    def request_still_preview(self, frame: int) -> None:
+        """Coalesce exact-frame seeks; discard stale project/revision results."""
+        if self._closed or not self.session.is_open:
+            self._notify("Buka project sebelum meminta preview.")
+            return
+        if not self._has_still_clips():
+            return
+        state = self.session.state
+        if type(frame) is not int or not 0 <= frame < state.timeline_end_frame:
+            self._notify("Frame preview di luar timeline.")
+            return
+        self.still_preview_frame = frame
+        self.still_preview_desired = (self.session_id, state.semantic_hash(), frame)
+        self._launch_still_preview()
+
+    def _launch_still_preview(self) -> None:
+        token = self.still_preview_desired
+        if (
+            self._closed
+            or self.still_preview_future is not None
+            or token is None
+            or not self.session.is_open
+        ):
+            return
+        if token[0] != self.session_id or token[1] != self.session.state.semantic_hash():
+            self.still_preview_desired = None
+            return
+        self.still_preview_inflight = token
+        self.still_preview_future = self.still_preview_worker.submit(
+            render_still_frame, self.session.state, token[2]
+        )
+
+    def _poll_still_preview(self) -> None:
+        future = self.still_preview_future
+        if future is None or not future.done():
+            return
+        token = self.still_preview_inflight
+        self.still_preview_future = None
+        self.still_preview_inflight = None
+        try:
+            image = future.result()
+        except (StillFramePreviewError, OSError, RuntimeError, ValueError):
+            if token == self.still_preview_desired:
+                self.still_preview_desired = None
+                self._stop_still_playback()
+                self._notify("Preview gambar gagal. Periksa media atau efek.")
+        else:
+            if (
+                token is not None
+                and token == self.still_preview_desired
+                and self.session.is_open
+                and token[0] == self.session_id
+                and token[1] == self.session.state.semantic_hash()
+                and self.window.window.property("ui_state") == "UI-010"
+            ):
+                self.window.apply_still_frame_preview(
+                    image,
+                    token[2],
+                    self.session.state.revision,
+                    self.session.state.timeline_end_frame,
+                )
+                self.still_preview_desired = None
+        self._launch_still_preview()
 
     def request_validation(self) -> None:
         if not self.session.is_open or self._closed:
@@ -252,12 +565,103 @@ class W8RuntimeController:
         self._notify(f"Media terverifikasi diterapkan pada revisi {updated.revision}.")
         self.request_validation()
 
+    def _request_scene_save(self) -> None:
+        """Existing Continue button: native file dialogs, then worker-only safe Save."""
+        from PySide6.QtWidgets import QFileDialog
+
+        if self.session.is_open and self.session.dirty:
+            self._notify("Simpan perubahan project lama sebelum membuat project baru.")
+            return
+        if self.recovery_future is not None or self.offer is not None:
+            self._notify("Selesaikan pemeriksaan project sebelumnya dahulu.")
+            return
+        plan = self.scene_docx_plan
+        source = self.scene_docx_path
+        folder = self.scene_asset_root
+        if (
+            plan is None
+            or source is None
+            or folder is None
+            or self.scene_asset_inventory is None
+            or not self.scene_asset_inventory.all_ready
+        ):
+            self._notify("Periksa DOCX dan folder aset terlebih dahulu.")
+            return
+        timing, _ = QFileDialog.getOpenFileName(
+            self.window.window, "Pilih TXT Durasi Scene", "", "TXT Durasi (*.txt)"
+        )
+        if not timing:
+            self._notify("TXT durasi belum dipilih. Project tidak dibuat.")
+            return
+        target, _ = QFileDialog.getSaveFileName(
+            self.window.window,
+            "Simpan Project Baru",
+            str(source.with_suffix(".angproj")),
+            "Project (*.angproj)",
+        )
+        if not target:
+            self._notify("Penyimpanan dibatalkan. Project tidak dibuat.")
+            return
+        destination = Path(target).resolve()
+        if destination.suffix.lower() != ".angproj":
+            self._notify("Nama project wajib berakhiran .angproj.")
+            return
+        if self._closed or self.window.window.property("ui_state") != "UI-003":
+            return
+        if self.session.is_open and self.session.dirty:
+            self._notify("Project lama berubah. Simpan project lama terlebih dahulu.")
+            return
+        self.scene_save_target = destination
+        self.scene_save_token = self.session_id
+        self.scene_save_future = self.recovery_worker.submit(
+            create_scene_project_from_wizard,
+            plan,
+            source,
+            folder,
+            Path(timing),
+            destination,
+        )
+        self._notify("Memvalidasi durasi, memeriksa ulang gambar, lalu menyimpan project...")
+
     def handle(self, intent: UiIntent) -> None:
         if self._closed:
             return
         kind = intent.kind
         data = dict(intent.payload)
-        if kind is UiIntentType.OPEN_PROJECT:
+        if kind is UiIntentType.NEW_PROJECT:
+            if data.get("action") == "continue_wizard":
+                scene_docx = data.get("path", "").strip()
+                if not scene_docx:
+                    self._notify("Pilih Scene DOCX sebelum melanjutkan.")
+                elif Path(scene_docx).suffix.lower() != ".docx" or not Path(scene_docx).is_file():
+                    self._notify("Scene DOCX tidak tersedia. Pilih file DOCX yang dapat dibuka.")
+                elif self.scene_docx_future is not None:
+                    self._notify("Pemeriksaan Scene DOCX masih berjalan.")
+                elif self.scene_asset_future is not None:
+                    self._notify("Pemeriksaan folder aset masih berjalan.")
+                elif self.scene_save_future is not None:
+                    self._notify("Penyimpanan project sedang berjalan.")
+                elif (
+                    self.scene_docx_plan is not None
+                    and self.scene_docx_path == Path(scene_docx).resolve()
+                    and self.scene_asset_root is not None
+                    and self.scene_asset_inventory is not None
+                    and self.scene_asset_inventory.all_ready
+                ):
+                    self._request_scene_save()
+                else:
+                    # Bounded ZIP/XML parsing runs off the GUI thread. The
+                    # validated DTO is only an import plan: binding assets,
+                    # saving .angproj and editor transition require later gates.
+                    self.scene_docx_plan = None
+                    self.scene_asset_inventory = None
+                    self.scene_asset_root = None
+                    self.scene_docx_path = Path(scene_docx).resolve()
+                    self.scene_docx_future = self.recovery_worker.submit(
+                        read_scene_docx, self.scene_docx_path
+                    )
+                    self._notify("Memeriksa struktur Scene DOCX...")
+        elif kind is UiIntentType.OPEN_PROJECT:
             filename = data.get("path", "")
             if not filename:
                 from PySide6.QtWidgets import QFileDialog
@@ -273,6 +677,8 @@ class W8RuntimeController:
             self._decide(RecoveryChoice.RECOVER_SNAPSHOT, Path(data.get("snapshot", "")))
         elif kind is UiIntentType.RECOVERY_IGNORE:
             self._decide(RecoveryChoice.IGNORE)
+        elif kind is UiIntentType.OPEN_EXPORT and data.get("action") == "render_requested":
+            self._request_still_export(data)
         elif kind is UiIntentType.OPEN_VALIDATION:
             if data.get("action") == "RELINK_MEDIA":
                 self.show_asset_scan()
@@ -292,6 +698,26 @@ class W8RuntimeController:
             self.show_asset_scan()
         elif kind is UiIntentType.ASSET_SCAN_APPLY:
             self._apply_scan(intent.payload)
+        elif kind is UiIntentType.PLAYBACK_SEEK and self._has_still_clips():
+            try:
+                frame = (
+                    int(data["frame"])
+                    if "frame" in data
+                    else self.still_preview_frame + int(data.get("delta", "0"))
+                )
+            except ValueError:
+                self._notify("Nomor frame preview tidak valid.")
+            else:
+                frame = max(0, min(frame, self.session.state.timeline_end_frame - 1))
+                self.request_still_preview(frame)
+                self._reanchor_still_playback(frame)
+        elif kind is UiIntentType.PLAYBACK_PLAY and self._has_still_clips():
+            self._start_still_playback()
+        elif kind is UiIntentType.PLAYBACK_PAUSE and self._has_still_clips():
+            if self.still_playing:
+                self._tick_still_playback()
+                self._stop_still_playback()
+                self._notify("Pemutaran gambar dijeda.")
         elif kind is UiIntentType.SAVE_PROJECT and self.session.is_open:
             try:
                 self.session.save()
@@ -317,6 +743,99 @@ class W8RuntimeController:
                         self.window.present_recovery(recovery_projection(offer))
                     else:
                         self._decide(RecoveryChoice.OPEN_SOURCE)
+        if self.scene_docx_future is not None and self.scene_docx_future.done():
+            docx_future = self.scene_docx_future
+            self.scene_docx_future = None
+            try:
+                parsed = docx_future.result()
+            except (SceneDocxFormatError, OSError, RuntimeError, ValueError):
+                self.scene_docx_plan = None
+                self.scene_asset_inventory = None
+                self.scene_asset_root = None
+                self._notify("Scene DOCX tidak sesuai format atau tidak dapat dibaca.")
+            else:
+                if self.window.window.property("ui_state") == "UI-003":
+                    from PySide6.QtWidgets import QFileDialog
+
+                    self.scene_docx_plan = parsed
+                    self._notify(
+                        f"Scene DOCX valid: {len(parsed.scenes)} scene, "
+                        f"{parsed.asset_count} aset. Pilih folder aset."
+                    )
+                    folder = QFileDialog.getExistingDirectory(
+                        self.window.window, "Pilih Folder Aset", ""
+                    )
+                    if (
+                        folder
+                        and not self._closed
+                        and self.window.window.property("ui_state") == "UI-003"
+                    ):
+                        self.scene_asset_inventory = None
+                        self.scene_asset_root = Path(folder).resolve()
+                        self.scene_asset_future = self.recovery_worker.submit(
+                            scan_scene_asset_folder, parsed, self.scene_asset_root
+                        )
+                        self._notify("Memeriksa file A001–Axxx di folder aset...")
+                    elif not self._closed:
+                        self._notify(
+                            f"Scene DOCX valid: {len(parsed.scenes)} scene, "
+                            f"{parsed.asset_count} aset. Folder aset belum dipilih; "
+                            "project belum dibuat."
+                        )
+        if self.scene_asset_future is not None and self.scene_asset_future.done():
+            asset_future = self.scene_asset_future
+            self.scene_asset_future = None
+            try:
+                inventory = asset_future.result()
+            except (SceneAssetScanError, OSError, RuntimeError, ValueError):
+                self.scene_asset_inventory = None
+                self.scene_asset_root = None
+                self._notify("Scan folder aset gagal. Pilih folder lain.")
+            else:
+                if self.window.window.property("ui_state") == "UI-003":
+                    self.scene_asset_inventory = inventory
+                    ready = inventory.ready_count
+                    total = len(inventory.bindings)
+                    if inventory.all_ready:
+                        self._notify(
+                            f"Folder aset: {ready}/{total} READY. "
+                            "Project belum dibuat. Siapkan TXT durasi, lalu klik Lanjut lagi."
+                        )
+                    else:
+                        issues = ", ".join(
+                            f"{item.asset_id}:{item.status.value}"
+                            for item in inventory.blockers[:4]
+                        )
+                        self._notify(
+                            f"Folder aset: {ready}/{total} READY. "
+                            f"Perbaiki {issues}. Project belum dibuat."
+                        )
+        if self.scene_save_future is not None and self.scene_save_future.done():
+            pending = self.scene_save_future
+            saved_target = self.scene_save_target
+            saved_token = self.scene_save_token
+            self.scene_save_future = None
+            self.scene_save_target = None
+            self.scene_save_token = None
+            try:
+                created = pending.result()
+            except (SceneImportReviewError, SceneAssetScanError, OSError, RuntimeError, ValueError):
+                self._notify("Project gagal dibuat. Periksa TXT durasi dan keutuhan DOCX/aset.")
+            else:
+                if (
+                    saved_target is not None
+                    and created.timeline_end_frame > 0
+                    and saved_token == self.session_id
+                    and self.window.window.property("ui_state") == "UI-003"
+                    and self.recovery_future is None
+                    and not (self.session.is_open and self.session.dirty)
+                ):
+                    self.request_open(saved_target)
+                else:
+                    self._notify("Project tersimpan, tetapi sesi berubah. Buka file secara manual.")
+        self._tick_still_playback()
+        self._poll_still_preview()
+        self._poll_still_export()
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
                 self.validation_job_id,
@@ -347,11 +866,16 @@ class W8RuntimeController:
         if self._closed:
             return
         self._closed = True
+        self.export_cancel.set()
+        self._stop_still_playback()
         self.timer.stop()
         self._cancel_project_jobs()
         self.validation_jobs.shutdown()
         self.relink.shutdown()
         self.recovery_worker.shutdown(wait=False, cancel_futures=True)
+        self.still_preview_desired = None
+        self.still_preview_worker.shutdown(wait=False, cancel_futures=True)
+        self.export_worker.shutdown(wait=False, cancel_futures=True)
         # Never pretend clean shutdown when unsaved work still exists.
         if self.session.is_open and not self.session.dirty:
             with suppress(OSError, RuntimeError, ValueError):

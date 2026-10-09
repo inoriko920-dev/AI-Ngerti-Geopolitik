@@ -1,0 +1,55 @@
+name: ANG Project Open Corruption Hardening Windows
+
+on:
+  push:
+    branches: [fix/project-open-corrupt-json-fail-closed-20261008]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_QPA_PLATFORM: "offscreen"
+
+jobs:
+  project-open-fail-closed:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.21"
+          enable-cache: true
+      - run: uv lock --check
+      - run: uv sync --frozen --group quality --group test
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run lint-imports
+      - run: uv run python scripts/verify/verify_architecture.py --root .
+      - run: uv run python scripts/verify/verify_source_of_truth.py --root .
+      - run: uv run python scripts/verify/verify_no_secrets.py --root .
+      - run: uv run --frozen python scripts/verify/verify_ui_reference_manifest.py --root .
+      - run: uv run pytest tests/unit/test_scene_docx_import_contract.py -q
+      - run: uv run pytest tests/unit/test_scene_asset_discovery.py -q
+      - run: uv run pytest tests/unit/test_scene_import_review.py -q
+      - run: uv run pytest tests/unit/test_image_hold_canonical.py -q
+      - run: uv run pytest tests/unit/test_scene_image_materialization.py -q
+      - run: uv run pytest tests/unit/test_scene_import_finalization.py -q
+      - run: uv run pytest tests/unit/test_scene_duration_manifest_cli.py -q
+      - run: uv run pytest tests/unit/test_still_frame_preview.py -q
+      - run: uv run pytest tests/unit/test_still_frame_sequence.py -q
+      - run: uv run pytest tests/unit/test_complete_still_sequence.py -q
+      - run: uv run pytest tests/unit/test_still_sequence_verification.py -q
+      - run: uv run pytest tests/unit/test_still_h264_plan.py -q
+      - run: uv run pytest tests/unit/test_still_rgb24_stream.py -q
+      - run: uv run pytest tests/unit/test_still_rgb24_sink.py -q
+      - run: uv run pytest tests/unit/test_still_rgb24_transaction.py -q
+      - run: uv run pytest tests/unit/test_project_open_corruption_regression.py -q
+      - run: uv run pytest tests/unit/test_step11_w8_006_recovery.py -q
+      - run: uv run pytest tests/qt/test_step11_w8_010_runtime_wiring.py -q
+      - run: uv run pytest -q

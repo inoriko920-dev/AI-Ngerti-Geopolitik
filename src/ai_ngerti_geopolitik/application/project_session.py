@@ -120,10 +120,14 @@ class ProjectSession:
         self._guard_replacement(discard_unsaved)
         resolved = path.resolve()
         state = self.repository.load(resolved)
-        self._bus = CommandBus(state)
+        # Compute the hash before replacing any active project session:
+        # a malformed state from any repository must never install itself.
+        saved_hash = state.semantic_hash()
+        next_bus = CommandBus(state)
+        self._bus = next_bus
         self._session_id = uuid4().hex
         self._current_path = resolved
-        self._saved_hash = state.semantic_hash()
+        self._saved_hash = saved_hash
         return state
 
     def close(self, *, discard_unsaved: bool = False) -> None:
@@ -146,9 +150,13 @@ class ProjectSession:
         target = path.resolve() if path is not None else self._current_path
         if target is None:
             raise ProjectSessionError("Save requires a path for an unsaved project")
-        self.repository.save(self.state, target)
+        # Fail before any file write if the current canonical state cannot
+        # produce the identity used to decide whether the project is saved.
+        state = self.state
+        saved_hash = state.semantic_hash()
+        self.repository.save(state, target)
         self._current_path = target
-        self._saved_hash = self.state.semantic_hash()
+        self._saved_hash = saved_hash
         return target
 
     def save_as(self, path: Path) -> Path:
@@ -172,7 +180,12 @@ class ProjectSession:
             raise ProjectSessionError("recovery snapshot project mismatch")
         if restored.revision < original.revision:
             raise ProjectSessionError("recovery snapshot is older than source")
-        self._bus = CommandBus(restored)
+        # A custom repository may return domain-valid state containing invalid
+        # Unicode. Hash before accepting recovery, just as open_project does.
+        original.semantic_hash()
+        restored.semantic_hash()
+        next_bus = CommandBus(restored)
+        self._bus = next_bus
         self._session_id = uuid4().hex
         self._current_path = source
         # Force dirty even for an identical semantic state: explicit Save is mandatory.

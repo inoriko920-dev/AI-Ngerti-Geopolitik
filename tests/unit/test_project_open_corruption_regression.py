@@ -1,0 +1,298 @@
+"""Post-W8 project-open hardening: malformed .angproj must never crash or leak paths."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import replace
+from pathlib import Path
+
+import pytest
+
+from ai_ngerti_geopolitik.application.project_session import ProjectSession
+from ai_ngerti_geopolitik.domain import (
+    Asset,
+    Clip,
+    FrameTime,
+    NarrationTrack,
+    ProjectState,
+    SubtitleCue,
+    SubtitleTrack,
+    Track,
+)
+from ai_ngerti_geopolitik.infrastructure.persistence import (
+    JsonProjectRepository,
+    ProjectFormatError,
+)
+
+
+@pytest.mark.parametrize("invalid_track", [None, 42, "corrupt-track"])
+def test_corrupt_nested_track_has_typed_private_safe_error(
+    tmp_path: Path, invalid_track: object
+) -> None:
+    repo = JsonProjectRepository()
+    document = ProjectState.create("P-OPEN", "Valid", 30).semantic_dict(include_revision=True)
+    document["tracks"] = [invalid_track]
+    bad = tmp_path / "SECRET_TOKEN_PRIVATE_PROJECT.angproj"
+    bad.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$") as error:
+        repo.load(bad)
+
+    assert "SECRET_TOKEN" not in str(error.value)
+    assert str(bad) not in str(error.value)
+    assert error.value.__cause__ is None
+    assert error.value.__suppress_context__
+
+
+def test_invalid_json_and_unavailable_path_are_redacted(tmp_path: Path) -> None:
+    repo = JsonProjectRepository()
+    broken = tmp_path / "PRIVATE_BAD_JSON.angproj"
+    broken.write_text("{malformed", encoding="utf-8")
+    absent = tmp_path / "PRIVATE_MISSING.angproj"
+    for path in (broken, absent):
+        with pytest.raises(ProjectFormatError, match="^invalid project file$") as error:
+            repo.load(path)
+        assert "PRIVATE_" not in str(error.value)
+        assert str(path) not in str(error.value)
+        assert error.value.__suppress_context__
+
+
+def test_corrupt_open_does_not_replace_valid_active_session(tmp_path: Path) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-SAFE", "Keep working", 30)
+    active = session.save(tmp_path / "active.angproj")
+    before_hash = session.state.semantic_hash()
+    before_session = session.session_id
+    before_bytes = active.read_bytes()
+
+    document = ProjectState.create("P-INVALID", "Corrupt", 30).semantic_dict(include_revision=True)
+    document["tracks"] = [17]
+    corrupt = tmp_path / "SECRET_TOKEN_CORRUPTED.angproj"
+    corrupt.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$"):
+        session.open_project(corrupt, discard_unsaved=True)
+
+    assert session.is_open
+    assert session.session_id == before_session
+    assert session.current_path == active
+    assert session.state.semantic_hash() == before_hash
+    assert not session.dirty
+    assert active.read_bytes() == before_bytes
+
+
+@pytest.mark.parametrize(
+    "field_path",
+    [
+        ("assets", 0, "has_audio"),
+        ("tracks", 0, "locked"),
+        ("tracks", 0, "muted"),
+        ("tracks", 0, "visible"),
+        ("tracks", 0, "clips", 0, "enabled"),
+        ("tracks", 0, "clips", 0, "properties", "title", "enabled"),
+        ("tracks", 0, "clips", 0, "properties", "effects", "locked"),
+        ("subtitle", "enabled"),
+        ("subtitle", "style", "background_box"),
+        ("narration", "muted"),
+    ],
+)
+@pytest.mark.parametrize("invalid", ["false", "true", 0, 1, None])
+def test_malformed_boolean_never_silently_flips_project_state(
+    tmp_path: Path, field_path: tuple[str | int, ...], invalid: object
+) -> None:
+    document = _full_project().semantic_dict(include_revision=True)
+    location: object = document
+    for item in field_path[:-1]:
+        location = location[item]  # type: ignore[index]
+    location[field_path[-1]] = invalid  # type: ignore[index]
+    path = tmp_path / "SECRET_BOOLEAN.angproj"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(ProjectFormatError, match="^invalid project file$") as error:
+        JsonProjectRepository().load(path)
+    assert "SECRET_BOOLEAN" not in str(error.value)
+    assert error.value.__suppress_context__
+
+
+def test_valid_boolean_flags_roundtrip_without_semantic_change(tmp_path: Path) -> None:
+    repository = JsonProjectRepository()
+    source = _full_project()
+    path = tmp_path / "valid.angproj"
+    repository.save(source, path)
+    reopened = repository.load(path)
+    assert reopened.semantic_hash() == source.semantic_hash()
+    assert reopened.tracks[0].visible
+    assert not reopened.tracks[0].muted
+    assert reopened.subtitle is not None and reopened.subtitle.enabled
+    assert reopened.narration is not None and not reopened.narration.muted
+
+
+def _full_project() -> ProjectState:
+    video = Asset(
+        "A-VIDEO",
+        "source.mp4",
+        "video",
+        FrameTime(90, 30),
+        1920,
+        1080,
+        True,
+        "a" * 64,
+    )
+    narration_asset = Asset(
+        "A-VOICE",
+        "narration.wav",
+        "audio",
+        FrameTime(90, 30),
+        0,
+        0,
+        True,
+        "b" * 64,
+    )
+    clip = Clip(
+        "C-VIDEO",
+        "A-VIDEO",
+        FrameTime(0, 30),
+        FrameTime(0, 30),
+        FrameTime(90, 30),
+    )
+    cues = (SubtitleCue("SUB-1", 1, FrameTime(0, 30), FrameTime(30, 30), "Caption"),)
+    project = replace(
+        ProjectState.create("P-BOOL", "Boolean guard", 30),
+        assets=(video, narration_asset),
+        tracks=(Track("V1", "video", 0, (clip,)),),
+        subtitle=SubtitleTrack("subtitles.srt", cues),
+        narration=NarrationTrack("N-1", "A-VOICE", FrameTime(0, 30)),
+    )
+    project.validate()
+    return project
+
+
+@pytest.mark.parametrize(
+    "location",
+    [
+        ("name",),
+        ("tracks", 0, "name"),
+        ("subtitle", "cues", 0, "text"),
+    ],
+)
+@pytest.mark.parametrize("invalid_char", ["\ud800", "\udfff"])
+def test_unpaired_surrogate_unicode_is_rejected_before_project_open(
+    tmp_path: Path, location: tuple[str | int, ...], invalid_char: str
+) -> None:
+    repository = JsonProjectRepository()
+    document = _full_project().semantic_dict(include_revision=True)
+    location_node: object = document
+    for key in location[:-1]:
+        location_node = location_node[key]  # type: ignore[index]
+    location_node[location[-1]] = invalid_char  # type: ignore[index]
+    bad = tmp_path / "SECRET_SURROGATE.angproj"
+    # JSON escape sequences may legally encode invalid lone UTF-16 surrogates.
+    bad.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$") as error:
+        repository.load(bad)
+    assert "SECRET_" not in str(error.value)
+    assert error.value.__suppress_context__
+
+
+def test_unicode_corruption_preserves_active_session_and_saved_file(tmp_path: Path) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-ACTIVE", "Existing project", 30)
+    original_path = session.save(tmp_path / "current.angproj")
+    original_bytes = original_path.read_bytes()
+    original_hash = session.state.semantic_hash()
+    original_session_id = session.session_id
+
+    damaged = _full_project().semantic_dict(include_revision=True)
+    damaged["name"] = "\ud800"
+    corrupt = tmp_path / "SECRET_BAD_UNICODE.angproj"
+    corrupt.write_text(json.dumps(damaged), encoding="utf-8")
+
+    with pytest.raises(ProjectFormatError, match="^invalid project file$"):
+        session.open_project(corrupt, discard_unsaved=True)
+
+    assert session.current_path == original_path
+    assert session.session_id == original_session_id
+    assert session.state.semantic_hash() == original_hash
+    assert not session.dirty
+    assert original_path.read_bytes() == original_bytes
+
+
+def test_even_non_json_repository_cannot_replace_session_with_unhashable_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-ACTIVE", "Existing project", 30)
+    active_path = session.save(tmp_path / "original.angproj")
+    old_id = session.session_id
+    old_hash = session.state.semantic_hash()
+    poisoned = replace(session.state, name="\ud800")
+    monkeypatch.setattr(repository, "load", lambda path: poisoned)
+
+    with pytest.raises(UnicodeEncodeError):
+        session.open_project(tmp_path / "synthetic.angproj", discard_unsaved=True)
+    assert session.current_path == active_path
+    assert session.session_id == old_id
+    assert session.state.semantic_hash() == old_hash
+
+
+def test_invalid_recovery_snapshot_never_replaces_active_project(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-SNAPSHOT", "Original project", 30)
+    current_path = session.save(tmp_path / "current.angproj")
+    source_bytes = current_path.read_bytes()
+    source_state = session.state
+    original_id = session.session_id
+    original_hash = source_state.semantic_hash()
+    selected = tmp_path / "corrupt.autosave.angproj"
+    invalid_snapshot = replace(source_state, name="\ud800", revision=1)
+
+    def fake_load(path: Path) -> ProjectState:
+        return invalid_snapshot if path == selected else source_state
+
+    monkeypatch.setattr(repository, "load", fake_load)
+    with pytest.raises(UnicodeEncodeError):
+        session.recover_snapshot(current_path, selected)
+
+    assert session.is_open and not session.dirty
+    assert session.current_path == current_path
+    assert session.session_id == original_id
+    assert session.state.semantic_hash() == original_hash
+    assert current_path.read_bytes() == source_bytes
+
+
+def test_save_as_invalid_state_never_invokes_repo_or_changes_project_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository = JsonProjectRepository()
+    session = ProjectSession(repository)
+    session.new_project("P-SAVE-AS", "Original project", 30)
+    current_path = session.save(tmp_path / "original.angproj")
+    old_bytes = current_path.read_bytes()
+    original_id = session.session_id
+    original_saved_hash = session._saved_hash
+    # Simulate bad state handed to a repository adapter after canonical checks.
+    poisoned = replace(session.state, name="\ud800")
+    session.bus.replace_loaded_state(poisoned)
+    destination = tmp_path / "save-as.angproj"
+    called = []
+
+    def unsafe_save(state: ProjectState, path: Path) -> None:
+        called.append(path)
+        path.write_text("premature write", encoding="utf-8")
+
+    monkeypatch.setattr(repository, "save", unsafe_save)
+    with pytest.raises(UnicodeEncodeError):
+        session.save_as(destination)
+
+    assert called == []
+    assert not destination.exists()
+    assert session.session_id == original_id
+    assert session.current_path == current_path
+    assert session._saved_hash == original_saved_hash
+    assert current_path.read_bytes() == old_bytes

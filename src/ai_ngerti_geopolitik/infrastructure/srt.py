@@ -13,6 +13,9 @@ from ai_ngerti_geopolitik.application.ports import (
     SubtitleWriteError,
 )
 
+_MAX_SOURCE_BYTES = 8 * 1024 * 1024
+_MAX_CUES = 10000
+
 _TIMESTAMP = re.compile(
     r"^(?P<hours>\d{2,}):(?P<minutes>\d{2}):(?P<seconds>\d{2}),(?P<millis>\d{3})$"
 )
@@ -55,7 +58,10 @@ class Utf8SrtParser:
             raise SubtitleParseError(f"subtitle source does not exist: {source}")
 
         try:
-            payload = source.read_bytes()
+            with source.open("rb") as handle:
+                payload = handle.read(_MAX_SOURCE_BYTES + 1)
+            if len(payload) > _MAX_SOURCE_BYTES:
+                raise SubtitleParseError("SRT exceeds the 8 MiB input safety limit")
         except OSError as exc:
             raise SubtitleParseError(f"cannot read subtitle source: {source}") from exc
 
@@ -68,6 +74,8 @@ class Utf8SrtParser:
         blocks = [block for block in re.split(r"\n[ \t]*\n", normalized) if block.strip()]
         if not blocks:
             raise SubtitleParseError("SRT does not contain any subtitle cues")
+        if len(blocks) > _MAX_CUES:
+            raise SubtitleParseError("SRT contains too many subtitle cues")
 
         cues: list[ParsedSubtitleCue] = []
         seen_indexes: set[int] = set()

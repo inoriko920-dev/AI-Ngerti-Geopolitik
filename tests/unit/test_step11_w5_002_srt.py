@@ -213,3 +213,26 @@ def test_frame_conversion_detects_overlap_created_by_project_fps(tmp_path: Path)
                 ),
             ),
         )
+
+
+def test_parser_rejects_oversized_srt_before_decode(tmp_path: Path) -> None:
+    path = tmp_path / "oversized.srt"
+    with path.open("wb") as stream:
+        stream.write(b"A" * (8 * 1024 * 1024 + 1))
+    with pytest.raises(SubtitleParseError, match="8 MiB"):
+        Utf8SrtParser().parse(path)
+
+
+def test_parser_rejects_excessive_cues(tmp_path: Path) -> None:
+    path = tmp_path / "too-many.srt"
+    # Repeated one-millisecond cues are monotonically ordered and non-overlapping.
+    blocks = []
+    for index in range(1, 10002):
+        start = index - 1
+        end = index
+        start_stamp = f"00:00:{start // 1000:02d},{start % 1000:03d}"
+        end_stamp = f"00:00:{end // 1000:02d},{end % 1000:03d}"
+        blocks.append(f"{index}\n{start_stamp} --> {end_stamp}\ntext\n")
+    path.write_text("\n".join(blocks), encoding="utf-8")
+    with pytest.raises(SubtitleParseError, match="too many"):
+        Utf8SrtParser().parse(path)
