@@ -340,7 +340,7 @@ def _audio_state(tmp_path: Path, *, with_subtitles: bool):
         audio.setsampwidth(2)
         audio.setframerate(48000)
         # A nonzero deterministic test signal, not a credential or private recording.
-        audio.writeframes((b"\x40\x1f\x80\xe0") * 48000)
+        audio.writeframes((b"\x40\x1f" * 240 + b"\xc0\xe0" * 240) * 200)
     voice = Asset(
         asset_id="A004",
         path_ref=str(narration.resolve()),
