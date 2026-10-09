@@ -606,7 +606,6 @@ def test_rejects_control_character_caption_without_final_mp4(tmp_path: Path) -> 
     assert not output.exists()
 
 
-
 def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     """12s real FFmpeg render: SRT cue windows and 1s delayed VBR MP3 narration."""
     from ai_ngerti_geopolitik.application.subtitle_import import build_subtitle_track
@@ -640,8 +639,12 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
         str(source_mp3),
     ]
     encoded = subprocess.run(
-        cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL, timeout=20, check=False
+        cmd,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        timeout=20,
+        check=False,
     )
     assert encoded.returncode == 0 and source_mp3.is_file()
     audio_asset = replace(
@@ -663,9 +666,7 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     source_srt = tmp_path / "narration-multi.srt"
     source_srt.write_bytes(text.encode("utf-8"))
     original_digest = hashlib.sha256(source_srt.read_bytes()).hexdigest()
-    subtitle = build_subtitle_track(
-        state, source_srt, Utf8SrtParser().parse(source_srt)
-    )
+    subtitle = build_subtitle_track(state, source_srt, Utf8SrtParser().parse(source_srt))
     state = replace(
         state,
         subtitle=replace(
@@ -687,9 +688,21 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     assert sum(s["codec_name"] == "aac" for s in streams) == 1
     audio = subprocess.run(
         [
-            str(native["ffmpeg_path"]), "-nostdin", "-v", "error",
-            "-i", str(result_path), "-map", "0:a:0", "-ar", "8000",
-            "-ac", "1", "-f", "s16le", "-",
+            str(native["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(result_path),
+            "-map",
+            "0:a:0",
+            "-ar",
+            "8000",
+            "-ac",
+            "1",
+            "-f",
+            "s16le",
+            "-",
         ],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
@@ -706,13 +719,26 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
 
     # Decode just 6 frames, avoiding huge frame buffers; check 3 separated SRT cues.
     frames: list[bytes] = []
-    for frame_index in (1, 30, 90, 135, 285, 315):
+    for frame_index in (5, 20, 90, 135, 285, 315):
         image_bytes = subprocess.run(
             [
-                str(native["ffmpeg_path"]), "-nostdin", "-v", "error",
-                "-i", str(result_path), "-vf",
-                f"select=eq(n\\,{frame_index})", "-vsync", "0",
-                "-frames:v", "1", "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
+                str(native["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(result_path),
+                "-vf",
+                f"select=eq(n\\,{frame_index})",
+                "-vsync",
+                "0",
+                "-frames:v",
+                "1",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
             ],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
@@ -725,9 +751,12 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     # Still background alternates by source HOLD; compare only adjacent
     # frames within the same clip when testing a subtitle's presence.
     assert len(frames) == 6
-    assert frames[0] != frames[1]
-    assert frames[2] != frames[3]
-    assert frames[4] != frames[5]
+    for before, during in ((frames[0], frames[1]), (frames[2], frames[3]),
+                           (frames[4], frames[5])):
+        changed = sum(
+            abs(a - b) > 25 for a, b in zip(before, during, strict=True)
+        )
+        assert changed > 30
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
     target = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
     if target:
