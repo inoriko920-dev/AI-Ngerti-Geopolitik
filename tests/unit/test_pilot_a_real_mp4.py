@@ -31,6 +31,7 @@ from ai_ngerti_geopolitik.domain import (
     Asset,
     FrameTime,
     NarrationTrack,
+    TransitionProperties,
     SubtitleCue,
     SubtitleStyle,
     SubtitleTrack,
@@ -1137,3 +1138,83 @@ def test_120_scene_cancel_mid_frame_staging_never_publishes(
     assert not list(tmp_path.glob(".angfull-*"))
     assert not list(tmp_path.glob(".angseq-*"))
     assert not list(tmp_path.glob(".ang-pilot-*"))
+
+
+
+def test_real_native_mp4_has_fade_black_pixels_at_exact_scene_frames(
+    tmp_path: Path,
+) -> None:
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    first = state.tracks[0].clips[0]
+    animated = replace(
+        first,
+        properties=replace(
+            first.properties,
+            transition=TransitionProperties("fade_black", 8),
+        ),
+    )
+    state = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(animated, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    mp4 = tmp_path / "fade-black-real.mp4"
+    result = export_still_project_mp4(state, mp4, batch_size=20, **_tools())
+    assert result.frame_count == 60
+    assert result.fps == 30
+    assert mp4.is_file()
+    frame_bytes = result.width * result.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        code = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(mp4),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=decoded,
+            stderr=subprocess.DEVNULL,
+            timeout=25,
+            check=False,
+        )
+        assert code.returncode == 0
+        assert decoded.tell() == 60 * frame_bytes
+
+        def frame_rgb(frame: int) -> bytes:
+            decoded.seek(frame * frame_bytes)
+            return decoded.read(3)
+
+        start, middle, finish, next_scene = (
+            frame_rgb(0),
+            frame_rgb(16),
+            frame_rgb(29),
+            frame_rgb(30),
+        )
+        assert max(start) <= 16
+        assert middle[0] > 180 and middle[1] < 100
+        assert finish[0] < 90
+        assert next_scene[1] > 160 and next_scene[0] < 90
+    output = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if output:
+        directory = Path(output)
+        directory.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(mp4, directory / "ANG-Pilot-A-Fade-Black-Real.mp4")
+        (directory / "Fade-Black-SHA256.txt").write_text(
+            f"{result.sha256}  ANG-Pilot-A-Fade-Black-Real.mp4\n",
+            encoding="utf-8",
+        )

@@ -10,6 +10,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from ai_ngerti_geopolitik.domain import ProjectState
+from ai_ngerti_geopolitik.domain.still_animation import qualified_fade_black_visibility
 
 
 class StillExportIntentError(ValueError):
@@ -84,6 +85,25 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
         raise StillExportIntentError("Pilot A hanya mendukung gambar dan satu narasi WAV/MP3.")
     if any(clip.image_hold_frames is None for track in state.tracks for clip in track.clips):
         raise StillExportIntentError("Timeline berisi klip yang belum didukung ekspor gambar.")
+    for track in state.tracks:
+        for clip in track.clips:
+            try:
+                fade = qualified_fade_black_visibility(clip, clip.timeline_start.frames)
+            except ValueError:
+                raise StillExportIntentError("Efek gambar belum didukung oleh Pilot A.") from None
+            if fade is not None:
+                if track.track_id != "V1" or any(
+                    other.track_id != "V1"
+                    and any(
+                        other_clip.timeline_start.frames < clip.timeline_end_frame
+                        and other_clip.timeline_end_frame > clip.timeline_start.frames
+                        for other_clip in other.clips
+                    )
+                    for other in state.tracks
+                ):
+                    raise StillExportIntentError(
+                        "Fade-through-black hanya tersedia untuk satu gambar di V1."
+                    )
     selected = _RESOLUTIONS.get(payload["resolution"])
     if selected != (state.settings.width, state.settings.height):
         raise StillExportIntentError(

@@ -17,6 +17,8 @@ from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.domain import FrameTime
 from ai_ngerti_geopolitik.domain.properties import (
     ClipProperties,
+    EffectProperties,
+    TransitionProperties,
     VideoProperties,
 )
 from ai_ngerti_geopolitik.infrastructure.mlt_projection import (
@@ -156,3 +158,69 @@ def test_cli_outputs_real_preview_png_and_refuses_overwrite(tmp_path: Path) -> N
     ]
     assert import_cli_main(invalid_args) == 1
     assert not (tmp_path / "outside.png").exists()
+
+
+
+def test_v1_fade_black_has_black_opening_full_middle_and_faded_closing(
+    tmp_path: Path,
+) -> None:
+    state = _save_real_project(tmp_path)
+    first = state.tracks[0].clips[0]
+    faded = replace(
+        first,
+        properties=replace(
+            first.properties,
+            transition=TransitionProperties("fade_black", 15),
+        ),
+    )
+    project = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(faded, *state.tracks[0].clips[1:])),
+            state.tracks[1],
+        ),
+    )
+    project.validate()
+    assert render_still_frame(project, 0).pixelColor(3, 3).red() <= 1
+    assert 100 <= render_still_frame(project, 7).pixelColor(3, 3).red() <= 145
+    assert render_still_frame(project, 40).pixelColor(3, 3).red() >= 250
+    assert render_still_frame(project, 149).pixelColor(3, 3).red() < 35
+    assert render_still_frame(project, 150).pixelColor(3, 3).green() >= 250
+
+
+def test_fade_in_double_scene_and_other_motion_effects_reject_without_fake_pixels(
+    tmp_path: Path,
+) -> None:
+    state = _save_real_project(tmp_path)
+    second = state.tracks[0].clips[1]
+    faded_double = replace(
+        second,
+        properties=replace(
+            second.properties, transition=TransitionProperties("fade_black", 8)
+        ),
+    )
+    double_state = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(state.tracks[0].clips[0], faded_double)),
+            state.tracks[1],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="single V1"):
+        render_still_frame(double_state, 150)
+    unsupported = replace(
+        state.tracks[0].clips[0],
+        properties=replace(
+            state.tracks[0].clips[0].properties,
+            effects=EffectProperties(enter_effect="Pop"),
+        ),
+    )
+    unsupported_state = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(unsupported, state.tracks[0].clips[1])),
+            state.tracks[1],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(unsupported_state, 0)

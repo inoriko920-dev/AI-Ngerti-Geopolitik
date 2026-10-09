@@ -1,7 +1,7 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
-This adapter produces a real QImage for static SINGLE or DOUBLE image holds.
-It does not implement MLT playback, transitions, animated effects or MP4 export.
+This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
+fade-through-black. Other motion, overlaps and creative effects fail closed.
 """
 
 from __future__ import annotations
@@ -10,10 +10,10 @@ import hashlib
 from pathlib import Path
 
 from PySide6.QtCore import QBuffer, QByteArray, QIODevice, QRect, QSize, Qt
-from PySide6.QtGui import QImage, QImageReader, QPainter
+from PySide6.QtGui import QColor, QImage, QImageReader, QPainter
 
 from ai_ngerti_geopolitik.domain import Asset, Clip, ProjectState
-from ai_ngerti_geopolitik.domain.properties import ClipProperties
+from ai_ngerti_geopolitik.domain.still_animation import qualified_fade_black_visibility
 
 _MAX_SOURCE_BYTES = 128 * 1024 * 1024
 _MAX_IMAGE_PIXELS = 100_000_000
@@ -114,11 +114,21 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                 asset = state.asset(clip.asset_id)
                 if asset.media_type != "image" or clip.image_hold_frames is None:
                     raise StillFramePreviewError("preview requires canonical still-image clips")
-                if clip.properties != ClipProperties():
-                    raise StillFramePreviewError("modified image effects are not qualified")
+                try:
+                    qualified_fade_black_visibility(clip, timeline_frame)
+                except ValueError:
+                    raise StillFramePreviewError("modified image effects are not qualified") from None
+                if (
+                    clip.properties.transition.preset == "fade_black"
+                    and track.track_id != "V1"
+                ):
+                    raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
     if "V1" not in active:
         raise StillFramePreviewError("image timeline contains a gap")
+    fade = qualified_fade_black_visibility(active["V1"][0], timeline_frame)
+    if fade is not None and len(active) != 1:
+        raise StillFramePreviewError("fade requires the single V1 image lane")
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
         placements = ((active["V1"][1], QRect(0, 0, width, height)),)
@@ -147,6 +157,9 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                 destination.height(),
             )
             painter.drawImage(destination, decoded, source)
+        if fade is not None and fade < 1.0:
+            alpha = max(0, min(255, round(255 * (1.0 - fade))))
+            painter.fillRect(result.rect(), QColor(0, 0, 0, alpha))
     finally:
         painter.end()
     return result
