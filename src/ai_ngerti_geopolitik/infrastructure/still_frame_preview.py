@@ -1,7 +1,8 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
 This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
-fade-through-black, W4 Fade, W4 Pan, W4 Drift, W4 Rise, Breathe or Pop enter/exit. Others fail closed.
+fade-through-black, W4 Fade/Pan/Drift/Rise, Breathe, or Pop.
+All unsupported combinations fail closed.
 """
 
 from __future__ import annotations
