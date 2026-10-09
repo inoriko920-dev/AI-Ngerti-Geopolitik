@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QImage
+from PySide6.QtGui import QColor, QImage
 from PySide6.QtWidgets import QComboBox, QLineEdit, QPushButton
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
@@ -1294,3 +1294,110 @@ def test_real_native_mp4_w4_fade_effect_in_and_out_at_exact_frames(
         (folder / "W4-Fade-Effect-SHA256.txt").write_text(
             f"{result.sha256}  {name}\n", encoding="utf-8"
         )
+
+
+
+def test_native_h264_w4_pan_effect_has_measurable_frame_motion(tmp_path: Path) -> None:
+    """The real encoded MP4 must move a patterned source during Pan IN/OUT."""
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    source = tmp_path / "A001.png"
+    image = QImage(64, 48, QImage.Format.Format_RGB32)
+    for x in range(64):
+        color = QColor((x * 4) % 256, (x * 7) % 256, (x * 11) % 256)
+        for y in range(48):
+            image.setPixelColor(x, y, color)
+    assert image.save(str(source), "PNG")
+    checksum = hashlib.sha256(source.read_bytes()).hexdigest()
+    assets = tuple(
+        replace(
+            asset,
+            width=64,
+            height=48,
+            file_size=source.stat().st_size,
+            fingerprint_sha256=checksum,
+        )
+        if asset.asset_id == "A001"
+        else asset
+        for asset in state.assets
+    )
+    first = state.tracks[0].clips[0]
+    moving = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Pan", exit_effect="Pan"),
+        ),
+    )
+    state = replace(
+        state,
+        assets=assets,
+        tracks=(
+            replace(state.tracks[0], clips=(moving, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    output = tmp_path / "w4-pan-native.mp4"
+    receipt = export_still_project_mp4(state, output, batch_size=15, **_tools())
+    assert receipt.frame_count == 60
+    assert (receipt.width, receipt.height) == (128, 72)
+    assert receipt.sha256 == hashlib.sha256(output.read_bytes()).hexdigest()
+    frame_bytes = receipt.width * receipt.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        ffmpeg = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(output),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=decoded,
+            stderr=subprocess.DEVNULL,
+            timeout=40,
+            check=False,
+        )
+        assert ffmpeg.returncode == 0
+        assert decoded.tell() == 60 * frame_bytes
+        def samples(frame: int) -> bytes:
+            return b"".join(
+                _read_rgb_sample(decoded, frame, 36, x, receipt.width, frame_bytes)
+                for x in range(12, 117, 5)
+            )
+        opening, middle, ending = samples(0), samples(18), samples(29)
+        # Deliberately broad: compression is lossy but motion must not be flat.
+        assert sum(abs(x - y) for x, y in zip(opening, middle, strict=True)) > 90
+        assert sum(abs(x - y) for x, y in zip(ending, middle, strict=True)) > 90
+        decoded.seek(30 * frame_bytes)
+        next_scene = decoded.read(3)
+        assert len(next_scene) == 3
+        assert next_scene[1] > 160
+    root = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if root:
+        artifacts = Path(root)
+        artifacts.mkdir(parents=True, exist_ok=True)
+        filename = "ANG-Pilot-A-W4-Pan-Motion.mp4"
+        shutil.copy2(output, artifacts / filename)
+        (artifacts / "W4-Pan-SHA256.txt").write_text(
+            f"{receipt.sha256}  {filename}\n", encoding="utf-8"
+        )
+
+
+def _read_rgb_sample(
+    stream, frame: int, y: int, x: int, width: int, frame_size: int
+) -> bytes:
+    stream.seek(frame * frame_size + (y * width + x) * 3)
+    result = stream.read(3)
+    assert len(result) == 3
+    return result

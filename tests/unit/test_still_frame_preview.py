@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from PySide6.QtGui import QImage
+from PySide6.QtGui import QColor, QImage
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
 from ai_ngerti_geopolitik.application.scene_import_review import (
@@ -315,3 +316,107 @@ def test_w4_fade_still_rejects_unqualified_combination_and_double_lane(
     )
     with pytest.raises(StillFramePreviewError, match="single V1"):
         render_still_frame(bad_double, 150)
+
+
+
+def _pan_pattern_state(tmp_path: Path):
+    state = _save_real_project(tmp_path)
+    image = QImage(64, 48, QImage.Format.Format_RGB32)
+    for x in range(64):
+        color = QColor((x * 4) % 256, (x * 7) % 256, (x * 11) % 256)
+        for y in range(48):
+            image.setPixelColor(x, y, color)
+    source = tmp_path / "A001.png"
+    assert image.save(str(source), "PNG")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    assets = tuple(
+        replace(
+            asset,
+            width=64,
+            height=48,
+            file_size=source.stat().st_size,
+            fingerprint_sha256=digest,
+        )
+        if asset.asset_id == "A001"
+        else asset
+        for asset in state.assets
+    )
+    state = replace(
+        state,
+        assets=assets,
+        settings=replace(state.settings, width=128, height=72),
+    )
+    state.validate()
+    return state
+
+
+def test_w4_pan_in_out_moves_real_pattern_without_black_borders(tmp_path: Path) -> None:
+    state = _pan_pattern_state(tmp_path)
+    first = state.tracks[0].clips[0]
+    moved = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Pan", exit_effect="Pan"),
+        ),
+    )
+    state = replace(
+        state, tracks=(
+            replace(state.tracks[0], clips=(moved, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    frames = [render_still_frame(state, f) for f in (0, 4, 18, 147, 149)]
+    assert all((image.width(), image.height()) == (128, 72) for image in frames)
+    def pixels(image: QImage) -> tuple[int, ...]:
+        return tuple(image.pixelColor(x, 36).red() for x in range(12, 117, 5))
+    start, entering, settled, leaving, end = (pixels(image) for image in frames)
+    def difference(a: tuple[int, ...], b: tuple[int, ...]) -> int:
+        return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+    assert difference(start, settled) > 30
+    assert difference(entering, settled) > 10
+    assert difference(leaving, settled) > 10
+    assert difference(end, settled) > 30
+    # Even the first/last moved frame covers the whole canvas with source pixels.
+    for image in frames:
+        for x in (0, 64, 127):
+            assert image.pixelColor(x, 36).alpha() == 255
+
+
+def test_w4_pan_double_scene_or_combined_fade_fails_closed(tmp_path: Path) -> None:
+    state = _pan_pattern_state(tmp_path)
+    second = state.tracks[0].clips[1]
+    bad_double = replace(
+        second,
+        properties=replace(
+            second.properties,
+            effects=EffectProperties(enter_effect="Pan"),
+        ),
+    )
+    double_project = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(state.tracks[0].clips[0], bad_double)),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="single V1"):
+        render_still_frame(double_project, 151)
+    first = state.tracks[0].clips[0]
+    combined = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Pan", exit_effect="Fade"),
+        ),
+    )
+    invalid = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(combined, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(invalid, 0)
