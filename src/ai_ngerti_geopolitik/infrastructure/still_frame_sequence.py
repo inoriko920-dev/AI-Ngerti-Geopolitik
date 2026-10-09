@@ -108,8 +108,6 @@ def export_still_frame_sequence(
             raise StillSequenceExportError("frame sequence destination already exists")
         if should_cancel is not None and should_cancel():
             raise StillSequenceExportError("frame sequence cancelled")
-        if should_cancel is not None and should_cancel():
-            raise StillSequenceExportError("full sequence cancelled")
         phase = "publish"
         os.rename(staging, destination)
         staging = None
@@ -225,6 +223,8 @@ def export_complete_still_sequence(
         )
         if destination.exists() or destination.is_symlink():
             raise StillSequenceExportError("frame sequence destination already exists")
+        if should_cancel is not None and should_cancel():
+            raise StillSequenceExportError("full sequence cancelled")
         phase = "publish"
         os.rename(staging, destination)
         staging = None
