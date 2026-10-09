@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import shutil
 import subprocess
+import wave
 from dataclasses import replace
 from pathlib import Path
 
@@ -14,6 +16,14 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QComboBox, QLineEdit, QPushButton
 
+from ai_ngerti_geopolitik.domain import (
+    Asset,
+    FrameTime,
+    NarrationTrack,
+    SubtitleCue,
+    SubtitleStyle,
+    SubtitleTrack,
+)
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
@@ -318,3 +328,119 @@ def test_real_frozen_gui_export_button_produces_verified_mp4(
     finally:
         controller.shutdown()
         window.close()
+
+
+
+def _audio_state(tmp_path: Path, *, with_subtitles: bool):
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    narration = tmp_path / "narration.wav"
+    with wave.open(str(narration), "wb") as audio:
+        audio.setnchannels(1)
+        audio.setsampwidth(2)
+        audio.setframerate(48000)
+        # A nonzero deterministic test signal, not a credential or private recording.
+        audio.writeframes((b"\x40\x1f\x80\xe0") * 48000)
+    voice = Asset(
+        asset_id="A004",
+        path_ref=str(narration.resolve()),
+        media_type="audio",
+        duration=FrameTime(60, 30),
+        width=0,
+        height=0,
+        has_audio=True,
+        fingerprint_sha256=hashlib.sha256(narration.read_bytes()).hexdigest(),
+        file_size=narration.stat().st_size,
+        sample_rate=48000,
+    )
+    subtitle = (
+        SubtitleTrack(
+            source_ref="synthetic-test.srt",
+            cues=(
+                SubtitleCue(
+                    cue_id="CUE001",
+                    index=1,
+                    start=FrameTime(0, 30),
+                    end=FrameTime(60, 30),
+                    text="TEST CAPTION",
+                ),
+            ),
+            style=SubtitleStyle(font_family="Arial", font_size=16, margin_v=8),
+        )
+        if with_subtitles
+        else None
+    )
+    result = replace(
+        state,
+        assets=(*state.assets, voice),
+        narration=NarrationTrack("N001", "A004", FrameTime(0, 30)),
+        subtitle=subtitle,
+    )
+    result.validate()
+    return result
+
+
+def _probe_av(destination: Path, tool: Path) -> dict:
+    result = subprocess.run(
+        [
+            str(tool), "-v", "error", "-count_frames",
+            "-show_entries", "stream=codec_type,codec_name,nb_read_frames",
+            "-show_entries", "format=duration", "-of", "json", str(destination),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        stdin=subprocess.DEVNULL,
+        text=True,
+        timeout=20,
+        check=True,
+    )
+    return json.loads(result.stdout)
+
+
+@pytest.mark.parametrize("subtitles", [False, True])
+def test_real_wav_narration_and_optional_burned_subtitle(
+    tmp_path: Path, subtitles: bool
+) -> None:
+    from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import export_still_project_mp4
+
+    state = _audio_state(tmp_path, with_subtitles=subtitles)
+    dest = tmp_path / ("narration_subtitles.mp4" if subtitles else "narration_only.mp4")
+    native = _tools()
+    result = export_still_project_mp4(
+        state,
+        dest,
+        include_subtitles=subtitles,
+        batch_size=15,
+        **native,
+    )
+    assert result.path == dest
+    assert dest.is_file() and dest.stat().st_size > 0
+    streams = _probe_av(dest, native["ffprobe_path"])["streams"]
+    assert sum(stream["codec_name"] == "h264" for stream in streams) == 1
+    assert sum(stream["codec_name"] == "aac" for stream in streams) == 1
+    assert next(s["nb_read_frames"] for s in streams if s["codec_name"] == "h264") == "60"
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    if subtitles:
+        root = Path(os.environ.get("ANG_PILOT_A_OUTPUT_DIR", str(tmp_path)))
+        root.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dest, root / "ANG-Pilot-A-WAV-Burned-Caption.mp4")
+        (root / "AV-SHA256.txt").write_text(
+            f"{result.sha256}  ANG-Pilot-A-WAV-Burned-Caption.mp4\n",
+            encoding="utf-8",
+        )
+
+
+def test_narration_fingerprint_tamper_never_publishes_mp4(tmp_path: Path) -> None:
+    from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
+        StillProjectMP4Error,
+        export_still_project_mp4,
+    )
+
+    state = _audio_state(tmp_path, with_subtitles=False)
+    wav_path = tmp_path / "narration.wav"
+    wav_path.write_bytes(wav_path.read_bytes() + b"x")
+    destination = tmp_path / "no-tamper.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(state, destination, **_tools())
+    assert not destination.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
