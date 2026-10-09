@@ -160,7 +160,8 @@ def test_saved_project_to_real_mp4_without_external_preexported_frames(
     status = scene_cli(
         [
             "mp4-pilot-a",
-            "--project", str(tmp_path / "pilot.angproj"),
+            "--project",
+            str(tmp_path / "pilot.angproj"),
             "--output", str(destination),
             "--ffmpeg", str(tools["ffmpeg_path"]),
             "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),
@@ -189,16 +190,12 @@ def test_project_export_blocked_without_pilot_gate(
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
 
 
-def test_project_export_cancellation_cleans_temporary_frames(
-    tmp_path: Path
-) -> None:
+def test_project_export_cancellation_cleans_temporary_frames(tmp_path: Path) -> None:
     _fixture(tmp_path)
     state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
     output = tmp_path / "cancelled.mp4"
     with pytest.raises(StillProjectMP4Error):
-        export_still_project_mp4(
-            state, output, should_cancel=lambda: True, **_tools()
-        )
+        export_still_project_mp4(state, output, should_cancel=lambda: True, **_tools())
     assert not output.exists()
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
 
@@ -210,7 +207,8 @@ def test_cli_missing_project_fails_closed(
     result = scene_cli(
         [
             "mp4-pilot-a",
-            "--project", str(tmp_path / "missing.angproj"),
+            "--project",
+            str(tmp_path / "missing.angproj"),
             "--output", str(tmp_path / "missing.mp4"),
             "--ffmpeg", str(tools["ffmpeg_path"]),
             "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),

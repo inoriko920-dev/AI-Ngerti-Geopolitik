@@ -14,16 +14,13 @@ from pathlib import Path
 
 from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
-    PilotAError,
     PilotAResult,
     export_silent_h264_pilot_a,
 )
 from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import (
-    StillSequenceExportError,
     export_complete_still_sequence,
 )
 from ai_ngerti_geopolitik.infrastructure.still_h264_plan import (
-    SilentH264PlanError,
     plan_silent_h264_mp4,
 )
 
