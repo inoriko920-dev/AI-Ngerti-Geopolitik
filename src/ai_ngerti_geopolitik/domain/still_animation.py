@@ -160,7 +160,6 @@ def qualified_still_breathe(clip: Clip, timeline_frame: int) -> float | None:
     return 1.0 - 0.02 * max(0.0, min(1.0, entering + leaving))
 
 
-
 def qualified_still_pop(clip: Clip, timeline_frame: int) -> float | None:
     """W4 Pop: bounded centered 0.85->1.00 IN, 1.00->0.85 OUT.
 
