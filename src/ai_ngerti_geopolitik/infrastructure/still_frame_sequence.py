@@ -168,7 +168,10 @@ def export_complete_still_sequence(
             folder = f"batch_{start:06d}_{start + count:06d}"
             phase = "render-batch"
             batch = export_still_frame_sequence(
-                state, staging / folder, start_frame=start, count=count,
+                state,
+                staging / folder,
+                start_frame=start,
+                count=count,
                 should_cancel=should_cancel,
             )
             phase = "verify-batch"

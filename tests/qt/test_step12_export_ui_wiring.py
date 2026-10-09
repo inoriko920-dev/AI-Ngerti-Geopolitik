@@ -33,17 +33,29 @@ def _state() -> ProjectState:
         state,
         assets=(
             Asset(
-                "A001", "A001.png", "image", FrameTime(1, 30),
-                64, 48, False, "0" * 64,
+                "A001",
+                "A001.png",
+                "image",
+                FrameTime(1, 30),
+                64,
+                48,
+                False,
+                "0" * 64,
             ),
         ),
         tracks=(
             Track(
-                "V001", "video", 0,
+                "V001",
+                "video",
+                0,
                 clips=(
                     Clip(
-                        "C001", "A001", FrameTime(0, 30), FrameTime(0, 30),
-                        FrameTime(1, 30), image_hold_frames=1,
+                        "C001",
+                        "A001",
+                        FrameTime(0, 30),
+                        FrameTime(0, 30),
+                        FrameTime(1, 30),
+                        image_hold_frames=1,
                     ),
                 ),
             ),
@@ -183,8 +195,14 @@ def test_render_button_starts_worker_and_returns_to_editor_without_blocking(
         assert state.project_id == "STEP12-UI"
         invoked.append(output)
         return PilotAResult(
-            path=output, sha256="0" * 64, file_bytes=100, frame_count=1,
-            fps=30, width=1920, height=1080, duration_seconds=1 / 30,
+            path=output,
+            sha256="0" * 64,
+            file_bytes=100,
+            frame_count=1,
+            fps=30,
+            width=1920,
+            height=1080,
+            duration_seconds=1 / 30,
             rgb24_sha256="1" * 64,
         )
 

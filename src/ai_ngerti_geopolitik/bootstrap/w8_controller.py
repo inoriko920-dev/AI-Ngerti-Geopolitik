@@ -89,9 +89,7 @@ class _DeferredProbe:
         return FfprobeMediaProbe().probe(path)
 
 
-def _run_pilot_gui_export(
-    state: ProjectState, output: Path, cancel: Event
-) -> PilotAResult:
+def _run_pilot_gui_export(state: ProjectState, output: Path, cancel: Event) -> PilotAResult:
     """Off-Qt worker: resolve, SHA-pin and run external tools only in Pilot A."""
     if os.environ.get("ANG_PILOT_A_FFMPEG") != "1" or cancel.is_set():
         raise RuntimeError("Pilot A is disabled or cancelled")
@@ -256,9 +254,7 @@ class W8RuntimeController:
             and token == (self.session_id, self.session.state.semantic_hash())
             and not self._closed
         ):
-            self._notify(
-                f"MP4 H.264 terverifikasi: {result.frame_count} frame, {result.fps} FPS."
-            )
+            self._notify(f"MP4 H.264 terverifikasi: {result.frame_count} frame, {result.fps} FPS.")
 
     def _finish_current_session(self) -> bool:
         if not self.session.is_open:

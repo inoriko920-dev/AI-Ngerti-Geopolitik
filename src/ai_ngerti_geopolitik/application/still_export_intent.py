@@ -36,9 +36,11 @@ _FIELDS = frozenset(
     }
 )
 _FORBIDDEN = frozenset('<>:"/\\|?*')
-_RESERVED = {"CON", "PRN", "AUX", "NUL"} | {f"COM{i}" for i in range(1, 10)} | {
-    f"LPT{i}" for i in range(1, 10)
-}
+_RESERVED = (
+    {"CON", "PRN", "AUX", "NUL"}
+    | {f"COM{i}" for i in range(1, 10)}
+    | {f"LPT{i}" for i in range(1, 10)}
+)
 
 
 def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState) -> Path:
@@ -54,7 +56,9 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
     if payload["subtitle"] != "Tanpa Subtitle":
         raise StillExportIntentError("Burn-in subtitle belum tersedia; pilih Tanpa Subtitle.")
     if state.subtitle is not None or state.narration is not None:
-        raise StillExportIntentError("Project berisi subtitle/narasi; ekspor audio-video belum didukung.")
+        raise StillExportIntentError(
+            "Project berisi subtitle/narasi; ekspor audio-video belum didukung."
+        )
     if not state.tracks or not any(track.clips for track in state.tracks):
         raise StillExportIntentError("Project belum mempunyai scene gambar untuk diekspor.")
     if any(asset.media_type != "image" or asset.has_audio for asset in state.assets):
