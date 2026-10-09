@@ -1012,8 +1012,7 @@ def _many_scene_project(tmp_path: Path, fps: int):
         for index in range(120)
     )
     assets = tuple(
-        replace(asset, duration=FrameTime(asset.duration.frames, fps))
-        for asset in state.assets
+        replace(asset, duration=FrameTime(asset.duration.frames, fps)) for asset in state.assets
     )
     narration = (
         replace(state.narration, timeline_start=FrameTime(3 * fps, fps))
@@ -1067,9 +1066,7 @@ def test_120_scene_real_mp4_exact_fps_and_bounded_python_heap(
     metadata = _probe_av(destination, native["ffprobe_path"])
     video = next(s for s in metadata["streams"] if s["codec_name"] == "h264")
     assert int(video["nb_read_frames"]) == frame_count
-    assert float(metadata["format"]["duration"]) == pytest.approx(
-        frame_count / fps, abs=1 / fps
-    )
+    assert float(metadata["format"]["duration"]) == pytest.approx(frame_count / fps, abs=1 / fps)
     assert sum(s["codec_name"] == "aac" for s in metadata["streams"]) == (1 if fps == 30 else 0)
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
     assert not list(tmp_path.glob(".ang-av-*"))
