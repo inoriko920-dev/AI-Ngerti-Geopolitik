@@ -13,16 +13,12 @@ import pytest
 from PySide6.QtGui import QImage
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
-from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
-from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
-from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
-    StillProjectMP4Error,
-    export_still_project_mp4,
-)
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
     create_canonical_scene_image_project,
 )
+from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
+from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
     PilotAError,
     export_silent_h264_pilot_a,
@@ -34,6 +30,10 @@ from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
 )
 from ai_ngerti_geopolitik.infrastructure.still_frame_sequence import export_complete_still_sequence
 from ai_ngerti_geopolitik.infrastructure.still_h264_plan import plan_silent_h264_mp4
+from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
+    StillProjectMP4Error,
+    export_still_project_mp4,
+)
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("ANG_PILOT_A_FFMPEG") != "1",
