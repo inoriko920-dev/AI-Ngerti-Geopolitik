@@ -5,6 +5,7 @@ from __future__ import annotations
 import ctypes
 import errno
 import hashlib
+import json
 import os
 import subprocess
 import sys
@@ -211,6 +212,7 @@ def test_real_mp4_120_distinct_pngs_frame_by_frame_and_windows_rss(
     if sys.platform == "win32":
         assert observed > 0
         assert peak_parent > 0
+        assert peak_children > 0
         assert peak_combined >= peak_parent
         assert peak_combined < 1024 * 1024 * 1024
         print(
@@ -269,6 +271,27 @@ def test_real_mp4_120_distinct_pngs_frame_by_frame_and_windows_rss(
         (directory / f"120-Distinct-{fps}FPS-SHA256.txt").write_text(
             f"{receipt.sha256}  {name}\n", encoding="utf-8"
         )
+        if sys.platform == "win32":
+            resource_evidence = {
+                "kind": "ang-pilot-a-windows-sampled-working-set-v1",
+                "total_unique_source_pngs": 120,
+                "fps": fps,
+                "output_frames": receipt.frame_count,
+                "observations": observed,
+                "parent_python_qt_sampled_max_bytes": peak_parent,
+                "native_ffmpeg_ffprobe_sampled_max_bytes": peak_children,
+                "combined_sampled_max_bytes": peak_combined,
+                "rss_sample_limit_bytes": 1024 * 1024 * 1024,
+                "sampling_seconds": 0.04,
+                "limitations": (
+                    "Windows current working-set samples; NOT a continuous native peak, "
+                    "private bytes, disk peak, or proof of real-world 1080p/4K capacity"
+                ),
+            }
+            (directory / f"ANG-Pilot-A-120-Distinct-{fps}FPS-RSS.json").write_text(
+                json.dumps(resource_evidence, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
 
 
 def test_real_project_disk_full_during_manifest_write_discards_staging(
@@ -322,3 +345,42 @@ def test_real_project_source_vanishes_after_some_frames_fails_closed(tmp_path: P
     assert not missing.exists()
     assert not output.exists()
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+
+def test_complete_manifest_cancel_after_write_prevents_publish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Cancellation at full-project publication boundary cannot leak a manifest."""
+    state, _ = _distinct_project(tmp_path, 30)
+    first_clip = state.tracks[0].clips[0]
+    state = replace(
+        state,
+        assets=(state.assets[0],),
+        tracks=(replace(state.tracks[0], clips=(first_clip,)),),
+    )
+    state.validate()
+    stop = threading.Event()
+    original = Path.write_text
+    master_written = 0
+
+    def flag_cancellation(self: Path, data: str, *args, **kwargs) -> int:
+        nonlocal master_written
+        result = original(self, data, *args, **kwargs)
+        if '"format": "ang-still-project-v1"' in data:
+            master_written += 1
+            stop.set()
+        return result
+
+    monkeypatch.setattr(Path, "write_text", flag_cancellation)
+    output = tmp_path / "cancel-on-manifest.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(
+            state, output, batch_size=1, should_cancel=stop.is_set, **_tools()
+        )
+    assert master_written == 1
+    assert stop.is_set()
+    assert not output.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    assert not list(tmp_path.glob(".angfull-*"))
+    assert not list(tmp_path.glob(".angseq-*"))
