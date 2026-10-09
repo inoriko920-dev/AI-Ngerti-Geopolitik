@@ -3,7 +3,8 @@
 Native Pilot A can render a single active V1 image HOLD with one of:
 - W4 fade-through-black transition;
 - W4 Fade enter and/or Fade exit effect;
-- W4 Pan enter and/or Pan exit effect (bounded horizontal motion).
+- W4 Pan enter and/or Pan exit effect (bounded horizontal motion);
+- W4 Drift enter and/or Drift exit effect (bounded diagonal motion).
 All use canonical clip duration. Unsupported combinations fail closed.
 """
 
@@ -53,9 +54,47 @@ def qualified_still_pan(clip: Clip, timeline_frame: int) -> float | None:
     return max(-1.0, min(1.0, entering + leaving))
 
 
+def qualified_still_drift(clip: Clip, timeline_frame: int) -> float | None:
+    """Diagonal Drift position -1 (bottom-left), 0 (center), +1 (top-right).
+
+    Drift shares the W4 quarter-second IN/OUT window with Pan. This value
+    drives bounded simultaneous X and Y overscan crops, not visual opacity.
+    """
+    if clip.properties == ClipProperties():
+        return None
+    props = clip.properties
+    effects = props.effects
+    qualified = (
+        clip.image_hold_frames is not None
+        and props.transition.preset == "none"
+        and effects.enter_effect in {"None", "Drift"}
+        and effects.exit_effect in {"None", "Drift"}
+        and (effects.enter_effect == "Drift" or effects.exit_effect == "Drift")
+        and effects.intensity_percent == 100
+        and replace(props, effects=EffectProperties()) == ClipProperties()
+    )
+    if not qualified:
+        return None
+    offset = timeline_frame - clip.timeline_start.frames
+    if not 0 <= offset < clip.duration_frames:
+        raise ValueError("drift frame outside clip")
+    window = max(1.0, min(0.25 * clip.timeline_start.fps, clip.duration_frames / 2.0))
+    entering = -max(0.0, 1.0 - offset / window) if effects.enter_effect == "Drift" else 0.0
+    leaving = (
+        max(0.0, 1.0 - (clip.duration_frames - offset) / window)
+        if effects.exit_effect == "Drift"
+        else 0.0
+    )
+    return max(-1.0, min(1.0, entering + leaving))
+
+
 def qualified_still_visibility(clip: Clip, timeline_frame: int) -> float | None:
     """Return 0..1 image visibility, None for unmodified clips; reject others."""
-    if clip.properties == ClipProperties() or qualified_still_pan(clip, timeline_frame) is not None:
+    if (
+        clip.properties == ClipProperties()
+        or qualified_still_pan(clip, timeline_frame) is not None
+        or qualified_still_drift(clip, timeline_frame) is not None
+    ):
         return None
     if clip.image_hold_frames is None:
         raise ValueError("unsupported still-image effect or transition")

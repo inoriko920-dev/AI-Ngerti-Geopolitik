@@ -11,6 +11,7 @@ from pathlib import Path
 
 from ai_ngerti_geopolitik.domain import ProjectState
 from ai_ngerti_geopolitik.domain.still_animation import (
+    qualified_still_drift,
     qualified_still_pan,
     qualified_still_visibility,
 )
@@ -93,9 +94,10 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
             try:
                 fade = qualified_still_visibility(clip, clip.timeline_start.frames)
                 pan = qualified_still_pan(clip, clip.timeline_start.frames)
+                drift = qualified_still_drift(clip, clip.timeline_start.frames)
             except ValueError:
                 raise StillExportIntentError("Efek gambar belum didukung oleh Pilot A.") from None
-            if (fade is not None or pan is not None) and (
+            if (fade is not None or pan is not None or drift is not None) and (
                 track.track_id != "V1"
                 or any(
                     other.track_id != "V1"
@@ -108,7 +110,7 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                 )
             ):
                 raise StillExportIntentError(
-                    "Fade/Pan gambar hanya tersedia untuk satu gambar di V1."
+                    "Fade/Pan/Drift gambar hanya tersedia untuk satu gambar di V1."
                 )
     selected = _RESOLUTIONS.get(payload["resolution"])
     if selected != (state.settings.width, state.settings.height):
