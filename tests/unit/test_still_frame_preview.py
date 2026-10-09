@@ -16,13 +16,13 @@ from ai_ngerti_geopolitik.application.scene_import_review import (
 )
 from ai_ngerti_geopolitik.bootstrap.scene_cli import main as import_cli_main
 from ai_ngerti_geopolitik.domain import FrameTime
-from ai_ngerti_geopolitik.domain.still_animation import qualified_still_breathe
 from ai_ngerti_geopolitik.domain.properties import (
     ClipProperties,
     EffectProperties,
     TransitionProperties,
     VideoProperties,
 )
+from ai_ngerti_geopolitik.domain.still_animation import qualified_still_breathe
 from ai_ngerti_geopolitik.infrastructure.mlt_projection import (
     MltProjectionError,
     build_mlt_timeline_plan,
