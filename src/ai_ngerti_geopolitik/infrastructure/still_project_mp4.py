@@ -65,7 +65,9 @@ def export_still_project_mp4(
             raise ValueError("project export cancelled before staging")
         with tempfile.TemporaryDirectory(prefix=".ang-still-mp4-", dir=destination.parent) as temp:
             frames = Path(temp) / "frames"
-            export_complete_still_sequence(state, frames, batch_size=batch_size)
+            export_complete_still_sequence(
+                state, frames, batch_size=batch_size, should_cancel=should_cancel
+            )
             if should_cancel is not None and should_cancel():
                 raise ValueError("project export cancelled before encoder")
             plan = plan_silent_h264_mp4(state, frames, destination)

@@ -11,6 +11,7 @@ import json
 import os
 import shutil
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
 
 from ai_ngerti_geopolitik.domain import ProjectState
@@ -33,6 +34,7 @@ def export_still_frame_sequence(
     *,
     start_frame: int,
     count: int,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> Path:
     """Stage PNG frames + verified manifest, then publish a new directory.
 
@@ -64,6 +66,8 @@ def export_still_frame_sequence(
         entries: list[dict[str, object]] = []
         total_bytes = 0
         for frame in range(start_frame, start_frame + count):
+            if should_cancel is not None and should_cancel():
+                raise StillSequenceExportError("frame sequence cancelled")
             phase = "render"
             image = render_still_frame(state, frame)
             filename = f"frame_{frame:06d}.png"
@@ -102,6 +106,10 @@ def export_still_frame_sequence(
         )
         if destination.exists() or destination.is_symlink():
             raise StillSequenceExportError("frame sequence destination already exists")
+        if should_cancel is not None and should_cancel():
+            raise StillSequenceExportError("frame sequence cancelled")
+        if should_cancel is not None and should_cancel():
+            raise StillSequenceExportError("full sequence cancelled")
         phase = "publish"
         os.rename(staging, destination)
         staging = None
@@ -126,6 +134,7 @@ def export_complete_still_sequence(
     destination: Path,
     *,
     batch_size: int = _MAX_BATCH_FRAMES,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> Path:
     """Export the full image-only timeline in bounded batches, atomically.
 
@@ -153,11 +162,14 @@ def export_complete_still_sequence(
         batches: list[dict[str, object]] = []
         total_bytes = 0
         for start in range(0, state.timeline_end_frame, batch_size):
+            if should_cancel is not None and should_cancel():
+                raise StillSequenceExportError("full sequence cancelled")
             count = min(batch_size, state.timeline_end_frame - start)
             folder = f"batch_{start:06d}_{start + count:06d}"
             phase = "render-batch"
             batch = export_still_frame_sequence(
-                state, staging / folder, start_frame=start, count=count
+                state, staging / folder, start_frame=start, count=count,
+                should_cancel=should_cancel,
             )
             phase = "verify-batch"
             manifest_bytes = (batch / "manifest.json").read_bytes()
@@ -187,6 +199,8 @@ def export_complete_still_sequence(
         phase = "final-source-verification"
         starts = {clip.timeline_start.frames for track in state.tracks for clip in track.clips}
         for frame in sorted(starts):
+            if should_cancel is not None and should_cancel():
+                raise StillSequenceExportError("full sequence cancelled")
             render_still_frame(state, frame)
 
         phase = "write-master-manifest"
