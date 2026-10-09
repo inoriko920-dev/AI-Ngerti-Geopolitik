@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import wave
+from array import array
 from dataclasses import replace
 from pathlib import Path
 
@@ -449,3 +450,158 @@ def test_narration_fingerprint_tamper_never_publishes_mp4(tmp_path: Path) -> Non
         export_still_project_mp4(state, destination, **_tools())
     assert not destination.exists()
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+
+def test_real_mp3_narration_respects_half_second_timeline_offset(tmp_path: Path) -> None:
+    """Actual libmp3lame input -> AAC output; validate silence then audible PCM."""
+    state = _audio_state(tmp_path, with_subtitles=False)
+    tools = _tools()
+    mp3 = tmp_path / "voice.mp3"
+    conversion = subprocess.run(
+        [
+            str(tools["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(tmp_path / "narration.wav"),
+            "-vn",
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "128k",
+            "-y",
+            str(mp3),
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+        timeout=20,
+    )
+    assert conversion.returncode == 0 and mp3.is_file()
+    source = replace(
+        state.asset("A004"),
+        path_ref=str(mp3.resolve()),
+        fingerprint_sha256=hashlib.sha256(mp3.read_bytes()).hexdigest(),
+        file_size=mp3.stat().st_size,
+    )
+    assert state.narration is not None
+    delayed = replace(
+        state,
+        assets=tuple(source if a.asset_id == source.asset_id else a for a in state.assets),
+        narration=replace(state.narration, timeline_start=FrameTime(15, 30)),
+    )
+    delayed.validate()
+    output = tmp_path / "mp3-offset.mp4"
+    result = export_still_project_mp4(delayed, output, **tools, batch_size=15)
+    assert result.path == output
+    streams = _probe_av(output, tools["ffprobe_path"])["streams"]
+    assert sum(s["codec_name"] == "aac" for s in streams) == 1
+    raw = subprocess.run(
+        [
+            str(tools["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(output),
+            "-map",
+            "0:a:0",
+            "-ar",
+            "8000",
+            "-ac",
+            "1",
+            "-f",
+            "s16le",
+            "-",
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=30,
+        check=True,
+    ).stdout
+    samples = array("h")
+    samples.frombytes(raw)
+    assert len(samples) >= 14000
+    quiet = max(abs(value) for value in samples[400:2000])
+    audible = max(abs(value) for value in samples[6400:8000])
+    assert quiet < 500
+    assert audible > 1000
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    target_path = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if target_path:
+        artifact_dir = Path(target_path)
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(output, artifact_dir / "ANG-Pilot-A-MP3-Offset-H264.mp4")
+        (artifact_dir / "MP3-SHA256.txt").write_text(
+            f"{result.sha256}  ANG-Pilot-A-MP3-Offset-H264.mp4\n", encoding="utf-8"
+        )
+
+
+def test_real_unicode_burned_subtitle_appears_only_in_cue_window(tmp_path: Path) -> None:
+    """An actual Unicode caption changes pixels during its frame-exact cue."""
+    state = _audio_state(tmp_path, with_subtitles=True)
+    subtitle = state.subtitle
+    assert subtitle is not None
+    cue = replace(
+        subtitle.cues[0],
+        start=FrameTime(5, 30),
+        end=FrameTime(25, 30),
+        text="Café 日本",
+    )
+    state = replace(state, subtitle=replace(subtitle, cues=(cue,)))
+    state.validate()
+    tools = _tools()
+    destination = tmp_path / "unicode-caption.mp4"
+    receipt = export_still_project_mp4(
+        state, destination, include_subtitles=True, batch_size=15, **tools
+    )
+    assert receipt.frame_count == 60
+    raw = subprocess.run(
+        [
+            str(tools["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(destination),
+            "-map",
+            "0:v:0",
+            "-an",
+            "-pix_fmt",
+            "rgb24",
+            "-f",
+            "rawvideo",
+            "-",
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=True,
+        timeout=30,
+    ).stdout
+    frame_bytes = receipt.width * receipt.height * 3
+    assert len(raw) == frame_bytes * 60
+
+    def pixels(frame: int) -> bytes:
+        return raw[frame * frame_bytes : (frame + 1) * frame_bytes]
+
+    before, during, after = pixels(0), pixels(12), pixels(28)
+    changed_during = sum(abs(x - y) > 25 for x, y in zip(before, during))
+    changed_after = sum(abs(x - y) > 25 for x, y in zip(before, after))
+    assert changed_during > 30
+    assert changed_after < changed_during // 2
+
+
+def test_rejects_control_character_caption_without_final_mp4(tmp_path: Path) -> None:
+    state = _audio_state(tmp_path, with_subtitles=True)
+    assert state.subtitle is not None
+    cue = replace(state.subtitle.cues[0], text="Safe\u202eunsafe")
+    invalid = replace(state, subtitle=replace(state.subtitle, cues=(cue,)))
+    output = tmp_path / "reject-bidi.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(invalid, output, include_subtitles=True, **_tools())
+    assert not output.exists()
