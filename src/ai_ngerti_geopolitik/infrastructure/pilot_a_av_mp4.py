@@ -36,8 +36,7 @@ def _qualified_caption(text: str) -> bool:
     ):
         return False
     return all(
-        char in _CAPTION_PUNCTUATION
-        or unicodedata.category(char).startswith(("L", "M", "N"))
+        char in _CAPTION_PUNCTUATION or unicodedata.category(char).startswith(("L", "M", "N"))
         for char in text
     )
 
@@ -74,9 +73,14 @@ def _probe_narration(source: Path, ffprobe: Path) -> None:
         try:
             result = subprocess.run(
                 [
-                    str(ffprobe), "-v", "error",
-                    "-show_entries", "stream=codec_type,codec_name,sample_rate",
-                    "-of", "json", str(source),
+                    str(ffprobe),
+                    "-v",
+                    "error",
+                    "-show_entries",
+                    "stream=codec_type,codec_name,sample_rate",
+                    "-of",
+                    "json",
+                    str(source),
                 ],
                 stdin=subprocess.DEVNULL,
                 stdout=sink,

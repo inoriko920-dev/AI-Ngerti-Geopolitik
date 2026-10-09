@@ -452,7 +452,6 @@ def test_narration_fingerprint_tamper_never_publishes_mp4(tmp_path: Path) -> Non
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
 
 
-
 def test_real_mp3_narration_respects_half_second_timeline_offset(tmp_path: Path) -> None:
     """Actual libmp3lame input -> AAC output; validate silence then audible PCM."""
     state = _audio_state(tmp_path, with_subtitles=False)
