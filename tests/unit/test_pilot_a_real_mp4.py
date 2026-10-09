@@ -1506,7 +1506,6 @@ def test_native_h264_w4_drift_moves_actual_pixels_diagonally(tmp_path: Path) -> 
         )
 
 
-
 def test_native_h264_w4_rise_has_real_vertical_pixel_motion(tmp_path: Path) -> None:
     """Decode a genuine native H264 MP4 and verify the W4 vertical Rise IN/OUT."""
     _fixture(tmp_path)
