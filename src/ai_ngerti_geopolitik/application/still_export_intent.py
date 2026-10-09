@@ -62,8 +62,7 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
         want_subtitles
         and state.subtitle is not None
         and (
-            state.subtitle.animation.preset != "none"
-            or state.subtitle.style.font_family != "Arial"
+            state.subtitle.animation.preset != "none" or state.subtitle.style.font_family != "Arial"
         )
     ):
         raise StillExportIntentError("Hanya subtitle statis Arial yang didukung Pilot A.")
