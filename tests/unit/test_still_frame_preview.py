@@ -211,7 +211,7 @@ def test_fade_in_double_scene_and_other_motion_effects_reject_without_fake_pixel
         state.tracks[0].clips[0],
         properties=replace(
             state.tracks[0].clips[0].properties,
-            effects=EffectProperties(enter_effect="Pop"),
+            effects=EffectProperties(enter_effect="Stomp"),
         ),
     )
     unsupported_state = replace(
