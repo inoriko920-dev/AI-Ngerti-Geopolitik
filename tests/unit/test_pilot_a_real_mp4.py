@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import threading
 import wave
 from array import array
 from dataclasses import replace
@@ -34,6 +35,7 @@ from ai_ngerti_geopolitik.domain import (
     SubtitleTrack,
 )
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
+from ai_ngerti_geopolitik.infrastructure.pilot_a_av_mp4 import _run_bounded_compose
 from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
     PilotAError,
     export_silent_h264_pilot_a,
@@ -784,3 +786,209 @@ def test_native_narration_metadata_mismatch_never_publishes(tmp_path: Path) -> N
         export_still_project_mp4(state, output, **_tools())
     assert not output.exists()
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+
+def test_24s_twelve_scene_native_av_caption_boundaries(tmp_path: Path) -> None:
+    """12 independent scenes, 720 frames, 3 separated Unicode subtitles, real AAC."""
+    state = _audio_state(tmp_path, with_subtitles=True)
+    track = state.tracks[0]
+    assert len(track.clips) == 2
+    clips = tuple(
+        replace(
+            track.clips[index % 2],
+            clip_id=f"C-MULTI-{index:03d}",
+            timeline_start=FrameTime(index * 60, 30),
+            image_hold_frames=60,
+        )
+        for index in range(12)
+    )
+    assert state.narration is not None and state.subtitle is not None
+    captions = (
+        (20, 40, "Café"),
+        (310, 335, "Indonesia 2026"),
+        (625, 650, "日本"),
+    )
+    cues = tuple(
+        SubtitleCue(
+            cue_id=f"CUE-STRESS-{index:03d}",
+            index=index,
+            start=FrameTime(start, 30),
+            end=FrameTime(end, 30),
+            text=text,
+        )
+        for index, (start, end, text) in enumerate(captions, start=1)
+    )
+    state = replace(
+        state,
+        tracks=(replace(track, clips=clips),),
+        narration=replace(state.narration, timeline_start=FrameTime(90, 30)),
+        subtitle=replace(state.subtitle, cues=cues),
+    )
+    state.validate()
+    assert state.timeline_end_frame == 720
+    native = _tools()
+    destination = tmp_path / "24s-twelve-scenes.mp4"
+    result = export_still_project_mp4(
+        state, destination, batch_size=75, include_subtitles=True, **native
+    )
+    assert result.frame_count == 720
+    assert result.duration_seconds == pytest.approx(24.0, abs=1 / 30)
+    assert result.sha256 == hashlib.sha256(destination.read_bytes()).hexdigest()
+    metadata = _probe_av(destination, native["ffprobe_path"])
+    assert float(metadata["format"]["duration"]) == pytest.approx(24.0, abs=1 / 30)
+    assert next(
+        int(s["nb_read_frames"])
+        for s in metadata["streams"]
+        if s["codec_name"] == "h264"
+    ) == 720
+    assert sum(s["codec_name"] == "aac" for s in metadata["streams"]) == 1
+    raw_audio = subprocess.run(
+        [
+            str(native["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(destination),
+            "-map",
+            "0:a:0",
+            "-ar",
+            "8000",
+            "-ac",
+            "1",
+            "-f",
+            "s16le",
+            "-",
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=True,
+        timeout=40,
+    ).stdout
+    samples = array("h")
+    samples.frombytes(raw_audio)
+    assert len(samples) >= 185000
+    assert max(abs(value) for value in samples[8000:12000]) < 500
+    assert max(abs(value) for value in samples[28000:32000]) > 1000
+    assert max(abs(value) for value in samples[64000:68000]) < 500
+
+    frame_size = result.width * result.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        image_decode = subprocess.run(
+            [
+                str(native["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(destination),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=decoded,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=60,
+        )
+        assert image_decode.returncode == 0
+        assert decoded.tell() == frame_size * 720
+
+        def frame(number: int) -> bytes:
+            decoded.seek(number * frame_size)
+            return decoded.read(frame_size)
+
+        for before, within, after in ((5, 30, 50), (305, 320, 345), (610, 635, 655)):
+            empty = frame(before)
+            present = frame(within)
+            finished = frame(after)
+            assert len(empty) == len(present) == len(finished) == frame_size
+            changed = sum(
+                abs(x - y) > 25 for x, y in zip(empty, present, strict=True)
+            )
+            recovered = sum(
+                abs(x - y) > 25 for x, y in zip(empty, finished, strict=True)
+            )
+            assert changed > 30
+            assert recovered < changed // 2
+        assert frame(59)[:3] != frame(60)[:3]
+        assert frame(119)[:3] != frame(120)[:3]
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    assert not list(tmp_path.glob(".ang-av-*"))
+    artifacts = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if artifacts:
+        folder = Path(artifacts)
+        folder.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(destination, folder / "ANG-Pilot-A-24s-12Scenes-AV.mp4")
+        (folder / "24S-SHA256.txt").write_text(
+            f"{result.sha256}  ANG-Pilot-A-24s-12Scenes-AV.mp4\n",
+            encoding="utf-8",
+        )
+
+
+def test_real_ffmpeg_compose_cancellation_reaps_child(tmp_path: Path) -> None:
+    """Cancel a real FFmpeg process during its realtime input; fail closed."""
+    native = _tools()
+    stopped = threading.Event()
+    timer = threading.Timer(0.3, stopped.set)
+    timer.start()
+    try:
+        with pytest.raises(PilotAError):
+            _run_bounded_compose(
+                [
+                    str(native["ffmpeg_path"]),
+                    "-nostdin",
+                    "-v",
+                    "error",
+                    "-re",
+                    "-f",
+                    "lavfi",
+                    "-i",
+                    "sine=frequency=440:sample_rate=48000",
+                    "-t",
+                    "20",
+                    "-f",
+                    "null",
+                    "-",
+                ],
+                timeout_seconds=6,
+                should_cancel=stopped.is_set,
+            )
+        assert stopped.is_set()
+    finally:
+        timer.cancel()
+        timer.join(timeout=2)
+
+
+def test_real_ffmpeg_compose_deadline_terminates_stalled_child() -> None:
+    """A live realtime native subprocess must be reaped after deadline."""
+    native = _tools()
+    with pytest.raises(PilotAError):
+        _run_bounded_compose(
+            [
+                str(native["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-re",
+                "-f",
+                "lavfi",
+                "-i",
+                "sine=frequency=440:sample_rate=48000",
+                "-t",
+                "20",
+                "-f",
+                "null",
+                "-",
+            ],
+            timeout_seconds=0.2,
+            should_cancel=None,
+        )
