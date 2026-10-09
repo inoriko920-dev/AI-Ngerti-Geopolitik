@@ -1400,3 +1400,110 @@ def _read_rgb_sample(stream, frame: int, y: int, x: int, width: int, frame_size:
     result = stream.read(3)
     assert len(result) == 3
     return result
+
+
+
+def test_native_h264_w4_drift_moves_actual_pixels_diagonally(tmp_path: Path) -> None:
+    """Native FFmpeg must encode non-static two-axis Drift IN/OUT pixels."""
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    image = QImage(64, 48, QImage.Format.Format_RGB32)
+    for x in range(64):
+        for y in range(48):
+            image.setPixelColor(
+                x,
+                y,
+                QColor(
+                    (4 * x + 2 * y + 40) % 256,
+                    (2 * x + 5 * y + 30) % 256,
+                    (3 * x + 7 * y + 20) % 256,
+                ),
+            )
+    source = tmp_path / "A001.png"
+    assert image.save(str(source), "PNG")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    assets = tuple(
+        replace(
+            asset,
+            file_size=source.stat().st_size,
+            fingerprint_sha256=digest,
+        )
+        if asset.asset_id == "A001"
+        else asset
+        for asset in state.assets
+    )
+    first = state.tracks[0].clips[0]
+    changed = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Drift", exit_effect="Drift"),
+        ),
+    )
+    state = replace(
+        state,
+        assets=assets,
+        tracks=(
+            replace(state.tracks[0], clips=(changed, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    video = tmp_path / "w4-drift-native.mp4"
+    result = export_still_project_mp4(state, video, batch_size=15, **_tools())
+    assert result.frame_count == 60
+    assert result.fps == 30
+    assert result.sha256 == hashlib.sha256(video.read_bytes()).hexdigest()
+    frame_size = result.width * result.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        ffmpeg = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(video),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=decoded,
+            stderr=subprocess.DEVNULL,
+            timeout=40,
+            check=False,
+        )
+        assert ffmpeg.returncode == 0
+        assert decoded.tell() == result.frame_count * frame_size
+
+        def samples(frame: int) -> bytes:
+            return b"".join(
+                _read_rgb_sample(decoded, frame, y, x, result.width, frame_size)
+                for x, y in ((15, 14), (64, 36), (105, 56))
+            )
+
+        opening, entering, middle, leaving, end = (
+            samples(frame) for frame in (0, 4, 18, 27, 29)
+        )
+        assert sum(abs(x - y) for x, y in zip(opening, middle, strict=True)) > 70
+        assert sum(abs(x - y) for x, y in zip(entering, middle, strict=True)) > 20
+        assert sum(abs(x - y) for x, y in zip(leaving, middle, strict=True)) > 20
+        assert sum(abs(x - y) for x, y in zip(end, middle, strict=True)) > 70
+        decoded.seek(30 * frame_size)
+        green = decoded.read(3)
+        assert len(green) == 3 and green[1] > 160 and green[0] < 90
+    root = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if root:
+        directory = Path(root)
+        directory.mkdir(parents=True, exist_ok=True)
+        filename = "ANG-Pilot-A-W4-Drift-Diagonal.mp4"
+        shutil.copy2(video, directory / filename)
+        (directory / "W4-Drift-SHA256.txt").write_text(
+            f"{result.sha256}  {filename}\n", encoding="utf-8"
+        )
