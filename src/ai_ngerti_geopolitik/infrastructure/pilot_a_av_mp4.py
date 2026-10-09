@@ -12,8 +12,10 @@ import math
 import os
 import subprocess
 import tempfile
+import time
 import unicodedata
 from collections.abc import Callable
+from fractions import Fraction
 from pathlib import Path
 
 from ai_ngerti_geopolitik.domain import ProjectState
@@ -141,6 +143,58 @@ def _subtitles(state: ProjectState, enabled: bool) -> str | None:
     return ",".join(filters)
 
 
+def _run_bounded_compose(
+    args: list[str],
+    *,
+    timeout_seconds: float,
+    should_cancel: Callable[[], bool] | None,
+) -> None:
+    """Own one FFmpeg child; interrupt on cancellation, timeout or failure.
+
+    stdout/stderr are discarded so neither pipe can block. Always reap the
+    child before the staged file can be removed. No shell is ever invoked.
+    """
+    if should_cancel is not None and should_cancel():
+        raise PilotAError("native compose cancelled before start")
+    try:
+        child = subprocess.Popen(
+            args,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            shell=False,
+        )
+    except OSError:
+        raise PilotAError("native compose executable failed to launch") from None
+
+    deadline = time.monotonic() + timeout_seconds
+    try:
+        while True:
+            if should_cancel is not None and should_cancel():
+                raise PilotAError("native compose cancelled")
+            if time.monotonic() >= deadline:
+                raise PilotAError("native compose exceeded time limit")
+            code = child.poll()
+            if code is not None:
+                if code != 0:
+                    raise PilotAError("native compose returned a failure")
+                if should_cancel is not None and should_cancel():
+                    raise PilotAError("native compose cancelled after exit")
+                return
+            time.sleep(0.04)
+    finally:
+        if child.poll() is None:
+            child.kill()
+        try:
+            child.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            try:
+                child.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                raise PilotAError("native compose process could not be reaped") from None
+
+
 def compose_narration_subtitle_pilot_a(
     silent: PilotAResult,
     state: ProjectState,
@@ -227,17 +281,15 @@ def compose_narration_subtitle_pilot_a(
             args.extend(
                 ("-t", f"{duration:.6f}", "-movflags", "+faststart", "-f", "mp4", "-y", str(staged))
             )
-            finished = subprocess.run(
+            _run_bounded_compose(
                 args,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                shell=False,
-                timeout=120,
-                check=False,
+                timeout_seconds=120,
+                should_cancel=should_cancel,
             )
-            if finished.returncode != 0 or not staged.is_file() or staged.stat().st_size <= 0:
+            if not staged.is_file() or staged.stat().st_size <= 0:
                 raise PilotAError("native audiovisual compose failed")
+            if narration is not None and _narration_source(state) != narration:
+                raise PilotAError("narration source changed after native compose")
             with tempfile.TemporaryFile() as manifest:
                 verified = subprocess.run(
                     [
@@ -246,7 +298,7 @@ def compose_narration_subtitle_pilot_a(
                         "error",
                         "-count_frames",
                         "-show_entries",
-                        "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate",
+                        "stream=codec_type,codec_name,pix_fmt,width,height,nb_read_frames,avg_frame_rate,duration",
                         "-show_entries",
                         "format=duration",
                         "-of",
@@ -274,6 +326,7 @@ def compose_narration_subtitle_pilot_a(
                 or int(videos[0]["width"]) != silent.width
                 or int(videos[0]["height"]) != silent.height
                 or int(videos[0]["nb_read_frames"]) != silent.frame_count
+                or Fraction(str(videos[0]["avg_frame_rate"])) != Fraction(state.fps, 1)
                 or len(audios) != (1 if narration is not None else 0)
                 or (audios and audios[0].get("codec_name") != "aac")
                 or abs(float(parsed["format"]["duration"]) - duration) > 1 / state.fps
