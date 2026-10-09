@@ -1,12 +1,13 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
 This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
-fade-through-black, W4 Fade, W4 Pan, W4 Drift or W4 Rise enter/exit. Others fail closed.
+fade-through-black, W4 Fade, W4 Pan, W4 Drift, W4 Rise or Breathe enter/exit. Others fail closed.
 """
 
 from __future__ import annotations
 
 import hashlib
+import math
 from pathlib import Path
 
 from PySide6.QtCore import QBuffer, QByteArray, QIODevice, QRect, QSize, Qt
@@ -14,6 +15,7 @@ from PySide6.QtGui import QColor, QImage, QImageReader, QPainter
 
 from ai_ngerti_geopolitik.domain import Asset, Clip, ProjectState
 from ai_ngerti_geopolitik.domain.still_animation import (
+    qualified_still_breathe,
     qualified_still_drift,
     qualified_still_pan,
     qualified_still_rise,
@@ -135,6 +137,8 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                     or clip.properties.effects.exit_effect == "Drift"
                     or clip.properties.effects.enter_effect == "Rise"
                     or clip.properties.effects.exit_effect == "Rise"
+                    or clip.properties.effects.enter_effect == "Breathe"
+                    or clip.properties.effects.exit_effect == "Breathe"
                 ) and track.track_id != "V1":
                     raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
@@ -144,8 +148,11 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
     pan = qualified_still_pan(active["V1"][0], timeline_frame)
     drift = qualified_still_drift(active["V1"][0], timeline_frame)
     rise = qualified_still_rise(active["V1"][0], timeline_frame)
-    if any(value is not None for value in (fade, pan, drift, rise)) and len(active) != 1:
-        raise StillFramePreviewError("fade/pan/drift/rise requires the single V1 image lane")
+    breathe = qualified_still_breathe(active["V1"][0], timeline_frame)
+    if any(value is not None for value in (fade, pan, drift, rise, breathe)) and len(active) != 1:
+        raise StillFramePreviewError(
+            "fade/pan/drift/rise/breathe requires the single V1 image lane"
+        )
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
         placements = ((active["V1"][1], QRect(0, 0, width, height)),)
@@ -167,15 +174,27 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for asset, destination in placements:
             requested = destination.size()
-            if pan is not None or drift is not None or rise is not None:
-                overscan = 116 if rise is not None else 112
+            if pan is not None or drift is not None or rise is not None or breathe is not None:
+                overscan = 116 if rise is not None else 105 if breathe is not None else 112
                 requested = QSize(
                     (destination.width() * overscan + 99) // 100,
                     (destination.height() * overscan + 99) // 100,
                 )
             decoded = _decode_verified(asset, requested)
-            center_x = (decoded.width() - destination.width()) // 2
-            center_y = (decoded.height() - destination.height()) // 2
+            # W4 Breathe crops ~2% more source at its start/end (zoom-out)
+            # than midclip. Decode 5% overscan to avoid uncovered borders.
+            crop_width = (
+                math.ceil(destination.width() / breathe)
+                if breathe is not None
+                else destination.width()
+            )
+            crop_height = (
+                math.ceil(destination.height() / breathe)
+                if breathe is not None
+                else destination.height()
+            )
+            center_x = (decoded.width() - crop_width) // 2
+            center_y = (decoded.height() - crop_height) // 2
             shift_x = round(pan * center_x) if pan is not None else 0
             shift_x += round(drift * center_x) if drift is not None else 0
             shift_y = round(-drift * center_y) if drift is not None else 0
@@ -184,8 +203,8 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
             source = QRect(
                 center_x + shift_x,
                 center_y + shift_y,
-                destination.width(),
-                destination.height(),
+                crop_width,
+                crop_height,
             )
             painter.drawImage(destination, decoded, source)
         if fade is not None and fade < 1.0:
