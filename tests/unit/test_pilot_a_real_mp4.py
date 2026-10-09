@@ -149,7 +149,6 @@ def test_cancel_before_launch_creates_no_video(tmp_path: Path) -> None:
     assert not plan.destination.exists()
 
 
-
 def test_saved_project_to_real_mp4_without_external_preexported_frames(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -162,12 +161,18 @@ def test_saved_project_to_real_mp4_without_external_preexported_frames(
             "mp4-pilot-a",
             "--project",
             str(tmp_path / "pilot.angproj"),
-            "--output", str(destination),
-            "--ffmpeg", str(tools["ffmpeg_path"]),
-            "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),
-            "--ffprobe", str(tools["ffprobe_path"]),
-            "--ffprobe-sha256", str(tools["ffprobe_sha256"]),
-            "--batch-size", "15",
+            "--output",
+            str(destination),
+            "--ffmpeg",
+            str(tools["ffmpeg_path"]),
+            "--ffmpeg-sha256",
+            str(tools["ffmpeg_sha256"]),
+            "--ffprobe",
+            str(tools["ffprobe_path"]),
+            "--ffprobe-sha256",
+            str(tools["ffprobe_sha256"]),
+            "--batch-size",
+            "15",
         ]
     )
     assert status == 0
@@ -209,11 +214,16 @@ def test_cli_missing_project_fails_closed(
             "mp4-pilot-a",
             "--project",
             str(tmp_path / "missing.angproj"),
-            "--output", str(tmp_path / "missing.mp4"),
-            "--ffmpeg", str(tools["ffmpeg_path"]),
-            "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),
-            "--ffprobe", str(tools["ffprobe_path"]),
-            "--ffprobe-sha256", str(tools["ffprobe_sha256"]),
+            "--output",
+            str(tmp_path / "missing.mp4"),
+            "--ffmpeg",
+            str(tools["ffmpeg_path"]),
+            "--ffmpeg-sha256",
+            str(tools["ffmpeg_sha256"]),
+            "--ffprobe",
+            str(tools["ffprobe_path"]),
+            "--ffprobe-sha256",
+            str(tools["ffprobe_sha256"]),
         ]
     )
     assert result == 1
