@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import threading
+import tracemalloc
 import wave
 from array import array
 from dataclasses import replace
@@ -986,3 +987,156 @@ def test_real_ffmpeg_compose_deadline_terminates_stalled_child() -> None:
             timeout_seconds=0.2,
             should_cancel=None,
         )
+
+
+def _many_scene_project(tmp_path: Path, fps: int):
+    """120 individually numbered image clips, two stable verified source PNGs."""
+    assert fps in (30, 60)
+    if fps == 30:
+        state = _audio_state(tmp_path, with_subtitles=False)
+    else:
+        _fixture(tmp_path)
+        state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    track = state.tracks[0]
+    assert len(track.clips) == 2
+    hold_frames = 5 if fps == 30 else 6
+    clips = tuple(
+        replace(
+            track.clips[index % 2],
+            clip_id=f"STRESS-{fps}-{index:03d}",
+            timeline_start=FrameTime(index * hold_frames, fps),
+            source_in=FrameTime(0, fps),
+            source_out=FrameTime(1, fps),
+            image_hold_frames=hold_frames,
+        )
+        for index in range(120)
+    )
+    assets = tuple(
+        replace(asset, duration=FrameTime(asset.duration.frames, fps))
+        for asset in state.assets
+    )
+    narration = (
+        replace(state.narration, timeline_start=FrameTime(3 * fps, fps))
+        if state.narration is not None
+        else None
+    )
+    state = replace(
+        state,
+        fps=fps,
+        assets=assets,
+        tracks=(replace(track, clips=clips),),
+        markers=(),
+        subtitle=None,
+        narration=narration,
+    )
+    state.validate()
+    assert len(state.tracks[0].clips) == 120
+    assert state.timeline_end_frame == 120 * hold_frames
+    return state
+
+
+@pytest.mark.parametrize(
+    ("fps", "frame_count"),
+    [(30, 600), (60, 720)],
+)
+def test_120_scene_real_mp4_exact_fps_and_bounded_python_heap(
+    tmp_path: Path, fps: int, frame_count: int
+) -> None:
+    """Bounded-source render of 120 real clips with WAV narration at 30 FPS."""
+    state = _many_scene_project(tmp_path, fps)
+    destination = tmp_path / f"120-scenes-{fps}fps.mp4"
+    native = _tools()
+    tracemalloc.start()
+    try:
+        result = export_still_project_mp4(
+            state, destination, batch_size=48, timeout_seconds=420, **native
+        )
+        _current, peak_python_heap_bytes = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    # tracemalloc measures Python-managed allocations only, NOT Qt/FFmpeg RSS.
+    assert peak_python_heap_bytes < 256 * 1024 * 1024
+    assert result.path == destination
+    assert result.frame_count == frame_count
+    assert result.fps == fps
+    assert abs(result.duration_seconds - frame_count / fps) < 1 / fps
+    assert result.sha256 == hashlib.sha256(destination.read_bytes()).hexdigest()
+    assert result.file_bytes == destination.stat().st_size
+    assert result.file_bytes < 32 * 1024 * 1024
+    assert len(state.tracks[0].clips) == 120
+    metadata = _probe_av(destination, native["ffprobe_path"])
+    video = next(s for s in metadata["streams"] if s["codec_name"] == "h264")
+    assert int(video["nb_read_frames"]) == frame_count
+    assert float(metadata["format"]["duration"]) == pytest.approx(
+        frame_count / fps, abs=1 / fps
+    )
+    assert sum(s["codec_name"] == "aac" for s in metadata["streams"]) == (1 if fps == 30 else 0)
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    assert not list(tmp_path.glob(".ang-av-*"))
+
+    # At frame boundaries, the verified red/green image alternation must
+    # survive actual H264 decoding; no dropped or reordered scene.
+    raw_first = subprocess.run(
+        [
+            str(native["ffmpeg_path"]),
+            "-nostdin",
+            "-v",
+            "error",
+            "-i",
+            str(destination),
+            "-map",
+            "0:v:0",
+            "-frames:v",
+            "1",
+            "-pix_fmt",
+            "rgb24",
+            "-f",
+            "rawvideo",
+            "-",
+        ],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=30,
+        check=True,
+    ).stdout
+    assert len(raw_first) == result.width * result.height * 3
+    assert raw_first[0] > 160 and raw_first[1] < 100 and raw_first[2] < 100
+
+    folder = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if folder:
+        artifact = Path(folder)
+        artifact.mkdir(parents=True, exist_ok=True)
+        filename = f"ANG-Pilot-A-120Scenes-{fps}FPS.mp4"
+        shutil.copy2(destination, artifact / filename)
+        (artifact / f"120Scenes-{fps}FPS-SHA256.txt").write_text(
+            f"{result.sha256}  {filename}\n", encoding="utf-8"
+        )
+
+
+def test_120_scene_cancel_mid_frame_staging_never_publishes(
+    tmp_path: Path,
+) -> None:
+    state = _many_scene_project(tmp_path, 30)
+    output = tmp_path / "cancelled-120-scenes.mp4"
+    checks = 0
+
+    def cancel_after_work_started() -> bool:
+        nonlocal checks
+        checks += 1
+        return checks >= 165
+
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(
+            state,
+            output,
+            should_cancel=cancel_after_work_started,
+            batch_size=40,
+            **_tools(),
+        )
+    assert checks >= 165
+    assert not output.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+    assert not list(tmp_path.glob(".angfull-*"))
+    assert not list(tmp_path.glob(".angseq-*"))
+    assert not list(tmp_path.glob(".ang-pilot-*"))
