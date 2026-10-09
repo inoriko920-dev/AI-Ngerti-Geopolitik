@@ -788,7 +788,6 @@ def test_native_narration_metadata_mismatch_never_publishes(tmp_path: Path) -> N
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
 
 
-
 def test_24s_twelve_scene_native_av_caption_boundaries(tmp_path: Path) -> None:
     """12 independent scenes, 720 frames, 3 separated Unicode subtitles, real AAC."""
     state = _audio_state(tmp_path, with_subtitles=True)
@@ -837,11 +836,10 @@ def test_24s_twelve_scene_native_av_caption_boundaries(tmp_path: Path) -> None:
     assert result.sha256 == hashlib.sha256(destination.read_bytes()).hexdigest()
     metadata = _probe_av(destination, native["ffprobe_path"])
     assert float(metadata["format"]["duration"]) == pytest.approx(24.0, abs=1 / 30)
-    assert next(
-        int(s["nb_read_frames"])
-        for s in metadata["streams"]
-        if s["codec_name"] == "h264"
-    ) == 720
+    assert (
+        next(int(s["nb_read_frames"]) for s in metadata["streams"] if s["codec_name"] == "h264")
+        == 720
+    )
     assert sum(s["codec_name"] == "aac" for s in metadata["streams"]) == 1
     raw_audio = subprocess.run(
         [
@@ -911,12 +909,8 @@ def test_24s_twelve_scene_native_av_caption_boundaries(tmp_path: Path) -> None:
             present = frame(within)
             finished = frame(after)
             assert len(empty) == len(present) == len(finished) == frame_size
-            changed = sum(
-                abs(x - y) > 25 for x, y in zip(empty, present, strict=True)
-            )
-            recovered = sum(
-                abs(x - y) > 25 for x, y in zip(empty, finished, strict=True)
-            )
+            changed = sum(abs(x - y) > 25 for x, y in zip(empty, present, strict=True))
+            recovered = sum(abs(x - y) > 25 for x, y in zip(empty, finished, strict=True))
             assert changed > 30
             assert recovered < changed // 2
         assert frame(59)[:3] != frame(60)[:3]
