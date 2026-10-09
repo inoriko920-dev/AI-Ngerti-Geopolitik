@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 import threading
-import time
 from ctypes import wintypes
 from dataclasses import replace
 from pathlib import Path
@@ -47,7 +46,9 @@ def _tools() -> dict[str, object]:
     }
 
 
-def _distinct_project(tmp_path: Path, fps: int) -> tuple[ProjectState, tuple[tuple[int, int, int], ...]]:
+def _distinct_project(
+    tmp_path: Path, fps: int
+) -> tuple[ProjectState, tuple[tuple[int, int, int], ...]]:
     assert fps in (30, 60)
     frames_per_scene = 3 if fps == 30 else 4
     colors: list[tuple[int, int, int]] = []
@@ -92,8 +93,11 @@ def _distinct_project(tmp_path: Path, fps: int) -> tuple[ProjectState, tuple[tup
         )
     state = replace(
         ProjectState.create(
-            f"P-120-UNIQUE-{fps}", "120 distinct source images", fps,
-            width=128, height=72,
+            f"P-120-UNIQUE-{fps}",
+            "120 distinct source images",
+            fps,
+            width=128,
+            height=72,
         ),
         assets=tuple(assets),
         tracks=(Track("V1", "video", 0, clips=tuple(clips)),),
@@ -127,7 +131,9 @@ def _windows_working_set(pid: int) -> int:
     kernel.CloseHandle.argtypes = [wintypes.HANDLE]
     kernel.CloseHandle.restype = wintypes.BOOL
     psapi.GetProcessMemoryInfo.argtypes = [
-        wintypes.HANDLE, ctypes.POINTER(_ProcessCounters), wintypes.DWORD
+        wintypes.HANDLE,
+        ctypes.POINTER(_ProcessCounters),
+        wintypes.DWORD,
     ]
     psapi.GetProcessMemoryInfo.restype = wintypes.BOOL
     handle = kernel.OpenProcess(0x0410, False, pid)
@@ -219,9 +225,20 @@ def test_real_mp4_120_distinct_pngs_frame_by_frame_and_windows_rss(
     with tempfile.TemporaryFile() as rawvideo:
         result = subprocess.run(
             [
-                str(native["ffmpeg_path"]), "-nostdin", "-v", "error",
-                "-i", str(output), "-map", "0:v:0", "-an",
-                "-pix_fmt", "rgb24", "-f", "rawvideo", "-",
+                str(native["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(output),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
             ],
             stdin=subprocess.DEVNULL,
             stdout=rawvideo,
@@ -236,7 +253,9 @@ def test_real_mp4_120_distinct_pngs_frame_by_frame_and_windows_rss(
             rawvideo.seek((index * hold + hold // 2) * frame_bytes + center_offset)
             pixel = rawvideo.read(3)
             assert len(pixel) == 3
-            assert all(abs(actual - expected) <= 25 for actual, expected in zip(pixel, rgb, strict=True))
+            assert all(
+                abs(actual - expected) <= 25 for actual, expected in zip(pixel, rgb, strict=True)
+            )
     assert not list(tmp_path.glob(".ang-still-mp4-*"))
     assert not list(tmp_path.glob(".ang-pilot-*"))
     artifact_root = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
@@ -278,9 +297,7 @@ def test_real_project_disk_full_during_manifest_write_discards_staging(
     assert not list(tmp_path.glob(".angseq-*"))
 
 
-def test_real_project_source_vanishes_after_some_frames_fails_closed(
-    tmp_path: Path
-) -> None:
+def test_real_project_source_vanishes_after_some_frames_fails_closed(tmp_path: Path) -> None:
     state, _colors = _distinct_project(tmp_path, 30)
     output = tmp_path / "missing-input.mp4"
     missing = Path(state.asset("MEDIA-009").path_ref)
@@ -295,7 +312,10 @@ def test_real_project_source_vanishes_after_some_frames_fails_closed(
 
     with pytest.raises(StillProjectMP4Error):
         export_still_project_mp4(
-            state, output, batch_size=20, should_cancel=remove_after_start,
+            state,
+            output,
+            batch_size=20,
+            should_cancel=remove_after_start,
             **_tools(),
         )
     assert calls >= 20
