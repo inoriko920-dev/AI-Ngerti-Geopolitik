@@ -1833,3 +1833,115 @@ def test_native_h264_w4_pop_has_real_centered_scale_motion(tmp_path: Path) -> No
         (artifact_dir / "W4-Pop-SHA256.txt").write_text(
             f"{result.sha256}  {name}\n", encoding="utf-8"
         )
+
+
+def test_native_h264_w4_stomp_has_real_centered_scale_motion(tmp_path: Path) -> None:
+    """A genuine H264 MP4 must contain measurable 0.85→1.00→0.85 pixel scale."""
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    image = QImage(256, 144, QImage.Format.Format_RGB32)
+    for x in range(256):
+        for y in range(144):
+            image.setPixelColor(
+                x,
+                y,
+                QColor(
+                    (3 * x + 2 * y + 30) % 256,
+                    (4 * x + 3 * y + 40) % 256,
+                    (5 * x + 4 * y + 50) % 256,
+                ),
+            )
+    source = tmp_path / "A001.png"
+    assert image.save(str(source), "PNG")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    assets = tuple(
+        replace(
+            asset,
+            width=256,
+            height=144,
+            file_size=source.stat().st_size,
+            fingerprint_sha256=digest,
+        )
+        if asset.asset_id == "A001"
+        else asset
+        for asset in state.assets
+    )
+    first = state.tracks[0].clips[0]
+    animated = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Stomp", exit_effect="Stomp"),
+        ),
+    )
+    state = replace(
+        state,
+        assets=assets,
+        settings=replace(state.settings, width=256, height=144),
+        tracks=(
+            replace(state.tracks[0], clips=(animated, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    output = tmp_path / "w4-stomp-real.mp4"
+    result = export_still_project_mp4(state, output, batch_size=15, **_tools())
+    assert result.frame_count == 60
+    assert (result.width, result.height) == (256, 144)
+    assert result.sha256 == hashlib.sha256(output.read_bytes()).hexdigest()
+    bytes_per_frame = result.width * result.height * 3
+    with tempfile.TemporaryFile() as raw:
+        verified = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(output),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=raw,
+            stderr=subprocess.DEVNULL,
+            timeout=40,
+            check=False,
+        )
+        assert verified.returncode == 0
+        assert raw.tell() == result.frame_count * bytes_per_frame
+
+        def pixels(frame: int) -> bytes:
+            return b"".join(
+                _read_rgb_sample(raw, frame, y, x, result.width, bytes_per_frame)
+                for y in (15, 35, 70, 110, 130)
+                for x in (20, 54, 105, 160, 222)
+            )
+
+        initial, entering, middle, leaving, ending = (pixels(index) for index in (0, 4, 17, 27, 29))
+
+        def diff(a: bytes, b: bytes) -> int:
+            return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+
+        assert diff(initial, middle) > 60
+        assert diff(entering, middle) > 20
+        assert diff(leaving, middle) > 20
+        assert diff(ending, middle) > 60
+        raw.seek(30 * bytes_per_frame)
+        following = raw.read(3)
+        assert len(following) == 3 and following[1] > 150 and following[0] < 100
+    folder = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if folder:
+        artifact_dir = Path(folder)
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        name = "ANG-Pilot-A-W4-Stomp-Scale.mp4"
+        shutil.copy2(output, artifact_dir / name)
+        (artifact_dir / "W4-Stomp-SHA256.txt").write_text(
+            f"{result.sha256}  {name}\n", encoding="utf-8"
+        )

@@ -1,7 +1,7 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
 This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
-fade-through-black, W4 Fade/Pan/Drift/Rise, Breathe, or Pop.
+fade-through-black, W4 Fade/Pan/Drift/Rise, Breathe, Pop, or Stomp.
 All unsupported combinations fail closed.
 """
 
@@ -21,6 +21,7 @@ from ai_ngerti_geopolitik.domain.still_animation import (
     qualified_still_pan,
     qualified_still_pop,
     qualified_still_rise,
+    qualified_still_stomp,
     qualified_still_visibility,
 )
 
@@ -143,6 +144,8 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                     or clip.properties.effects.exit_effect == "Breathe"
                     or clip.properties.effects.enter_effect == "Pop"
                     or clip.properties.effects.exit_effect == "Pop"
+                    or clip.properties.effects.enter_effect == "Stomp"
+                    or clip.properties.effects.exit_effect == "Stomp"
                 ) and track.track_id != "V1":
                     raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
@@ -154,12 +157,13 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
     rise = qualified_still_rise(active["V1"][0], timeline_frame)
     breathe = qualified_still_breathe(active["V1"][0], timeline_frame)
     pop = qualified_still_pop(active["V1"][0], timeline_frame)
+    stomp = qualified_still_stomp(active["V1"][0], timeline_frame)
     if (
-        any(value is not None for value in (fade, pan, drift, rise, breathe, pop))
+        any(value is not None for value in (fade, pan, drift, rise, breathe, pop, stomp))
         and len(active) != 1
     ):
         raise StillFramePreviewError(
-            "fade/pan/drift/rise/breathe/pop requires the single V1 image lane"
+            "animation requires the single V1 image lane"
         )
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
@@ -182,10 +186,10 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for asset, destination in placements:
             requested = destination.size()
-            if any(value is not None for value in (pan, drift, rise, breathe, pop)):
+            if any(value is not None for value in (pan, drift, rise, breathe, pop, stomp)):
                 overscan = (
                     120
-                    if pop is not None
+                    if pop is not None or stomp is not None
                     else 116
                     if rise is not None
                     else 105
@@ -199,7 +203,7 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
             decoded = _decode_verified(asset, requested)
             # W4 Breathe crops ~2% more source at its start/end (zoom-out)
             # than midclip. Decode 5% overscan to avoid uncovered borders.
-            scale = pop if pop is not None else breathe
+            scale = stomp if stomp is not None else pop if pop is not None else breathe
             crop_width = (
                 math.ceil(destination.width() / scale) if scale is not None else destination.width()
             )
