@@ -1402,7 +1402,6 @@ def _read_rgb_sample(stream, frame: int, y: int, x: int, width: int, frame_size:
     return result
 
 
-
 def test_native_h264_w4_drift_moves_actual_pixels_diagonally(tmp_path: Path) -> None:
     """Native FFmpeg must encode non-static two-axis Drift IN/OUT pixels."""
     _fixture(tmp_path)

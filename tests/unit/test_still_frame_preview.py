@@ -426,7 +426,6 @@ def test_w4_pan_double_scene_or_combined_fade_fails_closed(tmp_path: Path) -> No
         render_still_frame(invalid, 0)
 
 
-
 def _drift_pattern_state(tmp_path: Path):
     """Color varies independently with X and Y to prove diagonal movement."""
     state = _pan_pattern_state(tmp_path)
