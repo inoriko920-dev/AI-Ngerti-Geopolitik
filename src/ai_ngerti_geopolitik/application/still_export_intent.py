@@ -14,6 +14,7 @@ from ai_ngerti_geopolitik.domain.still_animation import (
     qualified_still_breathe,
     qualified_still_drift,
     qualified_still_pan,
+    qualified_still_pop,
     qualified_still_rise,
     qualified_still_visibility,
 )
@@ -99,9 +100,10 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                 drift = qualified_still_drift(clip, clip.timeline_start.frames)
                 rise = qualified_still_rise(clip, clip.timeline_start.frames)
                 breathe = qualified_still_breathe(clip, clip.timeline_start.frames)
+                pop = qualified_still_pop(clip, clip.timeline_start.frames)
             except ValueError:
                 raise StillExportIntentError("Efek gambar belum didukung oleh Pilot A.") from None
-            if any(value is not None for value in (fade, pan, drift, rise, breathe)) and (
+            if any(value is not None for value in (fade, pan, drift, rise, breathe, pop)) and (
                 track.track_id != "V1"
                 or any(
                     other.track_id != "V1"

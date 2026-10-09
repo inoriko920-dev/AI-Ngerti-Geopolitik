@@ -1,7 +1,7 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
 This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
-fade-through-black, W4 Fade, W4 Pan, W4 Drift, W4 Rise or Breathe enter/exit. Others fail closed.
+fade-through-black, W4 Fade, W4 Pan, W4 Drift, W4 Rise, Breathe or Pop enter/exit. Others fail closed.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from ai_ngerti_geopolitik.domain.still_animation import (
     qualified_still_breathe,
     qualified_still_drift,
     qualified_still_pan,
+    qualified_still_pop,
     qualified_still_rise,
     qualified_still_visibility,
 )
@@ -139,6 +140,8 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                     or clip.properties.effects.exit_effect == "Rise"
                     or clip.properties.effects.enter_effect == "Breathe"
                     or clip.properties.effects.exit_effect == "Breathe"
+                    or clip.properties.effects.enter_effect == "Pop"
+                    or clip.properties.effects.exit_effect == "Pop"
                 ) and track.track_id != "V1":
                     raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
@@ -149,9 +152,10 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
     drift = qualified_still_drift(active["V1"][0], timeline_frame)
     rise = qualified_still_rise(active["V1"][0], timeline_frame)
     breathe = qualified_still_breathe(active["V1"][0], timeline_frame)
-    if any(value is not None for value in (fade, pan, drift, rise, breathe)) and len(active) != 1:
+    pop = qualified_still_pop(active["V1"][0], timeline_frame)
+    if any(value is not None for value in (fade, pan, drift, rise, breathe, pop)) and len(active) != 1:
         raise StillFramePreviewError(
-            "fade/pan/drift/rise/breathe requires the single V1 image lane"
+            "fade/pan/drift/rise/breathe/pop requires the single V1 image lane"
         )
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
@@ -174,8 +178,8 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for asset, destination in placements:
             requested = destination.size()
-            if pan is not None or drift is not None or rise is not None or breathe is not None:
-                overscan = 116 if rise is not None else 105 if breathe is not None else 112
+            if any(value is not None for value in (pan, drift, rise, breathe, pop)):
+                overscan = 120 if pop is not None else 116 if rise is not None else 105 if breathe is not None else 112
                 requested = QSize(
                     (destination.width() * overscan + 99) // 100,
                     (destination.height() * overscan + 99) // 100,
@@ -183,16 +187,11 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
             decoded = _decode_verified(asset, requested)
             # W4 Breathe crops ~2% more source at its start/end (zoom-out)
             # than midclip. Decode 5% overscan to avoid uncovered borders.
-            crop_width = (
-                math.ceil(destination.width() / breathe)
-                if breathe is not None
-                else destination.width()
-            )
-            crop_height = (
-                math.ceil(destination.height() / breathe)
-                if breathe is not None
-                else destination.height()
-            )
+            scale = pop if pop is not None else breathe
+            crop_width = math.ceil(destination.width() / scale) if scale is not None else destination.width()
+            crop_height = math.ceil(destination.height() / scale) if scale is not None else destination.height()
+            if crop_width > decoded.width() or crop_height > decoded.height():
+                raise StillFramePreviewError("animation needs unavailable source coverage")
             center_x = (decoded.width() - crop_width) // 2
             center_y = (decoded.height() - crop_height) // 2
             shift_x = round(pan * center_x) if pan is not None else 0

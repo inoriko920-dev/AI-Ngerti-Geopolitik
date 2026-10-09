@@ -7,6 +7,7 @@ Native Pilot A can render a single active V1 image HOLD with one of:
 - W4 Drift enter and/or Drift exit effect (bounded diagonal motion).
 - W4 Rise enter and/or Rise exit effect (bounded vertical motion).
 - W4 Breathe enter and/or exit (bounded 0.98–1.00 centered scale).
+- W4 Pop enter and/or exit (bounded 0.85–1.00 centered scale).
 All use canonical clip duration. Unsupported combinations fail closed.
 """
 
@@ -159,6 +160,40 @@ def qualified_still_breathe(clip: Clip, timeline_frame: int) -> float | None:
     return 1.0 - 0.02 * max(0.0, min(1.0, entering + leaving))
 
 
+
+def qualified_still_pop(clip: Clip, timeline_frame: int) -> float | None:
+    """W4 Pop: bounded centered 0.85->1.00 IN, 1.00->0.85 OUT.
+
+    The pixel renderer draws a larger verified source using a moving crop
+    that always covers the canvas; this is a limited single-V1 effect.
+    """
+    if clip.properties == ClipProperties():
+        return None
+    props = clip.properties
+    effects = props.effects
+    qualified = (
+        clip.image_hold_frames is not None
+        and props.transition.preset == "none"
+        and effects.enter_effect in {"None", "Pop"}
+        and effects.exit_effect in {"None", "Pop"}
+        and (effects.enter_effect == "Pop" or effects.exit_effect == "Pop")
+        and effects.intensity_percent == 100
+        and replace(props, effects=EffectProperties()) == ClipProperties()
+    )
+    if not qualified:
+        return None
+    offset = timeline_frame - clip.timeline_start.frames
+    if not 0 <= offset < clip.duration_frames:
+        raise ValueError("pop frame outside clip")
+    window = max(1.0, min(0.25 * clip.timeline_start.fps, clip.duration_frames / 2.0))
+    entering = max(0.0, 1.0 - offset / window) if effects.enter_effect == "Pop" else 0.0
+    leaving = (
+        max(0.0, 1.0 - (clip.duration_frames - offset) / window)
+        if effects.exit_effect == "Pop"
+        else 0.0
+    )
+    return 1.0 - 0.15 * max(0.0, min(1.0, entering + leaving))
+
 def qualified_still_visibility(clip: Clip, timeline_frame: int) -> float | None:
     """Return 0..1 image visibility, None for unmodified clips; reject others."""
     if (
@@ -167,6 +202,7 @@ def qualified_still_visibility(clip: Clip, timeline_frame: int) -> float | None:
         or qualified_still_drift(clip, timeline_frame) is not None
         or qualified_still_rise(clip, timeline_frame) is not None
         or qualified_still_breathe(clip, timeline_frame) is not None
+        or qualified_still_pop(clip, timeline_frame) is not None
     ):
         return None
     if clip.image_hold_frames is None:
