@@ -1,7 +1,7 @@
 """CPU/Qt still-frame preview for canonical image clips (worker-only).
 
 This adapter renders SINGLE/DOUBLE image HOLD frames and a qualified V1-only
-fade-through-black or W4 Fade enter/exit. Other effects fail closed.
+fade-through-black, W4 Fade enter/exit or W4 Pan enter/exit. Others fail closed.
 """
 
 from __future__ import annotations
@@ -13,7 +13,10 @@ from PySide6.QtCore import QBuffer, QByteArray, QIODevice, QRect, QSize, Qt
 from PySide6.QtGui import QColor, QImage, QImageReader, QPainter
 
 from ai_ngerti_geopolitik.domain import Asset, Clip, ProjectState
-from ai_ngerti_geopolitik.domain.still_animation import qualified_still_visibility
+from ai_ngerti_geopolitik.domain.still_animation import (
+    qualified_still_pan,
+    qualified_still_visibility,
+)
 
 _MAX_SOURCE_BYTES = 128 * 1024 * 1024
 _MAX_IMAGE_PIXELS = 100_000_000
@@ -124,14 +127,17 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                     clip.properties.transition.preset == "fade_black"
                     or clip.properties.effects.enter_effect == "Fade"
                     or clip.properties.effects.exit_effect == "Fade"
+                    or clip.properties.effects.enter_effect == "Pan"
+                    or clip.properties.effects.exit_effect == "Pan"
                 ) and track.track_id != "V1":
                     raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
     if "V1" not in active:
         raise StillFramePreviewError("image timeline contains a gap")
     fade = qualified_still_visibility(active["V1"][0], timeline_frame)
-    if fade is not None and len(active) != 1:
-        raise StillFramePreviewError("fade requires the single V1 image lane")
+    pan = qualified_still_pan(active["V1"][0], timeline_frame)
+    if (fade is not None or pan is not None) and len(active) != 1:
+        raise StillFramePreviewError("fade/pan requires the single V1 image lane")
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
         placements = ((active["V1"][1], QRect(0, 0, width, height)),)
@@ -152,10 +158,19 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
     try:
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for asset, destination in placements:
-            decoded = _decode_verified(asset, destination.size())
+            requested = destination.size()
+            if pan is not None:
+                requested = QSize(
+                    (destination.width() * 112 + 99) // 100,
+                    (destination.height() * 112 + 99) // 100,
+                )
+            decoded = _decode_verified(asset, requested)
+            center_x = (decoded.width() - destination.width()) // 2
+            center_y = (decoded.height() - destination.height()) // 2
+            shift = round(pan * center_x) if pan is not None else 0
             source = QRect(
-                (decoded.width() - destination.width()) // 2,
-                (decoded.height() - destination.height()) // 2,
+                center_x + shift,
+                center_y,
                 destination.width(),
                 destination.height(),
             )
