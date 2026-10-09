@@ -194,6 +194,7 @@ def qualified_still_pop(clip: Clip, timeline_frame: int) -> float | None:
     )
     return 1.0 - 0.15 * max(0.0, min(1.0, entering + leaving))
 
+
 def qualified_still_visibility(clip: Clip, timeline_frame: int) -> float | None:
     """Return 0..1 image visibility, None for unmodified clips; reject others."""
     if (

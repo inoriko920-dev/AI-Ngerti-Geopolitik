@@ -153,7 +153,10 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
     rise = qualified_still_rise(active["V1"][0], timeline_frame)
     breathe = qualified_still_breathe(active["V1"][0], timeline_frame)
     pop = qualified_still_pop(active["V1"][0], timeline_frame)
-    if any(value is not None for value in (fade, pan, drift, rise, breathe, pop)) and len(active) != 1:
+    if (
+        any(value is not None for value in (fade, pan, drift, rise, breathe, pop))
+        and len(active) != 1
+    ):
         raise StillFramePreviewError(
             "fade/pan/drift/rise/breathe/pop requires the single V1 image lane"
         )
@@ -179,7 +182,15 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
         for asset, destination in placements:
             requested = destination.size()
             if any(value is not None for value in (pan, drift, rise, breathe, pop)):
-                overscan = 120 if pop is not None else 116 if rise is not None else 105 if breathe is not None else 112
+                overscan = (
+                    120
+                    if pop is not None
+                    else 116
+                    if rise is not None
+                    else 105
+                    if breathe is not None
+                    else 112
+                )
                 requested = QSize(
                     (destination.width() * overscan + 99) // 100,
                     (destination.height() * overscan + 99) // 100,
@@ -188,8 +199,14 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
             # W4 Breathe crops ~2% more source at its start/end (zoom-out)
             # than midclip. Decode 5% overscan to avoid uncovered borders.
             scale = pop if pop is not None else breathe
-            crop_width = math.ceil(destination.width() / scale) if scale is not None else destination.width()
-            crop_height = math.ceil(destination.height() / scale) if scale is not None else destination.height()
+            crop_width = (
+                math.ceil(destination.width() / scale) if scale is not None else destination.width()
+            )
+            crop_height = (
+                math.ceil(destination.height() / scale)
+                if scale is not None
+                else destination.height()
+            )
             if crop_width > decoded.width() or crop_height > decoded.height():
                 raise StillFramePreviewError("animation needs unavailable source coverage")
             center_x = (decoded.width() - crop_width) // 2
