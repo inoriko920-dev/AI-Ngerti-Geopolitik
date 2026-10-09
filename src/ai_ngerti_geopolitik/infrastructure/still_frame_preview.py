@@ -117,11 +117,10 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
                 try:
                     qualified_fade_black_visibility(clip, timeline_frame)
                 except ValueError:
-                    raise StillFramePreviewError("modified image effects are not qualified") from None
-                if (
-                    clip.properties.transition.preset == "fade_black"
-                    and track.track_id != "V1"
-                ):
+                    raise StillFramePreviewError(
+                        "modified image effects are not qualified"
+                    ) from None
+                if clip.properties.transition.preset == "fade_black" and track.track_id != "V1":
                     raise StillFramePreviewError("fade requires the single V1 image lane")
                 active[track.track_id] = (clip, asset)
     if "V1" not in active:

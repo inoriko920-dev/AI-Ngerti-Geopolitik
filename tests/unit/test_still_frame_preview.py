@@ -160,7 +160,6 @@ def test_cli_outputs_real_preview_png_and_refuses_overwrite(tmp_path: Path) -> N
     assert not (tmp_path / "outside.png").exists()
 
 
-
 def test_v1_fade_black_has_black_opening_full_middle_and_faded_closing(
     tmp_path: Path,
 ) -> None:
@@ -195,9 +194,7 @@ def test_fade_in_double_scene_and_other_motion_effects_reject_without_fake_pixel
     second = state.tracks[0].clips[1]
     faded_double = replace(
         second,
-        properties=replace(
-            second.properties, transition=TransitionProperties("fade_black", 8)
-        ),
+        properties=replace(second.properties, transition=TransitionProperties("fade_black", 8)),
     )
     double_state = replace(
         state,

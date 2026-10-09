@@ -1140,7 +1140,6 @@ def test_120_scene_cancel_mid_frame_staging_never_publishes(
     assert not list(tmp_path.glob(".ang-pilot-*"))
 
 
-
 def test_real_native_mp4_has_fade_black_pixels_at_exact_scene_frames(
     tmp_path: Path,
 ) -> None:
