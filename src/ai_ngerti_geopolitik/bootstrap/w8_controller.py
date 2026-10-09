@@ -6,9 +6,12 @@ project truth, typed validation, verified relink and crash recovery.
 
 from __future__ import annotations
 
+import os
+import shutil
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import suppress
 from pathlib import Path
+from threading import Event
 from time import monotonic
 from uuid import uuid4
 
@@ -39,6 +42,10 @@ from ai_ngerti_geopolitik.application.scene_asset_bindings import (
 )
 from ai_ngerti_geopolitik.application.scene_docx_contract import SceneDocxFormatError, SceneDocxPlan
 from ai_ngerti_geopolitik.application.scene_import_review import SceneImportReviewError
+from ai_ngerti_geopolitik.application.still_export_intent import (
+    StillExportIntentError,
+    validate_still_export_intent,
+)
 from ai_ngerti_geopolitik.application.ui_intents import (
     UiIntent,
     UiIntentSink,
@@ -56,6 +63,10 @@ from ai_ngerti_geopolitik.infrastructure.ffmpeg_slice import FfprobeMediaProbe
 from ai_ngerti_geopolitik.infrastructure.media_integrity import LocalMediaIntegrityInspector
 from ai_ngerti_geopolitik.infrastructure.media_status import LocalMediaAvailability
 from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
+from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
+    PilotAResult,
+    sha256_executable,
+)
 from ai_ngerti_geopolitik.infrastructure.relink_scan import LocalRelinkDirectoryScanner
 from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import scan_scene_asset_folder
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
@@ -63,6 +74,7 @@ from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
     StillFramePreviewError,
     render_still_frame,
 )
+from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import export_still_project_mp4
 from ai_ngerti_geopolitik.presentation.asset_scan import asset_scan_projection
 from ai_ngerti_geopolitik.presentation.main_window import MainWindow
 from ai_ngerti_geopolitik.presentation.navigation import UiRoute
@@ -75,6 +87,30 @@ class _DeferredProbe:
 
     def probe(self, path: Path) -> ProbeResult:
         return FfprobeMediaProbe().probe(path)
+
+
+def _run_pilot_gui_export(
+    state: ProjectState, output: Path, cancel: Event
+) -> PilotAResult:
+    """Off-Qt worker: resolve, SHA-pin and run external tools only in Pilot A."""
+    if os.environ.get("ANG_PILOT_A_FFMPEG") != "1" or cancel.is_set():
+        raise RuntimeError("Pilot A is disabled or cancelled")
+    ffmpeg_value = shutil.which("ffmpeg")
+    ffprobe_value = shutil.which("ffprobe")
+    if ffmpeg_value is None or ffprobe_value is None:
+        raise RuntimeError("native FFmpeg or FFprobe is unavailable")
+    ffmpeg = Path(ffmpeg_value).resolve(strict=True)
+    ffprobe = Path(ffprobe_value).resolve(strict=True)
+    return export_still_project_mp4(
+        state,
+        output,
+        ffmpeg_path=ffmpeg,
+        ffmpeg_sha256=sha256_executable(ffmpeg),
+        ffprobe_path=ffprobe,
+        ffprobe_sha256=sha256_executable(ffprobe),
+        timeout_seconds=900,
+        should_cancel=cancel.is_set,
+    )
 
 
 class W8IntentRouter:
@@ -148,6 +184,10 @@ class W8RuntimeController:
         self.still_play_start_frame = 0
         self.still_play_token: tuple[str, str] | None = None
         self.still_play_clock = monotonic
+        self.export_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ang-mp4")
+        self.export_future: Future[PilotAResult] | None = None
+        self.export_cancel = Event()
+        self.export_token: tuple[str, str] | None = None
         self.active_marker: CrashMarker | None = None
         self.last_error = ""
         self._closed = False
@@ -160,6 +200,65 @@ class W8RuntimeController:
     def _notify(self, message: str) -> None:
         self.last_error = message
         self.window.window.statusBar().showMessage(message, 7500)
+
+    def _request_still_export(self, data: dict[str, str]) -> None:
+        """Start exactly one qualified render without blocking the GUI thread."""
+        if self.export_future is not None:
+            self._notify("Render sebelumnya masih berjalan. Tunggu atau tutup aplikasi.")
+            return
+        if (
+            not self.session.is_open
+            or self.session.current_path is None
+            or self.session.dirty
+            or self.recovery_future is not None
+        ):
+            self._notify("Buka dan simpan project sebelum ekspor MP4.")
+            return
+        if os.environ.get("ANG_PILOT_A_FFMPEG") != "1":
+            self._notify("Ekspor MP4 masih dibatasi Pilot A di build pengembangan.")
+            return
+        if self.window.window.property("ui_state") != UiRoute.EXPORT_SETTINGS.value:
+            self._notify("Buka dialog Ekspor Video untuk memilih pengaturan.")
+            return
+        try:
+            destination = validate_still_export_intent(data, self.session.state)
+        except StillExportIntentError as error:
+            # Reuse the frozen dialog; no widget insertion or screen redesign.
+            self._notify(str(error))
+            dialog = self.window._active_dialog
+            if dialog is not None:
+                dialog.setWindowTitle(f"Ekspor Video — {error}")
+            return
+        self.export_cancel = Event()
+        self.export_token = (self.session_id, self.session.state.semantic_hash())
+        self.export_future = self.export_worker.submit(
+            _run_pilot_gui_export, self.session.state, destination, self.export_cancel
+        )
+        self.window.show_route(UiRoute.EDITOR)
+        self._notify("Membuat MP4 H.264 gambar tanpa audio/subtitle...")
+
+    def _poll_still_export(self) -> None:
+        future = self.export_future
+        if future is None or not future.done():
+            return
+        token = self.export_token
+        self.export_future = None
+        self.export_token = None
+        try:
+            result = future.result()
+        except (OSError, RuntimeError, ValueError):
+            if token is not None and token[0] == self.session_id and not self._closed:
+                self._notify("Ekspor MP4 gagal/dibatalkan; tidak ada hasil final yang disahkan.")
+            return
+        if (
+            token is not None
+            and self.session.is_open
+            and token == (self.session_id, self.session.state.semantic_hash())
+            and not self._closed
+        ):
+            self._notify(
+                f"MP4 H.264 terverifikasi: {result.frame_count} frame, {result.fps} FPS."
+            )
 
     def _finish_current_session(self) -> bool:
         if not self.session.is_open:
@@ -200,6 +299,7 @@ class W8RuntimeController:
         self._notify("Memeriksa autosave dan status pemulihan project…")
 
     def _cancel_project_jobs(self) -> None:
+        self.export_cancel.set()
         if self.validation_job_id is not None:
             self.validation_jobs.cancel(self.validation_job_id)
             self.validation_job_id = None
@@ -574,6 +674,8 @@ class W8RuntimeController:
             self._decide(RecoveryChoice.RECOVER_SNAPSHOT, Path(data.get("snapshot", "")))
         elif kind is UiIntentType.RECOVERY_IGNORE:
             self._decide(RecoveryChoice.IGNORE)
+        elif kind is UiIntentType.OPEN_EXPORT and data.get("action") == "render_requested":
+            self._request_still_export(data)
         elif kind is UiIntentType.OPEN_VALIDATION:
             if data.get("action") == "RELINK_MEDIA":
                 self.show_asset_scan()
@@ -730,6 +832,7 @@ class W8RuntimeController:
                     self._notify("Project tersimpan, tetapi sesi berubah. Buka file secara manual.")
         self._tick_still_playback()
         self._poll_still_preview()
+        self._poll_still_export()
         if self.validation_job_id is not None:
             snapshot = self.validation_jobs.snapshot(
                 self.validation_job_id,
@@ -760,6 +863,7 @@ class W8RuntimeController:
         if self._closed:
             return
         self._closed = True
+        self.export_cancel.set()
         self._stop_still_playback()
         self.timer.stop()
         self._cancel_project_jobs()
@@ -768,6 +872,7 @@ class W8RuntimeController:
         self.recovery_worker.shutdown(wait=False, cancel_futures=True)
         self.still_preview_desired = None
         self.still_preview_worker.shutdown(wait=False, cancel_futures=True)
+        self.export_worker.shutdown(wait=False, cancel_futures=True)
         # Never pretend clean shutdown when unsaved work still exists.
         if self.session.is_open and not self.session.dirty:
             with suppress(OSError, RuntimeError, ValueError):
