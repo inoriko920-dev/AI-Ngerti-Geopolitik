@@ -959,4 +959,3 @@ def test_w4_stomp_mixed_effects_fail_closed(tmp_path: Path, enter: str, exit: st
     )
     with pytest.raises(StillFramePreviewError, match="effects"):
         render_still_frame(invalid, 0)
-

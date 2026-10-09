@@ -105,7 +105,9 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                 stomp = qualified_still_stomp(clip, clip.timeline_start.frames)
             except ValueError:
                 raise StillExportIntentError("Efek gambar belum didukung oleh Pilot A.") from None
-            if any(value is not None for value in (fade, pan, drift, rise, breathe, pop, stomp)) and (
+            if any(
+                value is not None for value in (fade, pan, drift, rise, breathe, pop, stomp)
+            ) and (
                 track.track_id != "V1"
                 or any(
                     other.track_id != "V1"

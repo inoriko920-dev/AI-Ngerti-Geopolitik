@@ -162,9 +162,7 @@ def render_still_frame(state: ProjectState, timeline_frame: int) -> QImage:
         any(value is not None for value in (fade, pan, drift, rise, breathe, pop, stomp))
         and len(active) != 1
     ):
-        raise StillFramePreviewError(
-            "animation requires the single V1 image lane"
-        )
+        raise StillFramePreviewError("animation requires the single V1 image lane")
     placements: tuple[tuple[Asset, QRect], ...]
     if len(active) == 1:
         placements = ((active["V1"][1], QRect(0, 0, width, height)),)
