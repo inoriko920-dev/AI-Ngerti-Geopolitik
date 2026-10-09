@@ -23,6 +23,10 @@ from ai_ngerti_geopolitik.infrastructure.scene_asset_discovery import (
     verify_scene_image_media,
 )
 from ai_ngerti_geopolitik.infrastructure.scene_docx_reader import read_scene_docx
+from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
+    StillProjectMP4Error,
+    export_still_project_mp4,
+)
 from ai_ngerti_geopolitik.infrastructure.still_frame_preview import (
     StillFramePreviewError,
     render_still_frame,
@@ -77,7 +81,7 @@ def create_scene_project_from_wizard(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Impor Scene DOCX dan gambar Axxx tanpa mengubah UI atau menjalankan render."
+        description="Impor Scene DOCX, preview frame, dan ekspor MP4 Pilot A gambar saja."
     )
     modes = parser.add_subparsers(dest="action", required=True)
     template = modes.add_parser("template", help="Buat TXT durasi kosong untuk setiap scene.")
@@ -113,8 +117,41 @@ def main(argv: list[str] | None = None) -> int:
     full_parser.add_argument("--output", required=True)
     full_parser.add_argument("--batch-size", type=int, default=300)
 
+    pilot = modes.add_parser(
+        "mp4-pilot-a",
+        help="Ekspor .angproj gambar ke MP4 H.264 nyata (Pilot A, tanpa audio/subtitle).",
+    )
+    pilot.add_argument("--project", required=True)
+    pilot.add_argument("--output", required=True)
+    pilot.add_argument("--ffmpeg", required=True)
+    pilot.add_argument("--ffmpeg-sha256", required=True)
+    pilot.add_argument("--ffprobe", required=True)
+    pilot.add_argument("--ffprobe-sha256", required=True)
+    pilot.add_argument("--timeout", type=float, default=60.0)
+    pilot.add_argument("--batch-size", type=int, default=300)
+
     args = parser.parse_args(argv)
     try:
+        if args.action == "mp4-pilot-a":
+            if Path(args.project).suffix.lower() != ".angproj" or not Path(args.project).is_file():
+                raise StillProjectMP4Error("project belum tersedia atau bukan .angproj")
+            state = JsonProjectRepository().load(Path(args.project))
+            result = export_still_project_mp4(
+                state,
+                Path(args.output),
+                ffmpeg_path=Path(args.ffmpeg),
+                ffmpeg_sha256=args.ffmpeg_sha256,
+                ffprobe_path=Path(args.ffprobe),
+                ffprobe_sha256=args.ffprobe_sha256,
+                timeout_seconds=args.timeout,
+                batch_size=args.batch_size,
+            )
+            print(
+                f"PASS MP4 PILOT A: H.264 tanpa audio, {result.frame_count} frame, "
+                f"{result.fps} FPS, {result.width}x{result.height}; "
+                f"SHA256 {result.sha256}"
+            )
+            return 0
         if args.action == "frames-all":
             state = JsonProjectRepository().load(Path(args.project))
             export_complete_still_sequence(state, Path(args.output), batch_size=args.batch_size)
@@ -194,6 +231,7 @@ def main(argv: list[str] | None = None) -> int:
         SceneAssetScanError,
         StillFramePreviewError,
         StillSequenceExportError,
+        StillProjectMP4Error,
         OSError,
         ValueError,
     ) as err:

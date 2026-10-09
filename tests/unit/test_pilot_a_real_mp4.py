@@ -13,6 +13,12 @@ import pytest
 from PySide6.QtGui import QImage
 
 from ai_ngerti_geopolitik.application.scene_docx_contract import parse_scene_docx_lines
+from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
+from ai_ngerti_geopolitik.infrastructure.persistence import JsonProjectRepository
+from ai_ngerti_geopolitik.infrastructure.still_project_mp4 import (
+    StillProjectMP4Error,
+    export_still_project_mp4,
+)
 from ai_ngerti_geopolitik.application.scene_import_review import (
     build_scene_timeline_review,
     create_canonical_scene_image_project,
@@ -52,6 +58,7 @@ def _fixture(tmp_path: Path):
         project_name="Synthetic Pilot A scene",
     )
     state = replace(state, settings=replace(state.settings, width=128, height=72))
+    JsonProjectRepository().save(state, tmp_path / "pilot.angproj")
     frames = tmp_path / "frames"
     export_complete_still_sequence(state, frames, batch_size=30)
     return plan_silent_h264_mp4(state, frames, tmp_path / "pilot.mp4")
@@ -140,3 +147,77 @@ def test_cancel_before_launch_creates_no_video(tmp_path: Path) -> None:
     with pytest.raises(PilotAError):
         export_silent_h264_pilot_a(plan, should_cancel=lambda: True, **_tools())
     assert not plan.destination.exists()
+
+
+
+def test_saved_project_to_real_mp4_without_external_preexported_frames(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _fixture(tmp_path)
+    tools = _tools()
+    destination = tmp_path / "full-project.mp4"
+    monkeypatch.setenv("ANG_PILOT_A_FFMPEG", "1")
+    status = scene_cli(
+        [
+            "mp4-pilot-a",
+            "--project", str(tmp_path / "pilot.angproj"),
+            "--output", str(destination),
+            "--ffmpeg", str(tools["ffmpeg_path"]),
+            "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),
+            "--ffprobe", str(tools["ffprobe_path"]),
+            "--ffprobe-sha256", str(tools["ffprobe_sha256"]),
+            "--batch-size", "15",
+        ]
+    )
+    assert status == 0
+    assert "PASS MP4 PILOT A" in capsys.readouterr().out
+    assert destination.is_file()
+    assert destination.stat().st_size > 0
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+def test_project_export_blocked_without_pilot_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _fixture(tmp_path)
+    monkeypatch.delenv("ANG_PILOT_A_FFMPEG", raising=False)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    output = tmp_path / "not-authorized.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(state, output, **_tools())
+    assert not output.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+def test_project_export_cancellation_cleans_temporary_frames(
+    tmp_path: Path
+) -> None:
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    output = tmp_path / "cancelled.mp4"
+    with pytest.raises(StillProjectMP4Error):
+        export_still_project_mp4(
+            state, output, should_cancel=lambda: True, **_tools()
+        )
+    assert not output.exists()
+    assert not list(tmp_path.glob(".ang-still-mp4-*"))
+
+
+def test_cli_missing_project_fails_closed(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    tools = _tools()
+    result = scene_cli(
+        [
+            "mp4-pilot-a",
+            "--project", str(tmp_path / "missing.angproj"),
+            "--output", str(tmp_path / "missing.mp4"),
+            "--ffmpeg", str(tools["ffmpeg_path"]),
+            "--ffmpeg-sha256", str(tools["ffmpeg_sha256"]),
+            "--ffprobe", str(tools["ffprobe_path"]),
+            "--ffprobe-sha256", str(tools["ffprobe_sha256"]),
+        ]
+    )
+    assert result == 1
+    assert not (tmp_path / "missing.mp4").exists()
+    assert "GAGAL" in capsys.readouterr().err
