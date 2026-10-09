@@ -129,6 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     pilot.add_argument("--ffprobe-sha256", required=True)
     pilot.add_argument("--timeout", type=float, default=60.0)
     pilot.add_argument("--batch-size", type=int, default=300)
+    pilot.add_argument("--burn-subtitles", action="store_true")
 
     args = parser.parse_args(argv)
     try:
@@ -145,6 +146,7 @@ def main(argv: list[str] | None = None) -> int:
                 ffprobe_sha256=args.ffprobe_sha256,
                 timeout_seconds=args.timeout,
                 batch_size=args.batch_size,
+                include_subtitles=args.burn_subtitles,
             )
             print(
                 f"PASS MP4 PILOT A: H.264 tanpa audio, {result.frame_count} frame, "

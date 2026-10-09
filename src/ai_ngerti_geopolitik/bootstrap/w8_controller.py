@@ -89,7 +89,9 @@ class _DeferredProbe:
         return FfprobeMediaProbe().probe(path)
 
 
-def _run_pilot_gui_export(state: ProjectState, output: Path, cancel: Event) -> PilotAResult:
+def _run_pilot_gui_export(
+    state: ProjectState, output: Path, cancel: Event, include_subtitles: bool
+) -> PilotAResult:
     """Off-Qt worker: resolve, SHA-pin and run external tools only in Pilot A."""
     if os.environ.get("ANG_PILOT_A_FFMPEG") != "1" or cancel.is_set():
         raise RuntimeError("Pilot A is disabled or cancelled")
@@ -108,6 +110,7 @@ def _run_pilot_gui_export(state: ProjectState, output: Path, cancel: Event) -> P
         ffprobe_sha256=sha256_executable(ffprobe),
         timeout_seconds=900,
         should_cancel=cancel.is_set,
+        include_subtitles=include_subtitles,
     )
 
 
@@ -230,10 +233,14 @@ class W8RuntimeController:
         self.export_cancel = Event()
         self.export_token = (self.session_id, self.session.state.semantic_hash())
         self.export_future = self.export_worker.submit(
-            _run_pilot_gui_export, self.session.state, destination, self.export_cancel
+            _run_pilot_gui_export,
+            self.session.state,
+            destination,
+            self.export_cancel,
+            data["subtitle"] == "Sertakan Subtitle (Burn-in ke Video)",
         )
         self.window.show_route(UiRoute.EDITOR)
-        self._notify("Membuat MP4 H.264 gambar tanpa audio/subtitle...")
+        self._notify("Membuat MP4 H.264 dan memverifikasi semua track yang dipilih...")
 
     def _poll_still_export(self) -> None:
         future = self.export_future

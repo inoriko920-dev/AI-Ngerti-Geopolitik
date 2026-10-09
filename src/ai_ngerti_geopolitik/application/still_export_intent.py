@@ -53,16 +53,28 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
         raise StillExportIntentError("Preset atau bitrate ini belum didukung oleh Pilot A.")
     if payload["sharpen"] != "Normal":
         raise StillExportIntentError("Ketajaman pilihan ini belum didukung oleh Pilot A.")
-    if payload["subtitle"] != "Tanpa Subtitle":
-        raise StillExportIntentError("Burn-in subtitle belum tersedia; pilih Tanpa Subtitle.")
-    if state.subtitle is not None or state.narration is not None:
-        raise StillExportIntentError(
-            "Project berisi subtitle/narasi; ekspor audio-video belum didukung."
-        )
+    want_subtitles = payload["subtitle"] == "Sertakan Subtitle (Burn-in ke Video)"
+    if payload["subtitle"] not in {
+        "Tanpa Subtitle", "Sertakan Subtitle (Burn-in ke Video)"
+    }:
+        raise StillExportIntentError("Pilihan subtitle tidak dikenali.")
+    if want_subtitles != bool(state.subtitle is not None and state.subtitle.enabled):
+        raise StillExportIntentError("Subtitle project wajib sesuai dengan pilihan ekspor.")
+    if want_subtitles and state.subtitle is not None:
+        if state.subtitle.animation.preset != "none" or state.subtitle.style.font_family != "Arial":
+            raise StillExportIntentError("Hanya subtitle statis Arial yang didukung Pilot A.")
     if not state.tracks or not any(track.clips for track in state.tracks):
         raise StillExportIntentError("Project belum mempunyai scene gambar untuk diekspor.")
-    if any(asset.media_type != "image" or asset.has_audio for asset in state.assets):
-        raise StillExportIntentError("Pilot A hanya mendukung gambar, bukan video/audio.")
+    if any(
+        asset.media_type not in {"image", "audio"} or
+        (asset.media_type == "image" and asset.has_audio) or
+        (asset.media_type == "audio" and (
+            state.narration is None or asset.asset_id != state.narration.asset_id or
+            Path(asset.path_ref).suffix.lower() != ".wav"
+        ))
+        for asset in state.assets
+    ):
+        raise StillExportIntentError("Pilot A hanya mendukung gambar dan narasi WAV tunggal.")
     if any(clip.image_hold_frames is None for track in state.tracks for clip in track.clips):
         raise StillExportIntentError("Timeline berisi klip yang belum didukung ekspor gambar.")
     selected = _RESOLUTIONS.get(payload["resolution"])

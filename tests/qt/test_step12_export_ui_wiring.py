@@ -190,8 +190,11 @@ def test_render_button_starts_worker_and_returns_to_editor_without_blocking(
     options[-1].setCurrentText("Tanpa Subtitle")
     invoked: list[Path] = []
 
-    def fake_native_worker(state: ProjectState, output: Path, cancel) -> PilotAResult:
+    def fake_native_worker(
+        state: ProjectState, output: Path, cancel, include_subtitles: bool
+    ) -> PilotAResult:
         assert not cancel.is_set()
+        assert include_subtitles is False
         assert state.project_id == "STEP12-UI"
         invoked.append(output)
         return PilotAResult(
