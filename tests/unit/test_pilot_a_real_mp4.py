@@ -29,6 +29,7 @@ from ai_ngerti_geopolitik.bootstrap.scene_cli import main as scene_cli
 from ai_ngerti_geopolitik.bootstrap.w8_controller import W8IntentRouter, W8RuntimeController
 from ai_ngerti_geopolitik.domain import (
     Asset,
+    EffectProperties,
     FrameTime,
     NarrationTrack,
     SubtitleCue,
