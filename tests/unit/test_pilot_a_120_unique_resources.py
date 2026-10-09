@@ -383,7 +383,6 @@ def test_complete_manifest_cancel_after_write_prevents_publish(
     assert not list(tmp_path.glob(".angseq-*"))
 
 
-
 def _fullhd_project(
     root: Path, fps: int
 ) -> tuple[ProjectState, tuple[tuple[tuple[int, int, int], ...], ...]]:
@@ -464,9 +463,7 @@ def _fullhd_project(
             )
         )
     state = replace(
-        ProjectState.create(
-            f"P-HD-PILOT-{fps}", "Sixteen different Full HD sources", fps
-        ),
+        ProjectState.create(f"P-HD-PILOT-{fps}", "Sixteen different Full HD sources", fps),
         assets=tuple(assets),
         tracks=(Track("V1", "video", 0, clips=tuple(clips)),),
     )
@@ -601,10 +598,7 @@ def test_real_1080p_patterned_unique_media_and_windows_native_rss(
         for image_index, samples in enumerate(expected):
             for frame_in_clip in (0, 1):
                 for (x, y), pixel_expected in zip(coords, samples, strict=True):
-                    offset = (
-                        (image_index * 2 + frame_in_clip) * frame_size
-                        + (y * 1920 + x) * 3
-                    )
+                    offset = (image_index * 2 + frame_in_clip) * frame_size + (y * 1920 + x) * 3
                     decoded.seek(offset)
                     rgb = decoded.read(3)
                     assert len(rgb) == 3
