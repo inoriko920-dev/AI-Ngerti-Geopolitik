@@ -1,7 +1,7 @@
 """Owner-approved Pilot A audio / simple burned subtitle postflight.
 
-Restricted to one fingerprint-pinned PCM WAV narration and plain static
-ASCII text cues. Never assumes unsupported media fidelity.
+Restricted to one fingerprint-pinned PCM WAV/MP3 narration and qualified
+Unicode static captions. Never assumes arbitrary glyph/script parity.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import json
 import os
 import re
 import subprocess
+import unicodedata
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
@@ -24,7 +25,22 @@ from ai_ngerti_geopolitik.infrastructure.pilot_a_still_mp4 import (
     sha256_executable,
 )
 
-_TEXT_ALLOWED = re.compile(r"[A-Za-z0-9 .!?-]{1,120}\Z")
+_CAPTION_PUNCTUATION = frozenset(" .!?-。！？،")
+
+
+def _qualified_caption(text: str) -> bool:
+    """Accept bounded Unicode letters/marks/numbers and safe punctuation only."""
+    if (
+        not 1 <= len(text) <= 120
+        or len(text.encode("utf-8")) > 480
+        or unicodedata.normalize("NFC", text) != text
+    ):
+        return False
+    return all(
+        char in _CAPTION_PUNCTUATION
+        or unicodedata.category(char).startswith(("L", "M", "N"))
+        for char in text
+    )
 
 
 def _narration_source(state: ProjectState) -> Path | None:
@@ -35,7 +51,7 @@ def _narration_source(state: ProjectState) -> Path | None:
     source = Path(asset.path_ref)
     if (
         asset.media_type != "audio"
-        or source.suffix.lower() != ".wav"
+        or source.suffix.lower() not in {".wav", ".mp3"}
         or source.is_symlink()
         or not source.is_absolute()
         or not source.is_file()
@@ -53,6 +69,41 @@ def _narration_source(state: ProjectState) -> Path | None:
     return source
 
 
+def _probe_narration(source: Path, ffprobe: Path) -> None:
+    """Require one real stream matching declared WAV/MP3 extension before mux."""
+    with tempfile.TemporaryFile() as sink:
+        try:
+            result = subprocess.run(
+                [
+                    str(ffprobe), "-v", "error",
+                    "-show_entries", "stream=codec_type,codec_name,sample_rate",
+                    "-of", "json", str(source),
+                ],
+                stdin=subprocess.DEVNULL,
+                stdout=sink,
+                stderr=subprocess.DEVNULL,
+                timeout=20,
+                shell=False,
+                check=False,
+            )
+            if result.returncode != 0 or sink.tell() > 65536:
+                raise PilotAError("audio source codec verification failed")
+            sink.seek(0)
+            metadata = json.loads(sink.read(65536).decode("utf-8"))
+            streams = metadata["streams"]
+            expected = "mp3" if source.suffix.lower() == ".mp3" else "pcm_s16le"
+            if (
+                not isinstance(streams, list)
+                or len(streams) != 1
+                or streams[0].get("codec_type") != "audio"
+                or streams[0].get("codec_name") != expected
+                or int(streams[0]["sample_rate"]) not in (16000, 24000, 44100, 48000)
+            ):
+                raise PilotAError("audio source codec is not qualified")
+        except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
+            raise PilotAError("audio source codec verification failed") from None
+
+
 def _subtitles(state: ProjectState, enabled: bool) -> str | None:
     sub = state.subtitle
     if not enabled:
@@ -62,10 +113,10 @@ def _subtitles(state: ProjectState, enabled: bool) -> str | None:
     if (
         sub is None
         or not sub.enabled
-        or len(sub.cues) > 10
+        or len(sub.cues) > 60
         or sub.animation.preset != "none"
         or sub.style.font_family != "Arial"
-        or any(_TEXT_ALLOWED.fullmatch(cue.text) is None for cue in sub.cues)
+        or any(not _qualified_caption(cue.text) for cue in sub.cues)
     ):
         raise PilotAError("complex or missing subtitle unsupported for native Pilot A")
     filters = build_subtitle_export_plan(state).filters
@@ -101,6 +152,8 @@ def compose_narration_subtitle_pilot_a(
         ):
             raise PilotAError("native postcompose input invalid")
         narration = _narration_source(state)
+        if narration is not None:
+            _probe_narration(narration, ffprobe_path)
         subtitles = _subtitles(state, include_subtitles)
         if narration is None and subtitles is None:
             raise PilotAError("no secondary track required")

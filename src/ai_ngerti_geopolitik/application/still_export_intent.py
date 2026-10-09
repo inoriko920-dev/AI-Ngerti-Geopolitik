@@ -76,12 +76,12 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
             and (
                 state.narration is None
                 or asset.asset_id != state.narration.asset_id
-                or Path(asset.path_ref).suffix.lower() != ".wav"
+                or Path(asset.path_ref).suffix.lower() not in {".wav", ".mp3"}
             )
         )
         for asset in state.assets
     ):
-        raise StillExportIntentError("Pilot A hanya mendukung gambar dan narasi WAV tunggal.")
+        raise StillExportIntentError("Pilot A hanya mendukung gambar dan satu narasi WAV/MP3.")
     if any(clip.image_hold_frames is None for track in state.tracks for clip in track.clips):
         raise StillExportIntentError("Timeline berisi klip yang belum didukung ekspor gambar.")
     selected = _RESOLUTIONS.get(payload["resolution"])
