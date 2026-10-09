@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 import wave
 from array import array
 from dataclasses import replace
@@ -717,10 +718,11 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
     assert max(abs(x) for x in samples[12000:14400]) > 1000
     assert max(abs(x) for x in samples[72000:76000]) < 500
 
-    # Decode just 6 frames, avoiding huge frame buffers; check 3 separated SRT cues.
-    frames: list[bytes] = []
-    for frame_index in (5, 20, 90, 135, 285, 315):
-        image_bytes = subprocess.run(
+    # Decode all frames once to an on-disk temporary file; compare exact
+    # frame indices without FFmpeg select-filter ambiguities on Windows.
+    frame_bytes = result.width * result.height * 3
+    with tempfile.TemporaryFile() as decoded:
+        check = subprocess.run(
             [
                 str(native["ffmpeg_path"]),
                 "-nostdin",
@@ -728,12 +730,9 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
                 "error",
                 "-i",
                 str(result_path),
-                "-vf",
-                f"select=eq(n\\,{frame_index})",
-                "-vsync",
-                "0",
-                "-frames:v",
-                "1",
+                "-map",
+                "0:v:0",
+                "-an",
                 "-pix_fmt",
                 "rgb24",
                 "-f",
@@ -741,13 +740,19 @@ def test_vbr_mp3_long_timeline_and_multicue_srt_sync(tmp_path: Path) -> None:
                 "-",
             ],
             stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
+            stdout=decoded,
             stderr=subprocess.DEVNULL,
-            timeout=25,
-            check=True,
-        ).stdout
-        assert len(image_bytes) == result.width * result.height * 3
-        frames.append(image_bytes)
+            timeout=35,
+            check=False,
+        )
+        assert check.returncode == 0
+        assert decoded.tell() == frame_bytes * 360
+        frames: list[bytes] = []
+        for frame_index in (5, 20, 90, 135, 285, 315):
+            decoded.seek(frame_index * frame_bytes)
+            sample = decoded.read(frame_bytes)
+            assert len(sample) == frame_bytes
+            frames.append(sample)
     # Still background alternates by source HOLD; compare only adjacent
     # frames within the same clip when testing a subtitle's presence.
     assert len(frames) == 6
