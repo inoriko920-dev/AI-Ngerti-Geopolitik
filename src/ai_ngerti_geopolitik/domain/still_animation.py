@@ -44,9 +44,7 @@ def qualified_still_pan(clip: Clip, timeline_frame: int) -> float | None:
     if not 0 <= offset < clip.duration_frames:
         raise ValueError("pan frame outside clip")
     window = max(1.0, min(0.25 * clip.timeline_start.fps, clip.duration_frames / 2.0))
-    entering = (
-        -max(0.0, 1.0 - offset / window) if effects.enter_effect == "Pan" else 0.0
-    )
+    entering = -max(0.0, 1.0 - offset / window) if effects.enter_effect == "Pan" else 0.0
     leaving = (
         max(0.0, 1.0 - (clip.duration_frames - offset) / window)
         if effects.exit_effect == "Pan"

@@ -318,7 +318,6 @@ def test_w4_fade_still_rejects_unqualified_combination_and_double_lane(
         render_still_frame(bad_double, 150)
 
 
-
 def _pan_pattern_state(tmp_path: Path):
     state = _save_real_project(tmp_path)
     image = QImage(64, 48, QImage.Format.Format_RGB32)
@@ -361,7 +360,8 @@ def test_w4_pan_in_out_moves_real_pattern_without_black_borders(tmp_path: Path) 
         ),
     )
     state = replace(
-        state, tracks=(
+        state,
+        tracks=(
             replace(state.tracks[0], clips=(moved, *state.tracks[0].clips[1:])),
             *state.tracks[1:],
         ),
@@ -369,11 +369,15 @@ def test_w4_pan_in_out_moves_real_pattern_without_black_borders(tmp_path: Path) 
     state.validate()
     frames = [render_still_frame(state, f) for f in (0, 4, 18, 147, 149)]
     assert all((image.width(), image.height()) == (128, 72) for image in frames)
+
     def pixels(image: QImage) -> tuple[int, ...]:
         return tuple(image.pixelColor(x, 36).red() for x in range(12, 117, 5))
+
     start, entering, settled, leaving, end = (pixels(image) for image in frames)
+
     def difference(a: tuple[int, ...], b: tuple[int, ...]) -> int:
         return sum(abs(x - y) for x, y in zip(a, b, strict=True))
+
     assert difference(start, settled) > 30
     assert difference(entering, settled) > 10
     assert difference(leaving, settled) > 10

@@ -1296,7 +1296,6 @@ def test_real_native_mp4_w4_fade_effect_in_and_out_at_exact_frames(
         )
 
 
-
 def test_native_h264_w4_pan_effect_has_measurable_frame_motion(tmp_path: Path) -> None:
     """The real encoded MP4 must move a patterned source during Pan IN/OUT."""
     _fixture(tmp_path)
@@ -1370,11 +1369,13 @@ def test_native_h264_w4_pan_effect_has_measurable_frame_motion(tmp_path: Path) -
         )
         assert ffmpeg.returncode == 0
         assert decoded.tell() == 60 * frame_bytes
+
         def samples(frame: int) -> bytes:
             return b"".join(
                 _read_rgb_sample(decoded, frame, 36, x, receipt.width, frame_bytes)
                 for x in range(12, 117, 5)
             )
+
         opening, middle, ending = samples(0), samples(18), samples(29)
         # Deliberately broad: compression is lossy but motion must not be flat.
         assert sum(abs(x - y) for x, y in zip(opening, middle, strict=True)) > 90
@@ -1394,9 +1395,7 @@ def test_native_h264_w4_pan_effect_has_measurable_frame_motion(tmp_path: Path) -
         )
 
 
-def _read_rgb_sample(
-    stream, frame: int, y: int, x: int, width: int, frame_size: int
-) -> bytes:
+def _read_rgb_sample(stream, frame: int, y: int, x: int, width: int, frame_size: int) -> bytes:
     stream.seek(frame * frame_size + (y * width + x) * 3)
     result = stream.read(3)
     assert len(result) == 3

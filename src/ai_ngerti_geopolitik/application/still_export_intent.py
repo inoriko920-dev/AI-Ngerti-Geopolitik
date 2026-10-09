@@ -107,7 +107,9 @@ def validate_still_export_intent(payload: Mapping[str, str], state: ProjectState
                     for other in state.tracks
                 )
             ):
-                raise StillExportIntentError("Fade/Pan gambar hanya tersedia untuk satu gambar di V1.")
+                raise StillExportIntentError(
+                    "Fade/Pan gambar hanya tersedia untuk satu gambar di V1."
+                )
     selected = _RESOLUTIONS.get(payload["resolution"])
     if selected != (state.settings.width, state.settings.height):
         raise StillExportIntentError(
