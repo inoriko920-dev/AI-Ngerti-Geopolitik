@@ -221,3 +221,98 @@ def test_fade_in_double_scene_and_other_motion_effects_reject_without_fake_pixel
     )
     with pytest.raises(StillFramePreviewError, match="effects"):
         render_still_frame(unsupported_state, 0)
+
+
+
+def test_w4_fade_enter_exit_uses_frame_exact_alpha_not_static_image(tmp_path: Path) -> None:
+    state = _save_real_project(tmp_path)
+    first = state.tracks[0].clips[0]
+    animated = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Fade", exit_effect="Fade"),
+        ),
+    )
+    project = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(animated, *state.tracks[0].clips[1:])),
+            state.tracks[1],
+        ),
+    )
+    project.validate()
+    assert render_still_frame(project, 0).pixelColor(3, 3).red() == 0
+    assert 100 <= render_still_frame(project, 4).pixelColor(3, 3).red() <= 150
+    assert render_still_frame(project, 20).pixelColor(3, 3).red() >= 250
+    assert render_still_frame(project, 149).pixelColor(3, 3).red() < 50
+    assert render_still_frame(project, 150).pixelColor(0, 3).green() >= 250
+
+
+def test_w4_fade_only_enter_and_only_exit_preserve_other_end(tmp_path: Path) -> None:
+    state = _save_real_project(tmp_path)
+    first = state.tracks[0].clips[0]
+    for incoming, outgoing in (("Fade", "None"), ("None", "Fade")):
+        changed = replace(
+            first,
+            properties=replace(
+                first.properties,
+                effects=EffectProperties(enter_effect=incoming, exit_effect=outgoing),
+            ),
+        )
+        project = replace(
+            state,
+            tracks=(
+                replace(state.tracks[0], clips=(changed, *state.tracks[0].clips[1:])),
+                state.tracks[1],
+            ),
+        )
+        opening = render_still_frame(project, 0).pixelColor(2, 2).red()
+        ending = render_still_frame(project, 149).pixelColor(2, 2).red()
+        if incoming == "Fade":
+            assert opening == 0
+            assert ending >= 250
+        else:
+            assert opening >= 250
+            assert ending < 50
+
+
+def test_w4_fade_still_rejects_unqualified_combination_and_double_lane(
+    tmp_path: Path,
+) -> None:
+    state = _save_real_project(tmp_path)
+    first = state.tracks[0].clips[0]
+    combined = replace(
+        first,
+        properties=replace(
+            first.properties,
+            transition=TransitionProperties("fade_black", 10),
+            effects=EffectProperties(enter_effect="Fade"),
+        ),
+    )
+    bad = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(combined, *state.tracks[0].clips[1:])),
+            state.tracks[1],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="effects"):
+        render_still_frame(bad, 0)
+
+    double = replace(
+        state.tracks[0].clips[1],
+        properties=replace(
+            state.tracks[0].clips[1].properties,
+            effects=EffectProperties(enter_effect="Fade"),
+        ),
+    )
+    bad_double = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(first, double)),
+            state.tracks[1],
+        ),
+    )
+    with pytest.raises(StillFramePreviewError, match="single V1"):
+        render_still_frame(bad_double, 150)

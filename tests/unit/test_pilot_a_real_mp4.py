@@ -1217,3 +1217,80 @@ def test_real_native_mp4_has_fade_black_pixels_at_exact_scene_frames(
             f"{result.sha256}  ANG-Pilot-A-Fade-Black-Real.mp4\n",
             encoding="utf-8",
         )
+
+
+
+def test_real_native_mp4_w4_fade_effect_in_and_out_at_exact_frames(
+    tmp_path: Path,
+) -> None:
+    """Owner-approved FFmpeg must really encode W4 Fade effect pixels."""
+    _fixture(tmp_path)
+    state = JsonProjectRepository().load(tmp_path / "pilot.angproj")
+    first = state.tracks[0].clips[0]
+    faded = replace(
+        first,
+        properties=replace(
+            first.properties,
+            effects=EffectProperties(enter_effect="Fade", exit_effect="Fade"),
+        ),
+    )
+    state = replace(
+        state,
+        tracks=(
+            replace(state.tracks[0], clips=(faded, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
+    )
+    state.validate()
+    destination = tmp_path / "w4-fade-native.mp4"
+    result = export_still_project_mp4(state, destination, batch_size=12, **_tools())
+    assert result.frame_count == 60
+    frame_bytes = result.width * result.height * 3
+    with tempfile.TemporaryFile() as raw:
+        encode = subprocess.run(
+            [
+                str(_tools()["ffmpeg_path"]),
+                "-nostdin",
+                "-v",
+                "error",
+                "-i",
+                str(destination),
+                "-map",
+                "0:v:0",
+                "-an",
+                "-pix_fmt",
+                "rgb24",
+                "-f",
+                "rawvideo",
+                "-",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=raw,
+            stderr=subprocess.DEVNULL,
+            timeout=30,
+            check=False,
+        )
+        assert encode.returncode == 0
+        assert raw.tell() == result.frame_count * frame_bytes
+
+        def red_at(frame: int) -> int:
+            raw.seek(frame * frame_bytes)
+            pixel = raw.read(3)
+            assert len(pixel) == 3
+            return pixel[0]
+
+        assert red_at(0) <= 16
+        assert 55 <= red_at(4) <= 200
+        assert red_at(15) >= 180
+        assert red_at(29) <= 100
+        assert red_at(30) <= 100
+
+    target = os.environ.get("ANG_PILOT_A_OUTPUT_DIR")
+    if target:
+        folder = Path(target)
+        folder.mkdir(parents=True, exist_ok=True)
+        name = "ANG-Pilot-A-W4-Fade-Effect.mp4"
+        shutil.copy2(destination, folder / name)
+        (folder / "W4-Fade-Effect-SHA256.txt").write_text(
+            f"{result.sha256}  {name}\n", encoding="utf-8"
+        )
