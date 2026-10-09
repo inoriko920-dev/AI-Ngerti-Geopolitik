@@ -436,9 +436,11 @@ def _drift_pattern_state(tmp_path: Path):
             image.setPixelColor(
                 x,
                 y,
-                QColor((4 * x + 2 * y + 40) % 256,
-                       (2 * x + 5 * y + 30) % 256,
-                       (3 * x + 7 * y + 20) % 256),
+                QColor(
+                    (4 * x + 2 * y + 40) % 256,
+                    (2 * x + 5 * y + 30) % 256,
+                    (3 * x + 7 * y + 20) % 256,
+                ),
             )
     source = tmp_path / "A001.png"
     assert image.save(str(source), "PNG")
@@ -533,7 +535,10 @@ def test_w4_drift_rejects_double_lane_and_transition(tmp_path: Path) -> None:
     )
     project = replace(
         state,
-        tracks=(replace(state.tracks[0], clips=(state.tracks[0].clips[0], double)), *state.tracks[1:]),
+        tracks=(
+            replace(state.tracks[0], clips=(state.tracks[0].clips[0], double)),
+            *state.tracks[1:],
+        ),
     )
     with pytest.raises(StillFramePreviewError, match="single V1"):
         render_still_frame(project, 151)
@@ -548,7 +553,10 @@ def test_w4_drift_rejects_double_lane_and_transition(tmp_path: Path) -> None:
     )
     invalid = replace(
         state,
-        tracks=(replace(state.tracks[0], clips=(both, *state.tracks[0].clips[1:])), *state.tracks[1:]),
+        tracks=(
+            replace(state.tracks[0], clips=(both, *state.tracks[0].clips[1:])),
+            *state.tracks[1:],
+        ),
     )
     with pytest.raises(StillFramePreviewError, match="effects"):
         render_still_frame(invalid, 0)

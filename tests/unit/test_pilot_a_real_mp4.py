@@ -1488,9 +1488,7 @@ def test_native_h264_w4_drift_moves_actual_pixels_diagonally(tmp_path: Path) -> 
                 for x, y in ((15, 14), (64, 36), (105, 56))
             )
 
-        opening, entering, middle, leaving, end = (
-            samples(frame) for frame in (0, 4, 18, 27, 29)
-        )
+        opening, entering, middle, leaving, end = (samples(frame) for frame in (0, 4, 18, 27, 29))
         assert sum(abs(x - y) for x, y in zip(opening, middle, strict=True)) > 70
         assert sum(abs(x - y) for x, y in zip(entering, middle, strict=True)) > 20
         assert sum(abs(x - y) for x, y in zip(leaving, middle, strict=True)) > 20
