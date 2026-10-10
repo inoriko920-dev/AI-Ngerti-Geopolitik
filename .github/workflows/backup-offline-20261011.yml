@@ -1,0 +1,52 @@
+name: One-time offline recovery snapshot (2026-10-11)
+on:
+  push:
+    branches:
+      - backup/snapshot-20261011-wib
+    paths:
+      - .github/workflows/backup-offline-20261011.yml
+permissions:
+  contents: read
+jobs:
+  produce-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Mirror all Git branches and tags, verify, export main
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p backup
+          git clone --mirror "https://github.com/inoriko920-dev/AI-Ngerti-Geopolitik.git" backup/repo.git
+          git -C backup/repo.git fsck --full --no-reflogs
+          git -C backup/repo.git bundle create "$PWD/backup/AI-Ngerti-Geopolitik-ALL-REFS.bundle" --all
+          git -C backup/repo.git bundle verify "$PWD/backup/AI-Ngerti-Geopolitik-ALL-REFS.bundle" > backup/GIT_BUNDLE_VERIFY.txt 2>&1
+          git -C backup/repo.git bundle list-heads "$PWD/backup/AI-Ngerti-Geopolitik-ALL-REFS.bundle" > backup/BUNDLE_REFS.txt
+          git -C backup/repo.git show-ref > backup/ALL_REFS.txt
+          git -C backup/repo.git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/remotes refs/tags > backup/BRANCHES_TAGS.txt
+          git -C backup/repo.git log --all --pretty=format:'%H | %P | %aI | %an | %s' > backup/COMMIT_HISTORY.txt
+          git -C backup/repo.git archive --format=zip --output="$PWD/backup/AI-Ngerti-Geopolitik-SOURCE-MAIN.zip" refs/heads/main
+          git -C backup/repo.git rev-parse refs/heads/main > backup/MAIN_COMMIT.txt
+          git -C backup/repo.git count-objects -v > backup/GIT_OBJECTS.txt
+          git -C backup/repo.git log --all --format=%H | sort -u | wc -l > backup/UNIQUE_COMMITS_COUNT.txt
+          test -s backup/AI-Ngerti-Geopolitik-ALL-REFS.bundle
+          test -s backup/AI-Ngerti-Geopolitik-SOURCE-MAIN.zip
+          (cd backup && sha256sum AI-Ngerti-Geopolitik-ALL-REFS.bundle AI-Ngerti-Geopolitik-SOURCE-MAIN.zip > GIT_AND_SOURCE_SHA256.txt)
+      - name: Upload complete Git bundle plus main source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-restore-bundle-20261011
+          path: |
+            backup/AI-Ngerti-Geopolitik-ALL-REFS.bundle
+            backup/AI-Ngerti-Geopolitik-SOURCE-MAIN.zip
+            backup/GIT_BUNDLE_VERIFY.txt
+            backup/BUNDLE_REFS.txt
+            backup/ALL_REFS.txt
+            backup/BRANCHES_TAGS.txt
+            backup/COMMIT_HISTORY.txt
+            backup/MAIN_COMMIT.txt
+            backup/GIT_OBJECTS.txt
+            backup/UNIQUE_COMMITS_COUNT.txt
+            backup/GIT_AND_SOURCE_SHA256.txt
+          if-no-files-found: error
+          retention-days: 7
