@@ -1,0 +1,40 @@
+name: Publish GitHub-only Full Backup (AI-Ngerti-Geopolitik)
+on:
+  push:
+    branches:
+      - backup/snapshot-20261011-wib
+    paths:
+      - .github/workflows/backup-publish-release.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Check out backup branch (without touching main)
+        uses: actions/checkout@v4
+      - name: Produce and verify GitHub-only ZIP from all git refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 backup/build_github_only_release.py
+      - name: Create permanent GitHub Release and upload ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="backup-github-only-2026-10-11"
+          target_sha="$(git ls-remote "https://github.com/$GITHUB_REPOSITORY.git" refs/heads/main | cut -f1)"
+          test -n "$target_sha"
+          if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" --target "$target_sha" \
+              --title "AI-Ngerti-Geopolitik: GitHub-only complete repository backup (11 Oct 2026)" \
+              --notes "GitHub-only complete repository history and code recovery ZIP. Includes all branch/tag/PR refs in a verified Git bundle, main source snapshot, planning docs, UI-001..042, prompts, branch-only files, SHA-256 checks, and restore scripts for Windows 11. Original corrupt GitHub DOCX kept without repair. Secrets, GitHub discussion metadata, and final portable build not included."
+          fi
+          gh release upload "$tag" backup-release-output/*.zip backup-release-output/*.sha256 --clobber --repo "$GITHUB_REPOSITORY"
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json url,assets --jq '{url: .url,assets: [.assets[] | {name: .name,size: .size,url: .url}]}'
